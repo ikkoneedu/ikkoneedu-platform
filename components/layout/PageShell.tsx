@@ -17,10 +17,10 @@ interface PageShellProps {
  */
 export function PageShell({ children, title }: PageShellProps) {
   return (
-    <div className="bg-radial-glow flex min-h-screen w-full">
+    <div className="bg-radial-glow min-h-screen w-full lg:pl-64">
       <Sidebar />
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
         <Topbar title={title} />
 
         <main className="flex-1 px-4 py-6 pb-24 sm:px-6 lg:px-8 lg:pb-8">

@@ -2,9 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { mobileNavigationItems } from "@/lib/constants";
+import { mobileNavigationItems, type NavigationItem } from "@/lib/constants";
 
 interface MobileBottomNavProps {
+  /** Gösterilecek öğeler (varsayılan: genel mobil navigasyon). */
+  items?: NavigationItem[];
+  /** Aktif öğeyi açıkça belirler (rota yoksa kullanılır). */
+  activeId?: string;
   className?: string;
 }
 
@@ -13,8 +17,18 @@ interface MobileBottomNavProps {
  * Küçük ekranlarda öncelikli menü öğelerine hızlı erişim sağlar.
  * Masaüstünde gizlenir; o boyutta Sidebar kullanılır.
  */
-export function MobileBottomNav({ className = "" }: MobileBottomNavProps) {
+export function MobileBottomNav({
+  items = mobileNavigationItems,
+  activeId,
+  className = "",
+}: MobileBottomNavProps) {
   const pathname = usePathname();
+
+  const isItemActive = (item: NavigationItem) => {
+    if (activeId) return item.id === activeId;
+    if (item.href === "#") return false;
+    return item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+  };
 
   return (
     <nav
@@ -24,18 +38,18 @@ export function MobileBottomNav({ className = "" }: MobileBottomNavProps) {
         className,
       ].join(" ")}
     >
-      {mobileNavigationItems.map((item) => {
-        const isActive =
-          item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+      {items.map((item) => {
+        const isActive = isItemActive(item);
         const Icon = item.icon;
 
         return (
           <Link
             key={item.id}
             href={item.href}
+            aria-current={isActive ? "page" : undefined}
             className={[
               "flex flex-1 flex-col items-center gap-1 rounded-lg py-1.5 text-[11px] font-medium transition-colors",
-              isActive ? "text-content" : "text-muted hover:text-content",
+              isActive ? "text-accent" : "text-muted hover:text-content",
             ].join(" ")}
           >
             <Icon size={20} aria-hidden="true" />

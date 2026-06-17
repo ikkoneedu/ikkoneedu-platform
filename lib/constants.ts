@@ -11,6 +11,13 @@ import {
   MessageSquare,
   Sparkles,
   Settings,
+  BookOpen,
+  Brain,
+  CalendarDays,
+  BarChart3,
+  Home,
+  Bot,
+  User,
   type LucideIcon,
 } from "lucide-react";
 
@@ -69,6 +76,31 @@ export const mobileNavigationItems: NavigationItem[] = navigationItems.filter(
       item.id,
     ),
 );
+
+/** Yönetim paneli (/admin) kenar çubuğu menüsü. */
+export const adminNavigationItems: NavigationItem[] = [
+  { id: "panel", label: "Panel", href: "#", icon: LayoutDashboard },
+  { id: "akademik", label: "Akademik", href: "#", icon: BookOpen },
+  { id: "ai-zekasi", label: "AI Zekası", href: "#", icon: Brain },
+  { id: "takvim", label: "Takvim", href: "#", icon: CalendarDays },
+  { id: "analizler", label: "Analizler", href: "#", icon: BarChart3 },
+  { id: "yonetim", label: "Yönetim", href: "/admin", icon: Settings },
+];
+
+/** Yönetim paneli mobil alt navigasyonu. */
+export const adminMobileNavItems: NavigationItem[] = [
+  { id: "ana-sayfa", label: "Ana Sayfa", href: "#", icon: Home },
+  { id: "ai-brain", label: "AI Brain", href: "#", icon: Bot },
+  { id: "takvim", label: "Takvim", href: "/admin", icon: CalendarDays },
+  { id: "mesajlar", label: "Mesajlar", href: "#", icon: MessageSquare },
+  { id: "profil", label: "Profil", href: "#", icon: User },
+];
+
+/** Yönetim paneli üst çubuk orta bağlantıları. */
+export const adminTopbarLinks = [
+  { id: "kampus", label: "Kampüs Seçimi", href: "#" },
+  { id: "duyurular", label: "Duyurular", href: "#" },
+] as const;
 
 /** Geriye dönük uyumluluk için site bilgisi. */
 export const SITE = {
