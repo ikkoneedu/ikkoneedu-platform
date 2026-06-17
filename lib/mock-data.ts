@@ -22,6 +22,16 @@ import {
   Network,
   ShieldCheck,
   Cpu,
+  Crown,
+  MonitorSmartphone,
+  TrendingUp,
+  BookOpen,
+  LayoutDashboard,
+  Bot,
+  CalendarDays,
+  FileText,
+  ClipboardCheck,
+  LifeBuoy,
   type LucideIcon,
 } from "lucide-react";
 
@@ -398,6 +408,144 @@ export const tenantFeatures: TenantFeature[] = [
     icon: Cpu,
   },
 ];
+
+/* -------------------------------------------------------------------------- */
+/*  Pazarlama Sayfası (/)                                                       */
+/* -------------------------------------------------------------------------- */
+
+export interface LandingCard {
+  id: string;
+  title: string;
+  description: string;
+  icon: LucideIcon;
+}
+
+/** Kurucu okul vurgusu kartları. */
+export const founderHighlights: LandingCard[] = [
+  {
+    id: "avantaj",
+    title: "Kurucu Okul Avantajı",
+    description:
+      "Platformun ilk geliştirme ortağı olarak özelliklere öncelikli erişim ve söz hakkı.",
+    icon: Crown,
+  },
+  {
+    id: "donusum",
+    title: "Dijital Kampüs Dönüşümü",
+    description:
+      "Tüm okul süreçlerinin uçtan uca dijitalleşmesiyle modern bir kampüs deneyimi.",
+    icon: MonitorSmartphone,
+  },
+  {
+    id: "ai-yonetim",
+    title: "Yapay Zeka Destekli Okul Yönetimi",
+    description:
+      "Karar süreçlerini hızlandıran, veri odaklı yapay zeka asistanlığı.",
+    icon: Brain,
+  },
+  {
+    id: "vizyon",
+    title: "Gelecekte Gelir Üreten Platform Vizyonu",
+    description:
+      "Kurum içi verimliliğin ötesinde, ölçeklenebilir bir gelir modeline dönüşüm.",
+    icon: TrendingUp,
+  },
+];
+
+/** Tek platform, dört deneyim kartları. */
+export const platformExperiences: LandingCard[] = [
+  {
+    id: "veli",
+    title: "Veli Portalı",
+    description:
+      "Öğrenci gelişimi, iletişim ve ödemeler için tek dokunuşluk veli deneyimi.",
+    icon: Users,
+  },
+  {
+    id: "ogrenci",
+    title: "Öğrenci Portalı",
+    description:
+      "Dersler, ödevler ve yapay zeka asistanıyla kişiselleştirilmiş öğrenme.",
+    icon: GraduationCap,
+  },
+  {
+    id: "ogretmen",
+    title: "Öğretmen Portalı",
+    description:
+      "Sınıf, içerik ve değerlendirme süreçlerini kolaylaştıran akıllı araçlar.",
+    icon: BookOpen,
+  },
+  {
+    id: "yonetim",
+    title: "Yönetim Paneli",
+    description:
+      "Tüm kampüsü tek ekrandan yöneten stratejik gösterge paneli.",
+    icon: LayoutDashboard,
+  },
+];
+
+/** Yapay zeka modülleri kartları. */
+export const aiModules: LandingCard[] = [
+  {
+    id: "brain",
+    title: "AI Brain",
+    description: "Tüm modülleri besleyen merkezi yapay zeka zekası.",
+    icon: Bot,
+  },
+  {
+    id: "ders-programi",
+    title: "AI Ders Programı",
+    description: "Optimum ders ve öğretmen dağılımını saniyeler içinde oluşturur.",
+    icon: CalendarDays,
+  },
+  {
+    id: "sinav",
+    title: "AI Sınav Oluşturucu",
+    description: "Kazanımlara uygun sınavları otomatik hazırlar.",
+    icon: FileText,
+  },
+  {
+    id: "karne",
+    title: "AI Karne Yorumu",
+    description: "Öğrenciye özel, anlamlı karne değerlendirmeleri üretir.",
+    icon: ClipboardCheck,
+  },
+  {
+    id: "kayit",
+    title: "AI Kayıt Danışmanı",
+    description: "Yeni kayıt sürecini akıllı önerilerle yönlendirir.",
+    icon: UserPlus,
+  },
+  {
+    id: "rehberlik",
+    title: "AI Rehberlik Asistanı",
+    description: "Öğrenci rehberliğinde 7/24 yapay zeka desteği.",
+    icon: LifeBuoy,
+  },
+];
+
+/** SaaS gelir modeli kademeleri. */
+export interface RevenueTier {
+  id: string;
+  schools: string;
+  revenue: string;
+  /** Öne çıkan kademe. */
+  highlight?: boolean;
+}
+
+export const revenueTiers: RevenueTier[] = [
+  { id: "t10", schools: "10 Okul", revenue: "1.2M TL / yıl" },
+  { id: "t25", schools: "25 Okul", revenue: "3M TL / yıl" },
+  { id: "t50", schools: "50 Okul", revenue: "6M TL / yıl", highlight: true },
+  { id: "t100", schools: "100 Okul", revenue: "12M TL / yıl" },
+];
+
+/** Hero bölümü canlı metrik kartları. */
+export const heroMetrics = [
+  { id: "okul", label: "Aktif Okul", value: "36" },
+  { id: "ogrenci", label: "Öğrenci", value: "12.480" },
+  { id: "ai", label: "AI Etkileşimi", value: "6.180" },
+] as const;
 
 /* -------------------------------------------------------------------------- */
 /*  Geriye dönük uyumluluk                                                     */
