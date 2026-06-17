@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  background-color: #050c16;
+}
+
+body {
+  background-color: #050c16;
+  color: #e3e2e5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Yumuşak arka plan ışıması */
+.bg-radial-glow {
+  background-image:
+    radial-gradient(60% 60% at 50% 0%, rgba(10, 35, 66, 0.55) 0%, transparent 70%),
+    radial-gradient(40% 40% at 80% 20%, rgba(178, 199, 239, 0.12) 0%, transparent 70%);
+}
