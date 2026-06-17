@@ -15,6 +15,13 @@ import {
   Brain,
   Landmark,
   Megaphone,
+  Building2,
+  FlaskConical,
+  Plus,
+  Globe,
+  Network,
+  ShieldCheck,
+  Cpu,
   type LucideIcon,
 } from "lucide-react";
 
@@ -295,6 +302,100 @@ export const adminActivities: AdminActivity[] = [
     description: "V2.4 sürümü tüm kampüslerde aktif edildi.",
     time: "Dün, 14:30",
     icon: Megaphone,
+  },
+];
+
+/* -------------------------------------------------------------------------- */
+/*  Okul Seçimi (/school-select)                                               */
+/* -------------------------------------------------------------------------- */
+
+export interface SchoolOption {
+  id: string;
+  name: string;
+  /** Kurum tipi (Kurucu Okul, Kampüs, Demo Ortamı, SaaS Yönetimi). */
+  type: string;
+  /** Aktif kullanıcı sayısı; yoksa "-" gösterilir. */
+  activeUsers: string;
+  icon: LucideIcon;
+  actionLabel: string;
+  /** Seçildiğinde yönlendirilecek rota. */
+  href: string;
+  /** "Yeni okul ekle" gibi vurgulu/çerçeveli kart. */
+  isAddNew?: boolean;
+}
+
+export const schoolOptions: SchoolOption[] = [
+  {
+    id: "ikk",
+    name: "İngiliz Kültür Kolejleri",
+    type: "Kurucu Okul",
+    activeUsers: "1,248",
+    icon: GraduationCap,
+    actionLabel: "Devam Et",
+    href: "/admin",
+  },
+  {
+    id: "atael",
+    name: "Atael Koleji",
+    type: "Kampüs",
+    activeUsers: "842",
+    icon: Building2,
+    actionLabel: "Devam Et",
+    href: "/admin",
+  },
+  {
+    id: "demo",
+    name: "Demo Okul",
+    type: "Demo Ortamı",
+    activeUsers: "120",
+    icon: FlaskConical,
+    actionLabel: "Devam Et",
+    href: "/admin",
+  },
+  {
+    id: "yeni",
+    name: "Yeni Okul Ekle",
+    type: "SaaS Yönetimi",
+    activeUsers: "-",
+    icon: Plus,
+    actionLabel: "Okul Ekle",
+    href: "/saas-admin",
+    isAddNew: true,
+  },
+];
+
+/** Tenant altyapısını anlatan açıklama kartları. */
+export interface TenantFeature {
+  id: string;
+  title: string;
+  description: string;
+  icon: LucideIcon;
+}
+
+export const tenantFeatures: TenantFeature[] = [
+  {
+    id: "subdomain",
+    title: "okuladi.ikkoneedu.com",
+    description: "Her kuruma özel alt alan adı ile markalı erişim.",
+    icon: Globe,
+  },
+  {
+    id: "multi",
+    title: "Çoklu Okul Altyapısı",
+    description: "Birden fazla okul ve kampüsü tek çatı altında yönetin.",
+    icon: Network,
+  },
+  {
+    id: "tenant",
+    title: "Güvenli Tenant Sistemi",
+    description: "Kurumlar arası izole, güvenli veri mimarisi.",
+    icon: ShieldCheck,
+  },
+  {
+    id: "ai",
+    title: "Merkezi AI Altyapısı",
+    description: "Tüm kurumlar için ortak yapay zeka zekası.",
+    icon: Cpu,
   },
 ];
 
