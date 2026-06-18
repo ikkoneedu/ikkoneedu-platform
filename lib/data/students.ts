@@ -7,9 +7,9 @@
 import type { Student } from "@/src/types/student";
 
 const students: Student[] = [
-  { id: "st-defne", tenantId: "ikk", firstName: "Defne", lastName: "Yılmaz", grade: "5. Sınıf", classGroup: "5A", parentIds: ["pa-yilmaz"], gpa: 87, attendanceRate: 98, active: true },
-  { id: "st-arda", tenantId: "ikk", firstName: "Arda", lastName: "Yılmaz", grade: "8. Sınıf", classGroup: "8B", parentIds: ["pa-yilmaz"], gpa: 84, attendanceRate: 96, active: true },
-  { id: "st-elif", tenantId: "ikk", firstName: "Elif", lastName: "Demir", grade: "5. Sınıf", classGroup: "5A", parentIds: ["pa-demir"], gpa: 92, attendanceRate: 99, active: true },
+  { id: "st-defne", tenantId: "ikk", schoolId: "sc-ikk-atasehir", firstName: "Defne", lastName: "Yılmaz", grade: "5. Sınıf", classGroup: "5A", parentIds: ["pa-yilmaz"], gpa: 87, attendanceRate: 98, active: true, createdAt: "2025-09-01" },
+  { id: "st-arda", tenantId: "ikk", schoolId: "sc-ikk-atasehir", firstName: "Arda", lastName: "Yılmaz", grade: "8. Sınıf", classGroup: "8B", parentIds: ["pa-yilmaz"], gpa: 84, attendanceRate: 96, active: true, createdAt: "2025-09-01" },
+  { id: "st-elif", tenantId: "ikk", schoolId: "sc-ikk-atasehir", firstName: "Elif", lastName: "Demir", grade: "5. Sınıf", classGroup: "5A", parentIds: ["pa-demir"], gpa: 92, attendanceRate: 99, active: true, createdAt: "2025-09-02" },
 ];
 
 export async function getStudents(tenantId?: string): Promise<Student[]> {

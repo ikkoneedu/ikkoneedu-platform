@@ -5,6 +5,7 @@
 export interface Teacher {
   id: string;
   tenantId: string;
+  schoolId?: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -13,4 +14,6 @@ export interface Teacher {
   /** Sorumlu olduğu sınıf kimlikleri. */
   classIds: string[];
   active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
