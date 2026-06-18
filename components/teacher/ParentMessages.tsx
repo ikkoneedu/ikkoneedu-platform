@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { MessageSquare } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import type { TeacherMessage } from "@/lib/mock-data";
 
 interface ParentMessagesProps {
@@ -42,6 +44,12 @@ export function ParentMessages({ messages }: ParentMessagesProps) {
           </li>
         ))}
       </ul>
+      <Link href="/messages" className="mt-4 block">
+        <PrimaryButton variant="secondary" size="sm" className="w-full">
+          <MessageSquare size={16} aria-hidden="true" />
+          Mesaj Merkezi
+        </PrimaryButton>
+      </Link>
     </GlassCard>
   );
 }

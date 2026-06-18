@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import {
   Megaphone,
   CalendarDays,
@@ -129,6 +130,12 @@ export default function ParentPage() {
                   </li>
                 ))}
               </ul>
+              <Link href="/messages" className="mt-4 block">
+                <PrimaryButton variant="secondary" size="sm" className="w-full">
+                  <MessageSquare size={16} aria-hidden="true" />
+                  Mesaj Merkezi
+                </PrimaryButton>
+              </Link>
             </GlassCard>
           </div>
 
