@@ -11,6 +11,7 @@ import {
   School,
   Users,
   Check,
+  ShieldCheck,
 } from "lucide-react";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { GlassCard } from "@/components/shared/GlassCard";
@@ -156,6 +157,17 @@ export default function LoginPage() {
               >
                 <Sparkles size={18} aria-hidden="true" />
                 Demo Hesapla Giriş
+              </PrimaryButton>
+
+              <PrimaryButton
+                type="button"
+                variant="ghost"
+                size="lg"
+                className="w-full"
+                onClick={() => router.push("/super-admin")}
+              >
+                <ShieldCheck size={18} aria-hidden="true" />
+                Super Admin Demo Girişi
               </PrimaryButton>
             </form>
 
