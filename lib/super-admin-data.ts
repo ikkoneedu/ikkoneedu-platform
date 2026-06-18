@@ -25,6 +25,7 @@ export const siteRoutes: RouteEntry[] = [
   { id: "ai-brain", name: "AI Brain", route: "/ai-brain", description: "Merkezi yapay zeka sohbet ve asistan merkezi.", status: "Geliştiriliyor" },
   { id: "scheduler-ai", name: "AI Ders Programı", route: "/scheduler-ai", description: "Yapay zeka destekli ders programı oluşturucu.", status: "Geliştiriliyor" },
   { id: "exam-ai", name: "AI Sınav Oluşturucu", route: "/exam-ai", description: "Sınav, quiz ve çalışma kağıdı üretici.", status: "Geliştiriliyor" },
+  { id: "admissions-ai", name: "AI Kayıt Danışmanı", route: "/admissions-ai", description: "Aday veli iletişimi, kayıt funnel ve lead yönetimi.", status: "Geliştiriliyor" },
   { id: "saas-admin", name: "SaaS Yönetim Merkezi", route: "/saas-admin", description: "Çoklu okul, abonelik ve gelir yönetimi.", status: "Mock" },
   { id: "features", name: "Özellikler", route: "/features", description: "Platform modüllerinin tanıtım sayfası.", status: "Hazır" },
   { id: "pricing", name: "Fiyatlandırma", route: "/pricing", description: "Paketler ve SaaS gelir potansiyeli.", status: "Hazır" },

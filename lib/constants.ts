@@ -19,6 +19,7 @@ import {
   Bot,
   User,
   ShieldCheck,
+  UserPlus,
   type LucideIcon,
 } from "lucide-react";
 
@@ -69,6 +70,7 @@ export const navigationItems: NavigationItem[] = [
   { id: "yapay-zeka", label: "Yapay Zeka", href: "/features", icon: Sparkles },
   { id: "ayarlar", label: "Ayarlar", href: "/admin", icon: Settings },
   { id: "executive", label: "Executive", href: "/executive", icon: BarChart3 },
+  { id: "kayit-danismani", label: "AI Kayıt Danışmanı", href: "/admissions-ai", icon: UserPlus },
   { id: "super-admin", label: "Super Admin", href: "/super-admin", icon: ShieldCheck },
 ];
 
