@@ -6,9 +6,9 @@
 import type { Teacher } from "@/src/types/teacher";
 
 const teachers: Teacher[] = [
-  { id: "te-ayse", tenantId: "ikk", firstName: "Ayşe", lastName: "Yılmaz", email: "ayse@example.com", subject: "Matematik", classIds: ["5a", "6b", "8b"], active: true },
-  { id: "te-john", tenantId: "ikk", firstName: "John", lastName: "Smith", email: "john@example.com", subject: "İngilizce", classIds: ["5a", "7a"], active: true },
-  { id: "te-zeynep", tenantId: "ikk", firstName: "Zeynep", lastName: "Kaya", email: "zeynep@example.com", subject: "Fen Bilimleri", classIds: ["7a", "8b"], active: true },
+  { id: "te-ayse", tenantId: "ikk", schoolId: "sc-ikk-atasehir", firstName: "Ayşe", lastName: "Yılmaz", email: "ayse@example.com", subject: "Matematik", classIds: ["5a", "6b", "8b"], active: true, createdAt: "2025-08-20" },
+  { id: "te-john", tenantId: "ikk", schoolId: "sc-ikk-atasehir", firstName: "John", lastName: "Smith", email: "john@example.com", subject: "İngilizce", classIds: ["5a", "7a"], active: true, createdAt: "2025-08-20" },
+  { id: "te-zeynep", tenantId: "ikk", schoolId: "sc-ikk-atasehir", firstName: "Zeynep", lastName: "Kaya", email: "zeynep@example.com", subject: "Fen Bilimleri", classIds: ["7a", "8b"], active: true, createdAt: "2025-08-21" },
 ];
 
 export async function getTeachers(tenantId?: string): Promise<Teacher[]> {

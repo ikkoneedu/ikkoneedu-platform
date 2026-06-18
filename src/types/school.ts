@@ -13,6 +13,8 @@ export interface School {
   levels: SchoolLevel[];
   studentCount: number;
   active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface ClassGroup {
