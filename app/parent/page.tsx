@@ -1,84 +1,222 @@
 import type { Metadata } from "next";
 import {
-  CalendarCheck,
-  CreditCard,
-  Bell,
-  GraduationCap,
+  Megaphone,
+  CalendarDays,
   MessageSquare,
-  ArrowRight,
+  Bus,
+  Navigation,
+  CreditCard,
+  FileText,
+  ChevronRight,
 } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { StatCard } from "@/components/shared/StatCard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { StudentSwitcher } from "@/components/parent/StudentSwitcher";
+import { AnnouncementCard } from "@/components/parent/AnnouncementCard";
+import { LunchMenuCard } from "@/components/parent/LunchMenuCard";
+import { EventCard } from "@/components/parent/EventCard";
+import { ParentAiAssistant } from "@/components/parent/ParentAiAssistant";
 import { productName } from "@/lib/constants";
+import {
+  parentStudents,
+  parentMetrics,
+  parentAnnouncements,
+  parentLunchMenu,
+  parentEvents,
+  parentTeacherMessages,
+  parentServiceStatus,
+  parentPaymentInfo,
+  parentAiSuggestions,
+  parentQuickActions,
+} from "@/lib/mock-data";
 
 export const metadata: Metadata = {
   title: `Veli Portalı — ${productName}`,
-  description: "Çocuğunuzun gelişimini ve okul iletişimini tek yerden takip edin.",
+  description:
+    "Çocuğunuzun okul yaşamını, duyurularını ve gelişimini tek ekrandan takip edin.",
 };
-
-const announcements = [
-  { id: "1", title: "Dönem sonu veli toplantısı", time: "2 gün önce" },
-  { id: "2", title: "Bahar şenliği duyurusu", time: "4 gün önce" },
-  { id: "3", title: "Servis güzergâhı güncellemesi", time: "1 hafta önce" },
-];
 
 export default function ParentPage() {
   return (
     <PageShell title="Veli Portalı">
       <div className="flex flex-col gap-10">
         <SectionHeader
-          eyebrow="Veli"
+          eyebrow="Veli Portalı"
           title="Hoş geldiniz, Yılmaz Ailesi"
-          description="Elif'in gelişimini, duyuruları ve ödemeleri buradan takip edin."
+          description="Çocuğunuzun okul yaşamını, duyurularını ve gelişimini tek ekrandan takip edin."
         />
 
+        {/* 1. Öğrenci Seçimi */}
+        <StudentSwitcher students={parentStudents} />
+
+        {/* 2. Genel Durum Kartları */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Devam Oranı" value="%98" delta="+%1" trend="up" icon={CalendarCheck} />
-          <StatCard label="Genel Ortalama" value="87" delta="+2" trend="up" icon={GraduationCap} />
-          <StatCard label="Okunmamış Duyuru" value="4" icon={Bell} />
-          <StatCard label="Ödeme Durumu" value="Güncel" icon={CreditCard} />
+          {parentMetrics.map((metric) => (
+            <StatCard
+              key={metric.id}
+              label={metric.label}
+              value={metric.value}
+              delta={metric.delta || undefined}
+              trend={metric.trend}
+              icon={metric.icon}
+            />
+          ))}
         </div>
 
+        {/* Ana düzen */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <GlassCard tone="navy" className="lg:col-span-2">
-            <h2 className="mb-4 text-lg font-semibold text-content">
-              Son Duyurular
-            </h2>
-            <ul className="space-y-3">
-              {announcements.map((item) => (
-                <li
-                  key={item.id}
-                  className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.03] px-4 py-3"
-                >
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-navy/40 text-accent">
-                    <Bell size={16} aria-hidden="true" />
-                  </span>
-                  <span className="flex-1 text-sm font-medium text-content">
-                    {item.title}
-                  </span>
-                  <span className="text-xs text-muted">{item.time}</span>
-                </li>
-              ))}
-            </ul>
-          </GlassCard>
+          {/* Sol kolon (geniş) */}
+          <div className="flex flex-col gap-6 lg:col-span-2">
+            {/* 3. Güncel Duyurular */}
+            <section>
+              <div className="mb-4 flex items-center gap-2 text-content">
+                <Megaphone size={18} className="text-accent" aria-hidden="true" />
+                <h2 className="text-lg font-semibold">Güncel Duyurular</h2>
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {parentAnnouncements.map((item) => (
+                  <AnnouncementCard key={item.id} announcement={item} />
+                ))}
+              </div>
+            </section>
 
-          <GlassCard tone="navy" className="flex flex-col">
-            <div className="flex items-center gap-2 text-accent">
-              <MessageSquare size={18} aria-hidden="true" />
-              <span className="text-sm font-semibold">Okul İletişimi</span>
-            </div>
-            <p className="mt-2 text-sm text-muted">
-              Öğretmenlere ve rehberlik servisine doğrudan mesaj gönderin.
-            </p>
-            <PrimaryButton size="sm" className="mt-auto w-full">
-              Mesaj Gönder
-              <ArrowRight size={16} aria-hidden="true" />
-            </PrimaryButton>
-          </GlassCard>
+            {/* 5. Etkinlik Takvimi */}
+            <GlassCard tone="navy">
+              <div className="mb-4 flex items-center gap-2">
+                <CalendarDays size={18} className="text-accent" aria-hidden="true" />
+                <h2 className="text-lg font-semibold text-content">Etkinlik Takvimi</h2>
+              </div>
+              <div className="space-y-3">
+                {parentEvents.map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))}
+              </div>
+            </GlassCard>
+
+            {/* 6. Öğretmen Mesajları */}
+            <GlassCard tone="navy">
+              <div className="mb-4 flex items-center gap-2">
+                <MessageSquare size={18} className="text-accent" aria-hidden="true" />
+                <h2 className="text-lg font-semibold text-content">Öğretmen Mesajları</h2>
+              </div>
+              <ul className="divide-y divide-white/5">
+                {parentTeacherMessages.map((message) => (
+                  <li key={message.id} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
+                    <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-navy/50 text-accent">
+                      <MessageSquare size={16} aria-hidden="true" />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-semibold text-content">
+                          {message.sender}
+                        </span>
+                        <div className="flex shrink-0 items-center gap-2">
+                          {message.unread && (
+                            <span className="rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-semibold text-brand">
+                              Okunmamış
+                            </span>
+                          )}
+                          <span className="text-xs text-muted">{message.time}</span>
+                        </div>
+                      </div>
+                      <p className="mt-0.5 truncate text-sm text-muted">
+                        {message.preview}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </GlassCard>
+          </div>
+
+          {/* Sağ kolon (dar) */}
+          <div className="flex flex-col gap-6">
+            {/* 4. Yemek Listesi */}
+            <LunchMenuCard menu={parentLunchMenu} />
+
+            {/* 7. Servis Takibi */}
+            <GlassCard tone="navy">
+              <div className="mb-4 flex items-center gap-2">
+                <Bus size={18} className="text-accent" aria-hidden="true" />
+                <h2 className="text-lg font-semibold text-content">Servis Takibi</h2>
+              </div>
+              <div className="rounded-xl border border-accent/20 bg-navy/40 p-4">
+                <div className="flex items-center gap-2">
+                  <span className="relative flex h-2.5 w-2.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/60" />
+                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                  </span>
+                  <span className="text-sm font-semibold text-content">
+                    {parentServiceStatus.status}
+                  </span>
+                </div>
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="text-xs text-muted">Tahmini varış</span>
+                  <span className="text-sm font-semibold text-accent">
+                    {parentServiceStatus.eta}
+                  </span>
+                </div>
+                <div className="mt-3 flex items-center gap-2 border-t border-white/10 pt-3 text-xs text-muted">
+                  <Navigation size={13} aria-hidden="true" />
+                  {parentServiceStatus.route}
+                </div>
+              </div>
+            </GlassCard>
+
+            {/* 8. Ödeme ve Finans */}
+            <GlassCard tone="navy">
+              <div className="mb-4 flex items-center gap-2">
+                <CreditCard size={18} className="text-accent" aria-hidden="true" />
+                <h2 className="text-lg font-semibold text-content">Ödeme ve Finans</h2>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border border-emerald-400/20 bg-emerald-400/5 px-3 py-2 text-sm font-medium text-emerald-400">
+                {parentPaymentInfo.pending}
+              </div>
+              <p className="mt-3 text-xs text-muted">
+                Son ödeme: {parentPaymentInfo.lastPayment}
+              </p>
+              <PrimaryButton variant="secondary" size="sm" className="mt-4 w-full">
+                <FileText size={16} aria-hidden="true" />
+                Dekontlar ve Ödeme Geçmişi
+              </PrimaryButton>
+            </GlassCard>
+          </div>
         </div>
+
+        {/* 9. AI Veli Asistanı */}
+        <ParentAiAssistant suggestions={parentAiSuggestions} />
+
+        {/* 10. Hızlı İşlemler */}
+        <section>
+          <h2 className="mb-4 text-lg font-semibold text-content">Hızlı İşlemler</h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {parentQuickActions.map((action) => {
+              const Icon = action.icon;
+              return (
+                <button
+                  key={action.id}
+                  type="button"
+                  className="group flex flex-col items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:bg-white/[0.06]"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent/20 bg-navy/50 text-accent">
+                    <Icon size={20} aria-hidden="true" />
+                  </span>
+                  <span className="flex items-center gap-1 text-sm font-medium text-content">
+                    {action.label}
+                    <ChevronRight
+                      size={14}
+                      className="text-muted transition-transform group-hover:translate-x-0.5"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
       </div>
     </PageShell>
   );
