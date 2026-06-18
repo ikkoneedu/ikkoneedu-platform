@@ -73,6 +73,7 @@ export const navigationItems: NavigationItem[] = [
   { id: "executive", label: "Executive", href: "/executive", icon: BarChart3 },
   { id: "kayit-danismani", label: "AI Kayıt Danışmanı", href: "/admissions-ai", icon: UserPlus },
   { id: "crm", label: "CRM", href: "/crm", icon: Contact },
+  { id: "mesajlar", label: "Message Center", href: "/messages", icon: MessageSquare },
   { id: "super-admin", label: "Super Admin", href: "/super-admin", icon: ShieldCheck },
 ];
 
