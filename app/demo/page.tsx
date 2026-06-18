@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Sparkles, ArrowRight } from "lucide-react";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { SectionHeader } from "@/components/shared/SectionHeader";
@@ -55,6 +56,30 @@ export default function DemoPage() {
       <main className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         {/* 1. Hero */}
         <DemoHero />
+
+        {/* AI Kayıt Danışmanı bağlantısı */}
+        <Link
+          href="/admissions-ai"
+          className="group mb-4 flex items-center gap-4 rounded-2xl border border-accent/20 bg-accent/5 p-5 transition-all hover:-translate-y-0.5 hover:bg-accent/10"
+        >
+          <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-accent/30 bg-navy/50 text-accent">
+            <Sparkles size={22} aria-hidden="true" />
+          </span>
+          <span className="flex-1">
+            <span className="block text-base font-semibold text-content">
+              AI Kayıt Danışmanı&apos;nı deneyin
+            </span>
+            <span className="block text-sm text-muted">
+              Sorularınızı yanıtlayan ve sizi randevuya yönlendiren yapay zeka
+              danışmanıyla hemen tanışın.
+            </span>
+          </span>
+          <ArrowRight
+            size={20}
+            className="shrink-0 text-accent transition-transform group-hover:translate-x-0.5"
+            aria-hidden="true"
+          />
+        </Link>
 
         {/* 2. Demo talep formu */}
         <section id="demo-form" className="scroll-mt-20 py-8">
