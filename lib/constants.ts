@@ -21,6 +21,7 @@ import {
   ShieldCheck,
   UserPlus,
   Contact,
+  Bell,
   type LucideIcon,
 } from "lucide-react";
 
@@ -74,6 +75,7 @@ export const navigationItems: NavigationItem[] = [
   { id: "kayit-danismani", label: "AI Kayıt Danışmanı", href: "/admissions-ai", icon: UserPlus },
   { id: "crm", label: "CRM", href: "/crm", icon: Contact },
   { id: "mesajlar", label: "Message Center", href: "/messages", icon: MessageSquare },
+  { id: "bildirimler", label: "Bildirim Merkezi", href: "/notifications", icon: Bell },
   { id: "super-admin", label: "Super Admin", href: "/super-admin", icon: ShieldCheck },
 ];
 

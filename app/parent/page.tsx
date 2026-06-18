@@ -73,9 +73,17 @@ export default function ParentPage() {
           <div className="flex flex-col gap-6 lg:col-span-2">
             {/* 3. Güncel Duyurular */}
             <section>
-              <div className="mb-4 flex items-center gap-2 text-content">
-                <Megaphone size={18} className="text-accent" aria-hidden="true" />
-                <h2 className="text-lg font-semibold">Güncel Duyurular</h2>
+              <div className="mb-4 flex items-center justify-between gap-2 text-content">
+                <div className="flex items-center gap-2">
+                  <Megaphone size={18} className="text-accent" aria-hidden="true" />
+                  <h2 className="text-lg font-semibold">Güncel Duyurular</h2>
+                </div>
+                <Link
+                  href="/notifications"
+                  className="text-sm font-medium text-accent transition-colors hover:text-content"
+                >
+                  Tüm Bildirimler
+                </Link>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {parentAnnouncements.map((item) => (
