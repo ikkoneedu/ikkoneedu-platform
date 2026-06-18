@@ -1,45 +1,120 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { LayoutGrid } from "lucide-react";
-import { GlassCard } from "@/components/shared/GlassCard";
-import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { LogoMark } from "@/components/shared/LogoMark";
-import { productName } from "@/lib/constants";
+import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { HeroSection } from "@/components/features/HeroSection";
+import { FeatureGrid } from "@/components/features/FeatureGrid";
+import { AiFeatures } from "@/components/features/AiFeatures";
+import { SecuritySection } from "@/components/features/SecuritySection";
+import { CallToAction } from "@/components/features/CallToAction";
+import { productName, tagline } from "@/lib/constants";
+import {
+  managementFeatures,
+  studentFeatures,
+  parentFeatures,
+  teacherFeatures,
+  aiFeatures,
+  saasFeatures,
+  securityFeatures,
+} from "@/lib/features-data";
 
 export const metadata: Metadata = {
   title: `Platform Özellikleri — ${productName}`,
-  description: "ikkoneedu platformunun özelliklerini keşfedin.",
+  description:
+    "Okul yönetimini, iletişimi ve yapay zekayı tek platformda birleştiren yeni nesil eğitim işletim sistemi.",
+  openGraph: {
+    title: `Platform Özellikleri — ${productName}`,
+    description: tagline,
+    siteName: productName,
+    locale: "tr_TR",
+    type: "website",
+  },
 };
 
-/**
- * Platform özellikleri ekranı — geçici yer tutucu.
- * Pazarlama sayfası "Platformu İncele" CTA'sının yönlendirme hedefi.
- */
 export default function FeaturesPage() {
   return (
-    <div className="mesh-bg flex min-h-screen w-full items-center justify-center px-4 py-10">
-      <GlassCard tone="navy" className="max-w-md text-center sm:p-10">
-        <div className="mb-5 flex justify-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-accent/20 bg-navy/50 text-accent">
-            <LayoutGrid size={26} aria-hidden="true" />
-          </span>
-        </div>
-        <h1 className="text-2xl font-bold tracking-tight text-content">
-          Platform Özellikleri
-        </h1>
-        <p className="mt-2 text-sm leading-relaxed text-muted">
-          Platformun tüm özelliklerini ayrıntılı anlatan ekran yakında hazır
-          olacak.
-        </p>
-        <div className="mt-6 flex justify-center">
-          <Link href="/">
-            <PrimaryButton variant="secondary" size="lg">
-              <LogoMark size={18} />
-              Ana Sayfaya Dön
-            </PrimaryButton>
+    <div className="mesh-bg min-h-screen w-full overflow-x-hidden">
+      {/* Üst bar */}
+      <header className="sticky top-0 z-30 border-b border-white/10 bg-background/70 backdrop-blur-xl">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link href="/" className="flex items-center gap-2.5">
+            <LogoMark size={32} />
+            <span className="text-lg font-semibold tracking-tight text-content">
+              {productName}
+            </span>
           </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/login">
+              <PrimaryButton variant="ghost" size="sm">
+                Giriş Yap
+              </PrimaryButton>
+            </Link>
+            <Link href="/demo">
+              <PrimaryButton size="sm">Demo Talep Et</PrimaryButton>
+            </Link>
+          </div>
         </div>
-      </GlassCard>
+      </header>
+
+      <main className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        {/* 1. Hero */}
+        <HeroSection />
+
+        {/* 2. Yönetim modülleri */}
+        <FeatureGrid
+          eyebrow="Yönetim"
+          title="Yönetim Modülleri"
+          items={managementFeatures}
+        />
+
+        {/* 3. Öğrenci deneyimi */}
+        <FeatureGrid
+          eyebrow="Öğrenci"
+          title="Öğrenci Deneyimi"
+          items={studentFeatures}
+        />
+
+        {/* 4. Veli deneyimi */}
+        <FeatureGrid
+          eyebrow="Veli"
+          title="Veli Deneyimi"
+          items={parentFeatures}
+        />
+
+        {/* 5. Öğretmen deneyimi */}
+        <FeatureGrid
+          eyebrow="Öğretmen"
+          title="Öğretmen Deneyimi"
+          items={teacherFeatures}
+        />
+
+        {/* 6. Yapay zeka modülleri */}
+        <AiFeatures items={aiFeatures} />
+
+        {/* 7. SaaS özellikleri */}
+        <FeatureGrid
+          eyebrow="SaaS"
+          title="SaaS Özellikleri"
+          items={saasFeatures}
+        />
+
+        {/* 8. Güvenlik */}
+        <SecuritySection items={securityFeatures} />
+
+        {/* 9. Son CTA */}
+        <CallToAction />
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-white/10">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-sm text-muted sm:flex-row sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2">
+            <LogoMark size={24} />
+            <span className="font-medium text-content">{productName}</span>
+          </div>
+          <p>© {new Date().getFullYear()} {productName}. Tüm hakları saklıdır.</p>
+        </div>
+      </footer>
     </div>
   );
 }
