@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { LogOut, CircleUser } from "lucide-react";
+import { LogOut, CircleUser, ShieldCheck, ArrowRight } from "lucide-react";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { SectionHeader } from "@/components/shared/SectionHeader";
@@ -83,6 +83,36 @@ export default function SchoolSelectPage() {
             <SchoolCard key={option.id} option={option} onSelect={handleSelect} />
           ))}
         </motion.section>
+
+        {/* Super Admin paneli erişim kartı */}
+        <motion.div
+          {...fadeUp}
+          transition={{ duration: 0.5, ease: "easeOut", delay: 0.15 }}
+          className="mt-6"
+        >
+          <button
+            type="button"
+            onClick={() => router.push("/super-admin")}
+            className="group flex w-full items-center gap-4 rounded-2xl border border-accent/30 bg-accent/5 p-5 text-left backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:bg-accent/10"
+          >
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-accent/30 bg-navy/50 text-accent">
+              <ShieldCheck size={24} aria-hidden="true" />
+            </span>
+            <span className="flex-1">
+              <span className="block text-base font-semibold text-content">
+                Super Admin Paneli
+              </span>
+              <span className="block text-sm text-muted">
+                Geliştirme ve demo için tüm sayfalara tek merkezden erişin.
+              </span>
+            </span>
+            <ArrowRight
+              size={20}
+              className="shrink-0 text-accent transition-transform group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
+          </button>
+        </motion.div>
 
         {/* Alt bölüm — tenant altyapısı açıklama kartları */}
         <motion.section

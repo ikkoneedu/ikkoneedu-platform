@@ -18,6 +18,7 @@ import {
   Home,
   Bot,
   User,
+  ShieldCheck,
   type LucideIcon,
 } from "lucide-react";
 
@@ -67,12 +68,13 @@ export const navigationItems: NavigationItem[] = [
   { id: "mesajlar", label: "Mesajlar", href: "/demo", icon: MessageSquare },
   { id: "yapay-zeka", label: "Yapay Zeka", href: "/features", icon: Sparkles },
   { id: "ayarlar", label: "Ayarlar", href: "/admin", icon: Settings },
+  { id: "super-admin", label: "Super Admin", href: "/super-admin", icon: ShieldCheck },
 ];
 
 /** Mobil alt navigasyonda gösterilecek öncelikli öğeler. */
 export const mobileNavigationItems: NavigationItem[] = navigationItems.filter(
   (item) =>
-    ["genel-bakis", "okullar", "mesajlar", "yapay-zeka", "ayarlar"].includes(
+    ["genel-bakis", "okullar", "yapay-zeka", "ayarlar", "super-admin"].includes(
       item.id,
     ),
 );
