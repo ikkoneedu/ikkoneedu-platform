@@ -1,43 +1,74 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Wand2 } from "lucide-react";
-import { GlassCard } from "@/components/shared/GlassCard";
-import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { PageShell } from "@/components/layout/PageShell";
+import { SectionHeader } from "@/components/shared/SectionHeader";
+import { ExamHero } from "@/components/exam/ExamHero";
+import { ExamBuilderForm } from "@/components/exam/ExamBuilderForm";
+import { GeneratedExamPreview } from "@/components/exam/GeneratedExamPreview";
+import { QuestionBankOverview } from "@/components/exam/QuestionBankOverview";
+import { QualityAnalysisCard } from "@/components/exam/QualityAnalysisCard";
+import { WorksheetGenerator } from "@/components/exam/WorksheetGenerator";
+import { QuizGenerator } from "@/components/exam/QuizGenerator";
+import { ExportCenter } from "@/components/exam/ExportCenter";
+import { AiExamSuggestions } from "@/components/exam/AiExamSuggestions";
 import { productName } from "@/lib/constants";
+import {
+  examFormOptions,
+  examGeneratedQuestions,
+  examQuestionBankMetrics,
+  examBankFilters,
+  examQualityMetrics,
+  examWorksheetOptions,
+  examQuizOptions,
+  examExportActions,
+  examAiSuggestions,
+} from "@/lib/exam-mock-data";
 
 export const metadata: Metadata = {
   title: `AI Sınav Oluşturucu — ${productName}`,
-  description: "Yapay zeka destekli sınav ve quiz oluşturucu.",
+  description:
+    "Yapay zeka desteğiyle sınavlar, quizler ve çalışma kağıtları oluşturun.",
 };
 
-/**
- * AI Sınav Oluşturucu — geçici yer tutucu.
- * Öğretmen portalı "Sınav Oluştur" akışının yönlendirme hedefi.
- */
 export default function ExamAiPage() {
   return (
-    <div className="mesh-bg flex min-h-screen w-full items-center justify-center px-4 py-10">
-      <GlassCard tone="navy" className="max-w-md text-center sm:p-10">
-        <div className="mb-5 flex justify-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-accent/20 bg-navy/50 text-accent">
-            <Wand2 size={26} aria-hidden="true" />
-          </span>
+    <PageShell title="AI Sınav Oluşturucu">
+      <div className="flex flex-col gap-10">
+        <SectionHeader
+          eyebrow="Yapay Zeka"
+          title="AI Sınav Oluşturucu"
+          description="Yapay zeka desteğiyle sınavlar, quizler ve çalışma kağıtları oluşturun."
+        />
+
+        {/* 1. Hero */}
+        <ExamHero />
+
+        {/* 2 + 3. Form ve önizleme */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <ExamBuilderForm options={examFormOptions} />
+          <GeneratedExamPreview questions={examGeneratedQuestions} />
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-content">
-          AI Sınav Oluşturucu
-        </h1>
-        <p className="mt-2 text-sm leading-relaxed text-muted">
-          Yapay zeka destekli sınav ve quiz oluşturma ekranı yakında hazır
-          olacak.
-        </p>
-        <div className="mt-6 flex justify-center">
-          <Link href="/teacher">
-            <PrimaryButton variant="secondary" size="lg">
-              Öğretmen Portalına Dön
-            </PrimaryButton>
-          </Link>
+
+        {/* 4. Soru bankası */}
+        <QuestionBankOverview
+          metrics={examQuestionBankMetrics}
+          filters={examBankFilters}
+        />
+
+        {/* 5. Kalite analizi */}
+        <QualityAnalysisCard metrics={examQualityMetrics} />
+
+        {/* 6 + 7. Çalışma kağıdı ve quiz üretici */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <WorksheetGenerator options={examWorksheetOptions} />
+          <QuizGenerator options={examQuizOptions} />
         </div>
-      </GlassCard>
-    </div>
+
+        {/* 8. Dışa aktarma */}
+        <ExportCenter actions={examExportActions} />
+
+        {/* 9. AI önerileri */}
+        <AiExamSuggestions suggestions={examAiSuggestions} />
+      </div>
+    </PageShell>
   );
 }
