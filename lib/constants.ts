@@ -68,15 +68,14 @@ export const navigationItems: NavigationItem[] = [
   { id: "mesajlar", label: "Mesajlar", href: "/demo", icon: MessageSquare },
   { id: "yapay-zeka", label: "Yapay Zeka", href: "/features", icon: Sparkles },
   { id: "ayarlar", label: "Ayarlar", href: "/admin", icon: Settings },
+  { id: "executive", label: "Executive", href: "/executive", icon: BarChart3 },
   { id: "super-admin", label: "Super Admin", href: "/super-admin", icon: ShieldCheck },
 ];
 
 /** Mobil alt navigasyonda gösterilecek öncelikli öğeler. */
 export const mobileNavigationItems: NavigationItem[] = navigationItems.filter(
   (item) =>
-    ["genel-bakis", "okullar", "yapay-zeka", "ayarlar", "super-admin"].includes(
-      item.id,
-    ),
+    ["genel-bakis", "okullar", "executive", "super-admin"].includes(item.id),
 );
 
 /** Yönetim paneli (/admin) kenar çubuğu menüsü. */

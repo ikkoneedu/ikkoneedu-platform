@@ -18,6 +18,7 @@ export const siteRoutes: RouteEntry[] = [
   { id: "login", name: "Login", route: "/login", description: "Kullanıcı giriş ekranı (mock kimlik doğrulama).", status: "Hazır" },
   { id: "school-select", name: "Okul Seçimi", route: "/school-select", description: "Bağlı olunan okul/kampüs seçim ekranı.", status: "Hazır" },
   { id: "admin", name: "Yönetim Paneli", route: "/admin", description: "Okul yönetimi gösterge paneli ve metrikler.", status: "Mock" },
+  { id: "executive", name: "Executive Dashboard", route: "/executive", description: "Kurucu ve yönetim kurulu için üst düzey performans paneli.", status: "Mock" },
   { id: "parent", name: "Veli Portalı", route: "/parent", description: "Veli takip merkezi: duyuru, servis, mesaj.", status: "Mock" },
   { id: "student", name: "Öğrenci Portalı", route: "/student", description: "Öğrenci merkezi: program, görev, başarı.", status: "Mock" },
   { id: "teacher", name: "Öğretmen Portalı", route: "/teacher", description: "Sınıf, ödev ve AI içerik yönetimi.", status: "Mock" },
