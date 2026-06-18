@@ -28,6 +28,7 @@ export const siteRoutes: RouteEntry[] = [
   { id: "admissions-ai", name: "AI Kayıt Danışmanı", route: "/admissions-ai", description: "Aday veli iletişimi, kayıt funnel ve lead yönetimi.", status: "Geliştiriliyor" },
   { id: "crm", name: "CRM & Lead Yönetimi", route: "/crm", description: "Lead pipeline, randevu, görev merkezi ve kayıt tahmini.", status: "Mock" },
   { id: "messages", name: "Message Center", route: "/messages", description: "Mesaj, duyuru, SMS, e-posta ve push yönetimi.", status: "Mock" },
+  { id: "notifications", name: "Bildirim Merkezi", route: "/notifications", description: "Push, sistem içi bildirim ve FCM hazırlığı.", status: "Geliştiriliyor" },
   { id: "saas-admin", name: "SaaS Yönetim Merkezi", route: "/saas-admin", description: "Çoklu okul, abonelik ve gelir yönetimi.", status: "Mock" },
   { id: "features", name: "Özellikler", route: "/features", description: "Platform modüllerinin tanıtım sayfası.", status: "Hazır" },
   { id: "pricing", name: "Fiyatlandırma", route: "/pricing", description: "Paketler ve SaaS gelir potansiyeli.", status: "Hazır" },

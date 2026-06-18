@@ -1,5 +1,7 @@
-import { BellRing, Check } from "lucide-react";
+import Link from "next/link";
+import { BellRing, Check, ArrowRight } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { PrimaryButton } from "@/components/shared/PrimaryButton";
 
 interface NotificationReadinessProps {
   items: string[];
@@ -29,6 +31,13 @@ export function NotificationReadiness({ items }: NotificationReadinessProps) {
           </li>
         ))}
       </ul>
+      <Link href="/notifications" className="mt-5 block">
+        <PrimaryButton variant="secondary" size="sm" className="w-full">
+          Bildirim Merkezi&apos;ni Aç
+          <ArrowRight size={15} aria-hidden="true" />
+        </PrimaryButton>
+      </Link>
     </GlassCard>
   );
 }
+
