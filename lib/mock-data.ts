@@ -32,6 +32,9 @@ import {
   FileText,
   ClipboardCheck,
   LifeBuoy,
+  CalendarX,
+  Bus,
+  UtensilsCrossed,
   type LucideIcon,
 } from "lucide-react";
 
@@ -546,6 +549,142 @@ export const heroMetrics = [
   { id: "ogrenci", label: "Öğrenci", value: "12.480" },
   { id: "ai", label: "AI Etkileşimi", value: "6.180" },
 ] as const;
+
+/* -------------------------------------------------------------------------- */
+/*  Veli Portalı (/parent)                                                     */
+/* -------------------------------------------------------------------------- */
+
+export interface ParentStudent {
+  id: string;
+  name: string;
+  grade: string;
+}
+
+export const parentStudents: ParentStudent[] = [
+  { id: "defne", name: "Defne Yılmaz", grade: "5. Sınıf" },
+  { id: "arda", name: "Arda Yılmaz", grade: "8. Sınıf" },
+];
+
+export const parentMetrics: Metric[] = [
+  { id: "devamsizlik", label: "Devamsızlık", value: "2 Gün", delta: "", trend: "neutral", icon: CalendarX },
+  { id: "odev", label: "Bekleyen Ödev", value: "4", delta: "", trend: "neutral", icon: ClipboardCheck },
+  { id: "etkinlik", label: "Yaklaşan Etkinlik", value: "3", delta: "", trend: "neutral", icon: CalendarDays },
+  { id: "ortalama", label: "Akademik Ortalama", value: "87/100", delta: "+2", trend: "up", icon: GraduationCap },
+];
+
+export interface ParentAnnouncement {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  category: string;
+}
+
+export const parentAnnouncements: ParentAnnouncement[] = [
+  {
+    id: "a1",
+    title: "23 Nisan Kutlama Programı",
+    description: "Ulusal Egemenlik ve Çocuk Bayramı töreni okul bahçesinde yapılacaktır.",
+    date: "18 Nisan",
+    category: "Etkinlik",
+  },
+  {
+    id: "a2",
+    title: "Veli Toplantısı Hatırlatması",
+    description: "Dönem sonu veli görüşmeleri için randevu takvimi açıldı.",
+    date: "15 Haziran",
+    category: "Toplantı",
+  },
+  {
+    id: "a3",
+    title: "Yaz Okulu Ön Kayıtları",
+    description: "Yaz okulu programı ön kayıtları başlamıştır, kontenjan sınırlıdır.",
+    date: "12 Haziran",
+    category: "Kayıt",
+  },
+];
+
+export interface LunchMenu {
+  items: string[];
+  allergens: string;
+}
+
+export const parentLunchMenu: LunchMenu = {
+  items: ["Mercimek Çorbası", "Izgara Tavuk", "Pirinç Pilavı", "Salata", "Meyve"],
+  allergens: "Gluten ve süt ürünleri içerebilir. Alerji durumunda okul revirine bildiriniz.",
+};
+
+export interface ParentEvent {
+  id: string;
+  title: string;
+  date: string;
+  time: string;
+  place: string;
+  status: "Katılıyor" | "Bekliyor" | "Katılmıyor";
+}
+
+export const parentEvents: ParentEvent[] = [
+  { id: "e1", title: "Bilim Fuarı", date: "24 Haziran", time: "10:00", place: "Konferans Salonu", status: "Katılıyor" },
+  { id: "e2", title: "İngilizce Drama Gösterisi", date: "26 Haziran", time: "14:00", place: "Tiyatro Salonu", status: "Bekliyor" },
+  { id: "e3", title: "Bahar Şenliği", date: "30 Haziran", time: "11:00", place: "Okul Bahçesi", status: "Bekliyor" },
+];
+
+export interface TeacherMessage {
+  id: string;
+  sender: string;
+  preview: string;
+  time: string;
+  unread: boolean;
+}
+
+export const parentTeacherMessages: TeacherMessage[] = [
+  { id: "m1", sender: "Sınıf Öğretmeni", preview: "Defne bu hafta derslerde çok aktifti, tebrik ederiz.", time: "1 saat önce", unread: true },
+  { id: "m2", sender: "İngilizce Öğretmeni", preview: "Kelime testi sonuçlarını portal üzerinden görebilirsiniz.", time: "Dün", unread: true },
+  { id: "m3", sender: "Rehberlik Birimi", preview: "Önümüzdeki hafta için görüşme talebiniz onaylandı.", time: "2 gün önce", unread: false },
+];
+
+export interface ServiceStatus {
+  status: string;
+  eta: string;
+  route: string;
+}
+
+export const parentServiceStatus: ServiceStatus = {
+  status: "Servis yolda",
+  eta: "12 dk",
+  route: "Batıkent - Kampüs",
+};
+
+export interface PaymentInfo {
+  pending: string;
+  lastPayment: string;
+}
+
+export const parentPaymentInfo: PaymentInfo = {
+  pending: "Bekleyen ödeme yok",
+  lastPayment: "12 Haziran 2026",
+};
+
+export const parentAiSuggestions: string[] = [
+  "Yarın hangi etkinlikler var?",
+  "Çocuğumun bekleyen ödevi var mı?",
+  "Bu hafta yemek listesinde neler var?",
+  "Veli toplantısı ne zaman?",
+];
+
+export interface QuickAction {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+}
+
+export const parentQuickActions: QuickAction[] = [
+  { id: "mesaj", label: "Öğretmene Mesaj Gönder", icon: MessageSquare },
+  { id: "etkinlik", label: "Etkinliğe Katıl", icon: CalendarCheck },
+  { id: "yemek", label: "Yemek Listesini Gör", icon: UtensilsCrossed },
+  { id: "rapor", label: "Raporları İncele", icon: FileText },
+  { id: "servis", label: "Servisi Takip Et", icon: Bus },
+];
 
 /* -------------------------------------------------------------------------- */
 /*  Geriye dönük uyumluluk                                                     */
