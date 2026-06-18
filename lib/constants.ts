@@ -61,12 +61,12 @@ export interface NavigationItem {
 /** Ana navigasyon öğeleri — sidebar, topbar ve mobil menüde ortak kullanılır. */
 export const navigationItems: NavigationItem[] = [
   { id: "genel-bakis", label: "Genel Bakış", href: "/", icon: LayoutDashboard },
-  { id: "okullar", label: "Okullar", href: "/okullar", icon: School },
-  { id: "ogrenciler", label: "Öğrenciler", href: "/ogrenciler", icon: GraduationCap },
-  { id: "veliler", label: "Veliler", href: "/veliler", icon: Users },
-  { id: "mesajlar", label: "Mesajlar", href: "/mesajlar", icon: MessageSquare },
-  { id: "yapay-zeka", label: "Yapay Zeka", href: "/yapay-zeka", icon: Sparkles },
-  { id: "ayarlar", label: "Ayarlar", href: "/ayarlar", icon: Settings },
+  { id: "okullar", label: "Okullar", href: "/school-select", icon: School },
+  { id: "ogrenciler", label: "Öğrenciler", href: "/student", icon: GraduationCap },
+  { id: "veliler", label: "Veliler", href: "/parent", icon: Users },
+  { id: "mesajlar", label: "Mesajlar", href: "/demo", icon: MessageSquare },
+  { id: "yapay-zeka", label: "Yapay Zeka", href: "/features", icon: Sparkles },
+  { id: "ayarlar", label: "Ayarlar", href: "/admin", icon: Settings },
 ];
 
 /** Mobil alt navigasyonda gösterilecek öncelikli öğeler. */
