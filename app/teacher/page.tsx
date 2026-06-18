@@ -1,110 +1,184 @@
 import type { Metadata } from "next";
 import {
-  Users,
   BookOpen,
-  ClipboardCheck,
-  Clock,
-  Sparkles,
+  School,
+  BarChart3,
+  PenLine,
+  ChevronRight,
   ArrowRight,
 } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
-import { StatCard } from "@/components/shared/StatCard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { TeacherSchedule } from "@/components/teacher/TeacherSchedule";
+import { ClassCard } from "@/components/teacher/ClassCard";
+import { TeacherAiAssistant } from "@/components/teacher/TeacherAiAssistant";
+import { AssignmentOverview } from "@/components/teacher/AssignmentOverview";
+import { ExamBuilderPreview } from "@/components/teacher/ExamBuilderPreview";
+import { ParentMessages } from "@/components/teacher/ParentMessages";
 import { productName } from "@/lib/constants";
+import {
+  teacherSchedule,
+  teacherClasses,
+  teacherAiSuggestions,
+  teacherAssignmentStats,
+  teacherAssignments,
+  teacherExamOptions,
+  teacherPerformance,
+  teacherParentMessages,
+  teacherQuickActions,
+} from "@/lib/mock-data";
 
 export const metadata: Metadata = {
   title: `Öğretmen Portalı — ${productName}`,
-  description: "Sınıflarınızı, derslerinizi ve değerlendirmelerinizi yönetin.",
+  description:
+    "Sınıflarınızı yönetin, içerik üretin ve öğrencilerinizin gelişimini yapay zeka desteğiyle takip edin.",
 };
 
-const lessons = [
-  { id: "1", time: "09:00", lesson: "Matematik", group: "9-A" },
-  { id: "2", time: "11:00", lesson: "Matematik", group: "10-B" },
-  { id: "3", time: "13:00", lesson: "Geometri", group: "11-A" },
-  { id: "4", time: "14:00", lesson: "Matematik", group: "9-C" },
-];
-
-const pending = [
-  { id: "1", title: "9-A Deneme Sınavı", count: "28 kâğıt" },
-  { id: "2", title: "10-B Proje Ödevi", count: "24 ödev" },
-  { id: "3", title: "11-A Quiz", count: "26 kâğıt" },
+const performanceMetrics = [
+  { key: "success" as const, label: "Genel Başarı" },
+  { key: "participation" as const, label: "Katılım" },
+  { key: "homework" as const, label: "Ödev Tamamlama" },
 ];
 
 export default function TeacherPage() {
   return (
     <PageShell title="Öğretmen Portalı">
       <div className="flex flex-col gap-10">
+        {/* 1. Karşılama */}
         <SectionHeader
-          eyebrow="Öğretmen"
-          title="Günaydın, Ayşe Öğretmen"
-          description="Bugünkü dersleriniz ve bekleyen değerlendirmeleriniz hazır."
+          eyebrow="Öğretmen Portalı"
+          title="Merhaba Ayşe Öğretmen 👋"
+          description="Bugün 4 dersiniz, 2 bekleyen ödev kontrolünüz ve 1 veli mesajınız var."
         />
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Sınıflarım" value="5" icon={BookOpen} />
-          <StatCard label="Bugünkü Ders" value="4" icon={Clock} />
-          <StatCard label="Bekleyen Değerlendirme" value="18" delta="+6" trend="down" icon={ClipboardCheck} />
-          <StatCard label="Toplam Öğrenci" value="142" delta="+4" trend="up" icon={Users} />
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <GlassCard tone="navy" className="lg:col-span-2">
-            <h2 className="mb-4 text-lg font-semibold text-content">
-              Bugünkü Dersler
-            </h2>
-            <ul className="space-y-3">
-              {lessons.map((item) => (
-                <li
-                  key={item.id}
-                  className="flex items-center gap-4 rounded-xl border border-white/5 bg-white/[0.03] px-4 py-3"
-                >
-                  <span className="flex items-center gap-1.5 text-sm font-medium text-accent">
-                    <Clock size={15} aria-hidden="true" />
-                    {item.time}
-                  </span>
-                  <span className="flex-1 text-sm font-medium text-content">
-                    {item.lesson}
-                  </span>
-                  <span className="rounded bg-navy/40 px-2 py-0.5 text-xs text-muted">
-                    {item.group}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </GlassCard>
-
-          <div className="flex flex-col gap-6">
-            <GlassCard tone="navy">
-              <h2 className="mb-4 text-lg font-semibold text-content">
-                Bekleyen Değerlendirmeler
-              </h2>
-              <ul className="space-y-3">
-                {pending.map((item) => (
-                  <li key={item.id} className="flex items-center justify-between gap-2">
-                    <span className="text-sm text-content">{item.title}</span>
-                    <span className="shrink-0 text-xs text-muted">{item.count}</span>
-                  </li>
-                ))}
-              </ul>
-            </GlassCard>
-
-            <GlassCard className="ai-gradient border-accent/20">
-              <div className="flex items-center gap-2 text-accent">
-                <Sparkles size={18} aria-hidden="true" />
-                <span className="text-sm font-semibold">AI Sınav Oluşturucu</span>
-              </div>
-              <p className="mt-2 text-sm text-muted">
-                Kazanımlara uygun sınavı saniyeler içinde hazırlayın.
-              </p>
-              <PrimaryButton size="sm" className="mt-4 w-full">
-                Sınav Oluştur
-                <ArrowRight size={16} aria-hidden="true" />
-              </PrimaryButton>
-            </GlassCard>
+        {/* 2. Günlük Ders Programı */}
+        <section>
+          <div className="mb-4 flex items-center gap-2 text-content">
+            <BookOpen size={18} className="text-accent" aria-hidden="true" />
+            <h2 className="text-lg font-semibold">Günlük Ders Programı</h2>
           </div>
+          <TeacherSchedule lessons={teacherSchedule} />
+        </section>
+
+        {/* 3. Sınıflarım */}
+        <section>
+          <div className="mb-4 flex items-center gap-2 text-content">
+            <School size={18} className="text-accent" aria-hidden="true" />
+            <h2 className="text-lg font-semibold">Sınıflarım</h2>
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {teacherClasses.map((classItem) => (
+              <ClassCard key={classItem.id} classItem={classItem} />
+            ))}
+          </div>
+        </section>
+
+        {/* 4. AI Öğretmen Asistanı */}
+        <TeacherAiAssistant suggestions={teacherAiSuggestions} />
+
+        {/* 5 + 6. Ödev Yönetimi ve Sınav Merkezi */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <AssignmentOverview
+            stats={teacherAssignmentStats}
+            assignments={teacherAssignments}
+          />
+          <ExamBuilderPreview options={teacherExamOptions} />
         </div>
+
+        {/* 7. Öğrenci Performans Analizi */}
+        <GlassCard tone="navy">
+          <div className="mb-5 flex items-center gap-2">
+            <BarChart3 size={18} className="text-accent" aria-hidden="true" />
+            <h2 className="text-lg font-semibold text-content">
+              Öğrenci Performans Analizi
+            </h2>
+          </div>
+          <div className="space-y-5">
+            {teacherPerformance.map((row) => (
+              <div key={row.classGroup}>
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-sm font-semibold text-content">
+                    {row.classGroup}
+                  </span>
+                  <span className="rounded-full bg-emerald-400/10 px-2 py-0.5 text-xs font-medium text-emerald-400">
+                    Gelişim +%{row.trend}
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  {performanceMetrics.map((metric) => (
+                    <div key={metric.key}>
+                      <div className="mb-1 flex items-center justify-between text-xs">
+                        <span className="text-muted">{metric.label}</span>
+                        <span className="font-semibold text-accent">
+                          {row[metric.key]}
+                        </span>
+                      </div>
+                      <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
+                        <div
+                          className="h-full rounded-full bg-accent/70"
+                          style={{ width: `${row[metric.key]}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </GlassCard>
+
+        {/* 8 + 9. Veli Mesajları ve Karne Yorumu Asistanı */}
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <ParentMessages messages={teacherParentMessages} />
+
+          <GlassCard className="ai-gradient flex flex-col border-accent/20">
+            <div className="flex items-center gap-3">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-accent/30 bg-accent/15 text-accent">
+                <PenLine size={22} aria-hidden="true" />
+              </span>
+              <h2 className="text-lg font-semibold text-content">AI Karne Yorumu</h2>
+            </div>
+            <p className="mt-4 text-sm leading-relaxed text-muted">
+              Öğrenci performansına göre profesyonel, pozitif ve gelişim odaklı
+              karne yorumları oluşturun.
+            </p>
+            <PrimaryButton size="lg" className="mt-auto w-full sm:w-fit">
+              Karne Yorumu Oluştur
+              <ArrowRight size={18} aria-hidden="true" />
+            </PrimaryButton>
+          </GlassCard>
+        </div>
+
+        {/* 10. Hızlı İşlemler */}
+        <section>
+          <h2 className="mb-4 text-lg font-semibold text-content">Hızlı İşlemler</h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {teacherQuickActions.map((action) => {
+              const Icon = action.icon;
+              return (
+                <button
+                  key={action.id}
+                  type="button"
+                  className="group flex flex-col items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:bg-white/[0.06]"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent/20 bg-navy/50 text-accent">
+                    <Icon size={20} aria-hidden="true" />
+                  </span>
+                  <span className="flex items-center gap-1 text-sm font-medium text-content">
+                    {action.label}
+                    <ChevronRight
+                      size={14}
+                      className="text-muted transition-transform group-hover:translate-x-0.5"
+                      aria-hidden="true"
+                    />
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
       </div>
     </PageShell>
   );

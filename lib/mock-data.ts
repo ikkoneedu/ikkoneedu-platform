@@ -35,6 +35,8 @@ import {
   CalendarX,
   Bus,
   UtensilsCrossed,
+  FilePlus,
+  PenLine,
   type LucideIcon,
 } from "lucide-react";
 
@@ -684,6 +686,117 @@ export const parentQuickActions: QuickAction[] = [
   { id: "yemek", label: "Yemek Listesini Gör", icon: UtensilsCrossed },
   { id: "rapor", label: "Raporları İncele", icon: FileText },
   { id: "servis", label: "Servisi Takip Et", icon: Bus },
+];
+
+/* -------------------------------------------------------------------------- */
+/*  Öğretmen Portalı (/teacher)                                                */
+/* -------------------------------------------------------------------------- */
+
+export interface TeacherLesson {
+  id: string;
+  time: string;
+  classGroup: string;
+  lesson: string;
+  count: number;
+}
+
+export const teacherSchedule: TeacherLesson[] = [
+  { id: "l1", time: "09:00", classGroup: "5A", lesson: "İngilizce", count: 24 },
+  { id: "l2", time: "10:00", classGroup: "6B", lesson: "İngilizce", count: 22 },
+  { id: "l3", time: "13:30", classGroup: "7A", lesson: "Speaking", count: 21 },
+  { id: "l4", time: "15:00", classGroup: "8B", lesson: "Sınav Hazırlık", count: 26 },
+];
+
+export interface TeacherClass {
+  id: string;
+  name: string;
+  students: number;
+  average: number;
+  lastActivity: string;
+}
+
+export const teacherClasses: TeacherClass[] = [
+  { id: "5a", name: "5A", students: 24, average: 88, lastActivity: "Vocabulary Quiz" },
+  { id: "6b", name: "6B", students: 22, average: 84, lastActivity: "Reading Practice" },
+  { id: "7a", name: "7A", students: 21, average: 90, lastActivity: "Speaking Task" },
+  { id: "8b", name: "8B", students: 26, average: 81, lastActivity: "Deneme Sınavı" },
+];
+
+export const teacherAiSuggestions: string[] = [
+  "6. sınıf İngilizce için çalışma kağıdı hazırla",
+  "Present Perfect konusu için quiz oluştur",
+  "5A sınıfı için haftalık ders planı hazırla",
+  "Karne görüşü oluştur",
+];
+
+export interface AssignmentStats {
+  pending: number;
+  notSubmitted: number;
+  thisWeek: number;
+}
+
+export const teacherAssignmentStats: AssignmentStats = {
+  pending: 18,
+  notSubmitted: 6,
+  thisWeek: 4,
+};
+
+export interface TeacherAssignment {
+  id: string;
+  title: string;
+  classGroup: string;
+  dueDate: string;
+  status: "Devam Ediyor" | "Süresi Doldu" | "Tamamlandı";
+}
+
+export const teacherAssignments: TeacherAssignment[] = [
+  { id: "as1", title: "Vocabulary Worksheet", classGroup: "5A", dueDate: "20 Haz", status: "Devam Ediyor" },
+  { id: "as2", title: "Reading Practice", classGroup: "6B", dueDate: "18 Haz", status: "Süresi Doldu" },
+  { id: "as3", title: "Speaking Task", classGroup: "7A", dueDate: "22 Haz", status: "Devam Ediyor" },
+];
+
+export interface ExamBuilderOptions {
+  lessons: string[];
+  classes: string[];
+  topics: string[];
+  questionCounts: string[];
+}
+
+export const teacherExamOptions: ExamBuilderOptions = {
+  lessons: ["İngilizce", "Speaking", "Grammar", "Reading"],
+  classes: ["5A", "6B", "7A", "8B"],
+  topics: ["Present Perfect", "Past Simple", "Vocabulary", "Reading Comprehension"],
+  questionCounts: ["10 Soru", "20 Soru", "30 Soru", "40 Soru"],
+};
+
+export interface ClassPerformance {
+  classGroup: string;
+  success: number;
+  participation: number;
+  homework: number;
+  trend: number;
+}
+
+export const teacherPerformance: ClassPerformance[] = [
+  { classGroup: "5A", success: 88, participation: 92, homework: 85, trend: 6 },
+  { classGroup: "6B", success: 84, participation: 80, homework: 78, trend: 3 },
+  { classGroup: "7A", success: 90, participation: 88, homework: 91, trend: 8 },
+  { classGroup: "8B", success: 81, participation: 76, homework: 72, trend: 2 },
+];
+
+export const teacherParentMessages: TeacherMessage[] = [
+  { id: "tm1", sender: "Defne Yılmaz Velisi", preview: "Defne'nin İngilizce gelişimi hakkında konuşabilir miyiz?", time: "30 dk önce", unread: true },
+  { id: "tm2", sender: "Arda Yılmaz Velisi", preview: "Ödev teslim tarihini öğrenebilir miyim?", time: "2 saat önce", unread: true },
+  { id: "tm3", sender: "Rehberlik Birimi", preview: "7A sınıfı için gözlem raporu paylaşıldı.", time: "Dün", unread: false },
+];
+
+export const teacherQuickActions: QuickAction[] = [
+  { id: "yoklama", label: "Yoklama Al", icon: ClipboardCheck },
+  { id: "odev", label: "Ödev Ver", icon: FilePlus },
+  { id: "sinav", label: "Sınav Oluştur", icon: FileText },
+  { id: "ders-plani", label: "Ders Planı Hazırla", icon: CalendarDays },
+  { id: "veli-mesaj", label: "Veliye Mesaj Gönder", icon: MessageSquare },
+  { id: "karne", label: "Karne Yorumu Yaz", icon: PenLine },
 ];
 
 /* -------------------------------------------------------------------------- */
