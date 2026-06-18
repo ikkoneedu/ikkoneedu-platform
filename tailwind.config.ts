@@ -22,7 +22,15 @@ const config: Config = {
         DEFAULT: "rgba(255, 255, 255, 0.1)",
       },
       fontFamily: {
-        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+        sans: [
+          "Inter",
+          "ui-sans-serif",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"Segoe UI"',
+          "sans-serif",
+        ],
       },
     },
   },
