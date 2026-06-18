@@ -1,0 +1,37 @@
+import { ChevronDown } from "lucide-react";
+import { GlassCard } from "@/components/shared/GlassCard";
+import type { FaqItem } from "@/lib/pricing-data";
+
+interface PricingFaqProps {
+  items: FaqItem[];
+}
+
+/**
+ * Sık Sorulan Sorular.
+ * Native <details> ile erişilebilir, JS gerektirmeyen açılır panel.
+ */
+export function PricingFaq({ items }: PricingFaqProps) {
+  return (
+    <GlassCard tone="navy">
+      <h2 className="mb-5 text-lg font-semibold text-content">Sık Sorulan Sorular</h2>
+      <div className="space-y-3">
+        {items.map((item) => (
+          <details
+            key={item.id}
+            className="group rounded-xl border border-white/10 bg-white/[0.03] p-4 [&_summary::-webkit-details-marker]:hidden"
+          >
+            <summary className="flex cursor-pointer items-center justify-between gap-4 text-sm font-semibold text-content">
+              {item.question}
+              <ChevronDown
+                size={18}
+                className="shrink-0 text-muted transition-transform group-open:rotate-180"
+                aria-hidden="true"
+              />
+            </summary>
+            <p className="mt-3 text-sm leading-relaxed text-muted">{item.answer}</p>
+          </details>
+        ))}
+      </div>
+    </GlassCard>
+  );
+}
