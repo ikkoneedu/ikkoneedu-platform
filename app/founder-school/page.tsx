@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -10,6 +9,7 @@ import { PartnershipModel } from "@/components/founder/PartnershipModel";
 import { RevenueShareCard } from "@/components/founder/RevenueShareCard";
 import { VisionSection } from "@/components/founder/VisionSection";
 import { FounderCTA } from "@/components/founder/FounderCTA";
+import { buildMetadata } from "@/lib/seo/seo";
 import { productName } from "@/lib/constants";
 import {
   founderBenefits,
@@ -20,19 +20,13 @@ import {
   founderVisionMetrics,
 } from "@/lib/founder-mock-data";
 
-export const metadata: Metadata = {
-  title: `Kurucu Okul — ${productName}`,
+export const metadata = buildMetadata({
+  title: "Kurucu Okul ve Stratejik Ortak",
+  path: "/founder-school",
   description:
-    "İngiliz Kültür Kolejleri, ikkoneedu platformunun ilk uygulama, geliştirme ve büyüme ortağıdır.",
-  openGraph: {
-    title: `Kurucu Okul ve Stratejik Ortak — ${productName}`,
-    description:
-      "İngiliz Kültür Kolejleri'nin ikkoneedu platformundaki kurucu okul ve stratejik iş ortağı rolü.",
-    siteName: productName,
-    locale: "tr_TR",
-    type: "website",
-  },
-};
+    "İngiliz Kültür Kolejleri, ikkoneedu okul işletim sisteminin ilk uygulama, geliştirme ve büyüme ortağıdır.",
+  keywords: ["kolej yazılımı", "stratejik ortaklık", "okul dijital dönüşümü"],
+});
 
 export default function FounderSchoolPage() {
   return (

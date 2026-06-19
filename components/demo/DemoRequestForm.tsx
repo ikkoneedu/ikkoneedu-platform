@@ -1,12 +1,20 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { CheckCircle2, Send, AlertCircle } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { SelectField } from "@/components/shared/SelectField";
+import { HoneypotField } from "@/components/shared/HoneypotField";
 import { createDemoRequest } from "@/lib/services/demo-requests";
+import { demoRequestSchema } from "@/lib/validation/demo-request";
+import {
+  isHoneypotTriggered,
+  isCooldownPassed,
+  checkRateLimit,
+  HONEYPOT_FIELD,
+} from "@/lib/security/spam-protection";
 
 interface DemoRequestFormProps {
   institutionTypes: string[];
@@ -14,24 +22,44 @@ interface DemoRequestFormProps {
 
 /**
  * Demo Talep Formu.
- * Firestore `createDemoRequest` servisine bağlıdır. Firebase env yoksa
- * mock modda çalışır (Firestore'a yazmaz) ve yine başarı mesajı gösterir.
+ * Zod ile client-side doğrulama + honeypot/cooldown/rate-limit spam koruması.
+ * Firestore `createDemoRequest` servisine bağlıdır. Firebase env yoksa mock
+ * modda çalışır (Firestore'a yazmaz) ve yine başarı mesajı gösterir.
  */
 export function DemoRequestForm({ institutionTypes }: DemoRequestFormProps) {
   const [submitted, setSubmitted] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const lastSubmitRef = useRef<number | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!accepted || submitting) return;
 
     const data = new FormData(event.currentTarget);
-    setSubmitting(true);
-    setError(null);
 
-    const result = await createDemoRequest({
+    // 1) Honeypot — bot tuzağı.
+    if (isHoneypotTriggered(data.get(HONEYPOT_FIELD))) {
+      // Bota başarı gibi görün; gerçek işlem yapma.
+      setSubmitted(true);
+      return;
+    }
+
+    // 2) Submit cooldown — çok hızlı tekrar gönderimi engelle.
+    if (!isCooldownPassed(lastSubmitRef.current)) {
+      setError("Lütfen birkaç saniye sonra tekrar deneyin.");
+      return;
+    }
+
+    // 3) Basit rate-limit.
+    if (!checkRateLimit("demo-request").allowed) {
+      setError("Çok fazla deneme yaptınız. Lütfen biraz sonra tekrar deneyin.");
+      return;
+    }
+
+    // 4) Zod doğrulaması.
+    const parsed = demoRequestSchema.safeParse({
       institution: String(data.get("institution") ?? ""),
       fullName: String(data.get("fullname") ?? ""),
       role: String(data.get("role") ?? ""),
@@ -41,6 +69,28 @@ export function DemoRequestForm({ institutionTypes }: DemoRequestFormProps) {
       institutionType: String(data.get("institutionType") ?? ""),
       studentCount: String(data.get("students") ?? ""),
       message: String(data.get("message") ?? ""),
+      company: String(data.get(HONEYPOT_FIELD) ?? ""),
+    });
+
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Lütfen alanları kontrol edin.");
+      return;
+    }
+
+    lastSubmitRef.current = Date.now();
+    setSubmitting(true);
+    setError(null);
+
+    const result = await createDemoRequest({
+      institution: parsed.data.institution,
+      fullName: parsed.data.fullName,
+      role: parsed.data.role,
+      phone: parsed.data.phone,
+      email: parsed.data.email,
+      city: parsed.data.city,
+      institutionType: parsed.data.institutionType,
+      studentCount: parsed.data.studentCount,
+      message: parsed.data.message,
     });
 
     setSubmitting(false);
@@ -87,7 +137,8 @@ export function DemoRequestForm({ institutionTypes }: DemoRequestFormProps) {
         Bilgilerinizi paylaşın, size özel bir demo planlayalım.
       </p>
 
-      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+      <form onSubmit={handleSubmit} className="relative mt-6 space-y-4">
+        <HoneypotField />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <TextField label="Kurum Adı" name="institution" placeholder="Örnek Koleji" required />
           <TextField label="Yetkili Adı Soyadı" name="fullname" placeholder="Ad Soyad" required />

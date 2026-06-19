@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { ScholarshipDashboard } from "@/components/scholarship/ScholarshipDashboard";
@@ -12,14 +11,18 @@ import { ProctorAssignment } from "@/components/scholarship/ProctorAssignment";
 import { AdmissionCardManager } from "@/components/scholarship/AdmissionCardManager";
 import { ScholarshipResultEngine } from "@/components/scholarship/ScholarshipResultEngine";
 import { ScholarshipCRMConversion } from "@/components/scholarship/ScholarshipCRMConversion";
-import { productName } from "@/lib/constants";
+import { buildMetadata } from "@/lib/seo/seo";
 import { activeExam } from "@/lib/scholarship-exam-mock-data";
 
-export const metadata: Metadata = {
-  title: `Bursluluk Sınavı Yönetimi — ${productName}`,
+// Yönetim paneli — korumalı; arama motorlarında indekslenmez.
+export const metadata = buildMetadata({
+  title: "Bursluluk Sınavı Yönetimi",
+  path: "/scholarship-exam",
   description:
     "Okulunuza özel bursluluk sınavlarını oluşturun, başvuruları yönetin ve kayıt dönüşümünü takip edin.",
-};
+  keywords: ["bursluluk sınavı başvuru sistemi", "bursluluk sınavı yönetimi"],
+  noindex: true,
+});
 
 export default function ScholarshipExamPage() {
   return (

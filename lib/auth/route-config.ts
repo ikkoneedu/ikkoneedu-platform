@@ -1,0 +1,99 @@
+/**
+ * Merkezi route koruma yapılandırması.
+ *
+ * Halka açık (public) ve korumalı (protected) route ayrımının tek doğruluk
+ * kaynağıdır. Şu an gerçek kimlik doğrulama YOKTUR; bu yapı `middleware.ts`,
+ * `robots.ts` ve ileride Firebase Auth tarafından kullanılmak üzere hazırdır.
+ *
+ * Firebase Auth bağlandığında: middleware oturum çerezini/claim'leri okuyup
+ * `getRequiredRoles(pathname)` ile rol kontrolü yapacak, yetkisizleri
+ * `/login`e yönlendirecektir.
+ */
+
+import { ROLES, type Role } from "@/lib/auth/role-constants";
+
+/** Kimlik doğrulama gerektirmeyen tam yollar. */
+export const PUBLIC_ROUTES: string[] = [
+  "/",
+  "/features",
+  "/pricing",
+  "/demo",
+  "/founder-school",
+  "/mobile-app",
+  "/login",
+  "/school-select",
+  "/scholarship-exam/apply",
+  "/scholarship-exam/admission-card",
+  "/scholarship-exam/results",
+];
+
+/** Kimlik doğrulama gerektirmeyen yol önekleri (alt sayfalar dahil). */
+export const PUBLIC_PREFIXES: string[] = [
+  "/school", // /school/[slug] ve /school/[slug]/scholarship/*
+];
+
+/**
+ * Korumalı panel önekleri (ileride Firebase Auth ile korunacak).
+ * NOT: `/scholarship-exam` yönetim kökü korumalıdır; ancak `/scholarship-exam/apply`
+ * gibi halka açık alt yollar `PUBLIC_ROUTES` ile istisna tutulur.
+ */
+export const PROTECTED_PREFIXES: string[] = [
+  "/admin",
+  "/teacher",
+  "/parent",
+  "/student",
+  "/super-admin",
+  "/settings",
+  "/crm",
+  "/messages",
+  "/notifications",
+  "/executive",
+  "/saas-admin",
+  "/counseling",
+  "/finance",
+  "/report-card-ai",
+  "/scholarship-exam",
+  "/ai-brain",
+  "/scheduler-ai",
+  "/exam-ai",
+  "/admissions-ai",
+];
+
+/** Korumalı route → bu route'a erişebilecek roller. */
+export const ROUTE_ROLES: Record<string, Role[]> = {
+  "/admin": [ROLES.SCHOOL_ADMIN, ROLES.SUPER_ADMIN],
+  "/teacher": [ROLES.TEACHER, ROLES.SCHOOL_ADMIN, ROLES.SUPER_ADMIN],
+  "/parent": [ROLES.PARENT, ROLES.SUPER_ADMIN],
+  "/student": [ROLES.STUDENT, ROLES.SUPER_ADMIN],
+  "/super-admin": [ROLES.SUPER_ADMIN],
+  "/saas-admin": [ROLES.SUPER_ADMIN],
+  "/settings": [ROLES.SUPER_ADMIN, ROLES.SCHOOL_ADMIN],
+  "/executive": [ROLES.SUPER_ADMIN, ROLES.SCHOOL_ADMIN],
+  "/crm": [ROLES.SCHOOL_ADMIN, ROLES.SALES, ROLES.SUPER_ADMIN],
+  "/finance": [ROLES.SCHOOL_ADMIN, ROLES.SUPER_ADMIN],
+  "/counseling": [ROLES.SCHOOL_ADMIN, ROLES.TEACHER, ROLES.SUPER_ADMIN],
+};
+
+function matchesPrefix(pathname: string, prefix: string): boolean {
+  return pathname === prefix || pathname.startsWith(`${prefix}/`);
+}
+
+/** Verilen yol halka açık mı? */
+export function isPublicRoute(pathname: string): boolean {
+  if (PUBLIC_ROUTES.includes(pathname)) return true;
+  return PUBLIC_PREFIXES.some((prefix) => matchesPrefix(pathname, prefix));
+}
+
+/** Verilen yol korumalı mı? (Public istisnalar önceliklidir.) */
+export function isProtectedRoute(pathname: string): boolean {
+  if (isPublicRoute(pathname)) return false;
+  return PROTECTED_PREFIXES.some((prefix) => matchesPrefix(pathname, prefix));
+}
+
+/** Verilen yol için gerekli roller (tanımsızsa boş dizi). */
+export function getRequiredRoles(pathname: string): Role[] {
+  const entry = Object.entries(ROUTE_ROLES).find(([prefix]) =>
+    matchesPrefix(pathname, prefix),
+  );
+  return entry ? entry[1] : [];
+}

@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -8,6 +7,9 @@ import { PricingPlans } from "@/components/pricing/PricingPlans";
 import { RevenuePotential } from "@/components/pricing/RevenuePotential";
 import { ComparisonTable } from "@/components/pricing/ComparisonTable";
 import { PricingFaq } from "@/components/pricing/PricingFaq";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildMetadata } from "@/lib/seo/seo";
+import { faqSchema } from "@/lib/seo/structured-data";
 import { productName } from "@/lib/constants";
 import {
   pricingPlans,
@@ -19,15 +21,18 @@ import {
   pricingFaq,
 } from "@/lib/pricing-data";
 
-export const metadata: Metadata = {
-  title: `Fiyatlandırma — ${productName}`,
+export const metadata = buildMetadata({
+  title: "Fiyatlandırma",
+  path: "/pricing",
   description:
-    "Okulunuzun ölçeğine uygun Starter, Professional ve Enterprise paketleri ve SaaS gelir potansiyeli.",
-};
+    "Okulunuzun ölçeğine uygun Starter, Professional ve Enterprise paketleri ve SaaS gelir potansiyeli. Kolej yazılımı ve okul yönetim sistemi fiyatlandırması.",
+  keywords: ["kolej yazılımı fiyat", "okul yönetim sistemi fiyatlandırma", "SaaS okul yazılımı"],
+});
 
 export default function PricingPage() {
   return (
     <div className="mesh-bg min-h-screen w-full overflow-x-hidden">
+      <JsonLd data={faqSchema(pricingFaq)} />
       {/* Üst bar */}
       <header className="sticky top-0 z-30 border-b border-white/10 bg-background/70 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
