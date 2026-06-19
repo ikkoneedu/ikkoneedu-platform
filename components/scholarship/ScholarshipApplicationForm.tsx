@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
   User,
@@ -24,6 +24,7 @@ import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { SelectField } from "@/components/shared/SelectField";
+import { HoneypotField } from "@/components/shared/HoneypotField";
 import {
   applyFormOptions,
   applyConsents,
@@ -34,6 +35,13 @@ import {
   createScholarshipApplication,
   generateApplicationNo,
 } from "@/lib/services/scholarship-applications";
+import { scholarshipApplicationSchema } from "@/lib/validation/scholarship-application";
+import {
+  isHoneypotTriggered,
+  isCooldownPassed,
+  checkRateLimit,
+  HONEYPOT_FIELD,
+} from "@/lib/security/spam-protection";
 
 interface ScholarshipApplicationFormProps {
   /** Başvurunun bağlı olacağı okul/tenant (okula özel sayfalarda slug resolver'dan gelir). */
@@ -60,6 +68,7 @@ export function ScholarshipApplicationForm({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [applicationNo, setApplicationNo] = useState(sampleApplicationNo);
+  const lastSubmitRef = useRef<number | null>(null);
 
   const allConsentsAccepted = consents.every(Boolean);
 
@@ -76,13 +85,27 @@ export function ScholarshipApplicationForm({
     if (!allConsentsAccepted || submitting) return;
 
     const data = new FormData(event.currentTarget);
-    const newApplicationNo = generateApplicationNo(applicationPrefix);
-    setSubmitting(true);
-    setError(null);
 
-    const result = await createScholarshipApplication({
-      tenantId,
-      applicationNo: newApplicationNo,
+    // 1) Honeypot — bot tuzağı.
+    if (isHoneypotTriggered(data.get(HONEYPOT_FIELD))) {
+      setSubmitted(true);
+      return;
+    }
+
+    // 2) Submit cooldown.
+    if (!isCooldownPassed(lastSubmitRef.current)) {
+      setError("Lütfen birkaç saniye sonra tekrar deneyin.");
+      return;
+    }
+
+    // 3) Basit rate-limit.
+    if (!checkRateLimit("scholarship-application").allowed) {
+      setError("Çok fazla deneme yaptınız. Lütfen biraz sonra tekrar deneyin.");
+      return;
+    }
+
+    // 4) Zod doğrulaması.
+    const parsed = scholarshipApplicationSchema.safeParse({
       studentName: String(data.get("studentName") ?? ""),
       studentTc: String(data.get("studentTc") ?? ""),
       birthDate: String(data.get("birthDate") ?? ""),
@@ -91,6 +114,30 @@ export function ScholarshipApplicationForm({
       parentEmail: String(data.get("parentEmail") ?? ""),
       district: String(data.get("district") ?? ""),
       address: String(data.get("address") ?? ""),
+      company: String(data.get(HONEYPOT_FIELD) ?? ""),
+    });
+
+    if (!parsed.success) {
+      setError(parsed.error.issues[0]?.message ?? "Lütfen alanları kontrol edin.");
+      return;
+    }
+
+    const newApplicationNo = generateApplicationNo(applicationPrefix);
+    lastSubmitRef.current = Date.now();
+    setSubmitting(true);
+    setError(null);
+
+    const result = await createScholarshipApplication({
+      tenantId,
+      applicationNo: newApplicationNo,
+      studentName: parsed.data.studentName,
+      studentTc: parsed.data.studentTc,
+      birthDate: parsed.data.birthDate,
+      parentName: parsed.data.parentName,
+      parentPhone: parsed.data.parentPhone,
+      parentEmail: parsed.data.parentEmail,
+      district: parsed.data.district,
+      address: parsed.data.address,
     });
 
     setSubmitting(false);
@@ -202,7 +249,8 @@ export function ScholarshipApplicationForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="relative space-y-6">
+      <HoneypotField />
       {/* Öğrenci Bilgileri */}
       <GlassCard tone="navy">
         <h2 className="text-lg font-bold tracking-tight text-content">

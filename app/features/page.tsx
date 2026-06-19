@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -7,7 +6,8 @@ import { FeatureGrid } from "@/components/features/FeatureGrid";
 import { AiFeatures } from "@/components/features/AiFeatures";
 import { SecuritySection } from "@/components/features/SecuritySection";
 import { CallToAction } from "@/components/features/CallToAction";
-import { productName, tagline } from "@/lib/constants";
+import { buildMetadata } from "@/lib/seo/seo";
+import { productName } from "@/lib/constants";
 import {
   managementFeatures,
   studentFeatures,
@@ -18,18 +18,13 @@ import {
   securityFeatures,
 } from "@/lib/features-data";
 
-export const metadata: Metadata = {
-  title: `Platform Özellikleri — ${productName}`,
+export const metadata = buildMetadata({
+  title: "Platform Özellikleri",
+  path: "/features",
   description:
-    "Okul yönetimini, iletişimi ve yapay zekayı tek platformda birleştiren yeni nesil eğitim işletim sistemi.",
-  openGraph: {
-    title: `Platform Özellikleri — ${productName}`,
-    description: tagline,
-    siteName: productName,
-    locale: "tr_TR",
-    type: "website",
-  },
-};
+    "Okul yönetimini, veli iletişimini ve yapay zekayı tek platformda birleştiren yeni nesil eğitim kurumu yazılımı ve okul yönetim sistemi.",
+  keywords: ["eğitim kurumu yazılımı", "okul otomasyon sistemi", "veli iletişim uygulaması"],
+});
 
 export default function FeaturesPage() {
   return (

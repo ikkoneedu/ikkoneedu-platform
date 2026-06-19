@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { LogoMark } from "@/components/shared/LogoMark";
@@ -12,6 +11,9 @@ import { DemoProcess } from "@/components/demo/DemoProcess";
 import { FounderSchoolCard } from "@/components/demo/FounderSchoolCard";
 import { DemoFAQ } from "@/components/demo/DemoFAQ";
 import { DemoCTA } from "@/components/demo/DemoCTA";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildMetadata } from "@/lib/seo/seo";
+import { faqSchema } from "@/lib/seo/structured-data";
 import { productName } from "@/lib/constants";
 import {
   institutionTypes,
@@ -20,15 +22,18 @@ import {
   demoFaq,
 } from "@/lib/demo-mock-data";
 
-export const metadata: Metadata = {
-  title: `Demo Talep — ${productName}`,
+export const metadata = buildMetadata({
+  title: "Demo Talep",
+  path: "/demo",
   description:
-    "Okulunuza özel bir demo planlayalım ve ikkoneedu'nun eğitim süreçlerinizi nasıl dönüştürebileceğini birlikte keşfedelim.",
-};
+    "Okulunuza özel bir demo planlayalım; ikkoneedu okul yönetim sistemi ve özel okul CRM çözümünün süreçlerinizi nasıl dönüştürdüğünü birlikte keşfedelim.",
+  keywords: ["özel okul CRM", "okul yönetim sistemi demo", "okul yazılımı demo"],
+});
 
 export default function DemoPage() {
   return (
     <div className="mesh-bg min-h-screen w-full overflow-x-hidden">
+      <JsonLd data={faqSchema(demoFaq)} />
       {/* Üst bar */}
       <header className="sticky top-0 z-30 border-b border-white/10 bg-background/70 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">

@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -17,6 +16,12 @@ import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Reveal } from "@/components/landing/Reveal";
 import { HeroShowcase } from "@/components/landing/HeroShowcase";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { buildMetadata } from "@/lib/seo/seo";
+import {
+  organizationSchema,
+  softwareApplicationSchema,
+} from "@/lib/seo/structured-data";
 import {
   productName,
   productFullName,
@@ -31,32 +36,18 @@ import {
   type LandingCard,
 } from "@/lib/mock-data";
 
-export const metadata: Metadata = {
-  title: `${productName} — ${tagline}`,
+export const metadata = buildMetadata({
+  path: "/",
   description,
   keywords: [
-    "ikkoneedu",
     "eğitim işletim sistemi",
     "yapay zeka eğitim",
-    "okul yönetim sistemi",
     "EdTech",
-    "dijital kampüs",
     "İngiliz Kültür Kolejleri",
     "SaaS okul yazılımı",
+    "okul otomasyon sistemi",
   ],
-  openGraph: {
-    title: `${productName} — ${tagline}`,
-    description,
-    siteName: productName,
-    locale: "tr_TR",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `${productName} — ${tagline}`,
-    description,
-  },
-};
+});
 
 /* Tekrar eden ikon + başlık + açıklama kartı */
 function InfoCard({ card }: { card: LandingCard }) {
@@ -85,6 +76,7 @@ const portalLoginCards = [
 export default function HomePage() {
   return (
     <div className="mesh-bg min-h-screen w-full overflow-x-hidden">
+      <JsonLd data={[organizationSchema(), softwareApplicationSchema()]} />
       {/* Üst bar */}
       <header className="sticky top-0 z-30 border-b border-white/10 bg-background/70 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
