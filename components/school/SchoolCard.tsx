@@ -1,4 +1,5 @@
-import { Users } from "lucide-react";
+import Link from "next/link";
+import { Users, Award } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import type { SchoolOption } from "@/lib/mock-data";
@@ -56,6 +57,16 @@ export function SchoolCard({ option, onSelect }: SchoolCardProps) {
       >
         {option.actionLabel}
       </PrimaryButton>
+
+      {!option.isAddNew && (
+        <Link
+          href="/scholarship-exam/apply"
+          className="mt-3 flex items-center justify-center gap-1.5 text-xs font-medium text-accent transition-colors hover:text-content"
+        >
+          <Award size={13} aria-hidden="true" />
+          Bursluluk Başvurusu
+        </Link>
+      )}
     </GlassCard>
   );
 }

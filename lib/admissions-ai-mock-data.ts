@@ -101,6 +101,7 @@ export const admissionsFaq: string[] = [
   "Yaz okulu var mı?",
   "Kontenjan durumu nedir?",
   "Randevu nasıl alabilirim?",
+  "Bursluluk sınavı başvurusu hakkında bilgi ver.",
 ];
 
 /* ------------------------------ AI içgörüleri ----------------------------- */

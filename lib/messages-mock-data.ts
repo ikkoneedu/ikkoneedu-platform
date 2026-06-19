@@ -20,6 +20,7 @@ import {
   CreditCard,
   AlertTriangle,
   UserPlus,
+  Award,
   type LucideIcon,
 } from "lucide-react";
 
@@ -132,6 +133,10 @@ export const messageTemplates: MessageTemplate[] = [
   { id: "devamsizlik", name: "Devamsızlık Bilgilendirmesi", purpose: "Veliye günlük devamsızlık bildirimi.", icon: AlertTriangle },
   { id: "odeme", name: "Ödeme Hatırlatması", purpose: "Yaklaşan ödeme tarihi hatırlatması.", icon: CreditCard },
   { id: "acil", name: "Acil Duyuru", purpose: "Hava/güvenlik gibi acil bilgilendirmeler.", icon: Bell },
+  { id: "burs-onay", name: "Bursluluk Başvuru Onayı", purpose: "Bursluluk sınavı başvurusunun alındığını bildirir.", icon: Award },
+  { id: "burs-giris", name: "Sınav Giriş Belgesi Hatırlatma", purpose: "Bursluluk sınavı giriş belgesi ve detaylarını hatırlatır.", icon: Award },
+  { id: "burs-sonuc", name: "Sonuç Açıklandı", purpose: "Bursluluk sınavı sonucu ve burs oranını duyurur.", icon: Award },
+  { id: "burs-randevu", name: "Kayıt Görüşmesi Daveti", purpose: "Burs kazanan adaya kayıt görüşmesi daveti gönderir.", icon: Award },
 ];
 
 /* ------------------------------ Bildirim hazırlığı ------------------------ */

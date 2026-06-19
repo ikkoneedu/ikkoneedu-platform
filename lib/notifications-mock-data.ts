@@ -11,6 +11,7 @@ import {
   Smartphone,
   KeyRound,
   Megaphone,
+  Award,
   AlertTriangle,
   CalendarDays,
   ClipboardList,
@@ -65,6 +66,7 @@ export const notificationTypes: NotificationType[] = [
   { id: "odeme", name: "Ödeme", icon: CreditCard },
   { id: "servis", name: "Servis", icon: Bus },
   { id: "kayit", name: "Kayıt", icon: UserPlus },
+  { id: "bursluluk", name: "Bursluluk Sınavı", icon: Award },
 ];
 
 /* ------------------------------ Bildirim listesi -------------------------- */

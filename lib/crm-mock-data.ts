@@ -19,6 +19,7 @@ import {
   Search,
   Globe,
   Share2,
+  Award,
   type LucideIcon,
 } from "lucide-react";
 
@@ -146,6 +147,7 @@ export const leadSources: LeadSource[] = [
   { id: "google", name: "Google Ads", share: 22, conversion: 31, icon: Search },
   { id: "organik", name: "Organik Web", share: 16, conversion: 29, icon: Globe },
   { id: "referans", name: "Referans", share: 9, conversion: 52, icon: Share2 },
+  { id: "bursluluk", name: "Bursluluk Sınavı", share: 11, conversion: 47, icon: Award },
   { id: "telefon", name: "Telefon", share: 5, conversion: 41, icon: Phone },
 ];
 
