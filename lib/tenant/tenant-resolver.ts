@@ -7,7 +7,12 @@
  * Şimdilik saf bir fonksiyon olarak host adından slug çıkarır.
  */
 
-import { ROOT_DOMAIN, DEFAULT_TENANT_SLUG } from "@/lib/tenant/tenant-config";
+import {
+  ROOT_DOMAIN,
+  DEFAULT_TENANT_SLUG,
+  getPublicSchoolBySlug,
+  type PublicSchool,
+} from "@/lib/tenant/tenant-config";
 import type { TenantResolution } from "@/lib/tenant/tenant-types";
 
 export function resolveTenantFromHost(host?: string | null): TenantResolution {
@@ -27,4 +32,12 @@ export function resolveTenantFromHost(host?: string | null): TenantResolution {
   }
 
   return { slug: DEFAULT_TENANT_SLUG, source: "default" };
+}
+
+/**
+ * /school/[slug] için mock okul çözümleme.
+ * İleride tenantId üzerinden Firestore'dan yüklenecek.
+ */
+export function resolveSchoolBySlug(slug: string): PublicSchool | undefined {
+  return getPublicSchoolBySlug(slug);
 }
