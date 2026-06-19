@@ -36,4 +36,5 @@ export const siteRoutes: RouteEntry[] = [
   { id: "founder-school", name: "Kurucu Okul", route: "/founder-school", description: "Kurucu okul ve stratejik ortaklık vitrini.", status: "Hazır" },
   { id: "mobile-app", name: "Mobil Uygulama", route: "/mobile-app", description: "Mobil uygulama tanıtım ve önizleme sayfası.", status: "Hazır" },
   { id: "settings", name: "Sistem Ayarları", route: "/settings", description: "Süper admin ve sistem yapılandırma merkezi.", status: "Mock" },
+  { id: "super-admin", name: "Super Admin", route: "/super-admin", description: "Tüm sayfalara erişim merkezi (bu sayfa).", status: "Hazır" },
 ];
