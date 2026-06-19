@@ -1,6 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Sparkles, LogIn, Smartphone, Award } from "lucide-react";
+import {
+  ArrowRight,
+  Sparkles,
+  LogIn,
+  Smartphone,
+  Award,
+  School,
+  BookOpen,
+  Users,
+  GraduationCap,
+} from "lucide-react";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -64,6 +74,14 @@ function InfoCard({ card }: { card: LandingCard }) {
   );
 }
 
+/** Mevcut kullanıcılar için rol bazlı giriş kartları (query param ile /login). */
+const portalLoginCards = [
+  { id: "admin", title: "Okul Yönetimi", href: "/login?role=admin", icon: School },
+  { id: "teacher", title: "Öğretmen Girişi", href: "/login?role=teacher", icon: BookOpen },
+  { id: "parent", title: "Veli Girişi", href: "/login?role=parent", icon: Users },
+  { id: "student", title: "Öğrenci Girişi", href: "/login?role=student", icon: GraduationCap },
+];
+
 export default function HomePage() {
   return (
     <div className="mesh-bg min-h-screen w-full overflow-x-hidden">
@@ -115,18 +133,18 @@ export default function HomePage() {
               </span>
 
               <div>
-                <h1 className="text-5xl font-bold tracking-tight text-content sm:text-6xl">
-                  {productName}
+                <h1 className="text-4xl font-bold tracking-tight text-content sm:text-5xl">
+                  Okulunuzu Yapay Zeka Destekli Dijital Kampüse Taşıyın
                 </h1>
-                <p className="mt-3 text-xl font-medium text-accent sm:text-2xl">
+                <p className="mt-3 text-lg font-medium text-accent sm:text-xl">
                   {tagline}
                 </p>
               </div>
 
               <p className="max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-                Okul yönetimini, veli iletişimini, öğrenci deneyimini ve yapay
-                zekayı tek platformda birleştiren yeni nesil dijital kampüs
-                ekosistemi.
+                {productName}; okul yönetimi, veli iletişimi, öğrenci deneyimi,
+                bursluluk sınavı ve yapay zekayı tek platformda birleştiren yeni
+                nesil eğitim işletim sistemidir.
               </p>
 
               <div className="flex flex-col gap-3 sm:flex-row">
@@ -138,7 +156,12 @@ export default function HomePage() {
                 </Link>
                 <Link href="/features">
                   <PrimaryButton variant="secondary" size="lg" className="w-full sm:w-auto">
-                    Platformu İncele
+                    Özellikleri İncele
+                  </PrimaryButton>
+                </Link>
+                <Link href="/pricing">
+                  <PrimaryButton variant="ghost" size="lg" className="w-full sm:w-auto">
+                    Fiyatlandırma
                   </PrimaryButton>
                 </Link>
               </div>
@@ -148,6 +171,41 @@ export default function HomePage() {
           <Reveal delay={0.15}>
             <HeroShowcase />
           </Reveal>
+        </section>
+
+        {/* 1b. Mevcut kullanıcılar — Okul Portalı Girişi */}
+        <section className="py-12 lg:py-16">
+          <Reveal>
+            <SectionHeader
+              align="center"
+              eyebrow="Mevcut Kullanıcılar"
+              title="Okul Portalınıza Giriş Yapın"
+              description="Okul yöneticisi, öğretmen, veli ve öğrenciler tek giriş ekranından kendi panellerine yönlendirilir."
+            />
+          </Reveal>
+          <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {portalLoginCards.map((card, index) => {
+              const Icon = card.icon;
+              return (
+                <Reveal key={card.id} delay={index * 0.08}>
+                  <Link href={card.href}>
+                    <GlassCard tone="navy" interactive className="flex h-full flex-col items-start">
+                      <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-accent/20 bg-navy/50 text-accent">
+                        <Icon size={24} aria-hidden="true" />
+                      </span>
+                      <h3 className="mt-4 text-base font-semibold text-content">
+                        {card.title}
+                      </h3>
+                      <span className="mt-auto flex items-center gap-1 pt-4 text-sm font-medium text-accent">
+                        Giriş Yap
+                        <ArrowRight size={15} aria-hidden="true" />
+                      </span>
+                    </GlassCard>
+                  </Link>
+                </Reveal>
+              );
+            })}
+          </div>
         </section>
 
         {/* 2. Kurucu Okul Vurgusu */}

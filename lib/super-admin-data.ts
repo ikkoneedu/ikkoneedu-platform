@@ -40,5 +40,9 @@ export const siteRoutes: RouteEntry[] = [
   { id: "founder-school", name: "Kurucu Okul", route: "/founder-school", description: "Kurucu okul ve stratejik ortaklık vitrini.", status: "Hazır" },
   { id: "mobile-app", name: "Mobil Uygulama", route: "/mobile-app", description: "Mobil uygulama tanıtım ve önizleme sayfası.", status: "Hazır" },
   { id: "settings", name: "Sistem Ayarları", route: "/settings", description: "Süper admin ve sistem yapılandırma merkezi.", status: "Mock" },
+  { id: "school-public", name: "Halka Açık Okul Sayfası", route: "/school/ingiliz-kultur", description: "Okula özel halka açık tanıtım sayfası (örnek).", status: "Hazır" },
+  { id: "school-scholarship-apply", name: "Okul Bursluluk Başvurusu", route: "/school/ingiliz-kultur/scholarship/apply", description: "Okula özel bursluluk başvuru formu.", status: "Mock" },
+  { id: "school-admission-card", name: "Okul Sınav Giriş Belgesi", route: "/school/ingiliz-kultur/scholarship/admission-card", description: "Okula özel giriş belgesi sorgulama.", status: "Mock" },
+  { id: "school-results", name: "Okul Sonuç Sorgulama", route: "/school/ingiliz-kultur/scholarship/results", description: "Okula özel sonuç sorgulama.", status: "Mock" },
   { id: "super-admin", name: "Super Admin", route: "/super-admin", description: "Tüm sayfalara erişim merkezi (bu sayfa).", status: "Hazır" },
 ];

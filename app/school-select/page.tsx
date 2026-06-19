@@ -1,26 +1,42 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { LogOut, CircleUser, ShieldCheck, ArrowRight } from "lucide-react";
+import {
+  LogOut,
+  CircleUser,
+  ShieldCheck,
+  ArrowRight,
+  GraduationCap,
+  Building2,
+  FlaskConical,
+  Users,
+  Globe,
+  Award,
+} from "lucide-react";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { SectionHeader } from "@/components/shared/SectionHeader";
-import { SchoolCard } from "@/components/school/SchoolCard";
+import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { productName } from "@/lib/constants";
-import { schoolOptions, tenantFeatures, type SchoolOption } from "@/lib/mock-data";
+import { tenantFeatures } from "@/lib/mock-data";
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
 };
 
+/** Okul seçim kartları (mock — tenant slug ile halka açık sayfalara bağlı). */
+const selectCards = [
+  { id: "ikk", name: "İngiliz Kültür Kolejleri", slug: "ingiliz-kultur", role: "Yönetici", users: "1.248", href: "/admin", icon: GraduationCap, isSuper: false },
+  { id: "atael", name: "Atael Koleji", slug: "atael", role: "Yönetici", users: "842", href: "/admin", icon: Building2, isSuper: false },
+  { id: "demo", name: "Demo Okul", slug: "demo-okul", role: "Yönetici", users: "120", href: "/admin", icon: FlaskConical, isSuper: false },
+  { id: "super", name: "Super Admin", slug: null, role: "Platform Sahibi", users: "—", href: "/super-admin", icon: ShieldCheck, isSuper: true },
+] as const;
+
 export default function SchoolSelectPage() {
   const router = useRouter();
-
-  const handleSelect = (option: SchoolOption) => {
-    router.push(option.href);
-  };
 
   return (
     <div className="mesh-bg min-h-screen w-full">
@@ -79,40 +95,70 @@ export default function SchoolSelectPage() {
           transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
           className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
         >
-          {schoolOptions.map((option) => (
-            <SchoolCard key={option.id} option={option} onSelect={handleSelect} />
-          ))}
-        </motion.section>
+          {selectCards.map((card) => {
+            const Icon = card.icon;
+            return (
+              <GlassCard
+                key={card.id}
+                tone="navy"
+                interactive
+                className={[
+                  "flex h-full flex-col",
+                  card.isSuper ? "border-accent/40" : "",
+                ].join(" ")}
+              >
+                <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-accent/20 bg-navy/50 text-accent">
+                  <Icon size={26} aria-hidden="true" />
+                </span>
+                <h3 className="mt-5 text-lg font-semibold tracking-tight text-content">
+                  {card.name}
+                </h3>
+                <div className="mt-1 flex items-center gap-2 text-sm text-accent">
+                  <span>{card.role}</span>
+                  {card.slug && (
+                    <span className="font-mono text-xs text-muted">
+                      {card.slug}.ikkoneedu.com
+                    </span>
+                  )}
+                </div>
+                <div className="mt-3 flex items-center gap-2 text-sm text-muted">
+                  <Users size={16} aria-hidden="true" />
+                  <span>Kullanıcı: {card.users}</span>
+                </div>
 
-        {/* Super Admin paneli erişim kartı */}
-        <motion.div
-          {...fadeUp}
-          transition={{ duration: 0.5, ease: "easeOut", delay: 0.15 }}
-          className="mt-6"
-        >
-          <button
-            type="button"
-            onClick={() => router.push("/super-admin")}
-            className="group flex w-full items-center gap-4 rounded-2xl border border-accent/30 bg-accent/5 p-5 text-left backdrop-blur-xl transition-all hover:-translate-y-0.5 hover:bg-accent/10"
-          >
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-accent/30 bg-navy/50 text-accent">
-              <ShieldCheck size={24} aria-hidden="true" />
-            </span>
-            <span className="flex-1">
-              <span className="block text-base font-semibold text-content">
-                Super Admin Paneli
-              </span>
-              <span className="block text-sm text-muted">
-                Geliştirme ve demo için tüm sayfalara tek merkezden erişin.
-              </span>
-            </span>
-            <ArrowRight
-              size={20}
-              className="shrink-0 text-accent transition-transform group-hover:translate-x-0.5"
-              aria-hidden="true"
-            />
-          </button>
-        </motion.div>
+                <PrimaryButton
+                  type="button"
+                  variant={card.isSuper ? "secondary" : "primary"}
+                  size="md"
+                  className="mt-6 w-full"
+                  onClick={() => router.push(card.href)}
+                >
+                  Devam Et
+                  <ArrowRight size={15} aria-hidden="true" />
+                </PrimaryButton>
+
+                {card.slug && (
+                  <div className="mt-4 flex flex-col gap-2 border-t border-white/5 pt-4">
+                    <Link
+                      href={`/school/${card.slug}`}
+                      className="flex items-center gap-1.5 text-xs font-medium text-muted transition-colors hover:text-accent"
+                    >
+                      <Globe size={13} aria-hidden="true" />
+                      Halka Açık Okul Sayfası
+                    </Link>
+                    <Link
+                      href={`/school/${card.slug}/scholarship/apply`}
+                      className="flex items-center gap-1.5 text-xs font-medium text-muted transition-colors hover:text-accent"
+                    >
+                      <Award size={13} aria-hidden="true" />
+                      Bursluluk Başvurusu
+                    </Link>
+                  </div>
+                )}
+              </GlassCard>
+            );
+          })}
+        </motion.section>
 
         {/* Alt bölüm — tenant altyapısı açıklama kartları */}
         <motion.section
