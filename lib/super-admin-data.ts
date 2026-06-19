@@ -26,6 +26,7 @@ export const siteRoutes: RouteEntry[] = [
   { id: "scheduler-ai", name: "AI Ders Programı", route: "/scheduler-ai", description: "Yapay zeka destekli ders programı oluşturucu.", status: "Geliştiriliyor" },
   { id: "exam-ai", name: "AI Sınav Oluşturucu", route: "/exam-ai", description: "Sınav, quiz ve çalışma kağıdı üretici.", status: "Geliştiriliyor" },
   { id: "admissions-ai", name: "AI Kayıt Danışmanı", route: "/admissions-ai", description: "Aday veli iletişimi, kayıt funnel ve lead yönetimi.", status: "Geliştiriliyor" },
+  { id: "scholarship-exam", name: "Bursluluk Sınavı Yönetimi", route: "/scholarship-exam", description: "Sınav oluşturma, başvuru, oturum/salon, sonuç ve burs yönetimi.", status: "Mock" },
   { id: "crm", name: "CRM & Lead Yönetimi", route: "/crm", description: "Lead pipeline, randevu, görev merkezi ve kayıt tahmini.", status: "Mock" },
   { id: "report-card-ai", name: "AI Karne Asistanı", route: "/report-card-ai", description: "Öğrenci performansına göre AI karne yorumu üretici.", status: "Geliştiriliyor" },
   { id: "counseling", name: "Rehberlik Merkezi", route: "/counseling", description: "Öğrenci/veli görüşmeleri, risk analizi ve takip.", status: "Mock" },

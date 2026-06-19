@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Sparkles, LogIn, Smartphone } from "lucide-react";
+import { ArrowRight, Sparkles, LogIn, Smartphone, Award } from "lucide-react";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -261,6 +261,36 @@ export default function HomePage() {
               <Link href="/mobile-app" className="shrink-0">
                 <PrimaryButton size="lg">
                   Mobil Uygulamayı İncele
+                  <ArrowRight size={18} aria-hidden="true" />
+                </PrimaryButton>
+              </Link>
+            </GlassCard>
+          </Reveal>
+        </section>
+
+        {/* 5c. Bursluluk Sınavı CTA */}
+        <section className="pb-4">
+          <Reveal>
+            <GlassCard
+              tone="navy"
+              className="ai-gradient flex flex-col items-center gap-6 border-accent/20 px-6 py-12 text-center sm:px-10 lg:flex-row lg:justify-between lg:text-left"
+            >
+              <div className="max-w-xl">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-accent">
+                  <Award size={14} aria-hidden="true" />
+                  Bursluluk Sınavı
+                </span>
+                <h2 className="mt-4 text-2xl font-bold tracking-tight text-content sm:text-3xl">
+                  Bursluluk Sınavı Başvurusu Açık
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-muted sm:text-base">
+                  Çocuğunuz için bursluluk ve kabul sınavı başvurusunu birkaç
+                  dakika içinde tamamlayın, burs fırsatını yakalayın.
+                </p>
+              </div>
+              <Link href="/scholarship-exam/apply" className="shrink-0">
+                <PrimaryButton size="lg">
+                  Bursluluk Sınavı Başvurusu
                   <ArrowRight size={18} aria-hidden="true" />
                 </PrimaryButton>
               </Link>

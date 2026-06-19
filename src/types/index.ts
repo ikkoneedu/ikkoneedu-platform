@@ -20,6 +20,7 @@ export * from "@/src/types/subscription";
 export * from "@/src/types/payment";
 export * from "@/src/types/finance";
 export * from "@/src/types/scholarship";
+export * from "@/src/types/scholarship-exam";
 export * from "@/src/types/report-card";
 export * from "@/src/types/counseling";
 export * from "@/src/types/ai";

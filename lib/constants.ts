@@ -26,6 +26,7 @@ import {
   ClipboardPen,
   HeartHandshake,
   Wallet,
+  Award,
   type LucideIcon,
 } from "lucide-react";
 
@@ -77,6 +78,7 @@ export const navigationItems: NavigationItem[] = [
   { id: "ogretmenler", label: "Öğretmenler", href: "/teacher", icon: BookOpen },
   { id: "yapay-zeka", label: "AI Brain", href: "/ai-brain", icon: Sparkles },
   { id: "kayit-danismani", label: "AI Kayıt Danışmanı", href: "/admissions-ai", icon: UserPlus },
+  { id: "bursluluk", label: "Bursluluk Sınavı", href: "/scholarship-exam", icon: Award },
   { id: "karne-asistani", label: "AI Karne Asistanı", href: "/report-card-ai", icon: ClipboardPen },
   { id: "rehberlik", label: "Rehberlik Merkezi", href: "/counseling", icon: HeartHandshake },
   { id: "finans", label: "Finans Merkezi", href: "/finance", icon: Wallet },
