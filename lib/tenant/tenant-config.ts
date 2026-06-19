@@ -59,6 +59,8 @@ export interface PublicSchool {
   brandColor: string;
   intro: string;
   userCount: string;
+  /** Bursluluk başvuru numarası ön eki (ör. "IKK"). */
+  applicationPrefix: string;
 }
 
 export const PUBLIC_SCHOOLS: PublicSchool[] = [
@@ -71,6 +73,7 @@ export const PUBLIC_SCHOOLS: PublicSchool[] = [
     intro:
       "Çift dilli eğitim modeli ve yapay zeka destekli dijital kampüs deneyimiyle öğrencilerini geleceğe hazırlar.",
     userCount: "1.248",
+    applicationPrefix: "IKK",
   },
   {
     slug: "atael",
@@ -81,6 +84,7 @@ export const PUBLIC_SCHOOLS: PublicSchool[] = [
     intro:
       "Güçlü akademik kadrosu ve öğrenci merkezli yaklaşımıyla nitelikli bir eğitim sunar.",
     userCount: "842",
+    applicationPrefix: "ATA",
   },
   {
     slug: "demo-okul",
@@ -91,6 +95,7 @@ export const PUBLIC_SCHOOLS: PublicSchool[] = [
     intro:
       "ikkoneedu platformunun tüm özelliklerini deneyimleyebileceğiniz örnek demo kurumu.",
     userCount: "120",
+    applicationPrefix: "DEMO",
   },
 ];
 

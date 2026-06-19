@@ -12,6 +12,7 @@ import { Appointments } from "@/components/crm/Appointments";
 import { AiCrmInsights } from "@/components/crm/AiCrmInsights";
 import { TaskCenter } from "@/components/crm/TaskCenter";
 import { RevenueForecast } from "@/components/crm/RevenueForecast";
+import { NewLeadForm } from "@/components/crm/NewLeadForm";
 import { productName } from "@/lib/constants";
 import {
   crmMetrics,
@@ -85,7 +86,10 @@ export default function CrmPage() {
         {/* 2. Metrikler */}
         <CrmMetrics metrics={crmMetrics} />
 
-        {/* 3. Pipeline */}
+        {/* 3. Yeni lead ekle (Firestore'a hazır) */}
+        <NewLeadForm />
+
+        {/* 4. Pipeline */}
         <LeadPipeline columns={pipeline} />
 
         {/* 4 + 5. Lead detay ve kaynaklar */}

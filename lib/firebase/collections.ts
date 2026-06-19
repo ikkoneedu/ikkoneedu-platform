@@ -51,6 +51,9 @@ export const COLLECTIONS = {
   DEVICES: "devices",
   COUNSELING_SESSIONS: "counselingSessions",
   REPORT_CARDS: "reportCards",
+  DEMO_REQUESTS: "demoRequests",
+  SCHOLARSHIP_EXAMS: "scholarshipExams",
+  SCHOLARSHIP_APPLICATIONS: "scholarshipApplications",
 } as const;
 
 export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];
@@ -66,3 +69,70 @@ export const PLATFORM = {
 export function tenantPath(tenantId: string, collection: CollectionName): string {
   return `${COLLECTIONS.TENANTS}/${tenantId}/${collection}`;
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Koleksiyon yolu yardımcıları (Firestore collection/doc path üretir)       */
+/*  Kullanım: collection(db, tenantLeads(tenantId))                           */
+/* -------------------------------------------------------------------------- */
+
+/** Platform yapılandırma belgesi: platform/config */
+export const platformConfig = (): string => PLATFORM.CONFIG;
+
+/** Tüm tenant'lar: tenants */
+export const tenants = (): string => COLLECTIONS.TENANTS;
+
+/** Tek tenant belgesi: tenants/{tenantId} */
+export const tenantDoc = (tenantId: string): string =>
+  `${COLLECTIONS.TENANTS}/${tenantId}`;
+
+/** tenants/{tenantId}/users */
+export const tenantUsers = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.USERS);
+
+/** tenants/{tenantId}/students */
+export const tenantStudents = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.STUDENTS);
+
+/** tenants/{tenantId}/teachers */
+export const tenantTeachers = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.TEACHERS);
+
+/** tenants/{tenantId}/parents */
+export const tenantParents = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.PARENTS);
+
+/** tenants/{tenantId}/announcements */
+export const tenantAnnouncements = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.ANNOUNCEMENTS);
+
+/** tenants/{tenantId}/messages */
+export const tenantMessages = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.MESSAGES);
+
+/** tenants/{tenantId}/notifications */
+export const tenantNotifications = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.NOTIFICATIONS);
+
+/** tenants/{tenantId}/leads */
+export const tenantLeads = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.LEADS);
+
+/** tenants/{tenantId}/demoRequests */
+export const tenantDemoRequests = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.DEMO_REQUESTS);
+
+/** tenants/{tenantId}/scholarshipExams */
+export const tenantScholarshipExams = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.SCHOLARSHIP_EXAMS);
+
+/** tenants/{tenantId}/scholarshipApplications */
+export const tenantScholarshipApplications = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.SCHOLARSHIP_APPLICATIONS);
+
+/** tenants/{tenantId}/settings */
+export const tenantSettings = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.SETTINGS);
+
+/** tenants/{tenantId}/auditLogs */
+export const tenantAuditLogs = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.AUDIT_LOGS);

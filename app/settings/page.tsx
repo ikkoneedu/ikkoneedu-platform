@@ -8,6 +8,7 @@ import { SecuritySettings } from "@/components/settings/SecuritySettings";
 import { AiModelSettings } from "@/components/settings/AiModelSettings";
 import { NotificationSettings } from "@/components/settings/NotificationSettings";
 import { IntegrationSettings } from "@/components/settings/IntegrationSettings";
+import { FirebaseStatusCard } from "@/components/settings/FirebaseStatusCard";
 import { DataBackupSettings } from "@/components/settings/DataBackupSettings";
 import { SystemHealth } from "@/components/settings/SystemHealth";
 import { AuditLog } from "@/components/settings/AuditLog";
@@ -86,7 +87,8 @@ export default function SettingsPage() {
         <section id="bildirimler" className="scroll-mt-32">
           <NotificationSettings channels={notificationChannels} />
         </section>
-        <section id="entegrasyonlar" className="scroll-mt-32">
+        <section id="entegrasyonlar" className="scroll-mt-32 space-y-6">
+          <FirebaseStatusCard />
           <IntegrationSettings integrations={integrations} />
         </section>
         <section id="veri" className="scroll-mt-32">
