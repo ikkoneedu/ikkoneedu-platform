@@ -1,0 +1,115 @@
+rules_version = '2';
+
+// ikkoneedu — Firestore Security Rules
+//
+// Mimari:
+//   users/{uid}                                  → kök kullanıcı profilleri (MVP)
+//   tenants/{tenantId}/...                        → çoklu kiracılık verileri
+//   tenants/{tenantId}/demoRequests              → HALKA AÇIK form (anonim create)
+//   tenants/{tenantId}/scholarshipApplications   → HALKA AÇIK form (anonim create)
+//   tenants/{tenantId}/leads                      → İÇ CRM (yalnızca tenant üyesi)
+//   platform/...                                  → yalnızca SUPER_ADMIN
+//   connectionTests/...                           → firebase-check.mjs (geçici)
+//
+// Yetki kaynağı: kullanıcının users/{uid} profilindeki role + tenantId.
+// (Custom claims'e geçilene kadar Firestore profili kullanılır.)
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---- Yardımcı fonksiyonlar --------------------------------------------
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function hasProfile() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function myProfile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function myRole() {
+      return hasProfile() ? myProfile().role : '';
+    }
+
+    function myTenant() {
+      return hasProfile() ? myProfile().tenantId : '';
+    }
+
+    function isActiveUser() {
+      return hasProfile() && myProfile().status == 'ACTIVE';
+    }
+
+    function isSuperAdmin() {
+      return isActiveUser() && myRole() == 'SUPER_ADMIN';
+    }
+
+    // Kullanıcı bu tenant'a mı ait? (SUPER_ADMIN tüm tenant'lara erişir.)
+    function isTenantMember(tenantId) {
+      return isActiveUser() && (myTenant() == tenantId || isSuperAdmin());
+    }
+
+    // ---- Kök kullanıcı profilleri -----------------------------------------
+    match /users/{uid} {
+      // Kullanıcı kendi profilini okur; SUPER_ADMIN tümünü okur.
+      allow read: if isSelf(uid) || isSuperAdmin();
+
+      // Profil oluşturma/güncelleme yalnızca SUPER_ADMIN'e açıktır.
+      // (Kullanıcının kendi rolünü yükseltmesini engeller.)
+      // İLK admin profili Firebase Console'dan veya kurallar yayınlanmadan
+      // önce scripts/create-admin-profile.mjs ile oluşturulur (bkz. docs).
+      allow create, update: if isSuperAdmin();
+      allow delete: if isSuperAdmin();
+    }
+
+    // ---- Halka açık form gönderimleri (anonim oluşturma) ------------------
+    // Demo talepleri — herkes gönderebilir, yalnızca tenant üyesi okur.
+    match /tenants/{tenantId}/demoRequests/{docId} {
+      allow create: if true;
+      allow read, update, delete: if isTenantMember(tenantId);
+    }
+
+    // Bursluluk başvuruları — herkes gönderebilir, yalnızca tenant üyesi okur.
+    match /tenants/{tenantId}/scholarshipApplications/{docId} {
+      allow create: if true;
+      allow read, update, delete: if isTenantMember(tenantId);
+    }
+
+    // CRM lead — iç kullanım; yalnızca tenant üyesi oluşturur/okur.
+    match /tenants/{tenantId}/leads/{docId} {
+      allow read, write: if isTenantMember(tenantId);
+    }
+
+    // ---- Diğer tüm tenant verileri ----------------------------------------
+    // Öğrenci, öğretmen, veli, duyuru, mesaj, ayar, auditLog vb.
+    match /tenants/{tenantId}/{document=**} {
+      allow read, write: if isTenantMember(tenantId);
+    }
+
+    // ---- Platform geneli yapılandırma -------------------------------------
+    match /platform/{document=**} {
+      allow read: if isActiveUser();
+      allow write: if isSuperAdmin();
+    }
+
+    // ---- Bağlantı testi (firebase-check.mjs) ------------------------------
+    // Anonim yazıma izinli; okuma/temizlik yalnızca SUPER_ADMIN.
+    // Üretimde tamamen kaldırılabilir.
+    match /connectionTests/{docId} {
+      allow create: if true;
+      allow read, delete: if isSuperAdmin();
+    }
+
+    // ---- Varsayılan: her şey kapalı ---------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
