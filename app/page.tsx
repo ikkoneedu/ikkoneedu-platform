@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Sparkles, LogIn } from "lucide-react";
+import { ArrowRight, Sparkles, LogIn, Smartphone } from "lucide-react";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -77,6 +77,21 @@ export default function HomePage() {
             </span>
           </div>
           <div className="flex items-center gap-2">
+            <Link href="/features" className="hidden lg:block">
+              <PrimaryButton variant="ghost" size="sm">
+                Özellikler
+              </PrimaryButton>
+            </Link>
+            <Link href="/pricing" className="hidden lg:block">
+              <PrimaryButton variant="ghost" size="sm">
+                Fiyatlandırma
+              </PrimaryButton>
+            </Link>
+            <Link href="/founder-school" className="hidden lg:block">
+              <PrimaryButton variant="ghost" size="sm">
+                Kurucu Okul
+              </PrimaryButton>
+            </Link>
             <Link href="/login">
               <PrimaryButton variant="ghost" size="sm">
                 Giriş Yap
@@ -221,6 +236,36 @@ export default function HomePage() {
               </Reveal>
             ))}
           </div>
+        </section>
+
+        {/* 5b. Mobil Uygulama Vurgusu */}
+        <section className="py-16 lg:py-20">
+          <Reveal>
+            <GlassCard
+              tone="navy"
+              className="flex flex-col items-center gap-6 px-6 py-12 text-center sm:px-10 lg:flex-row lg:justify-between lg:text-left"
+            >
+              <div className="max-w-xl">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-accent">
+                  <Smartphone size={14} aria-hidden="true" />
+                  Mobil Uygulama
+                </span>
+                <h2 className="mt-4 text-2xl font-bold tracking-tight text-content sm:text-3xl">
+                  Okulunuz Cebinizde
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-muted sm:text-base">
+                  Veli, öğrenci, öğretmen ve yöneticiler için tasarlanmış mobil
+                  deneyim ile okulunuzla ilgili tüm süreçlere her yerden erişin.
+                </p>
+              </div>
+              <Link href="/mobile-app" className="shrink-0">
+                <PrimaryButton size="lg">
+                  Mobil Uygulamayı İncele
+                  <ArrowRight size={18} aria-hidden="true" />
+                </PrimaryButton>
+              </Link>
+            </GlassCard>
+          </Reveal>
         </section>
 
         {/* 6. Son CTA */}

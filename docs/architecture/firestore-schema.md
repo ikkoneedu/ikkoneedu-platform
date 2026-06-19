@@ -32,7 +32,9 @@ tenants/{tenantId}
   ├─ settings/{section}                  # platform | security | ai
   ├─ auditLogs/{logId}
   ├─ aiUsage/{usageId}
-  └─ devices/{deviceId}                   # (alternatif düz cihaz koleksiyonu)
+  ├─ devices/{deviceId}                   # (alternatif düz cihaz koleksiyonu)
+  ├─ counselingSessions/{sessionId}      # rehberlik görüşmeleri (gizli)
+  └─ reportCards/{reportCardId}          # AI karne yorumları
 ```
 
 ## Ortak belge alanları

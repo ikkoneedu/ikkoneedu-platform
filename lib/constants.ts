@@ -23,6 +23,9 @@ import {
   Contact,
   Bell,
   Rocket,
+  ClipboardPen,
+  HeartHandshake,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 
@@ -74,6 +77,9 @@ export const navigationItems: NavigationItem[] = [
   { id: "ogretmenler", label: "Öğretmenler", href: "/teacher", icon: BookOpen },
   { id: "yapay-zeka", label: "AI Brain", href: "/ai-brain", icon: Sparkles },
   { id: "kayit-danismani", label: "AI Kayıt Danışmanı", href: "/admissions-ai", icon: UserPlus },
+  { id: "karne-asistani", label: "AI Karne Asistanı", href: "/report-card-ai", icon: ClipboardPen },
+  { id: "rehberlik", label: "Rehberlik Merkezi", href: "/counseling", icon: HeartHandshake },
+  { id: "finans", label: "Finans Merkezi", href: "/finance", icon: Wallet },
   { id: "crm", label: "CRM", href: "/crm", icon: Contact },
   { id: "messages", label: "Mesajlar", href: "/messages", icon: MessageSquare },
   { id: "bildirimler", label: "Bildirim Merkezi", href: "/notifications", icon: Bell },

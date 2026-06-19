@@ -49,6 +49,8 @@ export const COLLECTIONS = {
   AUDIT_LOGS: "auditLogs",
   AI_USAGE: "aiUsage",
   DEVICES: "devices",
+  COUNSELING_SESSIONS: "counselingSessions",
+  REPORT_CARDS: "reportCards",
 } as const;
 
 export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];
