@@ -1,14 +1,17 @@
 /**
- * Firebase Auth tip hazırlığı.
+ * Firebase Auth tipleri.
  *
- * Bu sürümde gerçek kimlik doğrulama YOKTUR. Tipler, ileride Firebase Auth
- * custom claims ve Firestore kullanıcı belgeleri için sözleşmeyi tanımlar.
+ * Roller `role-constants.ts`'ten gelir (tek doğruluk kaynağı). UserProfile,
+ * Firestore'daki kullanıcı belgesinin sözleşmesidir.
  */
 
 import { ROLES, type Role } from "@/lib/auth/role-constants";
 
 export { ROLES };
 export type { Role };
+
+/** Kullanıcı hesap durumu. */
+export type UserStatus = "active" | "pending" | "suspended";
 
 /**
  * Firebase Auth oturumunun taşıyacağı custom claim'ler (ileride).
@@ -21,19 +24,24 @@ export interface FirebaseAuthClaims {
 }
 
 /**
- * Kullanıcı profili — Firestore `tenants/{tenantId}/users/{uid}` belgesi.
+ * Kullanıcı profili — Firestore `users/{uid}` belgesi (MVP).
+ *
+ * İlk girişte tenantId bilinmediği için profil kök `users/{uid}` belgesinde
+ * tutulur; tenantId/schoolId bu belgeden okunur. Çoklu kiracılık korunur:
+ * tenantId profilde zorunlu bir alandır.
  */
 export interface UserProfile {
   uid: string;
   email: string;
   displayName: string;
-  phone?: string;
   role: Role;
+  /** Kullanıcının bağlı olduğu okul/tenant (çoklu kiracılık anahtarı). */
   tenantId: string;
+  /** Kampüs/şube. */
   schoolId?: string;
+  status: UserStatus;
   /** Veli kullanıcılar için bağlı öğrenci kimlikleri. */
   linkedStudentIds?: string[];
   createdAt: string;
   updatedAt?: string;
-  isActive: boolean;
 }

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { SEO, siteUrl, baseKeywords } from "@/lib/seo/seo";
 import { colors } from "@/lib/constants";
+import { AuthProvider } from "@/components/auth/AuthProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -55,7 +56,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="tr" className="dark">
-      <body className="font-sans antialiased">{children}</body>
+      <body className="font-sans antialiased">
+        <AuthProvider>{children}</AuthProvider>
+      </body>
     </html>
   );
 }

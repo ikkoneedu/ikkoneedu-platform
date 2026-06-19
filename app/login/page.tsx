@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, type FormEvent } from "react";
+import { Suspense, useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import {
   Mail,
@@ -14,11 +14,16 @@ import {
   ShieldCheck,
   GraduationCap,
   BookOpen,
+  AlertCircle,
 } from "lucide-react";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { getUserProfile } from "@/lib/services/user-profile";
+import { getHomeRouteForRole, roleFromQueryParam } from "@/lib/auth/role-routing";
+import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 import { productName, productFullName, tagline } from "@/lib/constants";
 
 const benefits = [
@@ -58,14 +63,50 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const role = searchParams.get("role") ?? "";
   const school = searchParams.get("school") ?? "";
+  const redirectParam = searchParams.get("redirect") ?? "";
+
+  const { signIn, firebaseReady } = useAuth();
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const config = ROLE_CONFIG[role];
   const subtitle = config?.subtitle ?? "Hesabınıza giriş yapın.";
 
-  // Mock giriş: gerçek auth yok. role varsa ilgili panele, yoksa okul seçimine.
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push(config?.target ?? "/school-select");
+    if (submitting) return;
+
+    const data = new FormData(event.currentTarget);
+    const identifier = String(data.get("identifier") ?? "").trim();
+    const password = String(data.get("password") ?? "");
+    const remember = data.get("remember") === "on";
+
+    // Mock Mod: Firebase yapılandırılmamışsa eski mock davranışı korunur.
+    if (!firebaseReady) {
+      router.push(config?.target ?? "/school-select");
+      return;
+    }
+
+    // Bu sürümde yalnızca e-posta/şifre girişi desteklenir.
+    if (!identifier.includes("@")) {
+      setError(
+        "Şimdilik yalnızca e-posta ile giriş yapılabilir. Lütfen e-posta adresinizi girin.",
+      );
+      return;
+    }
+
+    setSubmitting(true);
+    setError(null);
+    try {
+      const user = await signIn(identifier, password, remember);
+      // Profil rolünü oku; yoksa ?role parametresinden yedekle.
+      const profile = await getUserProfile(user.uid);
+      const resolvedRole = profile?.role ?? roleFromQueryParam(role);
+      router.push(redirectParam || getHomeRouteForRole(resolvedRole));
+    } catch (err) {
+      setError(getAuthErrorMessage(err));
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -162,8 +203,20 @@ function LoginContent() {
                 </button>
               </div>
 
-              <PrimaryButton type="submit" size="lg" className="w-full">
-                Giriş Yap
+              {error && (
+                <p className="flex items-center gap-2 rounded-xl border border-brand/30 bg-brand/10 px-4 py-3 text-sm text-brand">
+                  <AlertCircle size={16} aria-hidden="true" />
+                  {error}
+                </p>
+              )}
+
+              <PrimaryButton
+                type="submit"
+                size="lg"
+                className="w-full"
+                disabled={submitting}
+              >
+                {submitting ? "Giriş yapılıyor..." : "Giriş Yap"}
                 <ArrowRight size={18} aria-hidden="true" />
               </PrimaryButton>
             </form>
