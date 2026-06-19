@@ -22,6 +22,7 @@ import {
   UserPlus,
   Contact,
   Bell,
+  Rocket,
   type LucideIcon,
 } from "lucide-react";
 
@@ -65,17 +66,19 @@ export interface NavigationItem {
 /** Ana navigasyon öğeleri — sidebar, topbar ve mobil menüde ortak kullanılır. */
 export const navigationItems: NavigationItem[] = [
   { id: "genel-bakis", label: "Genel Bakış", href: "/", icon: LayoutDashboard },
+  { id: "admin", label: "Yönetim Paneli", href: "/admin", icon: LayoutDashboard },
+  { id: "executive", label: "Executive", href: "/executive", icon: BarChart3 },
   { id: "okullar", label: "Okullar", href: "/school-select", icon: School },
   { id: "ogrenciler", label: "Öğrenciler", href: "/student", icon: GraduationCap },
   { id: "veliler", label: "Veliler", href: "/parent", icon: Users },
-  { id: "mesajlar", label: "Mesajlar", href: "/demo", icon: MessageSquare },
-  { id: "yapay-zeka", label: "Yapay Zeka", href: "/features", icon: Sparkles },
-  { id: "ayarlar", label: "Ayarlar", href: "/admin", icon: Settings },
-  { id: "executive", label: "Executive", href: "/executive", icon: BarChart3 },
+  { id: "ogretmenler", label: "Öğretmenler", href: "/teacher", icon: BookOpen },
+  { id: "yapay-zeka", label: "AI Brain", href: "/ai-brain", icon: Sparkles },
   { id: "kayit-danismani", label: "AI Kayıt Danışmanı", href: "/admissions-ai", icon: UserPlus },
   { id: "crm", label: "CRM", href: "/crm", icon: Contact },
-  { id: "mesajlar", label: "Message Center", href: "/messages", icon: MessageSquare },
+  { id: "messages", label: "Mesajlar", href: "/messages", icon: MessageSquare },
   { id: "bildirimler", label: "Bildirim Merkezi", href: "/notifications", icon: Bell },
+  { id: "demo", label: "Demo Talep", href: "/demo", icon: Rocket },
+  { id: "settings", label: "Ayarlar", href: "/settings", icon: Settings },
   { id: "super-admin", label: "Super Admin", href: "/super-admin", icon: ShieldCheck },
 ];
 
@@ -87,27 +90,27 @@ export const mobileNavigationItems: NavigationItem[] = navigationItems.filter(
 
 /** Yönetim paneli (/admin) kenar çubuğu menüsü. */
 export const adminNavigationItems: NavigationItem[] = [
-  { id: "panel", label: "Panel", href: "#", icon: LayoutDashboard },
-  { id: "akademik", label: "Akademik", href: "#", icon: BookOpen },
-  { id: "ai-zekasi", label: "AI Zekası", href: "#", icon: Brain },
-  { id: "takvim", label: "Takvim", href: "#", icon: CalendarDays },
-  { id: "analizler", label: "Analizler", href: "#", icon: BarChart3 },
-  { id: "yonetim", label: "Yönetim", href: "/admin", icon: Settings },
+  { id: "panel", label: "Panel", href: "/admin", icon: LayoutDashboard },
+  { id: "akademik", label: "Akademik", href: "/teacher", icon: BookOpen },
+  { id: "ai-zekasi", label: "AI Zekası", href: "/ai-brain", icon: Brain },
+  { id: "takvim", label: "Takvim", href: "/scheduler-ai", icon: CalendarDays },
+  { id: "analizler", label: "Analizler", href: "/executive", icon: BarChart3 },
+  { id: "yonetim", label: "Yönetim", href: "/settings", icon: Settings },
 ];
 
 /** Yönetim paneli mobil alt navigasyonu. */
 export const adminMobileNavItems: NavigationItem[] = [
-  { id: "ana-sayfa", label: "Ana Sayfa", href: "#", icon: Home },
-  { id: "ai-brain", label: "AI Brain", href: "#", icon: Bot },
-  { id: "takvim", label: "Takvim", href: "/admin", icon: CalendarDays },
-  { id: "mesajlar", label: "Mesajlar", href: "#", icon: MessageSquare },
-  { id: "profil", label: "Profil", href: "#", icon: User },
+  { id: "ana-sayfa", label: "Ana Sayfa", href: "/admin", icon: Home },
+  { id: "ai-brain", label: "AI Brain", href: "/ai-brain", icon: Bot },
+  { id: "takvim", label: "Takvim", href: "/scheduler-ai", icon: CalendarDays },
+  { id: "mesajlar", label: "Mesajlar", href: "/messages", icon: MessageSquare },
+  { id: "profil", label: "Profil", href: "/settings", icon: User },
 ];
 
 /** Yönetim paneli üst çubuk orta bağlantıları. */
 export const adminTopbarLinks = [
-  { id: "kampus", label: "Kampüs Seçimi", href: "#" },
-  { id: "duyurular", label: "Duyurular", href: "#" },
+  { id: "kampus", label: "Kampüs Seçimi", href: "/school-select" },
+  { id: "duyurular", label: "Duyurular", href: "/notifications" },
 ] as const;
 
 /** Geriye dönük uyumluluk için site bilgisi. */

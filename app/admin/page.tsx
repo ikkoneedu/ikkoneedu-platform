@@ -175,7 +175,7 @@ export default function AdminPage() {
     <div className="mesh-bg min-h-screen w-full lg:pl-64">
       <Sidebar
         items={adminNavigationItems}
-        activeId="yonetim"
+        activeId="panel"
         subtitle="Eğitim İşletim Sistemi"
         footer={<SidebarFooter />}
       />
@@ -242,7 +242,7 @@ export default function AdminPage() {
         </main>
       </div>
 
-      <MobileBottomNav items={adminMobileNavItems} activeId="takvim" />
+      <MobileBottomNav items={adminMobileNavItems} activeId="ana-sayfa" />
     </div>
   );
 }

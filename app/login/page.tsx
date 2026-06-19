@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
 import { motion } from "framer-motion";
@@ -173,12 +174,12 @@ export default function LoginPage() {
 
             <p className="mt-6 text-center text-sm text-muted">
               Okulunuzu sisteme taşımak için{" "}
-              <button
-                type="button"
+              <Link
+                href="/demo"
                 className="font-semibold text-accent transition-colors hover:text-content"
               >
                 demo talep edin
-              </button>
+              </Link>
             </p>
           </GlassCard>
         </motion.section>
