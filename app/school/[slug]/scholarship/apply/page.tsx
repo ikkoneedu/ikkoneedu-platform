@@ -38,7 +38,10 @@ export default async function SchoolScholarshipApplyPage({ params }: PageProps) 
         description="Çocuğunuz için bursluluk ve kabul sınavı başvurusunu birkaç dakika içinde tamamlayın."
         className="mb-10"
       />
-      <ScholarshipApplicationForm />
+      <ScholarshipApplicationForm
+        tenantId={school.tenantId}
+        applicationPrefix={school.applicationPrefix}
+      />
     </SchoolPublicShell>
   );
 }

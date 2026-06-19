@@ -1,27 +1,56 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { CheckCircle2, Send } from "lucide-react";
+import { CheckCircle2, Send, AlertCircle } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { SelectField } from "@/components/shared/SelectField";
+import { createDemoRequest } from "@/lib/services/demo-requests";
 
 interface DemoRequestFormProps {
   institutionTypes: string[];
 }
 
 /**
- * Demo Talep Formu — mock gönderim.
- * Gerçek bir backend/CRM gönderimi yoktur; gönderince başarı durumu gösterilir.
+ * Demo Talep Formu.
+ * Firestore `createDemoRequest` servisine bağlıdır. Firebase env yoksa
+ * mock modda çalışır (Firestore'a yazmaz) ve yine başarı mesajı gösterir.
  */
 export function DemoRequestForm({ institutionTypes }: DemoRequestFormProps) {
   const [submitted, setSubmitted] = useState(false);
   const [accepted, setAccepted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmitted(true);
+    if (!accepted || submitting) return;
+
+    const data = new FormData(event.currentTarget);
+    setSubmitting(true);
+    setError(null);
+
+    const result = await createDemoRequest({
+      institution: String(data.get("institution") ?? ""),
+      fullName: String(data.get("fullname") ?? ""),
+      role: String(data.get("role") ?? ""),
+      phone: String(data.get("phone") ?? ""),
+      email: String(data.get("email") ?? ""),
+      city: String(data.get("city") ?? ""),
+      institutionType: String(data.get("institutionType") ?? ""),
+      studentCount: String(data.get("students") ?? ""),
+      message: String(data.get("message") ?? ""),
+    });
+
+    setSubmitting(false);
+    if (result.ok) {
+      setSubmitted(true);
+    } else {
+      setError(
+        "Talebiniz şu anda gönderilemedi. Lütfen birkaç dakika sonra tekrar deneyin.",
+      );
+    }
   };
 
   if (submitted) {
@@ -31,13 +60,20 @@ export function DemoRequestForm({ institutionTypes }: DemoRequestFormProps) {
           <CheckCircle2 size={28} aria-hidden="true" />
         </span>
         <h3 className="text-xl font-bold tracking-tight text-content">
-          Talebiniz alındı!
+          Demo talebiniz alındı!
         </h3>
         <p className="max-w-sm text-sm text-muted">
           Uzman ekibimiz en kısa sürede sizinle iletişime geçerek okulunuza özel
           bir demo planlayacak.
         </p>
-        <PrimaryButton variant="secondary" size="md" onClick={() => setSubmitted(false)}>
+        <PrimaryButton
+          variant="secondary"
+          size="md"
+          onClick={() => {
+            setSubmitted(false);
+            setAccepted(false);
+          }}
+        >
           Yeni Talep Oluştur
         </PrimaryButton>
       </GlassCard>
@@ -59,7 +95,7 @@ export function DemoRequestForm({ institutionTypes }: DemoRequestFormProps) {
           <TextField label="Telefon" name="phone" type="tel" placeholder="0 5xx xxx xx xx" required />
           <TextField label="E-Posta" name="email" type="email" placeholder="ornek@okul.com" required />
           <TextField label="Şehir" name="city" placeholder="İstanbul" />
-          <SelectField label="Kurum Türü" items={institutionTypes} />
+          <SelectField label="Kurum Türü" name="institutionType" items={institutionTypes} />
           <TextField label="Öğrenci Sayısı" name="students" type="number" placeholder="500" />
         </div>
 
@@ -87,9 +123,21 @@ export function DemoRequestForm({ institutionTypes }: DemoRequestFormProps) {
           <span>KVKK metnini okudum ve kabul ediyorum.</span>
         </label>
 
-        <PrimaryButton type="submit" size="lg" className="w-full" disabled={!accepted}>
+        {error && (
+          <p className="flex items-center gap-2 rounded-xl border border-brand/30 bg-brand/10 px-4 py-3 text-sm text-brand">
+            <AlertCircle size={16} aria-hidden="true" />
+            {error}
+          </p>
+        )}
+
+        <PrimaryButton
+          type="submit"
+          size="lg"
+          className="w-full"
+          disabled={!accepted || submitting}
+        >
           <Send size={18} aria-hidden="true" />
-          Demo Talebi Gönder
+          {submitting ? "Gönderiliyor..." : "Demo Talebi Gönder"}
         </PrimaryButton>
       </form>
     </GlassCard>

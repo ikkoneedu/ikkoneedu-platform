@@ -18,6 +18,7 @@ import {
   MessageCircle,
   PhoneCall,
   CalendarCheck,
+  AlertCircle,
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -29,18 +30,36 @@ import {
   applyExtras,
   sampleApplicationNo,
 } from "@/lib/scholarship-exam-mock-data";
+import {
+  createScholarshipApplication,
+  generateApplicationNo,
+} from "@/lib/services/scholarship-applications";
+
+interface ScholarshipApplicationFormProps {
+  /** Başvurunun bağlı olacağı okul/tenant (okula özel sayfalarda slug resolver'dan gelir). */
+  tenantId?: string;
+  /** Başvuru numarası ön eki (ör. "IKK", "ATA", "DEMO"). */
+  applicationPrefix?: string;
+}
 
 /**
- * Bursluluk Sınavı Başvuru Formu — halka açık (aday veli) mock gönderim.
- * Gerçek backend / Firebase / SMS / captcha yoktur; gönderince başarı ekranı gösterilir.
+ * Bursluluk Sınavı Başvuru Formu — halka açık (aday veli).
+ * Firestore `createScholarshipApplication` servisine bağlıdır. Firebase env
+ * yoksa mock modda çalışır (Firestore'a yazmaz) ve başarı ekranı gösterir.
  */
-export function ScholarshipApplicationForm() {
+export function ScholarshipApplicationForm({
+  tenantId,
+  applicationPrefix = "IKK",
+}: ScholarshipApplicationFormProps = {}) {
   const [submitted, setSubmitted] = useState(false);
   const [consents, setConsents] = useState<boolean[]>(
     applyConsents.map(() => false),
   );
   const [extras, setExtras] = useState<boolean[]>(applyExtras.map(() => false));
   const [copied, setCopied] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [applicationNo, setApplicationNo] = useState(sampleApplicationNo);
 
   const allConsentsAccepted = consents.every(Boolean);
 
@@ -52,16 +71,43 @@ export function ScholarshipApplicationForm() {
     setExtras((prev) => prev.map((v, i) => (i === index ? !v : v)));
   };
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!allConsentsAccepted) return;
-    setSubmitted(true);
+    if (!allConsentsAccepted || submitting) return;
+
+    const data = new FormData(event.currentTarget);
+    const newApplicationNo = generateApplicationNo(applicationPrefix);
+    setSubmitting(true);
+    setError(null);
+
+    const result = await createScholarshipApplication({
+      tenantId,
+      applicationNo: newApplicationNo,
+      studentName: String(data.get("studentName") ?? ""),
+      studentTc: String(data.get("studentTc") ?? ""),
+      birthDate: String(data.get("birthDate") ?? ""),
+      parentName: String(data.get("parentName") ?? ""),
+      parentPhone: String(data.get("parentPhone") ?? ""),
+      parentEmail: String(data.get("parentEmail") ?? ""),
+      district: String(data.get("district") ?? ""),
+      address: String(data.get("address") ?? ""),
+    });
+
+    setSubmitting(false);
+    if (result.ok) {
+      setApplicationNo(newApplicationNo);
+      setSubmitted(true);
+    } else {
+      setError(
+        "Başvurunuz şu anda gönderilemedi. Lütfen birkaç dakika sonra tekrar deneyin.",
+      );
+    }
   };
 
   // Mock kopyalama: gerçek panoya yazma denenir, başarısız olursa sessizce geçilir.
   const handleCopyApplicationNo = async () => {
     try {
-      await navigator.clipboard.writeText(sampleApplicationNo);
+      await navigator.clipboard.writeText(applicationNo);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -70,7 +116,7 @@ export function ScholarshipApplicationForm() {
   };
 
   const handleCopyWhatsApp = async () => {
-    const message = `Bursluluk Sınavı başvurunuz alınmıştır. Başvuru No: ${sampleApplicationNo}. Sınav giriş belgenizi sistemden görüntüleyebilirsiniz.`;
+    const message = `Bursluluk Sınavı başvurunuz alınmıştır. Başvuru No: ${applicationNo}. Sınav giriş belgenizi sistemden görüntüleyebilirsiniz.`;
     try {
       await navigator.clipboard.writeText(message);
     } catch {
@@ -101,7 +147,7 @@ export function ScholarshipApplicationForm() {
           </p>
           <div className="mt-2 flex items-center justify-center gap-3">
             <span className="select-all text-2xl font-bold tracking-tight text-accent sm:text-3xl">
-              {sampleApplicationNo}
+              {applicationNo}
             </span>
             <button
               type="button"
@@ -317,14 +363,21 @@ export function ScholarshipApplicationForm() {
         </div>
       </GlassCard>
 
+      {error && (
+        <p className="flex items-center gap-2 rounded-xl border border-brand/30 bg-brand/10 px-4 py-3 text-sm text-brand">
+          <AlertCircle size={16} aria-hidden="true" />
+          {error}
+        </p>
+      )}
+
       <PrimaryButton
         type="submit"
         size="lg"
         className="w-full"
-        disabled={!allConsentsAccepted}
+        disabled={!allConsentsAccepted || submitting}
       >
         <Send size={18} aria-hidden="true" />
-        Başvuruyu Gönder
+        {submitting ? "Gönderiliyor..." : "Başvuruyu Gönder"}
       </PrimaryButton>
       {!allConsentsAccepted && (
         <p className="text-center text-xs text-muted">
