@@ -11,7 +11,7 @@ export { ROLES };
 export type { Role };
 
 /** Kullanıcı hesap durumu. */
-export type UserStatus = "active" | "pending" | "suspended";
+export type UserStatus = "ACTIVE" | "PENDING" | "SUSPENDED";
 
 /**
  * Firebase Auth oturumunun taşıyacağı custom claim'ler (ileride).

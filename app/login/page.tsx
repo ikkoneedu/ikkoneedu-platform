@@ -22,7 +22,7 @@ import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { getUserProfile } from "@/lib/services/user-profile";
-import { getHomeRouteForRole, roleFromQueryParam } from "@/lib/auth/role-routing";
+import { getHomeRouteForRole } from "@/lib/auth/role-routing";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 import { productName, productFullName, tagline } from "@/lib/constants";
 
@@ -65,7 +65,7 @@ function LoginContent() {
   const school = searchParams.get("school") ?? "";
   const redirectParam = searchParams.get("redirect") ?? "";
 
-  const { signIn, firebaseReady } = useAuth();
+  const { signIn, signOut, firebaseReady } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -99,10 +99,21 @@ function LoginContent() {
     setError(null);
     try {
       const user = await signIn(identifier, password, remember);
-      // Profil rolünü oku; yoksa ?role parametresinden yedekle.
+      // Firestore users/{uid} profilini oku (role, tenantId, schoolId).
       const profile = await getUserProfile(user.uid);
-      const resolvedRole = profile?.role ?? roleFromQueryParam(role);
-      router.push(redirectParam || getHomeRouteForRole(resolvedRole));
+
+      // Profil yoksa: girişi sonlandır ve yetki mesajı göster.
+      if (!profile) {
+        await signOut();
+        setError(
+          "Yetki profiliniz bulunamadı. Lütfen sistem yöneticisiyle iletişime geçin.",
+        );
+        setSubmitting(false);
+        return;
+      }
+
+      // Role göre yönlendir (redirect parametresi varsa ona öncelik ver).
+      router.push(redirectParam || getHomeRouteForRole(profile.role));
     } catch (err) {
       setError(getAuthErrorMessage(err));
       setSubmitting(false);
