@@ -1,0 +1,124 @@
+"use client";
+
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  type ReactNode,
+} from "react";
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut as firebaseSignOut,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
+  type User,
+} from "firebase/auth";
+import { auth, isFirebaseConfigured } from "@/lib/firebase/client";
+import { getUserProfile } from "@/lib/services/user-profile";
+import type { UserProfile } from "@/lib/auth/firebase-auth-types";
+
+interface AuthContextValue {
+  /** Firebase Auth kullanıcısı (oturum yoksa null). */
+  user: User | null;
+  /** Firestore `users/{uid}` profili (yoksa null — graceful fallback). */
+  profile: UserProfile | null;
+  /** Oturum durumu henüz çözülmedi mi? */
+  loading: boolean;
+  /** Oturum açık mı? */
+  isAuthenticated: boolean;
+  /** Firebase env tanımlı mı (Mock Mod değil mi)? */
+  firebaseReady: boolean;
+  signIn: (
+    email: string,
+    password: string,
+    remember?: boolean,
+  ) => Promise<User>;
+  signOut: () => Promise<void>;
+  refreshProfile: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+
+/**
+ * Uygulama geneli kimlik doğrulama sağlayıcısı.
+ * Firebase oturumunu `onAuthStateChanged` ile dinler ve kullanıcı geldiğinde
+ * Firestore profilini okur. Firebase yapılandırılmamışsa (Mock Mod) pasif kalır.
+ */
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const refreshProfile = useCallback(async () => {
+    if (!user) {
+      setProfile(null);
+      return;
+    }
+    setProfile(await getUserProfile(user.uid));
+  }, [user]);
+
+  // Firebase oturum durumunu dinle.
+  useEffect(() => {
+    if (!isFirebaseConfigured() || !auth) {
+      setLoading(false);
+      return;
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      setUser(firebaseUser);
+      // Kullanıcı geldiyse profilini oku (yoksa null kalır — fallback).
+      setProfile(firebaseUser ? await getUserProfile(firebaseUser.uid) : null);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const signIn = useCallback(
+    async (email: string, password: string, remember = true) => {
+      if (!isFirebaseConfigured() || !auth) {
+        throw new Error(
+          "Firebase yapılandırılmamış. Giriş için ortam değişkenlerini ayarlayın.",
+        );
+      }
+      await setPersistence(
+        auth,
+        remember ? browserLocalPersistence : browserSessionPersistence,
+      );
+      const credential = await signInWithEmailAndPassword(auth, email, password);
+      return credential.user;
+    },
+    [],
+  );
+
+  const signOut = useCallback(async () => {
+    if (!auth) return;
+    await firebaseSignOut(auth);
+  }, []);
+
+  const value: AuthContextValue = {
+    user,
+    profile,
+    loading,
+    isAuthenticated: Boolean(user),
+    firebaseReady: isFirebaseConfigured(),
+    signIn,
+    signOut,
+    refreshProfile,
+  };
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+/** AuthProvider içinden kimlik doğrulama durumuna erişir. */
+export function useAuth(): AuthContextValue {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth, AuthProvider içinde kullanılmalıdır.");
+  }
+  return context;
+}

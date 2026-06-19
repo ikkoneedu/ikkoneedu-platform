@@ -75,6 +75,17 @@ export function tenantPath(tenantId: string, collection: CollectionName): string
 /*  Kullanım: collection(db, tenantLeads(tenantId))                           */
 /* -------------------------------------------------------------------------- */
 
+/**
+ * Kök kullanıcı profili koleksiyonu: `users`.
+ * MVP'de ilk girişte tenantId bilinmediği için kullanıcı profili kök
+ * `users/{uid}` belgesinde tutulur (tenantId/schoolId bu belgeden okunur).
+ */
+export const usersRoot = (): string => COLLECTIONS.USERS;
+
+/** Kök kullanıcı profil belgesi: `users/{uid}` */
+export const userProfileDoc = (uid: string): string =>
+  `${COLLECTIONS.USERS}/${uid}`;
+
 /** Platform yapılandırma belgesi: platform/config */
 export const platformConfig = (): string => PLATFORM.CONFIG;
 
