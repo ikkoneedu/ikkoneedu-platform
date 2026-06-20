@@ -34,6 +34,8 @@ export interface UserProfile {
   uid: string;
   email: string;
   displayName: string;
+  /** İletişim telefonu (kullanıcı kendi günceller). */
+  phone?: string;
   role: Role;
   /** Kullanıcının bağlı olduğu okul/tenant (çoklu kiracılık anahtarı). */
   tenantId: string;

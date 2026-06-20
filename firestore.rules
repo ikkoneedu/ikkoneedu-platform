@@ -105,9 +105,16 @@ service cloud.firestore {
           && request.resource.data.tenantId == myTenant()
         );
 
-      // Güncelleme/silme yalnızca SUPER_ADMIN.
-      // (PUBLIC kullanıcı kendi rolünü/tenant'ını değiştiremez.)
-      allow update, delete: if isSuperAdmin();
+      // Güncelleme: SUPER_ADMIN her şeyi; kullanıcı kendi profilini güncelleyebilir
+      // ANCAK rol/tenant/status'ü değiştiremez.
+      allow update: if isSuperAdmin()
+        || (
+          isSelf(uid)
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.tenantId == resource.data.tenantId
+          && request.resource.data.status == resource.data.status
+        );
+      allow delete: if isSuperAdmin();
     }
 
     // ---- Halka açık form gönderimleri (anonim oluşturma) ------------------

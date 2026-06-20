@@ -23,6 +23,7 @@ export const PUBLIC_ROUTES: string[] = [
   "/login",
   "/register",
   "/code-login",
+  "/profile",
   "/school-select",
   "/scholarship-exam/apply",
   "/scholarship-exam/admission-card",

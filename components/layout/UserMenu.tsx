@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -39,20 +40,22 @@ export function UserMenu() {
 
   return (
     <div className="flex items-center gap-2">
-      <div className="hidden text-right sm:block">
-        <p className="text-sm font-medium leading-tight text-content">
-          {profile.displayName || "Kullanıcı"}
-        </p>
-        <p className="text-[11px] leading-tight text-muted">
-          {ROLE_LABELS[profile.role] ?? profile.role}
-        </p>
-      </div>
-      <div
-        aria-hidden="true"
-        className="flex h-9 w-9 items-center justify-center rounded-full border border-accent/20 bg-navy text-xs font-semibold text-accent"
-      >
-        {initials(profile.displayName || "")}
-      </div>
+      <Link href="/profile" className="flex items-center gap-2" aria-label="Profilim">
+        <div className="hidden text-right sm:block">
+          <p className="text-sm font-medium leading-tight text-content">
+            {profile.displayName || "Kullanıcı"}
+          </p>
+          <p className="text-[11px] leading-tight text-muted">
+            {ROLE_LABELS[profile.role] ?? profile.role}
+          </p>
+        </div>
+        <div
+          aria-hidden="true"
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-accent/20 bg-navy text-xs font-semibold text-accent transition-colors hover:border-accent/50"
+        >
+          {initials(profile.displayName || "")}
+        </div>
+      </Link>
       <button
         type="button"
         onClick={handleSignOut}

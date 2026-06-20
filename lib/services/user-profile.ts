@@ -6,7 +6,7 @@
  * varsayılanlarla devam eder.
  */
 
-import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { userProfileDoc } from "@/lib/firebase/collections";
 import { ROLES } from "@/lib/auth/role-constants";
@@ -29,6 +29,23 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   } catch {
     return null;
   }
+}
+
+/**
+ * Kullanıcının kendi profilinde güvenli alanları (ad, telefon) günceller.
+ * Rol/tenant/status değiştirilemez (güvenlik kuralları da zorunlu kılar).
+ */
+export async function updateMyProfile(
+  uid: string,
+  fields: { displayName?: string; phone?: string },
+): Promise<void> {
+  if (!isFirebaseConfigured() || !db) {
+    throw new Error("Firebase yapılandırılmamış.");
+  }
+  const data: Record<string, unknown> = { updatedAt: serverTimestamp() };
+  if (fields.displayName !== undefined) data.displayName = fields.displayName;
+  if (fields.phone !== undefined) data.phone = fields.phone;
+  await updateDoc(doc(db, userProfileDoc(uid)), data);
 }
 
 /**
