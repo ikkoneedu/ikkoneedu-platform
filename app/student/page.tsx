@@ -21,6 +21,7 @@ import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { StudentProfileCard } from "@/components/student/StudentProfileCard";
 import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
+import { AssignmentBoard } from "@/components/assignments/AssignmentBoard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { Reveal } from "@/components/landing/Reveal";
@@ -111,6 +112,9 @@ export default function StudentPage() {
 
         {/* Okul duyuruları (canlı) */}
         <AnnouncementBoard />
+
+        {/* Ödevler (canlı) */}
+        <AssignmentBoard />
 
         {/* 1. Günlük Program */}
         <Reveal>

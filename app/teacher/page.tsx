@@ -11,6 +11,7 @@ import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { TeacherRoster } from "@/components/teacher/TeacherRoster";
 import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
+import { AssignmentBoard } from "@/components/assignments/AssignmentBoard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TeacherSchedule } from "@/components/teacher/TeacherSchedule";
@@ -60,6 +61,9 @@ export default function TeacherPage() {
 
         {/* Duyuru panosu (canlı) */}
         <AnnouncementBoard />
+
+        {/* Ödev panosu (canlı) */}
+        <AssignmentBoard />
 
         {/* 2. Günlük Ders Programı */}
         <section>
