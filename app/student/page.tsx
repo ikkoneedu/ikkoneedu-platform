@@ -24,6 +24,7 @@ import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard"
 import { AssignmentBoard } from "@/components/assignments/AssignmentBoard";
 import { MessagingPanel } from "@/components/messaging/MessagingPanel";
 import { GradeBoard } from "@/components/grades/GradeBoard";
+import { ScheduleBoard } from "@/components/schedule/ScheduleBoard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { Reveal } from "@/components/landing/Reveal";
@@ -123,6 +124,9 @@ export default function StudentPage() {
 
         {/* Notlar (canlı) */}
         <GradeBoard />
+
+        {/* Ders programı (canlı) */}
+        <ScheduleBoard />
 
         {/* 1. Günlük Program */}
         <Reveal>
