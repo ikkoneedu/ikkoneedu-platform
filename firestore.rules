@@ -66,11 +66,20 @@ service cloud.firestore {
         && myProfile().linkedStudentIds.hasAny([studentUid]);
     }
 
-    // Okul personeli: öğretmen/müdür/okul yöneticisi.
+    // Okul personeli: tenant verisine yazabilen kadro.
     function isStaff() {
       return isActiveUser()
         && (myRole() == 'TEACHER' || myRole() == 'PRINCIPAL'
-            || myRole() == 'SCHOOL_ADMIN' || myRole() == 'SUPER_ADMIN');
+            || myRole() == 'VICE_PRINCIPAL' || myRole() == 'COORDINATOR'
+            || myRole() == 'SCHOOL_ADMIN' || myRole() == 'FOUNDER'
+            || myRole() == 'SUPER_ADMIN');
+    }
+
+    // Okul yönetimi: personel hesabı oluşturabilen üst kadro.
+    function isSchoolManager() {
+      return isActiveUser()
+        && (myRole() == 'SCHOOL_ADMIN' || myRole() == 'FOUNDER'
+            || myRole() == 'SUPER_ADMIN');
     }
 
     // Kullanıcı bu tenant'a mı ait? (SUPER_ADMIN tüm tenant'lara erişir.)
@@ -105,11 +114,14 @@ service cloud.firestore {
           && request.resource.data.tenantId == myTenant()
         )
         || (
-          // Okul yöneticisi kendi tenant'ında öğretmen/müdür oluşturabilir.
-          isActiveUser()
-          && (myRole() == 'SCHOOL_ADMIN' || myRole() == 'SUPER_ADMIN')
+          // Okul yönetimi (kurucu/okul yöneticisi) kendi tenant'ında personel
+          // hesabı oluşturabilir: müdür, müdür yrd., koordinatör, öğretmen, PR.
+          isSchoolManager()
           && (request.resource.data.role == 'TEACHER'
-              || request.resource.data.role == 'PRINCIPAL')
+              || request.resource.data.role == 'PRINCIPAL'
+              || request.resource.data.role == 'VICE_PRINCIPAL'
+              || request.resource.data.role == 'COORDINATOR'
+              || request.resource.data.role == 'PR')
           && request.resource.data.tenantId == myTenant()
         );
 

@@ -23,7 +23,12 @@ import { getSecondaryAuth } from "@/lib/firebase/secondary-app";
 import { userProfileDoc, usersRoot } from "@/lib/firebase/collections";
 import { ROLES, type Role } from "@/lib/auth/role-constants";
 
-export type StaffRole = typeof ROLES.TEACHER | typeof ROLES.PRINCIPAL;
+export type StaffRole =
+  | typeof ROLES.TEACHER
+  | typeof ROLES.PRINCIPAL
+  | typeof ROLES.VICE_PRINCIPAL
+  | typeof ROLES.COORDINATOR
+  | typeof ROLES.PR;
 
 const PASSWORD_ALPHABET =
   "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";

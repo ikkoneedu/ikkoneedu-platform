@@ -8,8 +8,12 @@ import { ROLES, type Role } from "@/lib/auth/role-constants";
 /** Rol → açılış route'u. */
 export const ROLE_HOME_ROUTE: Record<Role, string> = {
   [ROLES.SUPER_ADMIN]: "/super-admin",
+  [ROLES.FOUNDER]: "/admin",
   [ROLES.SCHOOL_ADMIN]: "/admin",
   [ROLES.PRINCIPAL]: "/admin",
+  [ROLES.VICE_PRINCIPAL]: "/admin",
+  [ROLES.COORDINATOR]: "/teacher",
+  [ROLES.PR]: "/crm",
   [ROLES.TEACHER]: "/teacher",
   [ROLES.PARENT]: "/parent",
   [ROLES.STUDENT]: "/student",

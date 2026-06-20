@@ -13,7 +13,9 @@ import { listLeads, type LeadRecord } from "@/lib/services/leads";
 
 const STAFF_ROLES = [
   ROLES.SCHOOL_ADMIN,
+  ROLES.FOUNDER,
   ROLES.PRINCIPAL,
+  ROLES.PR,
   ROLES.SALES,
   ROLES.SUPER_ADMIN,
 ] as const;

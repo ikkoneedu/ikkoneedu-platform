@@ -17,8 +17,11 @@ import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const STAFF_ROLES = [
   ROLES.TEACHER,
+  ROLES.COORDINATOR,
   ROLES.PRINCIPAL,
+  ROLES.VICE_PRINCIPAL,
   ROLES.SCHOOL_ADMIN,
+  ROLES.FOUNDER,
   ROLES.SUPER_ADMIN,
 ] as const;
 

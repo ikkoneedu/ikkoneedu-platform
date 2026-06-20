@@ -29,7 +29,7 @@ import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
  */
 export function StaffManager() {
   const { user, profile, firebaseReady, loading } = useAuth();
-  const canCreate = useHasRole([ROLES.SCHOOL_ADMIN, ROLES.SUPER_ADMIN]);
+  const canCreate = useHasRole([ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.SUPER_ADMIN]);
   const tenantId = profile?.tenantId;
   const adminUid = user?.uid;
   const ready = firebaseReady && Boolean(tenantId) && Boolean(adminUid);
@@ -144,6 +144,9 @@ export function StaffManager() {
               >
                 <option value={ROLES.TEACHER} className="bg-surface">{ROLE_LABELS.TEACHER}</option>
                 <option value={ROLES.PRINCIPAL} className="bg-surface">{ROLE_LABELS.PRINCIPAL}</option>
+                <option value={ROLES.VICE_PRINCIPAL} className="bg-surface">{ROLE_LABELS.VICE_PRINCIPAL}</option>
+                <option value={ROLES.COORDINATOR} className="bg-surface">{ROLE_LABELS.COORDINATOR}</option>
+                <option value={ROLES.PR} className="bg-surface">{ROLE_LABELS.PR}</option>
               </select>
             </div>
             <PrimaryButton type="submit" size="md" disabled={busy}>

@@ -17,7 +17,9 @@ export function TenantOverview() {
   const tenantId = profile?.tenantId;
   const isStaff =
     profile?.role === ROLES.SCHOOL_ADMIN ||
+    profile?.role === ROLES.FOUNDER ||
     profile?.role === ROLES.PRINCIPAL ||
+    profile?.role === ROLES.VICE_PRINCIPAL ||
     profile?.role === ROLES.SUPER_ADMIN;
 
   const [counts, setCounts] = useState<{
