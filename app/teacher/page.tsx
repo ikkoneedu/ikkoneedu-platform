@@ -10,6 +10,7 @@ import {
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { TeacherRoster } from "@/components/teacher/TeacherRoster";
+import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TeacherSchedule } from "@/components/teacher/TeacherSchedule";
@@ -56,6 +57,9 @@ export default function TeacherPage() {
 
         {/* Canlı sınıf listesi (gerçek Firestore — yalnızca giriş yapmış öğretmende) */}
         <TeacherRoster />
+
+        {/* Duyuru panosu (canlı) */}
+        <AnnouncementBoard />
 
         {/* 2. Günlük Ders Programı */}
         <section>

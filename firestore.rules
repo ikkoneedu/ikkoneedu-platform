@@ -123,8 +123,11 @@ service cloud.firestore {
 
     // ---- Diğer tüm tenant verileri ----------------------------------------
     // Öğrenci, öğretmen, veli, duyuru, mesaj, ayar, auditLog vb.
+    // Okuma: tenant üyesi (öğrenci/veli dahil). Yazma: yalnızca personel
+    // (öğrenci/veli tenant verisine yazamaz — ör. duyuru oluşturamaz).
     match /tenants/{tenantId}/{document=**} {
-      allow read, write: if isTenantMember(tenantId);
+      allow read: if isTenantMember(tenantId);
+      allow write: if isStaff() && myTenant() == tenantId;
     }
 
     // ---- Platform geneli yapılandırma -------------------------------------

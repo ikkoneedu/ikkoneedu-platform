@@ -13,6 +13,7 @@ import {
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { ParentChildCard } from "@/components/parent/ParentChildCard";
+import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
 import { StatCard } from "@/components/shared/StatCard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -53,6 +54,9 @@ export default function ParentPage() {
 
         {/* Canlı bağlı öğrenci (gerçek Firestore — yalnızca giriş yapmış velide) */}
         <ParentChildCard />
+
+        {/* Okul duyuruları (canlı) */}
+        <AnnouncementBoard />
 
         {/* 1. Öğrenci Seçimi */}
         <StudentSwitcher students={parentStudents} />
