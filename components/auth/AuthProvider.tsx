@@ -11,6 +11,8 @@ import {
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
   signOut as firebaseSignOut,
   setPersistence,
   browserLocalPersistence,
@@ -18,7 +20,10 @@ import {
   type User,
 } from "firebase/auth";
 import { auth, isFirebaseConfigured } from "@/lib/firebase/client";
-import { getUserProfile } from "@/lib/services/user-profile";
+import {
+  getUserProfile,
+  createPublicUserProfile,
+} from "@/lib/services/user-profile";
 import type { UserProfile } from "@/lib/auth/firebase-auth-types";
 
 interface AuthContextValue {
@@ -36,6 +41,12 @@ interface AuthContextValue {
     email: string,
     password: string,
     remember?: boolean,
+  ) => Promise<User>;
+  /** Halk (genel kullanıcı) açık kaydı: hesap + PUBLIC profil oluşturur. */
+  signUpPublic: (
+    email: string,
+    password: string,
+    displayName: string,
   ) => Promise<User>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
@@ -100,6 +111,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await firebaseSignOut(auth);
   }, []);
 
+  const signUpPublic = useCallback(
+    async (email: string, password: string, displayName: string) => {
+      if (!isFirebaseConfigured() || !auth) {
+        throw new Error(
+          "Firebase yapılandırılmamış. Kayıt için ortam değişkenlerini ayarlayın.",
+        );
+      }
+      const credential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
+      const newUser = credential.user;
+      if (displayName) {
+        await updateProfile(newUser, { displayName });
+      }
+      // PUBLIC rolüyle Firestore profili oluştur (yetki yükseltme yok).
+      await createPublicUserProfile(newUser.uid, email, displayName);
+      // Profili yerelde hemen yansıt.
+      setProfile(await getUserProfile(newUser.uid));
+      return newUser;
+    },
+    [],
+  );
+
   const value: AuthContextValue = {
     user,
     profile,
@@ -107,6 +143,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: Boolean(user),
     firebaseReady: isFirebaseConfigured(),
     signIn,
+    signUpPublic,
     signOut,
     refreshProfile,
   };

@@ -256,6 +256,12 @@ function LoginContent() {
             </div>
 
             <p className="mt-6 text-center text-sm text-muted">
+              Aday veli misiniz?{" "}
+              <Link href="/register" className="font-semibold text-accent transition-colors hover:text-content">
+                Hesap oluşturun
+              </Link>
+            </p>
+            <p className="mt-2 text-center text-sm text-muted">
               Okulunuzu sisteme taşımak için{" "}
               <Link href="/demo" className="font-semibold text-accent transition-colors hover:text-content">
                 demo talep edin

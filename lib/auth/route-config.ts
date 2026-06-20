@@ -21,6 +21,7 @@ export const PUBLIC_ROUTES: string[] = [
   "/founder-school",
   "/mobile-app",
   "/login",
+  "/register",
   "/school-select",
   "/scholarship-exam/apply",
   "/scholarship-exam/admission-card",
@@ -39,6 +40,7 @@ export const PUBLIC_PREFIXES: string[] = [
  */
 export const PROTECTED_PREFIXES: string[] = [
   "/admin",
+  "/portal",
   "/teacher",
   "/parent",
   "/student",
@@ -61,17 +63,19 @@ export const PROTECTED_PREFIXES: string[] = [
 
 /** Korumalı route → bu route'a erişebilecek roller. */
 export const ROUTE_ROLES: Record<string, Role[]> = {
-  "/admin": [ROLES.SCHOOL_ADMIN, ROLES.SUPER_ADMIN],
-  "/teacher": [ROLES.TEACHER, ROLES.SCHOOL_ADMIN, ROLES.SUPER_ADMIN],
+  "/admin": [ROLES.SCHOOL_ADMIN, ROLES.PRINCIPAL, ROLES.SUPER_ADMIN],
+  "/portal": [ROLES.PUBLIC, ROLES.SUPER_ADMIN],
+  "/teacher": [ROLES.TEACHER, ROLES.SCHOOL_ADMIN, ROLES.PRINCIPAL, ROLES.SUPER_ADMIN],
   "/parent": [ROLES.PARENT, ROLES.SUPER_ADMIN],
   "/student": [ROLES.STUDENT, ROLES.SUPER_ADMIN],
   "/super-admin": [ROLES.SUPER_ADMIN],
   "/saas-admin": [ROLES.SUPER_ADMIN],
   "/settings": [ROLES.SUPER_ADMIN, ROLES.SCHOOL_ADMIN],
-  "/executive": [ROLES.SUPER_ADMIN, ROLES.SCHOOL_ADMIN],
-  "/crm": [ROLES.SCHOOL_ADMIN, ROLES.SALES, ROLES.SUPER_ADMIN],
+  "/executive": [ROLES.SUPER_ADMIN, ROLES.SCHOOL_ADMIN, ROLES.PRINCIPAL],
+  // Finans/ekonomik panel — Müdür (PRINCIPAL) HARİÇ.
   "/finance": [ROLES.SCHOOL_ADMIN, ROLES.SUPER_ADMIN],
-  "/counseling": [ROLES.SCHOOL_ADMIN, ROLES.TEACHER, ROLES.SUPER_ADMIN],
+  "/crm": [ROLES.SCHOOL_ADMIN, ROLES.PRINCIPAL, ROLES.SALES, ROLES.SUPER_ADMIN],
+  "/counseling": [ROLES.SCHOOL_ADMIN, ROLES.PRINCIPAL, ROLES.TEACHER, ROLES.SUPER_ADMIN],
 };
 
 function matchesPrefix(pathname: string, prefix: string): boolean {

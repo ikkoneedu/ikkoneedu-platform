@@ -6,10 +6,14 @@
  * varsayılanlarla devam eder.
  */
 
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { userProfileDoc } from "@/lib/firebase/collections";
+import { ROLES } from "@/lib/auth/role-constants";
 import type { UserProfile } from "@/lib/auth/firebase-auth-types";
+
+/** Halk (genel kullanıcı) kayıtlarının bağlandığı sözde-tenant. */
+export const PUBLIC_TENANT_ID = "public";
 
 /**
  * `users/{uid}` profilini okur. Profil yoksa veya Firebase yapılandırılmamışsa
@@ -25,4 +29,28 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
   } catch {
     return null;
   }
+}
+
+/**
+ * Halk (genel kullanıcı) için `users/{uid}` profil belgesi oluşturur.
+ * Yalnızca PUBLIC rolü + public tenant ile yazılır (yetki yükseltme yok).
+ * Güvenlik kuralları bu kısıtı zorunlu kılar.
+ */
+export async function createPublicUserProfile(
+  uid: string,
+  email: string,
+  displayName: string,
+): Promise<void> {
+  if (!isFirebaseConfigured() || !db) return;
+  await setDoc(doc(db, userProfileDoc(uid)), {
+    uid,
+    email,
+    displayName,
+    role: ROLES.PUBLIC,
+    tenantId: PUBLIC_TENANT_ID,
+    schoolId: PUBLIC_TENANT_ID,
+    status: "ACTIVE",
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
 }

@@ -61,12 +61,20 @@ service cloud.firestore {
       // Kullanıcı kendi profilini okur; SUPER_ADMIN tümünü okur.
       allow read: if isSelf(uid) || isSuperAdmin();
 
-      // Profil oluşturma/güncelleme yalnızca SUPER_ADMIN'e açıktır.
-      // (Kullanıcının kendi rolünü yükseltmesini engeller.)
-      // İLK admin profili Firebase Console'dan veya kurallar yayınlanmadan
-      // önce scripts/create-admin-profile.mjs ile oluşturulur (bkz. docs).
-      allow create, update: if isSuperAdmin();
-      allow delete: if isSuperAdmin();
+      // Halk (genel kullanıcı) açık kaydı: kullanıcı YALNIZCA kendi belgesini
+      // ve YALNIZCA PUBLIC rol + public tenant ile oluşturabilir
+      // (yetki yükseltmeyi önler). Diğer tüm profilleri SUPER_ADMIN oluşturur.
+      allow create: if isSuperAdmin()
+        || (
+          isSelf(uid)
+          && request.resource.data.role == 'PUBLIC'
+          && request.resource.data.tenantId == 'public'
+          && request.resource.data.status == 'ACTIVE'
+        );
+
+      // Güncelleme/silme yalnızca SUPER_ADMIN.
+      // (PUBLIC kullanıcı kendi rolünü/tenant'ını değiştiremez.)
+      allow update, delete: if isSuperAdmin();
     }
 
     // ---- Halka açık form gönderimleri (anonim oluşturma) ------------------

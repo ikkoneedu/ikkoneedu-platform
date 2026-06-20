@@ -19,6 +19,15 @@ export const PERMISSIONS = {
   SETTINGS_READ: "settings:read",
   SETTINGS_WRITE: "settings:write",
   PLATFORM_MANAGE: "platform:manage",
+  /** Finans/ekonomik veriler (tahsilat, gelir). Müdür (PRINCIPAL) GÖRMEZ. */
+  FINANCE_READ: "finance:read",
+  FINANCE_WRITE: "finance:write",
+  /** CRM / aday veli yönetimi. */
+  CRM_READ: "crm:read",
+  CRM_WRITE: "crm:write",
+  /** Ders programı yönetimi. */
+  SCHEDULE_READ: "schedule:read",
+  SCHEDULE_WRITE: "schedule:write",
 } as const;
 
 export type Permission = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];

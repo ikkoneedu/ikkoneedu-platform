@@ -9,11 +9,13 @@ import { ROLES, type Role } from "@/lib/auth/role-constants";
 export const ROLE_HOME_ROUTE: Record<Role, string> = {
   [ROLES.SUPER_ADMIN]: "/super-admin",
   [ROLES.SCHOOL_ADMIN]: "/admin",
+  [ROLES.PRINCIPAL]: "/admin",
   [ROLES.TEACHER]: "/teacher",
   [ROLES.PARENT]: "/parent",
   [ROLES.STUDENT]: "/student",
   [ROLES.SALES]: "/crm",
   [ROLES.SUPPORT]: "/messages",
+  [ROLES.PUBLIC]: "/portal",
 };
 
 /** Rol bilinmiyorsa güvenli varsayılan. */
