@@ -12,6 +12,7 @@ import { SectionHeader } from "@/components/shared/SectionHeader";
 import { TeacherRoster } from "@/components/teacher/TeacherRoster";
 import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
 import { AssignmentBoard } from "@/components/assignments/AssignmentBoard";
+import { MessagingPanel } from "@/components/messaging/MessagingPanel";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TeacherSchedule } from "@/components/teacher/TeacherSchedule";
@@ -64,6 +65,9 @@ export default function TeacherPage() {
 
         {/* Ödev panosu (canlı) */}
         <AssignmentBoard />
+
+        {/* Mesajlaşma (canlı) */}
+        <MessagingPanel />
 
         {/* 2. Günlük Ders Programı */}
         <section>

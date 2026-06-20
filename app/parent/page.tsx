@@ -15,6 +15,7 @@ import { SectionHeader } from "@/components/shared/SectionHeader";
 import { ParentChildCard } from "@/components/parent/ParentChildCard";
 import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
 import { AssignmentBoard } from "@/components/assignments/AssignmentBoard";
+import { MessagingPanel } from "@/components/messaging/MessagingPanel";
 import { StatCard } from "@/components/shared/StatCard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -61,6 +62,9 @@ export default function ParentPage() {
 
         {/* Ödevler (canlı) */}
         <AssignmentBoard />
+
+        {/* Mesajlaşma (canlı) */}
+        <MessagingPanel />
 
         {/* 1. Öğrenci Seçimi */}
         <StudentSwitcher students={parentStudents} />

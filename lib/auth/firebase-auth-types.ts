@@ -46,6 +46,8 @@ export interface UserProfile {
   className?: string;
   /** Öğretmenin oluşturduğu kullanıcıyı (öğrenci/veli) üreten öğretmenin uid'i. */
   createdBy?: string;
+  /** Oluşturan öğretmenin adı (denormalize — mesajlaşma kontağı için). */
+  createdByName?: string;
   /** Veli kullanıcılar için bağlı öğrenci kimlikleri. */
   linkedStudentIds?: string[];
   /** Bağlı öğrenci özetleri (denormalize — veli panelinde gösterim için). */

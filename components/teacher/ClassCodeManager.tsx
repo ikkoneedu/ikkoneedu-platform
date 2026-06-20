@@ -129,6 +129,7 @@ export function ClassCodeManager() {
       const result = await createCodedAccount({
         tenantId,
         teacherUid,
+        teacherName: profile?.displayName,
         role,
         displayName,
         classId,

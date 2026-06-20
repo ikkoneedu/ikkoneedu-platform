@@ -115,6 +115,8 @@ export async function listMyClasses(
 export interface GenerateCodeInput {
   tenantId: string;
   teacherUid: string;
+  /** Kodu üreten öğretmenin adı (denormalize — mesajlaşma kontağı). */
+  teacherName?: string;
   role: CodeRole;
   /** Öğrenci adı (veli kodu için de "öğrencinin velisi" bağlamı). */
   displayName: string;
@@ -171,6 +173,7 @@ export async function createCodedAccount(
     schoolId: input.tenantId,
     status: "ACTIVE",
     createdBy: input.teacherUid,
+    ...(input.teacherName ? { createdByName: input.teacherName } : {}),
     accessCode: code,
     linkedStudentIds: input.linkedStudentIds ?? [],
     linkedStudents: input.linkedStudents ?? [],
