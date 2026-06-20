@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { Award, IdCard, FileSearch, Megaphone, ArrowRight, MapPin, CalendarCheck } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { SchoolPublicShell } from "@/components/school/SchoolPublicShell";
+import { RealSchoolPublic } from "@/components/school/RealSchoolPublic";
 import { PUBLIC_SCHOOLS, getPublicSchoolBySlug } from "@/lib/tenant/tenant-config";
 import { productName } from "@/lib/constants";
 
@@ -36,7 +36,9 @@ const announcements = [
 export default async function SchoolPublicPage({ params }: PageProps) {
   const { slug } = await params;
   const school = getPublicSchoolBySlug(slug);
-  if (!school) notFound();
+  // Statik mock okul yoksa, süper adminin oluşturduğu gerçek okulu (tenant)
+  // istemci tarafında yükle ve halka açık sayfayı göster.
+  if (!school) return <RealSchoolPublic slug={slug} />;
 
   return (
     <SchoolPublicShell school={school}>

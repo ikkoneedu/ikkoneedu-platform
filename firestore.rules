@@ -156,10 +156,11 @@ service cloud.firestore {
     // ---- Okul (tenant) belgesi --------------------------------------------
     // Not: `tenants/{tenantId}/{document=**}` üst belgenin KENDİSİNİ kapsamaz,
     // bu yüzden okul belgesi için ayrı kural gerekir.
-    // Okuma: giriş yapmış her kullanıcı (okul listesi/seçimi için).
+    // Okuma: HERKES (halka açık okul dizini + public okul sayfaları). Belge
+    // yalnızca okul adı/şehir/durum gibi tanıtım bilgisi taşır; gizli değildir.
     // Oluşturma/güncelleme/silme: yalnızca SUPER_ADMIN.
     match /tenants/{tenantId} {
-      allow read: if isSignedIn();
+      allow read: if true;
       allow create, update, delete: if isSuperAdmin();
     }
 

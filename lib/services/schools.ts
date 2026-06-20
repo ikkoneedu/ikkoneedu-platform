@@ -115,6 +115,26 @@ export async function deleteSchool(id: string): Promise<void> {
   await deleteDoc(doc(db, tenantDoc(id)));
 }
 
+function toSchoolRecord(id: string, data: Record<string, unknown>): SchoolRecord {
+  const ts = data.createdAt as { toMillis?: () => number } | undefined;
+  return {
+    id,
+    name: String(data.name ?? id),
+    slug: String(data.slug ?? id),
+    city: String(data.city ?? ""),
+    status: String(data.status ?? "ACTIVE"),
+    createdAt: ts && typeof ts.toMillis === "function" ? ts.toMillis() : null,
+  };
+}
+
+/** Tek bir okulu kimliğiyle (slug = tenantId) getirir. Halka açıktır. */
+export async function getSchool(id: string): Promise<SchoolRecord | null> {
+  if (!isFirebaseConfigured() || !db) return null;
+  const snap = await getDoc(doc(db, tenantDoc(id)));
+  if (!snap.exists()) return null;
+  return toSchoolRecord(snap.id, snap.data());
+}
+
 /** Tüm okulları (tenant'ları) listeler. */
 export async function listSchools(): Promise<SchoolRecord[]> {
   if (!isFirebaseConfigured() || !db) return [];
@@ -125,17 +145,5 @@ export async function listSchools(): Promise<SchoolRecord[]> {
     // orderBy için alan yoksa (eski belgeler) sırasız çek.
     snap = await getDocs(collection(db, tenants()));
   }
-  return snap.docs.map((d) => {
-    const data = d.data();
-    const ts = data.createdAt;
-    return {
-      id: d.id,
-      name: String(data.name ?? d.id),
-      slug: String(data.slug ?? d.id),
-      city: String(data.city ?? ""),
-      status: String(data.status ?? "ACTIVE"),
-      createdAt:
-        ts && typeof ts.toMillis === "function" ? ts.toMillis() : null,
-    };
-  });
+  return snap.docs.map((d) => toSchoolRecord(d.id, d.data()));
 }
