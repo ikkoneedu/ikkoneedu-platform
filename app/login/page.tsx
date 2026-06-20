@@ -81,17 +81,20 @@ function LoginContent() {
     const password = String(data.get("password") ?? "");
     const remember = data.get("remember") === "on";
 
-    // Mock Mod: Firebase yapılandırılmamışsa eski mock davranışı korunur.
+    // Firebase bağlı değilse SAHTE giriş yapma; net uyarı ver.
+    // (Önceden mock modda /school-select'e yönlendiriliyordu — kafa karıştırıcıydı.)
     if (!firebaseReady) {
-      router.push(config?.target ?? "/school-select");
+      setError(
+        "Giriş sistemi şu anda bağlı değil (Firebase yapılandırması bulunamadı). " +
+          "Geliştirme yapıyorsanız .env.local içindeki NEXT_PUBLIC_FIREBASE_* değerlerini " +
+          "kontrol edip sunucuyu yeniden başlatın.",
+      );
       return;
     }
 
-    // Bu sürümde yalnızca e-posta/şifre girişi desteklenir.
+    // Yalnızca e-posta/şifre girişi desteklenir.
     if (!identifier.includes("@")) {
-      setError(
-        "Şimdilik yalnızca e-posta ile giriş yapılabilir. Lütfen e-posta adresinizi girin.",
-      );
+      setError("Lütfen e-posta adresinizle giriş yapın (örn. ad@okul.com).");
       return;
     }
 
@@ -232,28 +235,32 @@ function LoginContent() {
               </PrimaryButton>
             </form>
 
-            {/* Demo giriş butonları */}
-            <div className="mt-6 border-t border-white/10 pt-5">
-              <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted">
-                Demo Girişleri
-              </p>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                {DEMO_BUTTONS.map((btn) => {
-                  const Icon = btn.icon;
-                  return (
-                    <button
-                      key={btn.id}
-                      type="button"
-                      onClick={() => router.push(btn.href)}
-                      className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-left text-sm font-medium text-content transition-colors hover:border-accent/30 hover:bg-white/[0.06]"
-                    >
-                      <Icon size={16} className="shrink-0 text-accent" aria-hidden="true" />
-                      {btn.label}
-                    </button>
-                  );
-                })}
+            {/* Demo giriş butonları — yalnızca Firebase BAĞLI DEĞİLKEN (demo/tanıtım).
+                Gerçek giriş aktifken gizlenir; aksi halde korumalı panellere
+                yönlendirip /login'e geri atılırdı. */}
+            {!firebaseReady && (
+              <div className="mt-6 border-t border-white/10 pt-5">
+                <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted">
+                  Demo Girişleri (Firebase bağlı değil)
+                </p>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {DEMO_BUTTONS.map((btn) => {
+                    const Icon = btn.icon;
+                    return (
+                      <button
+                        key={btn.id}
+                        type="button"
+                        onClick={() => router.push(btn.href)}
+                        className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-left text-sm font-medium text-content transition-colors hover:border-accent/30 hover:bg-white/[0.06]"
+                      >
+                        <Icon size={16} className="shrink-0 text-accent" aria-hidden="true" />
+                        {btn.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            )}
 
             <p className="mt-6 text-center text-sm text-muted">
               Öğrenci veya veli misiniz?{" "}
@@ -271,6 +278,12 @@ function LoginContent() {
               Okulunuzu sisteme taşımak için{" "}
               <Link href="/demo" className="font-semibold text-accent transition-colors hover:text-content">
                 demo talep edin
+              </Link>
+            </p>
+            <p className="mt-4 border-t border-white/10 pt-4 text-center text-sm text-muted">
+              Üye olmadan{" "}
+              <Link href="/" className="font-semibold text-accent transition-colors hover:text-content">
+                okulları ve bursluluğu inceleyin
               </Link>
             </p>
           </GlassCard>
