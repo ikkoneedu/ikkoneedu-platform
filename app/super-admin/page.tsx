@@ -5,6 +5,7 @@ import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { SuperAdminConsole } from "@/components/super-admin/SuperAdminConsole";
 import { productName } from "@/lib/constants";
 import { siteRoutes, type RouteStatus } from "@/lib/super-admin-data";
 
@@ -24,8 +25,16 @@ export default function SuperAdminPage() {
     <PageShell title="Super Admin">
       <div className="flex flex-col gap-8">
         <SectionHeader
-          eyebrow="Erişim Merkezi"
+          eyebrow="Platform Yönetimi"
           title="Super Admin Paneli"
+          description="Tüm okulları ve kullanıcıları tek merkezden yönetin; yeni okul oluşturun."
+        />
+
+        <SuperAdminConsole />
+
+        <SectionHeader
+          eyebrow="Erişim Merkezi"
+          title="Tüm Sayfalar"
           description="Geliştirme ve demo süreci için tüm sayfalara tek merkezden erişin."
         />
 

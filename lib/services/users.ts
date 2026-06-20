@@ -119,3 +119,24 @@ export async function listTenantUsers(tenantId: string): Promise<TenantUser[]> {
     };
   });
 }
+
+export interface AllUser extends TenantUser {
+  tenantId: string;
+}
+
+/** TÜM kullanıcıları listeler (yalnızca SUPER_ADMIN — kurallar zorunlu kılar). */
+export async function listAllUsers(): Promise<AllUser[]> {
+  if (!isFirebaseConfigured() || !db) return [];
+  const snap = await getDocs(collection(db, usersRoot()));
+  return snap.docs.map((d) => {
+    const data = d.data();
+    return {
+      uid: d.id,
+      email: String(data.email ?? ""),
+      displayName: String(data.displayName ?? ""),
+      role: data.role as Role,
+      status: String(data.status ?? ""),
+      tenantId: String(data.tenantId ?? ""),
+    };
+  });
+}

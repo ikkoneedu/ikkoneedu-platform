@@ -125,6 +125,16 @@ service cloud.firestore {
       allow delete: if isSuperAdmin();
     }
 
+    // ---- Okul (tenant) belgesi --------------------------------------------
+    // Not: `tenants/{tenantId}/{document=**}` üst belgenin KENDİSİNİ kapsamaz,
+    // bu yüzden okul belgesi için ayrı kural gerekir.
+    // Okuma: giriş yapmış her kullanıcı (okul listesi/seçimi için).
+    // Oluşturma/güncelleme/silme: yalnızca SUPER_ADMIN.
+    match /tenants/{tenantId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isSuperAdmin();
+    }
+
     // ---- Halka açık form gönderimleri (anonim oluşturma) ------------------
     // Demo talepleri — herkes gönderebilir, yalnızca tenant üyesi okur.
     match /tenants/{tenantId}/demoRequests/{docId} {
