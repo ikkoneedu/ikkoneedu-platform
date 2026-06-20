@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
+import { StudentProfileCard } from "@/components/student/StudentProfileCard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { Reveal } from "@/components/landing/Reveal";
@@ -103,6 +104,9 @@ export default function StudentPage() {
             description="Bugünkü programın, görevlerin ve başarıların burada."
           />
         </Reveal>
+
+        {/* Canlı öğrenci bilgisi (gerçek Firestore — yalnızca giriş yapmış öğrencide) */}
+        <StudentProfileCard />
 
         {/* 1. Günlük Program */}
         <Reveal>

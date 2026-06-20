@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
+import { TeacherRoster } from "@/components/teacher/TeacherRoster";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TeacherSchedule } from "@/components/teacher/TeacherSchedule";
@@ -52,6 +53,9 @@ export default function TeacherPage() {
           title="Merhaba Ayşe Öğretmen 👋"
           description="Bugün 4 dersiniz, 2 bekleyen ödev kontrolünüz ve 1 veli mesajınız var."
         />
+
+        {/* Canlı sınıf listesi (gerçek Firestore — yalnızca giriş yapmış öğretmende) */}
+        <TeacherRoster />
 
         {/* 2. Günlük Ders Programı */}
         <section>

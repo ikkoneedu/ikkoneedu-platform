@@ -85,6 +85,8 @@ export function ClassCodeManager() {
     }
   };
 
+  const students = codes.filter((c) => c.role === ROLES.STUDENT);
+
   const handleGenerate = async (
     event: FormEvent<HTMLFormElement>,
     role: CodeRole,
@@ -93,9 +95,32 @@ export function ClassCodeManager() {
     if (!tenantId || !teacherUid || busy) return;
     const form = event.currentTarget;
     const data = new FormData(form);
-    const displayName = String(data.get("displayName") ?? "").trim();
-    const classId = String(data.get("classId") ?? "").trim() || undefined;
-    if (!displayName) return;
+
+    let displayName = "";
+    let classId: string | undefined;
+    let className: string | undefined;
+    let linkedStudentIds: string[] | undefined;
+    let linkedStudents: { uid: string; displayName: string }[] | undefined;
+
+    if (role === ROLES.STUDENT) {
+      displayName = String(data.get("displayName") ?? "").trim();
+      classId = String(data.get("classId") ?? "").trim() || undefined;
+      className = classes.find((c) => c.id === classId)?.name;
+      if (!displayName) return;
+    } else {
+      // Veli: bağlanacak öğrenci seçilir.
+      const studentUid = String(data.get("studentUid") ?? "").trim();
+      const student = students.find((s) => s.uid === studentUid);
+      if (!student) {
+        setError("Lütfen veliyi bağlayacağınız öğrenciyi seçin.");
+        return;
+      }
+      displayName = `${student.displayName} (Veli)`;
+      classId = student.classId;
+      className = classes.find((c) => c.id === student.classId)?.name;
+      linkedStudentIds = [student.uid];
+      linkedStudents = [{ uid: student.uid, displayName: student.displayName }];
+    }
 
     setBusy(true);
     setError(null);
@@ -107,6 +132,9 @@ export function ClassCodeManager() {
         role,
         displayName,
         classId,
+        className,
+        linkedStudentIds,
+        linkedStudents,
       });
       setLastCode(result.code);
       form.reset();
@@ -212,9 +240,34 @@ export function ClassCodeManager() {
             <h2 className="text-lg font-semibold text-content">Veli Kodu Üret</h2>
           </div>
           <form onSubmit={(e) => handleGenerate(e, ROLES.PARENT)} className="space-y-3">
-            <TextField label="Öğrenci Ad Soyad (velisi)" name="displayName" placeholder="Ad Soyad velisi" required />
-            <ClassSelect classes={classes} />
-            <PrimaryButton type="submit" size="md" className="w-full" disabled={busy}>
+            {students.length === 0 ? (
+              <p className="text-xs text-muted">
+                Önce öğrenci kodu üretin; veli kodu bir öğrenciye bağlanır.
+              </p>
+            ) : (
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-muted">Öğrenci Seç</label>
+                <select
+                  name="studentUid"
+                  defaultValue=""
+                  required
+                  className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                >
+                  <option value="" disabled className="bg-surface">Öğrenci seçin</option>
+                  {students.map((s) => (
+                    <option key={s.uid} value={s.uid} className="bg-surface">
+                      {s.displayName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            <PrimaryButton
+              type="submit"
+              size="md"
+              className="w-full"
+              disabled={busy || students.length === 0}
+            >
               <KeyRound size={16} aria-hidden="true" />
               Veli Kodu Üret
             </PrimaryButton>

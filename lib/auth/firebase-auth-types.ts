@@ -42,10 +42,16 @@ export interface UserProfile {
   status: UserStatus;
   /** Öğretmen/öğrenci için bağlı sınıf kimliği. */
   classId?: string;
+  /** Sınıf adı (denormalize — öğrenci/veli panelinde gösterim için). */
+  className?: string;
   /** Öğretmenin oluşturduğu kullanıcıyı (öğrenci/veli) üreten öğretmenin uid'i. */
   createdBy?: string;
   /** Veli kullanıcılar için bağlı öğrenci kimlikleri. */
   linkedStudentIds?: string[];
+  /** Bağlı öğrenci özetleri (denormalize — veli panelinde gösterim için). */
+  linkedStudents?: { uid: string; displayName: string }[];
+  /** Öğrencinin giriş kodu (öğretmen referansı). */
+  accessCode?: string;
   createdAt: string;
   updatedAt?: string;
 }

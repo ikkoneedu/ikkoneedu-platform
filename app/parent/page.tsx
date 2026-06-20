@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
+import { ParentChildCard } from "@/components/parent/ParentChildCard";
 import { StatCard } from "@/components/shared/StatCard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -49,6 +50,9 @@ export default function ParentPage() {
           title="Hoş geldiniz, Yılmaz Ailesi"
           description="Çocuğunuzun okul yaşamını, duyurularını ve gelişimini tek ekrandan takip edin."
         />
+
+        {/* Canlı bağlı öğrenci (gerçek Firestore — yalnızca giriş yapmış velide) */}
+        <ParentChildCard />
 
         {/* 1. Öğrenci Seçimi */}
         <StudentSwitcher students={parentStudents} />

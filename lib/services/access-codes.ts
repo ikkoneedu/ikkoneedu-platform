@@ -119,8 +119,12 @@ export interface GenerateCodeInput {
   /** Öğrenci adı (veli kodu için de "öğrencinin velisi" bağlamı). */
   displayName: string;
   classId?: string;
+  /** Sınıf adı (denormalize — öğrenci/veli panelinde gösterim). */
+  className?: string;
   /** Veli kodu için bağlı öğrenci uid'leri. */
   linkedStudentIds?: string[];
+  /** Veli kodu için bağlı öğrenci özetleri (denormalize). */
+  linkedStudents?: { uid: string; displayName: string }[];
 }
 
 export interface GeneratedCode {
@@ -169,7 +173,9 @@ export async function createCodedAccount(
     createdBy: input.teacherUid,
     accessCode: code,
     linkedStudentIds: input.linkedStudentIds ?? [],
+    linkedStudents: input.linkedStudents ?? [],
     ...(input.classId ? { classId: input.classId } : {}),
+    ...(input.className ? { className: input.className } : {}),
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
