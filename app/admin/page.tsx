@@ -18,6 +18,7 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { MetricCard } from "@/components/dashboard/MetricCard";
+import { TenantOverview } from "@/components/dashboard/TenantOverview";
 import { AiInsightCard } from "@/components/dashboard/AiInsightCard";
 import { PerformanceChart } from "@/components/dashboard/PerformanceChart";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
@@ -201,6 +202,11 @@ export default function AdminPage() {
                 </PrimaryButton>
               }
             />
+
+            {/* Okul özeti — gerçek Firestore verisi (yalnızca giriş yapmış personelde görünür) */}
+            <div className="mb-10">
+              <TenantOverview />
+            </div>
 
             {/* Metrik kartları */}
             <section className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">

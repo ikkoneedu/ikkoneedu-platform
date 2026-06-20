@@ -102,3 +102,17 @@ export function getRequiredRoles(pathname: string): Role[] {
   );
   return entry ? entry[1] : [];
 }
+
+/**
+ * Bir rol verilen yola erişebilir mi? Rol-kapısı yoksa herkese açıktır.
+ * Navigasyonu role göre filtrelemek için kullanılır (ör. müdüre finans gizleme).
+ */
+export function canRoleAccess(
+  role: Role | null | undefined,
+  pathname: string,
+): boolean {
+  const required = getRequiredRoles(pathname);
+  if (required.length === 0) return true;
+  if (!role) return false;
+  return required.includes(role);
+}

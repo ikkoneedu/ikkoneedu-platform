@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/shared/LogoMark";
 import { navigationItems, type NavigationItem } from "@/lib/constants";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { canRoleAccess } from "@/lib/auth/route-config";
 
 interface SidebarProps {
   /** Menü öğeleri (varsayılan: genel navigasyon). */
@@ -31,6 +33,14 @@ export function Sidebar({
   className = "",
 }: SidebarProps) {
   const pathname = usePathname();
+  const { profile, firebaseReady } = useAuth();
+
+  // Rol-duyarlı menü: oturum açıkken kullanıcının erişemediği öğeler gizlenir.
+  // Mock Mod'da (Firebase yok) veya profil yokken tüm öğeler gösterilir.
+  const visibleItems =
+    firebaseReady && profile
+      ? items.filter((item) => canRoleAccess(profile.role, item.href))
+      : items;
 
   const isItemActive = (item: NavigationItem) => {
     if (activeId) return item.id === activeId;
@@ -58,7 +68,7 @@ export function Sidebar({
       </div>
 
       <nav className="mt-8 flex flex-1 flex-col gap-1 overflow-y-auto">
-        {items.map((item) => {
+        {visibleItems.map((item) => {
           const isActive = isItemActive(item);
           const Icon = item.icon;
 
