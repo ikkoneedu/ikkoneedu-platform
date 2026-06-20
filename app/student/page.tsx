@@ -25,6 +25,7 @@ import { AssignmentBoard } from "@/components/assignments/AssignmentBoard";
 import { MessagingPanel } from "@/components/messaging/MessagingPanel";
 import { GradeBoard } from "@/components/grades/GradeBoard";
 import { ScheduleBoard } from "@/components/schedule/ScheduleBoard";
+import { AttendanceBoard } from "@/components/attendance/AttendanceBoard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { Reveal } from "@/components/landing/Reveal";
@@ -127,6 +128,9 @@ export default function StudentPage() {
 
         {/* Ders programı (canlı) */}
         <ScheduleBoard />
+
+        {/* Yoklama (canlı) */}
+        <AttendanceBoard />
 
         {/* 1. Günlük Program */}
         <Reveal>
