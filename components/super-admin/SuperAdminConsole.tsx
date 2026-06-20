@@ -12,6 +12,10 @@ import {
   Trash2,
   Check,
   X,
+  Copy,
+  CheckCircle2,
+  Inbox,
+  UserPlus,
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -19,7 +23,11 @@ import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useHasRole } from "@/components/auth/RoleGate";
 import { ROLES, ROLE_LABELS, type Role } from "@/lib/auth/role-constants";
-import { listAllUsers, type AllUser } from "@/lib/services/users";
+import {
+  listAllUsers,
+  createManagedAccount,
+  type AllUser,
+} from "@/lib/services/users";
 import {
   createSchool,
   deleteSchool,
@@ -28,6 +36,10 @@ import {
   updateSchool,
   type SchoolRecord,
 } from "@/lib/services/schools";
+import {
+  listDemoRequests,
+  type DemoRequestRecord,
+} from "@/lib/services/demo-requests";
 import { UserAdminActions } from "@/components/admin/UserAdminActions";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
@@ -51,17 +63,40 @@ export function SuperAdminConsole() {
 
   const [schools, setSchools] = useState<SchoolRecord[]>([]);
   const [users, setUsers] = useState<AllUser[]>([]);
+  const [demoRequests, setDemoRequests] = useState<DemoRequestRecord[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const [slugPreview, setSlugPreview] = useState("");
+
+  // Okul oluşturma formu (kontrollü — demo talebinden ön doldurma için).
+  const [form, setForm] = useState({
+    name: "",
+    slug: "",
+    city: "",
+    founderName: "",
+    founderEmail: "",
+  });
+  // Onboarding sonucu — kurucu hesabı geçici kimlik bilgileri.
+  const [onboarded, setOnboarded] = useState<{
+    school: string;
+    email: string;
+    password: string;
+  } | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const slugPreview = toSlug(form.slug || form.name);
 
   const refresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      const [s, u] = await Promise.all([listSchools(), listAllUsers()]);
+      const [s, u, d] = await Promise.all([
+        listSchools(),
+        listAllUsers(),
+        listDemoRequests(),
+      ]);
       setSchools(s);
       setUsers(u);
+      setDemoRequests(d);
       setError(null);
     } catch (err) {
       setError(getAuthErrorMessage(err));
@@ -92,30 +127,78 @@ export function SuperAdminConsole() {
     return map;
   }, [users]);
 
+  const prefillFromDemo = (d: DemoRequestRecord) => {
+    setForm({
+      name: d.institution,
+      slug: "",
+      city: d.city,
+      founderName: d.fullName,
+      founderEmail: d.email,
+    });
+    setOnboarded(null);
+    setError(null);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const handleCreate = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!adminUid || busy) return;
-    const form = event.currentTarget;
-    const data = new FormData(form);
-    const name = String(data.get("name") ?? "").trim();
-    const slug = String(data.get("slug") ?? "").trim();
-    const city = String(data.get("city") ?? "").trim();
+    const name = form.name.trim();
+    const founderEmail = form.founderEmail.trim();
+    const founderName = form.founderName.trim();
     if (!name) {
       setError("Lütfen okul adını girin.");
+      return;
+    }
+    if (founderEmail && !founderEmail.includes("@")) {
+      setError("Kurucu için geçerli bir e-posta girin (veya boş bırakın).");
       return;
     }
 
     setBusy(true);
     setError(null);
+    setOnboarded(null);
     try {
-      await createSchool({ name, slug, city, createdBy: adminUid });
-      form.reset();
-      setSlugPreview("");
+      const school = await createSchool({
+        name,
+        slug: form.slug,
+        city: form.city,
+        createdBy: adminUid,
+      });
+
+      // Kurucu e-postası verildiyse okul için FOUNDER hesabı aç.
+      if (founderEmail) {
+        const result = await createManagedAccount({
+          tenantId: school.id,
+          createdBy: adminUid,
+          role: ROLES.FOUNDER,
+          displayName: founderName || name,
+          email: founderEmail,
+        });
+        setOnboarded({
+          school: school.name,
+          email: result.email,
+          password: result.tempPassword,
+        });
+      }
+
+      setForm({ name: "", slug: "", city: "", founderName: "", founderEmail: "" });
       await refresh();
     } catch (err) {
       setError(getAuthErrorMessage(err));
     } finally {
       setBusy(false);
+    }
+  };
+
+  const copyPassword = async () => {
+    if (!onboarded) return;
+    try {
+      await navigator.clipboard.writeText(onboarded.password);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
     }
   };
 
@@ -163,39 +246,128 @@ export function SuperAdminConsole() {
         />
       </div>
 
-      {/* Okul oluştur */}
+      {/* Okul oluştur + kurucu onboarding */}
       <GlassCard tone="navy">
-        <div className="mb-4 flex items-center gap-2">
+        <div className="mb-1 flex items-center gap-2">
           <Building2 size={18} className="text-accent" aria-hidden="true" />
           <h2 className="text-lg font-semibold text-content">Okul Oluştur</h2>
         </div>
-        <form
-          onSubmit={handleCreate}
-          className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:items-end"
-        >
-          <TextField
-            label="Okul Adı"
-            name="name"
-            placeholder="Örnek Koleji"
-            required
-            onChange={(e) => setSlugPreview(toSlug(e.target.value))}
-          />
-          <TextField
-            label="Kısa Ad (slug)"
-            name="slug"
-            placeholder={slugPreview || "ornek-koleji"}
-            onChange={(e) => setSlugPreview(toSlug(e.target.value))}
-          />
-          <TextField label="Şehir" name="city" placeholder="İstanbul" />
-          <PrimaryButton type="submit" size="md" disabled={busy}>
-            <Plus size={16} aria-hidden="true" />
-            {busy ? "Oluşturuluyor…" : "Oluştur"}
-          </PrimaryButton>
+        <p className="mb-4 text-xs text-muted">
+          Kurucu e-postası girerseniz okul açılışıyla birlikte bir{" "}
+          <span className="text-accent">Kurucu</span> hesabı oluşturulur ve geçici
+          şifre üretilir.
+        </p>
+        <form onSubmit={handleCreate} className="flex flex-col gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <TextField
+              label="Okul Adı"
+              name="name"
+              placeholder="Örnek Koleji"
+              required
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+            />
+            <TextField
+              label="Kısa Ad (slug)"
+              name="slug"
+              placeholder={slugPreview || "ornek-koleji"}
+              value={form.slug}
+              onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
+            />
+            <TextField
+              label="Şehir"
+              name="city"
+              placeholder="İstanbul"
+              value={form.city}
+              onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
+            />
+          </div>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:items-end">
+            <TextField
+              label="Kurucu Ad Soyad (opsiyonel)"
+              name="founderName"
+              placeholder="Ad Soyad"
+              value={form.founderName}
+              onChange={(e) => setForm((f) => ({ ...f, founderName: e.target.value }))}
+            />
+            <TextField
+              label="Kurucu E-posta (opsiyonel)"
+              name="founderEmail"
+              type="email"
+              placeholder="kurucu@okul.com"
+              value={form.founderEmail}
+              onChange={(e) => setForm((f) => ({ ...f, founderEmail: e.target.value }))}
+            />
+            <PrimaryButton type="submit" size="md" disabled={busy}>
+              <Plus size={16} aria-hidden="true" />
+              {busy ? "Oluşturuluyor…" : "Okulu Oluştur"}
+            </PrimaryButton>
+          </div>
         </form>
-        {slugPreview && (
+        {slugPreview && !onboarded && (
           <p className="mt-2 text-xs text-muted">
             Kimlik: <span className="font-mono text-accent">{slugPreview}</span>
           </p>
+        )}
+
+        {onboarded && (
+          <div className="mt-4 flex flex-col gap-2 rounded-xl border border-accent/30 bg-accent/5 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="text-sm">
+              <p className="font-semibold text-content">
+                Okul ve kurucu hesabı oluşturuldu
+              </p>
+              <p className="mt-0.5 text-muted">
+                {onboarded.school} · Kurucu: {onboarded.email} · Geçici şifre:{" "}
+                <span className="font-mono text-accent">{onboarded.password}</span>
+              </p>
+              <p className="mt-0.5 text-xs text-muted">
+                Bu bilgileri kurucuya iletin; e-posta + şifre ile /login üzerinden
+                giriş yapacak.
+              </p>
+            </div>
+            <PrimaryButton type="button" variant="secondary" size="sm" onClick={copyPassword}>
+              {copied ? <CheckCircle2 size={15} /> : <Copy size={15} />}
+              {copied ? "Kopyalandı" : "Şifreyi Kopyala"}
+            </PrimaryButton>
+          </div>
+        )}
+      </GlassCard>
+
+      {/* Demo talepleri — okula dönüştür */}
+      <GlassCard tone="navy">
+        <div className="mb-4 flex items-center gap-2">
+          <Inbox size={18} className="text-accent" aria-hidden="true" />
+          <h2 className="text-lg font-semibold text-content">Demo Talepleri</h2>
+          <span className="ml-auto text-xs text-muted">{demoRequests.length} talep</span>
+        </div>
+        {demoRequests.length === 0 ? (
+          <p className="text-sm text-muted">Bekleyen demo talebi yok.</p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {demoRequests.map((d) => (
+              <li
+                key={d.id}
+                className="flex flex-col gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div>
+                  <span className="font-medium text-content">{d.institution || "—"}</span>
+                  <p className="mt-0.5 text-xs text-muted">
+                    {d.fullName || "—"} · {d.phone || d.email || "—"}
+                    {d.city ? ` · ${d.city}` : ""}
+                  </p>
+                </div>
+                <PrimaryButton
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => prefillFromDemo(d)}
+                >
+                  <UserPlus size={15} aria-hidden="true" />
+                  Okula Dönüştür
+                </PrimaryButton>
+              </li>
+            ))}
+          </ul>
         )}
       </GlassCard>
 

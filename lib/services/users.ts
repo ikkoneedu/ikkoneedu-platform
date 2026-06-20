@@ -57,12 +57,17 @@ export interface CreatedStaff {
 }
 
 /**
- * Öğretmen/müdür hesabı oluşturur. Geçici şifre döndürür; yönetici bunu
- * personele iletir, personel /login'den e-posta + geçici şifre ile girer.
+ * Belirli rolde yönetilen hesap oluşturur (öğretmen, müdür, kurucu vb.).
+ * Geçici şifre döndürür. Hesap gizli (ikincil) oturumda oluşturulur ki
+ * işlemi yapan yöneticinin/süper adminin oturumu bozulmasın.
  */
-export async function createStaffAccount(
-  input: CreateStaffInput,
-): Promise<CreatedStaff> {
+export async function createManagedAccount(input: {
+  tenantId: string;
+  createdBy: string;
+  role: Role;
+  displayName: string;
+  email: string;
+}): Promise<CreatedStaff> {
   if (!isFirebaseConfigured() || !db) {
     throw new Error("Firebase yapılandırılmamış.");
   }
@@ -80,7 +85,7 @@ export async function createStaffAccount(
   );
   const uid = credential.user.uid;
 
-  // 2) Profil belgesini ana oturumla (yönetici) yaz.
+  // 2) Profil belgesini ana oturumla (yönetici/süper admin) yaz.
   await setDoc(doc(db, userProfileDoc(uid)), {
     uid,
     email,
@@ -98,6 +103,16 @@ export async function createStaffAccount(
   await signOut(secondary);
 
   return { uid, email, tempPassword: password };
+}
+
+/**
+ * Öğretmen/müdür hesabı oluşturur. Geçici şifre döndürür; yönetici bunu
+ * personele iletir, personel /login'den e-posta + geçici şifre ile girer.
+ */
+export async function createStaffAccount(
+  input: CreateStaffInput,
+): Promise<CreatedStaff> {
+  return createManagedAccount(input);
 }
 
 export interface TenantUser {
