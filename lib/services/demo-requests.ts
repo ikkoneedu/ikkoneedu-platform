@@ -3,6 +3,8 @@
  * Mock modda (env yok) gerçek yazma yapılmaz; başarı döner.
  */
 
+import { collection, getDocs, query } from "firebase/firestore";
+import { db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { createDocument, type CreateResult } from "@/lib/services/firestore-helpers";
 import { tenantDemoRequests } from "@/lib/firebase/collections";
 
@@ -28,5 +30,37 @@ export async function createDemoRequest(
     ...data,
     type: "demo_request",
     status: "new",
+  });
+}
+
+export interface DemoRequestRecord {
+  id: string;
+  institution: string;
+  fullName: string;
+  phone: string;
+  email: string;
+  city: string;
+  studentCount: string;
+  message: string;
+}
+
+/** Platform düzeyindeki demo taleplerini listeler (yalnızca SUPER_ADMIN). */
+export async function listDemoRequests(): Promise<DemoRequestRecord[]> {
+  if (!isFirebaseConfigured() || !db) return [];
+  const snap = await getDocs(
+    query(collection(db, tenantDemoRequests(DEMO_TENANT_ID))),
+  );
+  return snap.docs.map((d) => {
+    const data = d.data();
+    return {
+      id: d.id,
+      institution: String(data.institution ?? ""),
+      fullName: String(data.fullName ?? ""),
+      phone: String(data.phone ?? ""),
+      email: String(data.email ?? ""),
+      city: String(data.city ?? ""),
+      studentCount: String(data.studentCount ?? ""),
+      message: String(data.message ?? ""),
+    };
   });
 }

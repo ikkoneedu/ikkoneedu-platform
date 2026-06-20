@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { SaasOverview } from "@/components/saas/SaasOverview";
+import { DemoRequestsInbox } from "@/components/saas/DemoRequestsInbox";
 import { SchoolTable } from "@/components/saas/SchoolTable";
 import { NewSchoolForm } from "@/components/saas/NewSchoolForm";
 import { SubscriptionCards } from "@/components/saas/SubscriptionCards";
@@ -42,6 +43,9 @@ export default function SaasAdminPage() {
           title="SaaS Yönetim Merkezi"
           description="Tüm okulları, abonelikleri, kullanıcıları ve yapay zeka kullanımını tek merkezden yönetin."
         />
+
+        {/* Demo talepleri — gerçek Firestore (canlı) */}
+        <DemoRequestsInbox />
 
         {/* 1. Genel durum */}
         <SaasOverview metrics={saasOverviewMetrics} />
