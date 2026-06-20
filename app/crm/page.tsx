@@ -13,6 +13,7 @@ import { AiCrmInsights } from "@/components/crm/AiCrmInsights";
 import { TaskCenter } from "@/components/crm/TaskCenter";
 import { RevenueForecast } from "@/components/crm/RevenueForecast";
 import { NewLeadForm } from "@/components/crm/NewLeadForm";
+import { CrmInbox } from "@/components/crm/CrmInbox";
 import { productName } from "@/lib/constants";
 import {
   crmMetrics,
@@ -82,6 +83,9 @@ export default function CrmPage() {
           title="CRM & Lead Yönetimi"
           description="Aday velileri, görüşmeleri ve kayıt süreçlerini tek merkezden yönetin."
         />
+
+        {/* Gerçek gelen kutusu — bursluluk başvuruları + lead'ler (canlı) */}
+        <CrmInbox />
 
         {/* 2. Metrikler */}
         <CrmMetrics metrics={crmMetrics} />

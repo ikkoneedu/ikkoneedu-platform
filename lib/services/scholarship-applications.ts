@@ -3,6 +3,8 @@
  * Mock modda (env yok) gerçek yazma yapılmaz; başarı döner.
  */
 
+import { collection, getDocs, query } from "firebase/firestore";
+import { db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { createDocument, type CreateResult } from "@/lib/services/firestore-helpers";
 import { tenantScholarshipApplications } from "@/lib/firebase/collections";
 
@@ -43,5 +45,37 @@ export async function createScholarshipApplication(
     tenantId,
     type: "scholarship_application",
     status: "received",
+  });
+}
+
+export interface ScholarshipApplicationRecord {
+  id: string;
+  applicationNo: string;
+  studentName: string;
+  parentName: string;
+  parentPhone: string;
+  parentEmail: string;
+  status: string;
+}
+
+/** Tenant'taki bursluluk başvurularını listeler (personel). */
+export async function listScholarshipApplications(
+  tenantId: string,
+): Promise<ScholarshipApplicationRecord[]> {
+  if (!isFirebaseConfigured() || !db) return [];
+  const snap = await getDocs(
+    query(collection(db, tenantScholarshipApplications(tenantId))),
+  );
+  return snap.docs.map((d) => {
+    const data = d.data();
+    return {
+      id: d.id,
+      applicationNo: String(data.applicationNo ?? ""),
+      studentName: String(data.studentName ?? ""),
+      parentName: String(data.parentName ?? ""),
+      parentPhone: String(data.parentPhone ?? ""),
+      parentEmail: String(data.parentEmail ?? ""),
+      status: String(data.status ?? ""),
+    };
   });
 }
