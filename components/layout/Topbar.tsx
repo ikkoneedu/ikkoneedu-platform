@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { Bell, Search } from "lucide-react";
 import { Logo } from "@/components/shared/LogoMark";
+import { UserMenu } from "@/components/layout/UserMenu";
 
 interface TopbarLink {
   id: string;
@@ -39,12 +40,7 @@ function DefaultActions() {
         <Bell size={18} aria-hidden="true" />
         <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-brand" />
       </Link>
-      <div
-        aria-hidden="true"
-        className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-navy text-xs font-semibold text-content"
-      >
-        IK
-      </div>
+      <UserMenu />
     </>
   );
 }
