@@ -13,6 +13,7 @@ import {
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { ParentChildCard } from "@/components/parent/ParentChildCard";
+import { ParentSummary } from "@/components/parent/ParentSummary";
 import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
 import { AssignmentBoard } from "@/components/assignments/AssignmentBoard";
 import { MessagingPanel } from "@/components/messaging/MessagingPanel";
@@ -59,6 +60,9 @@ export default function ParentPage() {
 
         {/* Canlı bağlı öğrenci (gerçek Firestore — yalnızca giriş yapmış velide) */}
         <ParentChildCard />
+
+        {/* Canlı özet — çocuğun not/yoklama/ödev sayıları */}
+        <ParentSummary />
 
         {/* Okul duyuruları (canlı) */}
         <AnnouncementBoard />
