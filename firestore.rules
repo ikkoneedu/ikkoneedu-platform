@@ -51,6 +51,13 @@ service cloud.firestore {
       return isActiveUser() && myRole() == 'SUPER_ADMIN';
     }
 
+    // Veli, verilen öğrenciye bağlı mı? (linkedStudentIds içinde mi)
+    function isLinkedParent(studentUid) {
+      return hasProfile()
+        && ('linkedStudentIds' in myProfile())
+        && myProfile().linkedStudentIds.hasAny([studentUid]);
+    }
+
     // Okul personeli: öğretmen/müdür/okul yöneticisi.
     function isStaff() {
       return isActiveUser()
@@ -134,6 +141,17 @@ service cloud.firestore {
     match /platform/{document=**} {
       allow read: if isActiveUser();
       allow write: if isSuperAdmin();
+    }
+
+    // ---- Öğrenci kayıtları / notlar (kök; gizli) --------------------------
+    // Okuma: öğrencinin kendisi, bağlı velisi, aynı tenant personeli.
+    // Yazma: yalnızca aynı tenant personeli.
+    match /studentRecords/{studentUid} {
+      allow read: if isSelf(studentUid)
+        || (isStaff() && resource.data.tenantId == myTenant())
+        || isLinkedParent(studentUid);
+      allow write: if isStaff()
+        && request.resource.data.tenantId == myTenant();
     }
 
     // ---- Birebir mesajlar (kök; katılımcı bazlı erişim) -------------------

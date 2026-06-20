@@ -23,6 +23,7 @@ import { StudentProfileCard } from "@/components/student/StudentProfileCard";
 import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
 import { AssignmentBoard } from "@/components/assignments/AssignmentBoard";
 import { MessagingPanel } from "@/components/messaging/MessagingPanel";
+import { GradeBoard } from "@/components/grades/GradeBoard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { Reveal } from "@/components/landing/Reveal";
@@ -119,6 +120,9 @@ export default function StudentPage() {
 
         {/* Mesajlaşma (canlı) */}
         <MessagingPanel />
+
+        {/* Notlar (canlı) */}
+        <GradeBoard />
 
         {/* 1. Günlük Program */}
         <Reveal>
