@@ -47,8 +47,16 @@ service cloud.firestore {
       return hasProfile() && myProfile().status == 'ACTIVE';
     }
 
+    // Custom claim'de rol (atanmışsa). Profil okumadan hızlı kontrol sağlar.
+    function tokenRole() {
+      return isSignedIn() && ('role' in request.auth.token)
+        ? request.auth.token.role : '';
+    }
+
     function isSuperAdmin() {
-      return isActiveUser() && myRole() == 'SUPER_ADMIN';
+      // Önce custom claim; yoksa Firestore profili (geriye dönük uyumlu).
+      return tokenRole() == 'SUPER_ADMIN'
+        || (isActiveUser() && myRole() == 'SUPER_ADMIN');
     }
 
     // Veli, verilen öğrenciye bağlı mı? (linkedStudentIds içinde mi)

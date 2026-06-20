@@ -31,6 +31,8 @@ interface AuthContextValue {
   user: User | null;
   /** Firestore `users/{uid}` profili (yoksa null — graceful fallback). */
   profile: UserProfile | null;
+  /** Firebase Auth custom claims (atanmışsa). */
+  claims: AuthClaims | null;
   /** Oturum durumu henüz çözülmedi mi? */
   loading: boolean;
   /** Oturum açık mı? */
@@ -59,9 +61,16 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
  * Firebase oturumunu `onAuthStateChanged` ile dinler ve kullanıcı geldiğinde
  * Firestore profilini okur. Firebase yapılandırılmamışsa (Mock Mod) pasif kalır.
  */
+export interface AuthClaims {
+  role?: string;
+  tenantId?: string;
+  schoolId?: string;
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [claims, setClaims] = useState<AuthClaims | null>(null);
   const [loading, setLoading] = useState(true);
 
   const refreshProfile = useCallback(async () => {
@@ -83,6 +92,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(firebaseUser);
       // Kullanıcı geldiyse profilini oku (yoksa null kalır — fallback).
       setProfile(firebaseUser ? await getUserProfile(firebaseUser.uid) : null);
+      // Custom claims (varsa) — ileride rol/tenant kaynağı olarak kullanılabilir.
+      if (firebaseUser) {
+        try {
+          const token = await firebaseUser.getIdTokenResult();
+          setClaims({
+            role: token.claims.role as string | undefined,
+            tenantId: token.claims.tenantId as string | undefined,
+            schoolId: token.claims.schoolId as string | undefined,
+          });
+        } catch {
+          setClaims(null);
+        }
+      } else {
+        setClaims(null);
+      }
       setLoading(false);
     });
 
@@ -139,6 +163,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value: AuthContextValue = {
     user,
     profile,
+    claims,
     loading,
     isAuthenticated: Boolean(user),
     firebaseReady: isFirebaseConfigured(),
