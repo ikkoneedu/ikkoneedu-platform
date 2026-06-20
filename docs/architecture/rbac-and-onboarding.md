@@ -43,10 +43,17 @@ giriş engellenir: *"Yetki profiliniz bulunamadı..."*.
   kurallarında public self-register.
 - **Faz 2** — Öğretmen→veli→öğrenci davet/kod sistemi (kod üretimi, kod ile
   giriş, öğrenci↔veli bağlama, sınıf oluşturma).
-- **Faz 3** — Panel içi yetki uygulaması: müdürde finans gizleme, öğretmenin
-  yalnızca kendi sınıfını yönetmesi, okul yöneticisinin öğretmen/müdür
-  oluşturması; `ProtectedRoute`/`middleware` ile gerçek route koruması.
-- **Faz 4** — Custom claims'e geçiş (Admin SDK) + Firestore kurallarının
+- **Faz 2 ✅** — Öğretmen→veli→öğrenci davet/kod sistemi: ikincil Firebase app
+  ile gizli hesap üretimi (`lib/firebase/secondary-app.ts`,
+  `lib/services/access-codes.ts`), öğretmen `/teacher/classes` ekranı,
+  öğrenci/veli `/code-login` ile kod girişi.
+- **Faz 3 ✅** — `RoleGuard` + segment `layout.tsx` ile rol bazlı route koruması
+  (müdür `/finance` göremez); `RoleGate`/`useHasPermission` ile UI gizleme.
+- **Faz 4 ✅ (kısmi)** — Okul yöneticisi personel (öğretmen/müdür) oluşturur
+  (`lib/services/users.ts`, `app/admin/users`), gerçek tenant kullanıcı listesi.
+  Kalan: panellerin (admin/teacher/parent/student) zengin içeriklerinin gerçek
+  Firestore verisiyle dolması.
+- **Faz 5** — Custom claims'e geçiş (Admin SDK) + Firestore kurallarının
   claim bazlı sıkılaştırılması.
 
 ## İlgili dosyalar

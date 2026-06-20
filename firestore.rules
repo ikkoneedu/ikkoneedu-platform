@@ -65,8 +65,11 @@ service cloud.firestore {
 
     // ---- Kök kullanıcı profilleri -----------------------------------------
     match /users/{uid} {
-      // Kullanıcı kendi profilini okur; SUPER_ADMIN tümünü okur.
-      allow read: if isSelf(uid) || isSuperAdmin();
+      // Kullanıcı kendi profilini okur; SUPER_ADMIN tümünü okur;
+      // personel kendi tenant'ındaki kullanıcıları okur (listeleme).
+      allow read: if isSelf(uid)
+        || isSuperAdmin()
+        || (isStaff() && resource.data.tenantId == myTenant());
 
       // Halk (genel kullanıcı) açık kaydı: kullanıcı YALNIZCA kendi belgesini
       // ve YALNIZCA PUBLIC rol + public tenant ile oluşturabilir
@@ -84,6 +87,14 @@ service cloud.firestore {
           isStaff()
           && (request.resource.data.role == 'STUDENT'
               || request.resource.data.role == 'PARENT')
+          && request.resource.data.tenantId == myTenant()
+        )
+        || (
+          // Okul yöneticisi kendi tenant'ında öğretmen/müdür oluşturabilir.
+          isActiveUser()
+          && (myRole() == 'SCHOOL_ADMIN' || myRole() == 'SUPER_ADMIN')
+          && (request.resource.data.role == 'TEACHER'
+              || request.resource.data.role == 'PRINCIPAL')
           && request.resource.data.tenantId == myTenant()
         );
 

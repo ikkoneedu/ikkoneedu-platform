@@ -71,11 +71,13 @@ export interface NavigationItem {
 export const navigationItems: NavigationItem[] = [
   { id: "genel-bakis", label: "Genel Bakış", href: "/", icon: LayoutDashboard },
   { id: "admin", label: "Yönetim Paneli", href: "/admin", icon: LayoutDashboard },
+  { id: "personel", label: "Personel ve Kullanıcılar", href: "/admin/users", icon: UserPlus },
   { id: "executive", label: "Executive", href: "/executive", icon: BarChart3 },
   { id: "okullar", label: "Okullar", href: "/school-select", icon: School },
   { id: "ogrenciler", label: "Öğrenciler", href: "/student", icon: GraduationCap },
   { id: "veliler", label: "Veliler", href: "/parent", icon: Users },
   { id: "ogretmenler", label: "Öğretmenler", href: "/teacher", icon: BookOpen },
+  { id: "siniflarim", label: "Sınıflarım ve Kodlar", href: "/teacher/classes", icon: School },
   { id: "yapay-zeka", label: "AI Brain", href: "/ai-brain", icon: Sparkles },
   { id: "kayit-danismani", label: "AI Kayıt Danışmanı", href: "/admissions-ai", icon: UserPlus },
   { id: "bursluluk", label: "Bursluluk Sınavı", href: "/scholarship-exam", icon: Award },
