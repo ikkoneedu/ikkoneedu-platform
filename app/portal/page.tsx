@@ -9,6 +9,7 @@ import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useRequireAuth } from "@/components/auth/useRequireAuth";
+import { SchoolDiscovery } from "@/components/portal/SchoolDiscovery";
 import { PUBLIC_SCHOOLS } from "@/lib/tenant/tenant-config";
 import { productName } from "@/lib/constants";
 
@@ -67,10 +68,17 @@ export default function PortalPage() {
               : "Hoş geldiniz"
           }
           title="Okul Portalı"
-          description="Bursluluk başvurusu yapın, okulların tanıtım sayfalarını inceleyin ve süreçlerinizi takip edin."
+          description="Platformdaki okulları keşfedin, bilgi talebi gönderin ve bursluluk başvurusu yapın."
           className="mb-10"
         />
 
+        {/* Gerçek okul keşfi — adaylar okul arar ve bilgi talebi gönderir. */}
+        <SchoolDiscovery />
+
+        {/* Öne çıkan okullar — tanıtım sayfaları ve bursluluk başvurusu. */}
+        <h2 className="mb-6 mt-14 text-sm font-semibold uppercase tracking-[0.18em] text-muted">
+          Öne Çıkan Okullar
+        </h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {PUBLIC_SCHOOLS.map((school) => (
             <GlassCard key={school.slug} tone="navy" className="flex flex-col">

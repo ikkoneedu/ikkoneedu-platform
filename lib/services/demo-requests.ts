@@ -64,3 +64,70 @@ export async function listDemoRequests(): Promise<DemoRequestRecord[]> {
     };
   });
 }
+
+/* -------------------------------------------------------------------------- */
+/*  Okula özel aday/iletişim talepleri (belirli bir tenant'a yazılır)         */
+/* -------------------------------------------------------------------------- */
+
+export interface SchoolInquiryInput {
+  schoolName: string;
+  fullName: string;
+  phone: string;
+  email: string;
+  /** İlgilenilen sınıf/kademe (opsiyonel). */
+  grade?: string;
+  message?: string;
+}
+
+/**
+ * Aday velinin belirli bir okula gönderdiği bilgi/iletişim talebi.
+ * `tenants/{tenantId}/demoRequests` altına yazılır (anonim/halka açık oluşturma);
+ * okul personeli bunu CRM gelen kutusunda görür.
+ */
+export async function createSchoolInquiry(
+  tenantId: string,
+  data: SchoolInquiryInput,
+): Promise<CreateResult> {
+  return createDocument(tenantDemoRequests(tenantId), {
+    ...data,
+    institution: data.schoolName,
+    type: "school_inquiry",
+    status: "new",
+  });
+}
+
+export interface SchoolInquiryRecord {
+  id: string;
+  fullName: string;
+  phone: string;
+  email: string;
+  grade: string;
+  message: string;
+  type: string;
+  createdAt: number | null;
+}
+
+/** Bir okulun aldığı aday/iletişim taleplerini listeler (tenant üyesi). */
+export async function listSchoolInquiries(
+  tenantId: string,
+): Promise<SchoolInquiryRecord[]> {
+  if (!isFirebaseConfigured() || !db) return [];
+  const snap = await getDocs(
+    query(collection(db, tenantDemoRequests(tenantId))),
+  );
+  return snap.docs.map((d) => {
+    const data = d.data();
+    const ts = data.createdAt;
+    return {
+      id: d.id,
+      fullName: String(data.fullName ?? ""),
+      phone: String(data.phone ?? ""),
+      email: String(data.email ?? ""),
+      grade: String(data.grade ?? ""),
+      message: String(data.message ?? ""),
+      type: String(data.type ?? "school_inquiry"),
+      createdAt:
+        ts && typeof ts.toMillis === "function" ? ts.toMillis() : null,
+    };
+  });
+}

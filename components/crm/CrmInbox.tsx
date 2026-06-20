@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Inbox, Award, Contact } from "lucide-react";
+import { Inbox, Award, Contact, MessageSquare } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
@@ -10,6 +10,10 @@ import {
   type ScholarshipApplicationRecord,
 } from "@/lib/services/scholarship-applications";
 import { listLeads, type LeadRecord } from "@/lib/services/leads";
+import {
+  listSchoolInquiries,
+  type SchoolInquiryRecord,
+} from "@/lib/services/demo-requests";
 
 const STAFF_ROLES = [
   ROLES.SCHOOL_ADMIN,
@@ -32,18 +36,21 @@ export function CrmInbox() {
 
   const [apps, setApps] = useState<ScholarshipApplicationRecord[] | null>(null);
   const [leads, setLeads] = useState<LeadRecord[]>([]);
+  const [inquiries, setInquiries] = useState<SchoolInquiryRecord[]>([]);
 
   useEffect(() => {
     if (!firebaseReady || !tenantId || !canSee) return;
     let active = true;
     void (async () => {
-      const [a, l] = await Promise.all([
+      const [a, l, i] = await Promise.all([
         listScholarshipApplications(tenantId),
         listLeads(tenantId),
+        listSchoolInquiries(tenantId),
       ]);
       if (active) {
         setApps(a);
         setLeads(l);
+        setInquiries(i);
       }
     })();
     return () => {
@@ -104,6 +111,36 @@ export function CrmInbox() {
                   {l.email ? ` · ${l.email}` : ""}
                 </p>
                 {l.note && <p className="mt-1 text-xs text-muted/70">{l.note}</p>}
+              </li>
+            ))}
+          </ul>
+        )}
+      </GlassCard>
+
+      <GlassCard tone="navy" className="lg:col-span-2">
+        <div className="mb-4 flex items-center gap-2">
+          <MessageSquare size={18} className="text-accent" aria-hidden="true" />
+          <h2 className="text-lg font-semibold text-content">Aday Bilgi Talepleri</h2>
+          <span className="ml-auto text-xs text-muted">{inquiries.length}</span>
+        </div>
+        {inquiries.length === 0 ? (
+          <p className="flex items-center gap-2 text-sm text-muted">
+            <Inbox size={15} aria-hidden="true" />
+            Portaldan gelen aday talebi yok.
+          </p>
+        ) : (
+          <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {inquiries.map((i) => (
+              <li key={i.id} className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-medium text-content">{i.fullName || "—"}</span>
+                  {i.grade && <span className="text-xs text-accent">{i.grade}</span>}
+                </div>
+                <p className="mt-0.5 text-xs text-muted">
+                  {i.phone || "—"}
+                  {i.email ? ` · ${i.email}` : ""}
+                </p>
+                {i.message && <p className="mt-1 text-xs text-muted/70">{i.message}</p>}
               </li>
             ))}
           </ul>
