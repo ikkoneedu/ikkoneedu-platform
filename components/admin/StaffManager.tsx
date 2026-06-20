@@ -24,6 +24,7 @@ import {
   UserAdminActions,
   MANAGER_ASSIGNABLE_ROLES,
 } from "@/components/admin/UserAdminActions";
+import { createAuditLog } from "@/lib/services/audit-logs";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 /**
@@ -237,6 +238,16 @@ export function StaffManager() {
                             assignableRoles={MANAGER_ASSIGNABLE_ROLES}
                             onChanged={refresh}
                             onError={setError}
+                            onAction={async (action, meta) => {
+                              if (!tenantId) return;
+                              await createAuditLog({
+                                tenantId,
+                                actorId: adminUid,
+                                action,
+                                resource: `users/${u.uid}`,
+                                meta,
+                              });
+                            }}
                           />
                         ) : (
                           ROLE_LABELS[u.role] ?? u.role

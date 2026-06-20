@@ -91,6 +91,13 @@ export const userProfileDoc = (uid: string): string =>
 /** Platform yapılandırma belgesi: platform/config */
 export const platformConfig = (): string => PLATFORM.CONFIG;
 
+/**
+ * Platform denetim kaydı koleksiyonu (kök): `platformAuditLogs`.
+ * Kök tutulur çünkü `platform/**` okuması tüm aktif kullanıcılara açıktır;
+ * denetim kayıtları yalnızca SUPER_ADMIN'e görünür olmalıdır (kurallarda kısıtlı).
+ */
+export const platformAuditLogs = (): string => "platformAuditLogs";
+
 /** Tüm tenant'lar: tenants */
 export const tenants = (): string => COLLECTIONS.TENANTS;
 

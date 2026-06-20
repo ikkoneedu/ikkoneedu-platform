@@ -197,6 +197,13 @@ service cloud.firestore {
       allow write: if isSuperAdmin();
     }
 
+    // ---- Platform denetim kayıtları (yalnızca SUPER_ADMIN) ----------------
+    // Kök koleksiyon; değiştirilemez (append-only). Okuma/oluşturma süper admin.
+    match /platformAuditLogs/{docId} {
+      allow read, create: if isSuperAdmin();
+      allow update, delete: if false;
+    }
+
     // ---- Öğrenci kayıtları / notlar (kök; gizli) --------------------------
     // Okuma: öğrencinin kendisi, bağlı velisi, aynı tenant personeli.
     // Yazma: yalnızca aynı tenant personeli.

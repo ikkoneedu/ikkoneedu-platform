@@ -20,6 +20,8 @@ interface UserAdminActionsProps {
   onChanged: () => void | Promise<void>;
   /** Hata mesajını üst bileşene bildirmek için. */
   onError?: (message: string) => void;
+  /** Başarılı işlem sonrası denetim kaydı için (action, meta). */
+  onAction?: (action: string, meta: Record<string, unknown>) => void | Promise<void>;
 }
 
 /**
@@ -33,6 +35,7 @@ export function UserAdminActions({
   assignableRoles,
   onChanged,
   onError,
+  onAction,
 }: UserAdminActionsProps) {
   const [busy, setBusy] = useState(false);
   const suspended = status === "SUSPENDED";
@@ -42,11 +45,16 @@ export function UserAdminActions({
     ? assignableRoles
     : [role, ...assignableRoles];
 
-  const run = async (fn: () => Promise<void>) => {
+  const run = async (
+    fn: () => Promise<void>,
+    action: string,
+    meta: Record<string, unknown>,
+  ) => {
     if (busy) return;
     setBusy(true);
     try {
       await fn();
+      await onAction?.(action, { uid, ...meta });
       await onChanged();
     } catch (err) {
       onError?.(getAuthErrorMessage(err));
@@ -57,12 +65,16 @@ export function UserAdminActions({
 
   const handleRole = (next: Role) => {
     if (next === role) return;
-    void run(() => setUserRole(uid, next));
+    void run(() => setUserRole(uid, next), "user.role_change", { from: role, to: next });
   };
 
   const toggleStatus = () => {
     const next: UserStatus = suspended ? "ACTIVE" : "SUSPENDED";
-    void run(() => setUserStatus(uid, next));
+    void run(
+      () => setUserStatus(uid, next),
+      next === "SUSPENDED" ? "user.suspend" : "user.activate",
+      { status: next },
+    );
   };
 
   return (

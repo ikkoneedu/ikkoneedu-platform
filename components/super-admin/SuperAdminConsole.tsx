@@ -16,6 +16,7 @@ import {
   CheckCircle2,
   Inbox,
   UserPlus,
+  FileClock,
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -40,6 +41,11 @@ import {
   listDemoRequests,
   type DemoRequestRecord,
 } from "@/lib/services/demo-requests";
+import {
+  createPlatformAuditLog,
+  listPlatformAuditLogs,
+  type PlatformAuditRecord,
+} from "@/lib/services/audit-logs";
 import { UserAdminActions } from "@/components/admin/UserAdminActions";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
@@ -64,6 +70,7 @@ export function SuperAdminConsole() {
   const [schools, setSchools] = useState<SchoolRecord[]>([]);
   const [users, setUsers] = useState<AllUser[]>([]);
   const [demoRequests, setDemoRequests] = useState<DemoRequestRecord[]>([]);
+  const [auditLogs, setAuditLogs] = useState<PlatformAuditRecord[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -89,14 +96,16 @@ export function SuperAdminConsole() {
   const refresh = useCallback(async () => {
     setRefreshing(true);
     try {
-      const [s, u, d] = await Promise.all([
+      const [s, u, d, a] = await Promise.all([
         listSchools(),
         listAllUsers(),
         listDemoRequests(),
+        listPlatformAuditLogs(),
       ]);
       setSchools(s);
       setUsers(u);
       setDemoRequests(d);
+      setAuditLogs(a);
       setError(null);
     } catch (err) {
       setError(getAuthErrorMessage(err));
@@ -126,6 +135,18 @@ export function SuperAdminConsole() {
     }
     return map;
   }, [users]);
+
+  // Best-effort platform denetim kaydı (hata UI'ı bozmaz).
+  const logAction = useCallback(
+    async (action: string, resource: string, meta: Record<string, unknown> = {}) => {
+      try {
+        await createPlatformAuditLog({ actorId: adminUid, action, resource, meta });
+      } catch {
+        /* denetim kaydı başarısız olsa da işlem akışını bozma */
+      }
+    },
+    [adminUid],
+  );
 
   const prefillFromDemo = (d: DemoRequestRecord) => {
     setForm({
@@ -165,6 +186,7 @@ export function SuperAdminConsole() {
         city: form.city,
         createdBy: adminUid,
       });
+      await logAction("school.create", `tenants/${school.id}`, { name: school.name });
 
       // Kurucu e-postası verildiyse okul için FOUNDER hesabı aç.
       if (founderEmail) {
@@ -174,6 +196,10 @@ export function SuperAdminConsole() {
           role: ROLES.FOUNDER,
           displayName: founderName || name,
           email: founderEmail,
+        });
+        await logAction("founder.create", `users/${result.uid}`, {
+          email: result.email,
+          tenantId: school.id,
         });
         setOnboarded({
           school: school.name,
@@ -410,6 +436,7 @@ export function SuperAdminConsole() {
                     userCount={usersByTenant.get(s.id) ?? 0}
                     onChanged={refresh}
                     onError={setError}
+                    onAudit={logAction}
                   />
                 ))}
               </tbody>
@@ -459,6 +486,9 @@ export function SuperAdminConsole() {
                           assignableRoles={ALL_ASSIGNABLE_ROLES}
                           onChanged={refresh}
                           onError={setError}
+                          onAction={(action, meta) =>
+                            logAction(action, `users/${u.uid}`, meta)
+                          }
                         />
                       )}
                     </td>
@@ -469,8 +499,61 @@ export function SuperAdminConsole() {
           </div>
         )}
       </GlassCard>
+
+      {/* İşlem kayıtları (denetim) */}
+      <GlassCard tone="navy">
+        <div className="mb-4 flex items-center gap-2">
+          <FileClock size={18} className="text-accent" aria-hidden="true" />
+          <h2 className="text-lg font-semibold text-content">İşlem Kayıtları</h2>
+          <span className="ml-auto text-xs text-muted">son {auditLogs.length}</span>
+        </div>
+        {auditLogs.length === 0 ? (
+          <p className="text-sm text-muted">Henüz kayıt yok.</p>
+        ) : (
+          <ul className="flex flex-col gap-1.5">
+            {auditLogs.map((log) => (
+              <li
+                key={log.id}
+                className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm"
+              >
+                <div className="min-w-0">
+                  <span className="font-medium text-content">{auditActionLabel(log.action)}</span>
+                  {log.resource && (
+                    <span className="ml-2 font-mono text-xs text-muted">{log.resource}</span>
+                  )}
+                </div>
+                <span className="shrink-0 text-xs text-muted">{formatAuditTime(log.createdAt)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </GlassCard>
     </div>
   );
+}
+
+const AUDIT_ACTION_LABELS: Record<string, string> = {
+  "school.create": "Okul oluşturuldu",
+  "school.update": "Okul güncellendi",
+  "school.delete": "Okul silindi",
+  "founder.create": "Kurucu hesabı açıldı",
+  "user.role_change": "Rol değiştirildi",
+  "user.suspend": "Kullanıcı askıya alındı",
+  "user.activate": "Kullanıcı etkinleştirildi",
+};
+
+function auditActionLabel(action: string): string {
+  return AUDIT_ACTION_LABELS[action] ?? action;
+}
+
+function formatAuditTime(ms: number | null): string {
+  if (!ms) return "—";
+  return new Intl.DateTimeFormat("tr-TR", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(ms));
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -494,11 +577,17 @@ function SchoolRow({
   userCount,
   onChanged,
   onError,
+  onAudit,
 }: {
   school: SchoolRecord;
   userCount: number;
   onChanged: () => void | Promise<void>;
   onError: (message: string) => void;
+  onAudit: (
+    action: string,
+    resource: string,
+    meta?: Record<string, unknown>,
+  ) => void | Promise<void>;
 }) {
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -511,6 +600,7 @@ function SchoolRow({
     setBusy(true);
     try {
       await updateSchool(school.id, { name, city, status });
+      await onAudit("school.update", `tenants/${school.id}`, { name, city, status });
       setEditing(false);
       await onChanged();
     } catch (err) {
@@ -529,6 +619,7 @@ function SchoolRow({
     setBusy(true);
     try {
       await deleteSchool(school.id);
+      await onAudit("school.delete", `tenants/${school.id}`, { name: school.name });
       await onChanged();
     } catch (err) {
       onError(getAuthErrorMessage(err));
