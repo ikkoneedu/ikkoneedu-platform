@@ -9,6 +9,7 @@
  */
 
 import {
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -16,6 +17,7 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { collection } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
@@ -82,6 +84,35 @@ export async function createSchool(input: CreateSchoolInput): Promise<SchoolReco
   });
 
   return { id: slug, name, slug, city, status: "ACTIVE", createdAt: Date.now() };
+}
+
+export interface UpdateSchoolInput {
+  name?: string;
+  city?: string;
+  status?: string;
+}
+
+/** Okul bilgilerini günceller (ad, şehir, durum). */
+export async function updateSchool(
+  id: string,
+  patch: UpdateSchoolInput,
+): Promise<void> {
+  if (!isFirebaseConfigured() || !db) {
+    throw new Error("Firebase yapılandırılmamış.");
+  }
+  const data: Record<string, unknown> = { updatedAt: serverTimestamp() };
+  if (patch.name !== undefined) data.name = patch.name.trim();
+  if (patch.city !== undefined) data.city = patch.city.trim();
+  if (patch.status !== undefined) data.status = patch.status;
+  await updateDoc(doc(db, tenantDoc(id)), data);
+}
+
+/** Okulu (tenant belgesini) siler. Not: alt koleksiyonlar otomatik silinmez. */
+export async function deleteSchool(id: string): Promise<void> {
+  if (!isFirebaseConfigured() || !db) {
+    throw new Error("Firebase yapılandırılmamış.");
+  }
+  await deleteDoc(doc(db, tenantDoc(id)));
 }
 
 /** Tüm okulları (tenant'ları) listeler. */

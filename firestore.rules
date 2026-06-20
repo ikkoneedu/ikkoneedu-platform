@@ -75,11 +75,16 @@ service cloud.firestore {
             || myRole() == 'SUPER_ADMIN');
     }
 
-    // Okul yönetimi: personel hesabı oluşturabilen üst kadro.
+    // Okul yönetimi: personel hesabı oluşturabilen / kullanıcı yönetebilen kadro.
     function isSchoolManager() {
       return isActiveUser()
         && (myRole() == 'SCHOOL_ADMIN' || myRole() == 'FOUNDER'
-            || myRole() == 'SUPER_ADMIN');
+            || myRole() == 'PRINCIPAL' || myRole() == 'SUPER_ADMIN');
+    }
+
+    // Üst yönetim rolleri — yetki yükseltme engellerinde kullanılır.
+    function isManagementRole(role) {
+      return role == 'SUPER_ADMIN' || role == 'FOUNDER' || role == 'SCHOOL_ADMIN';
     }
 
     // Kullanıcı bu tenant'a mı ait? (SUPER_ADMIN tüm tenant'lara erişir.)
@@ -133,6 +138,17 @@ service cloud.firestore {
           && request.resource.data.role == resource.data.role
           && request.resource.data.tenantId == resource.data.tenantId
           && request.resource.data.status == resource.data.status
+        )
+        || (
+          // Okul yönetimi (kurucu/okul yön./müdür) kendi tenant'ındaki bir
+          // kullanıcının durum/rolünü güncelleyebilir. Yetki yükseltme engeli:
+          // hedefin mevcut rolü ve atanacak yeni rol ÜST YÖNETİM olamaz; tenant
+          // değiştirilemez (başka okula taşıma yok).
+          isSchoolManager()
+          && resource.data.tenantId == myTenant()
+          && request.resource.data.tenantId == resource.data.tenantId
+          && !isManagementRole(resource.data.role)
+          && !isManagementRole(request.resource.data.role)
         );
       allow delete: if isSuperAdmin();
     }

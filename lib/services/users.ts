@@ -16,6 +16,7 @@ import {
   query,
   serverTimestamp,
   setDoc,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
@@ -122,6 +123,33 @@ export async function listTenantUsers(tenantId: string): Promise<TenantUser[]> {
       role: data.role as Role,
       status: String(data.status ?? ""),
     };
+  });
+}
+
+export type UserStatus = "ACTIVE" | "SUSPENDED";
+
+/** Kullanıcı durumunu değiştirir (askıya alma / yeniden etkinleştirme). */
+export async function setUserStatus(
+  uid: string,
+  status: UserStatus,
+): Promise<void> {
+  if (!isFirebaseConfigured() || !db) {
+    throw new Error("Firebase yapılandırılmamış.");
+  }
+  await updateDoc(doc(db, userProfileDoc(uid)), {
+    status,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+/** Kullanıcının rolünü değiştirir. Kurallar yetki yükseltmeyi engeller. */
+export async function setUserRole(uid: string, role: Role): Promise<void> {
+  if (!isFirebaseConfigured() || !db) {
+    throw new Error("Firebase yapılandırılmamış.");
+  }
+  await updateDoc(doc(db, userProfileDoc(uid)), {
+    role,
+    updatedAt: serverTimestamp(),
   });
 }
 

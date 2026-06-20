@@ -20,6 +20,10 @@ import {
   type TenantUser,
   type StaffRole,
 } from "@/lib/services/users";
+import {
+  UserAdminActions,
+  MANAGER_ASSIGNABLE_ROLES,
+} from "@/components/admin/UserAdminActions";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 /**
@@ -29,7 +33,12 @@ import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
  */
 export function StaffManager() {
   const { user, profile, firebaseReady, loading } = useAuth();
-  const canCreate = useHasRole([ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.SUPER_ADMIN]);
+  const canCreate = useHasRole([
+    ROLES.SCHOOL_ADMIN,
+    ROLES.FOUNDER,
+    ROLES.PRINCIPAL,
+    ROLES.SUPER_ADMIN,
+  ]);
   const tenantId = profile?.tenantId;
   const adminUid = user?.uid;
   const ready = firebaseReady && Boolean(tenantId) && Boolean(adminUid);
@@ -191,23 +200,51 @@ export function StaffManager() {
                 <tr className="text-xs uppercase tracking-wide text-muted">
                   <th className="pb-2 pr-4 font-medium">Ad</th>
                   <th className="pb-2 pr-4 font-medium">E-posta</th>
-                  <th className="pb-2 pr-4 font-medium">Rol</th>
-                  <th className="pb-2 font-medium">Durum</th>
+                  <th className="pb-2 pr-4 font-medium">Durum</th>
+                  <th className="pb-2 font-medium">{canCreate ? "Rol / İşlem" : "Rol"}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {users.map((u) => (
-                  <tr key={u.uid} className="text-content">
-                    <td className="py-2.5 pr-4">{u.displayName || "—"}</td>
-                    <td className="py-2.5 pr-4 text-muted">{u.email}</td>
-                    <td className="py-2.5 pr-4">{ROLE_LABELS[u.role] ?? u.role}</td>
-                    <td className="py-2.5">
-                      <span className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 text-xs text-emerald-400">
-                        {u.status || "—"}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                {users.map((u) => {
+                  const isManagement =
+                    u.role === ROLES.SUPER_ADMIN ||
+                    u.role === ROLES.FOUNDER ||
+                    u.role === ROLES.SCHOOL_ADMIN;
+                  const canManage =
+                    canCreate && u.uid !== adminUid && !isManagement;
+                  return (
+                    <tr key={u.uid} className="text-content">
+                      <td className="py-2.5 pr-4">{u.displayName || "—"}</td>
+                      <td className="py-2.5 pr-4 text-muted">{u.email}</td>
+                      <td className="py-2.5 pr-4">
+                        <span
+                          className={[
+                            "rounded-full border px-2 py-0.5 text-xs",
+                            u.status === "SUSPENDED"
+                              ? "border-brand/30 bg-brand/10 text-brand"
+                              : "border-emerald-400/30 bg-emerald-400/10 text-emerald-400",
+                          ].join(" ")}
+                        >
+                          {u.status === "SUSPENDED" ? "Askıda" : u.status || "—"}
+                        </span>
+                      </td>
+                      <td className="py-2.5">
+                        {canManage ? (
+                          <UserAdminActions
+                            uid={u.uid}
+                            role={u.role}
+                            status={u.status}
+                            assignableRoles={MANAGER_ASSIGNABLE_ROLES}
+                            onChanged={refresh}
+                            onError={setError}
+                          />
+                        ) : (
+                          ROLE_LABELS[u.role] ?? u.role
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
