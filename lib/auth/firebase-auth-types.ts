@@ -40,6 +40,10 @@ export interface UserProfile {
   /** Kampüs/şube. */
   schoolId?: string;
   status: UserStatus;
+  /** Öğretmen/öğrenci için bağlı sınıf kimliği. */
+  classId?: string;
+  /** Öğretmenin oluşturduğu kullanıcıyı (öğrenci/veli) üreten öğretmenin uid'i. */
+  createdBy?: string;
   /** Veli kullanıcılar için bağlı öğrenci kimlikleri. */
   linkedStudentIds?: string[];
   createdAt: string;

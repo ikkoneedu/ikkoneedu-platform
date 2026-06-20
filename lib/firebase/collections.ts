@@ -54,6 +54,8 @@ export const COLLECTIONS = {
   DEMO_REQUESTS: "demoRequests",
   SCHOLARSHIP_EXAMS: "scholarshipExams",
   SCHOLARSHIP_APPLICATIONS: "scholarshipApplications",
+  CLASSES: "classes",
+  ACCESS_CODES: "accessCodes",
 } as const;
 
 export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];
@@ -147,3 +149,19 @@ export const tenantSettings = (tenantId: string): string =>
 /** tenants/{tenantId}/auditLogs */
 export const tenantAuditLogs = (tenantId: string): string =>
   tenantPath(tenantId, COLLECTIONS.AUDIT_LOGS);
+
+/** tenants/{tenantId}/classes */
+export const tenantClasses = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.CLASSES);
+
+/** tenants/{tenantId}/classes/{classId} */
+export const classDoc = (tenantId: string, classId: string): string =>
+  `${tenantClasses(tenantId)}/${classId}`;
+
+/** tenants/{tenantId}/accessCodes (kod → hesap eşlemesi referansı) */
+export const tenantAccessCodes = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.ACCESS_CODES);
+
+/** tenants/{tenantId}/accessCodes/{code} */
+export const accessCodeDoc = (tenantId: string, code: string): string =>
+  `${tenantAccessCodes(tenantId)}/${code}`;

@@ -51,6 +51,13 @@ service cloud.firestore {
       return isActiveUser() && myRole() == 'SUPER_ADMIN';
     }
 
+    // Okul personeli: öğretmen/müdür/okul yöneticisi.
+    function isStaff() {
+      return isActiveUser()
+        && (myRole() == 'TEACHER' || myRole() == 'PRINCIPAL'
+            || myRole() == 'SCHOOL_ADMIN' || myRole() == 'SUPER_ADMIN');
+    }
+
     // Kullanıcı bu tenant'a mı ait? (SUPER_ADMIN tüm tenant'lara erişir.)
     function isTenantMember(tenantId) {
       return isActiveUser() && (myTenant() == tenantId || isSuperAdmin());
@@ -66,10 +73,18 @@ service cloud.firestore {
       // (yetki yükseltmeyi önler). Diğer tüm profilleri SUPER_ADMIN oluşturur.
       allow create: if isSuperAdmin()
         || (
+          // Halk açık kaydı: yalnızca kendi belgesi, PUBLIC rol + public tenant.
           isSelf(uid)
           && request.resource.data.role == 'PUBLIC'
           && request.resource.data.tenantId == 'public'
           && request.resource.data.status == 'ACTIVE'
+        )
+        || (
+          // Personel, kendi tenant'ında öğrenci/veli profili oluşturabilir.
+          isStaff()
+          && (request.resource.data.role == 'STUDENT'
+              || request.resource.data.role == 'PARENT')
+          && request.resource.data.tenantId == myTenant()
         );
 
       // Güncelleme/silme yalnızca SUPER_ADMIN.
