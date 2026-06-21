@@ -72,6 +72,11 @@ export function CrmInbox() {
 
   if (!firebaseReady || !canSee || apps === null || !tenantId) return null;
 
+  const isNew = (s: string) => s === "new" || s === "received" || s === "";
+  const newApps = apps.filter((a) => isNew(a.status)).length;
+  const newLeads = leads.filter((l) => isNew(l.status)).length;
+  const newInquiries = inquiries.filter((i) => isNew(i.status)).length;
+
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
       {error && (
@@ -84,6 +89,7 @@ export function CrmInbox() {
         <div className="mb-4 flex items-center gap-2">
           <Award size={18} className="text-accent" aria-hidden="true" />
           <h2 className="text-lg font-semibold text-content">Bursluluk Başvuruları</h2>
+          <NewBadge count={newApps} />
           <span className="ml-auto text-xs text-muted">{apps.length}</span>
         </div>
         {apps.length === 0 ? (
@@ -131,6 +137,7 @@ export function CrmInbox() {
         <div className="mb-4 flex items-center gap-2">
           <Contact size={18} className="text-accent" aria-hidden="true" />
           <h2 className="text-lg font-semibold text-content">Lead&apos;ler</h2>
+          <NewBadge count={newLeads} />
           <span className="ml-auto text-xs text-muted">{leads.length}</span>
         </div>
         {leads.length === 0 ? (
@@ -171,6 +178,7 @@ export function CrmInbox() {
         <div className="mb-4 flex items-center gap-2">
           <MessageSquare size={18} className="text-accent" aria-hidden="true" />
           <h2 className="text-lg font-semibold text-content">Aday Bilgi Talepleri</h2>
+          <NewBadge count={newInquiries} />
           <span className="ml-auto text-xs text-muted">{inquiries.length}</span>
         </div>
         {inquiries.length === 0 ? (
@@ -218,5 +226,15 @@ export function CrmInbox() {
         )}
       </GlassCard>
     </div>
+  );
+}
+
+/** İşlenmemiş (yeni) kayıt sayısını vurgulayan rozet. */
+function NewBadge({ count }: { count: number }) {
+  if (count <= 0) return null;
+  return (
+    <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-xs font-medium text-amber-300">
+      {count} yeni
+    </span>
   );
 }
