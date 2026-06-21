@@ -6,6 +6,7 @@ import { SectionHeader } from "@/components/shared/SectionHeader";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { SuperAdminConsole } from "@/components/super-admin/SuperAdminConsole";
+import { GlobalCrmPanel } from "@/components/super-admin/GlobalCrmPanel";
 import { productName } from "@/lib/constants";
 import { siteRoutes, type RouteStatus } from "@/lib/super-admin-data";
 
@@ -31,6 +32,14 @@ export default function SuperAdminPage() {
         />
 
         <SuperAdminConsole />
+
+        <SectionHeader
+          eyebrow="Tüm Okullar"
+          title="Global CRM"
+          description="Tüm okulların lead, bursluluk başvurusu ve aday taleplerini tek birleşik görünümde inceleyin."
+        />
+
+        <GlobalCrmPanel />
 
         <SectionHeader
           eyebrow="Erişim Merkezi"

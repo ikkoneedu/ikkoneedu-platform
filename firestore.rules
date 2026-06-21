@@ -191,6 +191,20 @@ service cloud.firestore {
       allow write: if isStaff() && myTenant() == tenantId;
     }
 
+    // ---- Global CRM (collection group) — yalnızca SUPER_ADMIN -------------
+    // Süper admin TÜM okulların CRM verisini tek sorguda okur. Bu kurallar
+    // yalnızca collection group sorgularına izin verir; tenant izolasyonunu
+    // bozmaz (tenant üyeleri yine yalnızca kendi alt koleksiyonlarını okur).
+    match /{path=**}/leads/{leadId} {
+      allow read: if isSuperAdmin();
+    }
+    match /{path=**}/scholarshipApplications/{appId} {
+      allow read: if isSuperAdmin();
+    }
+    match /{path=**}/demoRequests/{reqId} {
+      allow read: if isSuperAdmin();
+    }
+
     // ---- Platform geneli yapılandırma -------------------------------------
     match /platform/{document=**} {
       allow read: if isActiveUser();
