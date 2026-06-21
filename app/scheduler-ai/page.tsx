@@ -17,7 +17,6 @@ import {
   schedulerTimetable,
   schedulerConflictAnalysis,
   schedulerAiSuggestions,
-  schedulerExportActions,
 } from "@/lib/scheduler-mock-data";
 
 export const metadata: Metadata = {
@@ -59,7 +58,11 @@ export default function SchedulerAiPage() {
         </div>
 
         {/* 7. Kaydet / Dışa aktar */}
-        <ScheduleExportActions actions={schedulerExportActions} />
+        <ScheduleExportActions
+          days={schedulerDays}
+          hours={schedulerHours}
+          timetable={schedulerTimetable}
+        />
       </div>
     </PageShell>
   );
