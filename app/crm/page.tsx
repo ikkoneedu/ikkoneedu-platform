@@ -14,6 +14,7 @@ import { TaskCenter } from "@/components/crm/TaskCenter";
 import { RevenueForecast } from "@/components/crm/RevenueForecast";
 import { NewLeadForm } from "@/components/crm/NewLeadForm";
 import { CrmInbox } from "@/components/crm/CrmInbox";
+import { AppointmentManager } from "@/components/crm/AppointmentManager";
 import { productName } from "@/lib/constants";
 import {
   crmMetrics,
@@ -86,6 +87,9 @@ export default function CrmPage() {
 
         {/* Gerçek gelen kutusu — bursluluk başvuruları + lead'ler (canlı) */}
         <CrmInbox />
+
+        {/* Randevular (canlı — pipeline APPOINTMENT aşaması) */}
+        <AppointmentManager />
 
         {/* 2. Metrikler */}
         <CrmMetrics metrics={crmMetrics} />
