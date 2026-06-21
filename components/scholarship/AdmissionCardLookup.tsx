@@ -20,6 +20,7 @@ import {
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
+import { printToPDF, htmlTable } from "@/lib/export/download";
 import {
   activeExam,
   sampleResult,
@@ -39,6 +40,8 @@ export function AdmissionCardLookup() {
     setShown(true);
   };
 
+  const [copied, setCopied] = useState(false);
+
   const infoItems = [
     { id: "exam", icon: QrCode, label: "Sınav", value: activeExam.name },
     {
@@ -52,6 +55,43 @@ export function AdmissionCardLookup() {
     { id: "room", icon: DoorOpen, label: "Salon", value: "Salon A" },
     { id: "seat", icon: Armchair, label: "Sıra", value: "A-12" },
   ];
+
+  const cardText = () =>
+    `Sınav Giriş Belgesi\nAday: ${sampleResult.studentName}\n` +
+    infoItems.map((i) => `${i.label}: ${i.value}`).join("\n");
+
+  const downloadPdf = () => {
+    const table = htmlTable(
+      [{ label: "Bilgi" }, { label: "Değer" }],
+      infoItems.map((i) => [i.label, i.value]),
+    );
+    const rules = `<h3>Sınav Kuralları</h3><ul>${examRules
+      .map((r) => `<li>${r}</li>`)
+      .join("")}</ul>`;
+    const docs = `<h3>Gerekli Belgeler</h3><ul>${requiredDocuments
+      .map((d) => `<li>${d}</li>`)
+      .join("")}</ul>`;
+    printToPDF(
+      "Sınav Giriş Belgesi",
+      `<h1>Sınav Giriş Belgesi</h1><p class="meta">Aday: <strong>${sampleResult.studentName}</strong></p>${table}<div style="margin-top:20px;display:flex;gap:32px;flex-wrap:wrap">${rules}${docs}</div>`,
+    );
+  };
+
+  const sendEmail = () => {
+    const subject = encodeURIComponent("Sınav Giriş Belgesi");
+    const body = encodeURIComponent(cardText());
+    window.location.href = `mailto:?subject=${subject}&body=${body}`;
+  };
+
+  const copyDetails = async () => {
+    try {
+      await navigator.clipboard.writeText(cardText());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -190,24 +230,26 @@ export function AdmissionCardLookup() {
 
           {/* Eylemler */}
           <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <PrimaryButton type="button" size="md" className="w-full">
+            <PrimaryButton type="button" size="md" className="w-full" onClick={downloadPdf}>
               <FileDown size={18} aria-hidden="true" />
-              PDF İndir
+              PDF İndir / Yazdır
             </PrimaryButton>
             <PrimaryButton
               type="button"
               variant="secondary"
               size="md"
               className="w-full"
+              onClick={copyDetails}
             >
               <MessageSquare size={18} aria-hidden="true" />
-              SMS Gönder
+              {copied ? "Kopyalandı" : "Bilgileri Kopyala"}
             </PrimaryButton>
             <PrimaryButton
               type="button"
               variant="secondary"
               size="md"
               className="w-full"
+              onClick={sendEmail}
             >
               <Mail size={18} aria-hidden="true" />
               E-posta Gönder

@@ -18,6 +18,7 @@ import {
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
+import { printToPDF, htmlTable } from "@/lib/export/download";
 import { sampleResult, bursRules } from "@/lib/scholarship-exam-mock-data";
 
 /**
@@ -203,19 +204,34 @@ export function ScholarshipResultsLookup() {
               variant="secondary"
               size="md"
               className="w-full"
+              onClick={() => {
+                const statsTable = htmlTable(
+                  [{ label: "Bilgi" }, { label: "Değer" }],
+                  [
+                    ["Aday", sampleResult.studentName],
+                    ["Kazanılan Burs", sampleResult.award],
+                    ...stats.map((s) => [s.label, s.value] as [string, string]),
+                  ],
+                );
+                const rulesTable = htmlTable(
+                  [{ label: "Başarı Dilimi" }, { label: "Burs Oranı" }],
+                  bursRules.map((r) => [r.label, r.award]),
+                );
+                printToPDF(
+                  "Bursluluk Sınavı Sonuç Belgesi",
+                  `<h1>Sınav Sonuç Belgesi</h1>${statsTable}<h3 style="margin-top:20px">Burs Oranları</h3>${rulesTable}`,
+                );
+              }}
             >
               <FileDown size={18} aria-hidden="true" />
               Sonuç Belgesi İndir
             </PrimaryButton>
-            <PrimaryButton
-              type="button"
-              variant="secondary"
-              size="md"
-              className="w-full"
-            >
-              <PhoneCall size={18} aria-hidden="true" />
-              Okulu Ara
-            </PrimaryButton>
+            <a href="tel:+908502420000" className="w-full">
+              <PrimaryButton type="button" variant="secondary" size="md" className="w-full">
+                <PhoneCall size={18} aria-hidden="true" />
+                Okulu Ara
+              </PrimaryButton>
+            </a>
           </div>
         </GlassCard>
       )}
