@@ -8,6 +8,7 @@ import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLE_LABELS } from "@/lib/auth/role-constants";
 import { getSchool } from "@/lib/services/schools";
+import { getSettings } from "@/lib/services/settings";
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -24,6 +25,7 @@ function initials(name: string): string {
 export function AccountSummaryCard() {
   const { profile, firebaseReady } = useAuth();
   const [schoolName, setSchoolName] = useState<string | null>(null);
+  const [academicYear, setAcademicYear] = useState<string>("");
 
   useEffect(() => {
     const tid = profile?.tenantId;
@@ -31,8 +33,14 @@ export function AccountSummaryCard() {
     let active = true;
     void (async () => {
       try {
-        const s = await getSchool(tid);
-        if (active) setSchoolName(s?.name ?? null);
+        const [s, academic] = await Promise.all([
+          getSchool(tid),
+          getSettings(tid, "academic"),
+        ]);
+        if (active) {
+          setSchoolName(s?.name ?? null);
+          setAcademicYear(academic.academicYear || "");
+        }
       } catch {
         /* yoksay */
       }
@@ -70,6 +78,14 @@ export function AccountSummaryCard() {
             <School size={13} className="text-accent" aria-hidden="true" />
             {school}
           </span>
+          {academicYear && (
+            <>
+              <span className="text-muted/40" aria-hidden="true">
+                ·
+              </span>
+              <span>{academicYear}</span>
+            </>
+          )}
         </p>
       </div>
       <Link href="/profile" className="sm:ml-auto">

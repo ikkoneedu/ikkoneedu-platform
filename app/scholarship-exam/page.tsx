@@ -5,6 +5,7 @@ import { ScholarshipExamBuilder } from "@/components/scholarship/ScholarshipExam
 import { ScholarshipContentManager } from "@/components/scholarship/ScholarshipContentManager";
 import { ScholarshipApplicationsTable } from "@/components/scholarship/ScholarshipApplicationsTable";
 import { ScholarshipResultsManager } from "@/components/scholarship/ScholarshipResultsManager";
+import { ScholarshipSettingsBanner } from "@/components/scholarship/ScholarshipSettingsBanner";
 import { ClassPlacementAdvisor } from "@/components/scholarship/ClassPlacementAdvisor";
 import { AiSessionPlanner } from "@/components/scholarship/AiSessionPlanner";
 import { RoomSeatPlanner } from "@/components/scholarship/RoomSeatPlanner";
@@ -35,6 +36,9 @@ export default function ScholarshipExamPage() {
           title="Bursluluk Sınavı Yönetimi"
           description="Okulunuza özel bursluluk sınavlarını oluşturun, başvuruları yönetin ve kayıt dönüşümünü takip edin."
         />
+
+        {/* Bursluluk ayar şeridi (settings'ten okur) */}
+        <ScholarshipSettingsBanner />
 
         {/* 1. Genel durum panosu */}
         <ScholarshipDashboard />
