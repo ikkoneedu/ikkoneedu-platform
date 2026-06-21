@@ -1,5 +1,6 @@
 import { Building2 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import type { CampusRow } from "@/lib/executive-mock-data";
 
 interface CampusComparisonProps {
@@ -15,9 +16,24 @@ const columns = ["Öğrenci", "Başvuru", "Memnuniyet", "AI Kullanımı", "Gelir
 export function CampusComparison({ rows }: CampusComparisonProps) {
   return (
     <GlassCard tone="navy">
-      <div className="mb-5 flex items-center gap-2">
+      <div className="mb-5 flex flex-wrap items-center gap-2">
         <Building2 size={18} className="text-accent" aria-hidden="true" />
         <h2 className="text-lg font-semibold text-content">Kampüs Karşılaştırması</h2>
+        <DataExportButtons
+          className="ml-auto"
+          filename="kampus-karsilastirmasi"
+          title="Kampüs Karşılaştırması"
+          columns={[
+            { key: "name", label: "Kampüs" },
+            { key: "students", label: "Öğrenci" },
+            { key: "applications", label: "Başvuru" },
+            { key: "satisfaction", label: "Memnuniyet" },
+            { key: "aiUsage", label: "AI Kullanımı" },
+            { key: "revenue", label: "Gelir" },
+            { key: "status", label: "Durum" },
+          ]}
+          rows={rows as unknown as Record<string, unknown>[]}
+        />
       </div>
 
       <div className="overflow-x-auto">
