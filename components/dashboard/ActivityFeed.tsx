@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { MoreHorizontal } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -64,9 +65,11 @@ export function ActivityFeed({ title, items }: ActivityFeedProps) {
         })}
       </ul>
 
-      <PrimaryButton variant="secondary" size="md" className="mt-4 w-full">
-        Tümünü Gör
-      </PrimaryButton>
+      <Link href="/notifications" className="mt-4 block">
+        <PrimaryButton variant="secondary" size="md" className="w-full">
+          Tümünü Gör
+        </PrimaryButton>
+      </Link>
     </GlassCard>
   );
 }

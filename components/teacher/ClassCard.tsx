@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Users, TrendingUp, Activity, ArrowRight } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -41,10 +42,12 @@ export function ClassCard({ classItem }: ClassCardProps) {
         </div>
       </div>
 
-      <PrimaryButton variant="secondary" size="sm" className="mt-5 w-full">
-        Sınıfı Aç
-        <ArrowRight size={15} aria-hidden="true" />
-      </PrimaryButton>
+      <Link href="/teacher/classes" className="mt-5 block">
+        <PrimaryButton variant="secondary" size="sm" className="w-full">
+          Sınıfı Aç
+          <ArrowRight size={15} aria-hidden="true" />
+        </PrimaryButton>
+      </Link>
     </GlassCard>
   );
 }

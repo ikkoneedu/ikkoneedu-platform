@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Clock, Users, ClipboardCheck } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -27,10 +28,12 @@ export function TeacherSchedule({ lessons }: TeacherScheduleProps) {
             <Users size={13} aria-hidden="true" />
             {lesson.count} öğrenci
           </p>
-          <PrimaryButton variant="secondary" size="sm" className="mt-4 w-full">
-            <ClipboardCheck size={15} aria-hidden="true" />
-            Yoklama Al
-          </PrimaryButton>
+          <Link href="/teacher" className="mt-4 block">
+            <PrimaryButton variant="secondary" size="sm" className="w-full">
+              <ClipboardCheck size={15} aria-hidden="true" />
+              Yoklama Al
+            </PrimaryButton>
+          </Link>
         </GlassCard>
       ))}
     </div>
