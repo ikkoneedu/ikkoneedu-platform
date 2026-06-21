@@ -1,5 +1,6 @@
 import { Receipt } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import type { Payment, PaymentStatus } from "@/lib/finance-mock-data";
 
 interface PaymentTableProps {
@@ -21,9 +22,23 @@ const columns = ["Sınıf", "Tutar", "Tarih", "Durum"];
 export function PaymentTable({ rows }: PaymentTableProps) {
   return (
     <GlassCard tone="navy">
-      <div className="mb-5 flex items-center gap-2">
+      <div className="mb-5 flex flex-wrap items-center gap-2">
         <Receipt size={18} className="text-accent" aria-hidden="true" />
         <h2 className="text-lg font-semibold text-content">Tahsilat Tablosu</h2>
+        <DataExportButtons
+          className="ml-auto"
+          filename="tahsilat-tablosu"
+          title="Tahsilat Tablosu"
+          columns={[
+            { key: "parent", label: "Veli" },
+            { key: "student", label: "Öğrenci" },
+            { key: "grade", label: "Sınıf" },
+            { key: "amount", label: "Tutar" },
+            { key: "date", label: "Tarih" },
+            { key: "status", label: "Durum" },
+          ]}
+          rows={rows as unknown as Record<string, unknown>[]}
+        />
       </div>
 
       <div className="overflow-x-auto">
