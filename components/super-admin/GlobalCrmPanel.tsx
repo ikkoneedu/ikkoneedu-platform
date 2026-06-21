@@ -20,6 +20,7 @@ import {
 } from "@/lib/services/crm-global";
 import { listSchools, type SchoolRecord } from "@/lib/services/schools";
 import { CrmStatusSelect } from "@/components/crm/CrmStatusSelect";
+import { CRM_STATUSES, crmStatusLabel } from "@/lib/services/crm-actions";
 import { createPlatformAuditLog } from "@/lib/services/audit-logs";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
@@ -93,6 +94,23 @@ export function GlobalCrmPanel() {
     return map;
   }, [entries]);
 
+  // Pipeline durum dağılımı (filtreye duyarlı) + dönüşüm oranı.
+  const statusCounts = useMemo(() => {
+    const norm = (s: string) => (s === "received" ? "new" : s);
+    const map = new Map<string, number>();
+    for (const e of filtered) {
+      const s = norm(e.status);
+      map.set(s, (map.get(s) ?? 0) + 1);
+    }
+    return map;
+  }, [filtered]);
+
+  const conversionRate = useMemo(() => {
+    if (filtered.length === 0) return 0;
+    const converted = statusCounts.get("converted") ?? 0;
+    return Math.round((converted / filtered.length) * 100);
+  }, [filtered, statusCounts]);
+
   if (loading) {
     return <GlassCard tone="navy" className="text-sm text-muted">Yükleniyor…</GlassCard>;
   }
@@ -155,6 +173,37 @@ export function GlobalCrmPanel() {
             {crmKindLabel(k)}: {kindCounts.get(k) ?? 0}
           </span>
         ))}
+      </div>
+
+      {/* Dönüşüm hunisi (filtreye duyarlı) */}
+      <div className="mb-4 rounded-xl border border-white/10 bg-white/[0.02] p-3">
+        <div className="mb-2 flex items-center justify-between">
+          <span className="text-xs font-semibold uppercase tracking-wide text-muted">
+            Pipeline
+          </span>
+          <span className="text-xs text-muted">
+            Dönüşüm oranı:{" "}
+            <span className="font-semibold text-emerald-300">%{conversionRate}</span>
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {CRM_STATUSES.map((s) => {
+            const count = statusCounts.get(s) ?? 0;
+            const pct = filtered.length ? Math.round((count / filtered.length) * 100) : 0;
+            return (
+              <div
+                key={s}
+                className="flex min-w-[96px] flex-1 flex-col gap-1 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1.5"
+              >
+                <span className="text-xs text-muted">{crmStatusLabel(s)}</span>
+                <span className="text-sm font-semibold text-content">
+                  {count}
+                  <span className="ml-1 text-xs font-normal text-muted">%{pct}</span>
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Filtreler */}

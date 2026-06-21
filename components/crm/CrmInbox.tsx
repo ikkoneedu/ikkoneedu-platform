@@ -114,6 +114,7 @@ export function CrmInbox() {
                       kind="scholarship"
                       id={a.id}
                       studentName={a.studentName}
+                      parentName={a.parentName}
                       staffUid={user.uid}
                       staffName={profile?.displayName}
                       onConverted={refresh}

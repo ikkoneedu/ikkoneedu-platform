@@ -9,18 +9,25 @@ import { updateCrmStatus } from "@/lib/services/crm-actions";
 import type { CrmKind } from "@/lib/services/crm-global";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
+interface ConvertResult {
+  studentCode: string;
+  parentCode?: string;
+}
+
 /**
  * Bursluluk başvurusu / aday talebini ÖĞRENCİ kaydına dönüştürür.
  *
  * Mevcut modele uygun: öğrenci hesabı erişim KODU ile üretilir
- * (createCodedAccount). Üretilen kod personele gösterilir; aileye iletilir.
- * Ardından CRM kaydı "Kayıt oldu" (converted) olarak işaretlenir.
+ * (createCodedAccount), e-posta uydurulmaz. Başvuruda veli adı varsa öğrenciye
+ * BAĞLI bir veli kodu da üretilir. Üretilen kod(lar) personele gösterilir ve
+ * aileye iletilir. Ardından CRM kaydı "Kayıt oldu" (converted) işaretlenir.
  */
 export function ConvertToStudentAction({
   tenantId,
   kind,
   id,
   studentName,
+  parentName,
   staffUid,
   staffName,
   onConverted,
@@ -29,29 +36,47 @@ export function ConvertToStudentAction({
   kind: CrmKind;
   id: string;
   studentName: string;
+  /** Verilirse öğrenciye bağlı bir veli kodu da üretilir. */
+  parentName?: string;
   staffUid: string;
   staffName?: string;
   onConverted?: () => void | Promise<void>;
 }) {
   const [busy, setBusy] = useState(false);
-  const [code, setCode] = useState<string | null>(null);
+  const [result, setResult] = useState<ConvertResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<string | null>(null);
 
   const convert = async () => {
     if (busy) return;
     setBusy(true);
     setError(null);
     try {
-      const result = await createCodedAccount({
+      const student = await createCodedAccount({
         tenantId,
         teacherUid: staffUid,
         teacherName: staffName,
         role: ROLES.STUDENT,
         displayName: studentName || "Öğrenci",
       });
+
+      let parentCode: string | undefined;
+      const pName = parentName?.trim();
+      if (pName) {
+        const parent = await createCodedAccount({
+          tenantId,
+          teacherUid: staffUid,
+          teacherName: staffName,
+          role: ROLES.PARENT,
+          displayName: pName,
+          linkedStudentIds: [student.uid],
+          linkedStudents: [{ uid: student.uid, displayName: student.displayName }],
+        });
+        parentCode = parent.code;
+      }
+
       await updateCrmStatus({ tenantId, kind, id, status: "converted" });
-      setCode(result.code);
+      setResult({ studentCode: student.code, parentCode });
       await onConverted?.();
     } catch (err) {
       setError(getAuthErrorMessage(err));
@@ -60,32 +85,33 @@ export function ConvertToStudentAction({
     }
   };
 
-  const copyCode = async () => {
-    if (!code) return;
+  const copy = async (code: string) => {
     try {
       await navigator.clipboard.writeText(code);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setCopied(code);
+      setTimeout(() => setCopied(null), 2000);
     } catch {
-      setCopied(false);
+      setCopied(null);
     }
   };
 
-  if (code) {
+  if (result) {
     return (
-      <div className="flex items-center gap-2 rounded-lg border border-emerald-400/30 bg-emerald-400/5 px-2.5 py-1.5">
-        <CheckCircle2 size={14} className="shrink-0 text-emerald-400" aria-hidden="true" />
-        <span className="text-xs text-content">
-          Öğrenci kodu: <span className="font-mono text-emerald-300">{code}</span>
-        </span>
-        <button
-          type="button"
-          onClick={copyCode}
-          className="ml-auto text-muted transition hover:text-content"
-          aria-label="Kodu kopyala"
-        >
-          {copied ? <CheckCircle2 size={13} /> : <Copy size={13} />}
-        </button>
+      <div className="flex flex-col gap-1.5 rounded-lg border border-emerald-400/30 bg-emerald-400/5 px-2.5 py-2">
+        <CodeRow
+          label="Öğrenci kodu"
+          code={result.studentCode}
+          copied={copied === result.studentCode}
+          onCopy={() => copy(result.studentCode)}
+        />
+        {result.parentCode && (
+          <CodeRow
+            label="Veli kodu"
+            code={result.parentCode}
+            copied={copied === result.parentCode}
+            onCopy={() => copy(result.parentCode!)}
+          />
+        )}
       </div>
     );
   }
@@ -105,6 +131,35 @@ export function ConvertToStudentAction({
           </button>
         </span>
       )}
+    </div>
+  );
+}
+
+function CodeRow({
+  label,
+  code,
+  copied,
+  onCopy,
+}: {
+  label: string;
+  code: string;
+  copied: boolean;
+  onCopy: () => void;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <CheckCircle2 size={13} className="shrink-0 text-emerald-400" aria-hidden="true" />
+      <span className="text-xs text-content">
+        {label}: <span className="font-mono text-emerald-300">{code}</span>
+      </span>
+      <button
+        type="button"
+        onClick={onCopy}
+        className="ml-auto text-muted transition hover:text-content"
+        aria-label={`${label} kopyala`}
+      >
+        {copied ? <CheckCircle2 size={13} /> : <Copy size={13} />}
+      </button>
     </div>
   );
 }
