@@ -198,6 +198,12 @@ service cloud.firestore {
       allow read, write: if isTenantMember(tenantId);
     }
 
+    // CRM randevuları — lead'ler gibi; PR/SALES dahil tenant üyesi yönetir.
+    // (Genel tenant kuralı yazımı isStaff ister; PR/SALES isStaff değildir.)
+    match /tenants/{tenantId}/appointments/{docId} {
+      allow read, write: if isTenantMember(tenantId);
+    }
+
     // ---- Diğer tüm tenant verileri ----------------------------------------
     // Öğrenci, öğretmen, veli, duyuru, mesaj, ayar, auditLog vb.
     // Okuma: tenant üyesi (öğrenci/veli dahil). Yazma: yalnızca personel
