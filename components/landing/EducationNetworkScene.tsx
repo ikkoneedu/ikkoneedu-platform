@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type MutableRefObject } from "react";
 import { ModuleNode } from "@/components/landing/ModuleNode";
-import { NETWORK_MODULES } from "@/components/landing/cinematic-modules";
+import { NETWORK_MODULES, TONE_RGB } from "@/components/landing/cinematic-modules";
 import {
   createParticles,
   drawParticles,
@@ -59,6 +59,7 @@ export function EducationNetworkScene({
   const flashRef = useRef<HTMLDivElement>(null);
   const shockRef = useRef<HTMLDivElement>(null);
   const shock2Ref = useRef<HTMLDivElement>(null);
+  const captionRef = useRef<HTMLDivElement>(null);
   const nodeRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
@@ -204,8 +205,36 @@ export function EducationNetworkScene({
           )})`;
           el.style.opacity = ((0.4 + 0.6 * depthNorm) * appear).toFixed(3);
           const blur = allowBlur ? (1 - depthNorm) * 3 : 0;
-          el.style.filter = blur > 0.25 ? `blur(${blur.toFixed(1)}px)` : "none";
+          let filter = blur > 0.25 ? `blur(${blur.toFixed(1)}px)` : "";
+          // Ateşlenme anında kartın anlık ışıması.
+          if (flash > 0.05) {
+            const rgb = TONE_RGB[NETWORK_MODULES[i].tone];
+            filter += ` drop-shadow(0 0 ${(10 * flash).toFixed(1)}px rgba(${rgb[0]},${rgb[1]},${rgb[2]},${(0.75 * flash).toFixed(2)}))`;
+          }
+          el.style.filter = filter.trim() || "none";
           el.style.zIndex = String(1000 + Math.round(z2));
+        }
+      }
+
+      // Ateşlenen modülün adını çekirdeğin altında kısa süre öne çıkar.
+      if (captionRef.current) {
+        const cap = captionRef.current;
+        let topI = -1;
+        let topFlash = 0;
+        for (let i = 0; i < N; i += 1) {
+          if (projected[i].flash > topFlash) {
+            topFlash = projected[i].flash;
+            topI = i;
+          }
+        }
+        if (!reduced && boot < 0.97 && topFlash > 0.12 && topI >= 0) {
+          if (cap.dataset.idx !== String(topI)) {
+            cap.textContent = NETWORK_MODULES[topI].label;
+            cap.dataset.idx = String(topI);
+          }
+          cap.style.opacity = topFlash.toFixed(3);
+        } else {
+          cap.style.opacity = "0";
         }
       }
 
@@ -302,6 +331,13 @@ export function EducationNetworkScene({
         <div className="absolute inset-[12%] animate-[spin_24s_linear_infinite_reverse] rounded-full border border-brand/20" />
         <div className="absolute inset-[24%] animate-[spin_30s_linear_infinite] rounded-full border border-dashed border-accent/15" />
       </div>
+
+      {/* Ateşlenen modül adı — çekirdeğin altında kısa vurgu */}
+      <div
+        ref={captionRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-[70%] z-[1] -translate-x-1/2 font-mono text-xs uppercase tracking-[0.4em] text-accent opacity-0 will-change-[opacity] sm:text-sm"
+      />
 
       {/* Modül düğümleri (cam kartlar) */}
       {NETWORK_MODULES.map((m, i) => (
