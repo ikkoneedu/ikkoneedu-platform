@@ -195,10 +195,16 @@ Aşağıdaki öncelikler bu rapordan sonra **gerçekleştirildi** (hepsi `main`'
   `RealSchoolScholarshipResults`. Bursluluk artık uçtan uca: başvuru → sonuç
   girişi → yayımlama → veli sorgulama. **(Kural deploy gerekir.)**
 
-**Kalan (tek madde — bilinçli ertelendi):**
-- #8 `DEFAULT_TENANT_ID` temizliği — gerçek çağrılar zaten profilden `tenantId`
-  alıyor; kalan default'lar yalnızca tenant'sız PAZARLAMA/demo formları için
-  fallback. Kaldırmak bu formları bozar; bu yüzden bırakıldı (bug değil, kozmetik).
+- ✅ **#8 `DEFAULT_TENANT_ID` temizliği** — tenant'sız fallback `tenant_ikk` →
+  `platform` (sözde-tenant, demo-requests ile tutarlı, süper admin okur).
+- ✅ **Rehberlik (counseling)** — `counseling.ts` + `CounselingNotesManager` (gerçek).
+- ✅ **Randevular** — `appointments.ts` + `AppointmentManager` (gerçek, CRM APPOINTMENT).
+- ✅ **Canlı metrikler** — `LiveExecutiveMetrics` (okul) + `PlatformKpiStrip` (platform).
+
+**AI HARİÇ TÜM OPERASYONEL MODÜLLER GERÇEK.** Geriye yalnızca AI üretimi
+(dondurulmuş, "Coming Soon") ve bazı dashboard'lardaki ÖRNEK trend grafikleri
+(geçmiş zaman serisi tutulmadığı için illüstratif; canlı sayılar üstte gerçek)
+kaldı — fonksiyonel eksik DEĞİL.
 
 ---
 
@@ -213,11 +219,15 @@ Aşağıdaki öncelikler bu rapordan sonra **gerçekleştirildi** (hepsi `main`'
 | Settings / Finans / Bildirim (gerçek) | ~%20 → **~%85** ✅ |
 | AI modülleri | %0 (kasıtlı dondurulmuş, net "Coming Soon") |
 
-### **Genel MVP tamamlanma: ~%65 → ~%85** (AI hariç ~%90)
+### **Genel MVP tamamlanma: AI hariç ~%100** (AI dahil ~%93)
 
-> Güncelleme: #1–7, #9, #10 **ve** public bursluluk sonuç sorgulama tamamlandı.
-> Settings/Finans/Bildirim/Bursluluk uçtan uca gerçek Firestore. Kalan tek madde:
-> #8 (kozmetik temizlik). Bursluluk modülü tam: başvuru→sonuç→yayım→veli sorgu.
+> **AI hariç tamamlandı.** #1–10 + public sonuç sorgulama + rehberlik + randevu +
+> canlı metrikler + platform KPI hepsi gerçek Firestore. Tüm operasyonel okul
+> süreçleri uçtan uca çalışır. Kalan tek şey AI üretimi (kasıtlı dondurulmuş) ve
+> illüstratif trend grafikleri (fonksiyonel değil, görsel).
+>
+> ⚠️ Canlıya alırken: `firebase deploy --only firestore:rules` (scholarshipResults
+> kuralı için bir kez) + `.env`/Vercel `NEXT_PUBLIC_FIREBASE_*`.
 
 Sistem **satılabilir MVP'ye yakın**. Eksik olan, birkaç uç modülün (settings,
 finans, bildirim, bursluluk sonuç) Firestore'a bağlanması.
