@@ -41,6 +41,9 @@ export interface SchoolClass {
   name: string;
   /** Yapı sınıfı mı (yönetici üretti) yoksa öğretmen sınıfı mı. */
   kind: "structure" | "teacher";
+  /** Atanmış sınıf öğretmeni (varsa). */
+  classTeacherUid?: string;
+  classTeacherName?: string;
 }
 
 function mapClass(id: string, data: Record<string, unknown>): SchoolClass {
@@ -50,6 +53,12 @@ function mapClass(id: string, data: Record<string, unknown>): SchoolClass {
     branch: String(data.branch ?? ""),
     name: String(data.name ?? ""),
     kind: data.kind === "structure" ? "structure" : "teacher",
+    classTeacherUid: data.classTeacherUid
+      ? String(data.classTeacherUid)
+      : undefined,
+    classTeacherName: data.classTeacherName
+      ? String(data.classTeacherName)
+      : undefined,
   };
 }
 
