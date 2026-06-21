@@ -72,6 +72,7 @@ export const navigationItems: NavigationItem[] = [
   { id: "genel-bakis", label: "Genel Bakış", href: "/", icon: LayoutDashboard },
   { id: "admin", label: "Yönetim Paneli", href: "/admin", icon: LayoutDashboard },
   { id: "personel", label: "Personel ve Kullanıcılar", href: "/admin/users", icon: UserPlus },
+  { id: "ders-programi", label: "Ders Programı ve Sınıflar", href: "/admin/timetable", icon: CalendarDays },
   { id: "executive", label: "Executive", href: "/executive", icon: BarChart3 },
   { id: "okullar", label: "Okullar", href: "/school-select", icon: School },
   { id: "ogrenciler", label: "Öğrenciler", href: "/student", icon: GraduationCap },
@@ -102,6 +103,7 @@ export const mobileNavigationItems: NavigationItem[] = navigationItems.filter(
 export const adminNavigationItems: NavigationItem[] = [
   { id: "panel", label: "Panel", href: "/admin", icon: LayoutDashboard },
   { id: "akademik", label: "Akademik", href: "/teacher", icon: BookOpen },
+  { id: "ders-programi", label: "Ders Programı", href: "/admin/timetable", icon: CalendarDays },
   { id: "ai-zekasi", label: "AI Zekası", href: "/ai-brain", icon: Brain },
   { id: "takvim", label: "Takvim", href: "/scheduler-ai", icon: CalendarDays },
   { id: "analizler", label: "Analizler", href: "/executive", icon: BarChart3 },

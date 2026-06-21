@@ -23,6 +23,7 @@ export const siteRoutes: RouteEntry[] = [
   { id: "student", name: "Öğrenci Portalı", route: "/student", description: "Öğrenci merkezi: program, görev, başarı.", status: "Mock" },
   { id: "teacher", name: "Öğretmen Portalı", route: "/teacher", description: "Sınıf, ödev ve AI içerik yönetimi.", status: "Mock" },
   { id: "ai-brain", name: "AI Brain", route: "/ai-brain", description: "Merkezi yapay zeka sohbet ve asistan merkezi.", status: "Geliştiriliyor" },
+  { id: "timetable", name: "Ders Programı ve Sınıflar", route: "/admin/timetable", description: "Kademe/şube yapısı ve sınıf bazlı haftalık ders programı (gerçek veri).", status: "Hazır" },
   { id: "scheduler-ai", name: "AI Ders Programı", route: "/scheduler-ai", description: "Yapay zeka destekli ders programı oluşturucu.", status: "Geliştiriliyor" },
   { id: "exam-ai", name: "AI Sınav Oluşturucu", route: "/exam-ai", description: "Sınav, quiz ve çalışma kağıdı üretici.", status: "Geliştiriliyor" },
   { id: "admissions-ai", name: "AI Kayıt Danışmanı", route: "/admissions-ai", description: "Aday veli iletişimi, kayıt funnel ve lead yönetimi.", status: "Geliştiriliyor" },
