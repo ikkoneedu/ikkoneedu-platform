@@ -184,6 +184,15 @@ service cloud.firestore {
       allow read, update, delete: if isTenantMember(tenantId);
     }
 
+    // Yayımlanmış bursluluk SONUÇLARI — veli/aday başvuru numarasıyla sorgular.
+    // Okuma HERKESE açıktır (belge id = başvuru no, erişim anahtarıdır; içerik
+    // hassas değildir: ad, puan, burs oranı, salon). Yazma yalnızca personel.
+    match /tenants/{tenantId}/scholarshipResults/{appNo} {
+      allow read: if true;
+      allow write: if isStaff() && myTenant() == tenantId
+        && tenantNotSuspended(tenantId);
+    }
+
     // CRM lead — iç kullanım; yalnızca tenant üyesi oluşturur/okur.
     match /tenants/{tenantId}/leads/{docId} {
       allow read, write: if isTenantMember(tenantId);

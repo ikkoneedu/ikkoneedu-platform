@@ -10,6 +10,7 @@ import { ROLES } from "@/lib/auth/role-constants";
 import {
   listScholarshipApplications,
   setScholarshipResult,
+  publishScholarshipResult,
   type ScholarshipApplicationRecord,
 } from "@/lib/services/scholarship-applications";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
@@ -106,6 +107,18 @@ export function ScholarshipResultsManager() {
         examScore: dr.examScore,
         scholarshipRate: dr.scholarshipRate,
       });
+      // Veli/aday başvuru numarasıyla sorgulayabilsin diye public sonucu yayımla.
+      if (a.applicationNo) {
+        await publishScholarshipResult(tenantId, {
+          applicationNo: a.applicationNo,
+          studentName: a.studentName,
+          examScore: dr.examScore,
+          scholarshipRate: dr.scholarshipRate,
+          status: "result_published",
+          room: a.room,
+          seatNo: a.seatNo,
+        });
+      }
       await load();
     } catch (err) {
       setError(getAuthErrorMessage(err));

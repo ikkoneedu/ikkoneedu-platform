@@ -6,14 +6,22 @@
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   query,
   serverTimestamp,
+  setDoc,
   updateDoc,
 } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { createDocument, type CreateResult } from "@/lib/services/firestore-helpers";
-import { tenantScholarshipApplications } from "@/lib/firebase/collections";
+import {
+  tenantScholarshipApplications,
+  COLLECTIONS,
+} from "@/lib/firebase/collections";
+
+const resultsPath = (tenantId: string) =>
+  `${COLLECTIONS.TENANTS}/${tenantId}/scholarshipResults`;
 
 /** Bir tenant belirtilmezse kullanılan varsayılan (genel bursluluk sayfası). */
 const DEFAULT_TENANT_ID = "tenant_ikk";
@@ -148,4 +156,56 @@ export async function setScholarshipResult(
     doc(db, `${tenantScholarshipApplications(tenantId)}/${applicationId}`),
     data,
   );
+}
+
+export interface PublicScholarshipResult {
+  applicationNo: string;
+  studentName: string;
+  examScore: string;
+  scholarshipRate: string;
+  status: string;
+  room: string;
+  seatNo: string;
+}
+
+/**
+ * Sonucu HALKA AÇIK sorgulanabilir belgeye yayımlar (id = başvuru no).
+ * Veli/aday yalnızca başvuru numarasıyla sorgular. İçerik hassas değildir.
+ */
+export async function publishScholarshipResult(
+  tenantId: string,
+  result: PublicScholarshipResult,
+): Promise<void> {
+  if (!isFirebaseConfigured() || !db) return;
+  const id = result.applicationNo.trim();
+  if (!id) return;
+  await setDoc(
+    doc(db, `${resultsPath(tenantId)}/${id}`),
+    { ...result, updatedAt: serverTimestamp() },
+    { merge: true },
+  );
+}
+
+/** Başvuru numarasıyla yayımlanmış sonucu getirir (halka açık). */
+export async function getPublicScholarshipResult(
+  tenantId: string,
+  applicationNo: string,
+): Promise<PublicScholarshipResult | null> {
+  if (!isFirebaseConfigured() || !db || !tenantId || !applicationNo) return null;
+  try {
+    const snap = await getDoc(doc(db, `${resultsPath(tenantId)}/${applicationNo.trim()}`));
+    if (!snap.exists()) return null;
+    const d = snap.data();
+    return {
+      applicationNo: String(d.applicationNo ?? applicationNo),
+      studentName: String(d.studentName ?? ""),
+      examScore: String(d.examScore ?? ""),
+      scholarshipRate: String(d.scholarshipRate ?? ""),
+      status: String(d.status ?? ""),
+      room: String(d.room ?? ""),
+      seatNo: String(d.seatNo ?? ""),
+    };
+  } catch {
+    return null;
+  }
 }
