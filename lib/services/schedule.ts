@@ -57,6 +57,7 @@ export interface ScheduleInput {
   startTime: string;
   subject: string;
   teacherName: string;
+  teacherUid?: string;
 }
 
 export interface ScheduleEntry {
@@ -67,6 +68,7 @@ export interface ScheduleEntry {
   startTime: string;
   subject: string;
   teacherName: string;
+  teacherUid: string;
 }
 
 export async function createScheduleEntry(input: ScheduleInput): Promise<void> {
@@ -80,6 +82,7 @@ export async function createScheduleEntry(input: ScheduleInput): Promise<void> {
     startTime: input.startTime,
     subject: input.subject,
     teacherName: input.teacherName,
+    teacherUid: input.teacherUid ?? "",
     createdAt: serverTimestamp(),
   });
 }
@@ -132,6 +135,7 @@ export async function listClassSchedule(
       startTime: String(data.startTime ?? ""),
       subject: String(data.subject ?? ""),
       teacherName: String(data.teacherName ?? ""),
+      teacherUid: String(data.teacherUid ?? ""),
     };
   });
   items.sort((a, b) =>
@@ -154,6 +158,7 @@ export async function listSchedule(tenantId: string): Promise<ScheduleEntry[]> {
       startTime: String(data.startTime ?? ""),
       subject: String(data.subject ?? ""),
       teacherName: String(data.teacherName ?? ""),
+      teacherUid: String(data.teacherUid ?? ""),
     };
   });
   items.sort((a, b) =>

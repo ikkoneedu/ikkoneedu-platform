@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { AccountSummaryCard } from "@/components/shared/AccountSummaryCard";
 import {
-  BookOpen,
   School,
   BarChart3,
   PenLine,
@@ -16,10 +15,10 @@ import { AssignmentBoard } from "@/components/assignments/AssignmentBoard";
 import { MessagingPanel } from "@/components/messaging/MessagingPanel";
 import { GradeBoard } from "@/components/grades/GradeBoard";
 import { ScheduleBoard } from "@/components/schedule/ScheduleBoard";
+import { MyTimetable } from "@/components/teacher/MyTimetable";
 import { AttendanceBoard } from "@/components/attendance/AttendanceBoard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
-import { TeacherSchedule } from "@/components/teacher/TeacherSchedule";
 import { ClassCard } from "@/components/teacher/ClassCard";
 import { TeacherAiAssistant } from "@/components/teacher/TeacherAiAssistant";
 import { AssignmentOverview } from "@/components/teacher/AssignmentOverview";
@@ -27,7 +26,6 @@ import { ExamBuilderPreview } from "@/components/teacher/ExamBuilderPreview";
 import { ParentMessages } from "@/components/teacher/ParentMessages";
 import { productName } from "@/lib/constants";
 import {
-  teacherSchedule,
   teacherClasses,
   teacherAiSuggestions,
   teacherAssignmentStats,
@@ -63,6 +61,9 @@ export default function TeacherPage() {
           description="Bugün 4 dersiniz, 2 bekleyen ödev kontrolünüz ve 1 veli mesajınız var."
         />
 
+        {/* Kendi ders programım (canlı) + sıradaki ders hatırlatması */}
+        <MyTimetable />
+
         {/* Canlı sınıf listesi (gerçek Firestore — yalnızca giriş yapmış öğretmende) */}
         <TeacherRoster />
 
@@ -83,15 +84,6 @@ export default function TeacherPage() {
 
         {/* Yoklama (canlı) */}
         <AttendanceBoard />
-
-        {/* 2. Günlük Ders Programı */}
-        <section>
-          <div className="mb-4 flex items-center gap-2 text-content">
-            <BookOpen size={18} className="text-accent" aria-hidden="true" />
-            <h2 className="text-lg font-semibold">Günlük Ders Programı</h2>
-          </div>
-          <TeacherSchedule lessons={teacherSchedule} />
-        </section>
 
         {/* 3. Sınıflarım */}
         <section>
