@@ -6,6 +6,7 @@ import { GlassCard } from "@/components/shared/GlassCard";
 import { CounselingMetrics } from "@/components/counseling/CounselingMetrics";
 import { StudentWatchList } from "@/components/counseling/StudentWatchList";
 import { SessionNotes } from "@/components/counseling/SessionNotes";
+import { CounselingNotesManager } from "@/components/counseling/CounselingNotesManager";
 import { ParentMeetings } from "@/components/counseling/ParentMeetings";
 import { RiskAnalysis } from "@/components/counseling/RiskAnalysis";
 import { AiCounselingInsights } from "@/components/counseling/AiCounselingInsights";
@@ -36,6 +37,9 @@ export default function CounselingPage() {
           title="Rehberlik Merkezi"
           description="Öğrenci gelişimini, görüşme süreçlerini ve rehberlik notlarını güvenli şekilde takip edin."
         />
+
+        {/* Canlı rehberlik görüşme notları (gerçek Firestore) */}
+        <CounselingNotesManager />
 
         {/* 2. Metrikler */}
         <CounselingMetrics metrics={counselingMetrics} />
