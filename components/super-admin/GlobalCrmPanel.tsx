@@ -238,6 +238,7 @@ export function GlobalCrmPanel() {
                       kind={e.kind}
                       id={e.id}
                       status={e.status}
+                      onChanged={refresh}
                       onError={setError}
                       onAction={(status) =>
                         createPlatformAuditLog({
