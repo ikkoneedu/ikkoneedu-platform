@@ -3,6 +3,7 @@ import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { NotificationMetrics } from "@/components/notifications/NotificationMetrics";
 import { NotificationComposer } from "@/components/notifications/NotificationComposer";
+import { NotificationFeed } from "@/components/notifications/NotificationFeed";
 import { NotificationPreview } from "@/components/notifications/NotificationPreview";
 import { NotificationList } from "@/components/notifications/NotificationList";
 import { UserPreferences } from "@/components/notifications/UserPreferences";
@@ -50,7 +51,10 @@ export default function NotificationsPage() {
           <NotificationPreview />
         </div>
 
-        {/* 5. Bildirim listesi */}
+        {/* Canlı bildirim akışı (gerçek Firestore) */}
+        <NotificationFeed />
+
+        {/* 5. Bildirim listesi (örnek) */}
         <NotificationList notifications={notificationList} />
 
         {/* 6. Kullanıcı tercihleri */}

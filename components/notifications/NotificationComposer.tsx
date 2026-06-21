@@ -13,6 +13,8 @@ import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { SelectField } from "@/components/shared/SelectField";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { createNotification } from "@/lib/services/notifications";
 
 interface NotificationComposerProps {
   options: {
@@ -41,6 +43,7 @@ const DRAFT_KEY = "ikkoneedu:notification-draft";
  * (bu sürümde dağıtım yapılmaz; bildirim hazırlanır).
  */
 export function NotificationComposer({ options }: NotificationComposerProps) {
+  const { user, profile, firebaseReady } = useAuth();
   const formRef = useRef<HTMLFormElement>(null);
   const [preview, setPreview] = useState<Draft | null>(null);
   const [done, setDone] = useState<Draft | null>(null);
@@ -92,14 +95,32 @@ export function NotificationComposer({ options }: NotificationComposerProps) {
       return;
     }
     setError(null);
-    try {
-      const outbox = JSON.parse(localStorage.getItem("ikkoneedu:notification-outbox") || "[]");
-      outbox.unshift({ ...d, createdAt: new Date().toISOString() });
-      localStorage.setItem("ikkoneedu:notification-outbox", JSON.stringify(outbox.slice(0, 50)));
-      localStorage.removeItem(DRAFT_KEY);
-    } catch {
-      /* yoksay */
-    }
+    // Gerçek Firestore yazımı (okul personeli + Firebase aktifse); aksi halde
+    // yerel kayıt. FCM/push yok — bildirim panelde "Bildirim Akışı"nda görünür.
+    void (async () => {
+      if (firebaseReady && profile?.tenantId && user) {
+        try {
+          await createNotification(profile.tenantId, {
+            title: d.title,
+            body: d.body,
+            audience: d.recipient,
+            channel: d.channel,
+            createdBy: user.uid,
+            createdByName: profile.displayName,
+          });
+        } catch {
+          /* yazılamazsa yerelde kalır */
+        }
+      }
+      try {
+        const outbox = JSON.parse(localStorage.getItem("ikkoneedu:notification-outbox") || "[]");
+        outbox.unshift({ ...d, createdAt: new Date().toISOString() });
+        localStorage.setItem("ikkoneedu:notification-outbox", JSON.stringify(outbox.slice(0, 50)));
+        localStorage.removeItem(DRAFT_KEY);
+      } catch {
+        /* yoksay */
+      }
+    })();
     setDone(d);
     setPreview(null);
     formRef.current?.reset();
