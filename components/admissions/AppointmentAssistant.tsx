@@ -1,6 +1,6 @@
 import { CalendarPlus } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
-import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { ConfirmAppointmentButton } from "@/components/admissions/ConfirmAppointmentButton";
 import type { AppointmentField } from "@/lib/admissions-ai-mock-data";
 
 interface AppointmentAssistantProps {
@@ -36,10 +36,7 @@ export function AppointmentAssistant({ fields }: AppointmentAssistantProps) {
         })}
       </ul>
 
-      <PrimaryButton size="md" className="mt-5 w-full">
-        <CalendarPlus size={16} aria-hidden="true" />
-        Randevuyu Onayla
-      </PrimaryButton>
+      <ConfirmAppointmentButton />
     </GlassCard>
   );
 }
