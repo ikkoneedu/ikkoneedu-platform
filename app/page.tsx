@@ -1,7 +1,6 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  Sparkles,
   LogIn,
   Smartphone,
   Award,
@@ -15,19 +14,14 @@ import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Reveal } from "@/components/landing/Reveal";
-import { HeroShowcase } from "@/components/landing/HeroShowcase";
+import { CinematicHero } from "@/components/landing/CinematicHero";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildMetadata } from "@/lib/seo/seo";
 import {
   organizationSchema,
   softwareApplicationSchema,
 } from "@/lib/seo/structured-data";
-import {
-  productName,
-  productFullName,
-  tagline,
-  description,
-} from "@/lib/constants";
+import { productName, description } from "@/lib/constants";
 import {
   founderHighlights,
   platformExperiences,
@@ -114,57 +108,10 @@ export default function HomePage() {
         </div>
       </header>
 
+      {/* 1. Sinematik açılış deneyimi (tam genişlik) */}
+      <CinematicHero />
+
       <main className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-        {/* 1. Hero */}
-        <section className="grid grid-cols-1 items-center gap-12 py-16 lg:grid-cols-2 lg:py-24">
-          <Reveal>
-            <div className="flex flex-col gap-6">
-              <span className="inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-accent">
-                <Sparkles size={14} aria-hidden="true" />
-                {productFullName}
-              </span>
-
-              <div>
-                <h1 className="text-4xl font-bold tracking-tight text-content sm:text-5xl">
-                  Okulunuzu Yapay Zeka Destekli Dijital Kampüse Taşıyın
-                </h1>
-                <p className="mt-3 text-lg font-medium text-accent sm:text-xl">
-                  {tagline}
-                </p>
-              </div>
-
-              <p className="max-w-xl text-base leading-relaxed text-muted sm:text-lg">
-                {productName}; okul yönetimi, veli iletişimi, öğrenci deneyimi,
-                bursluluk sınavı ve yapay zekayı tek platformda birleştiren yeni
-                nesil eğitim işletim sistemidir.
-              </p>
-
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Link href="/demo">
-                  <PrimaryButton size="lg" className="w-full sm:w-auto">
-                    Demo Talep Et
-                    <ArrowRight size={18} aria-hidden="true" />
-                  </PrimaryButton>
-                </Link>
-                <Link href="/features">
-                  <PrimaryButton variant="secondary" size="lg" className="w-full sm:w-auto">
-                    Özellikleri İncele
-                  </PrimaryButton>
-                </Link>
-                <Link href="/pricing">
-                  <PrimaryButton variant="ghost" size="lg" className="w-full sm:w-auto">
-                    Fiyatlandırma
-                  </PrimaryButton>
-                </Link>
-              </div>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.15}>
-            <HeroShowcase />
-          </Reveal>
-        </section>
-
         {/* 1b. Mevcut kullanıcılar — Okul Portalı Girişi */}
         <section className="py-12 lg:py-16">
           <Reveal>
