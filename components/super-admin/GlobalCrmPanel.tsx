@@ -19,6 +19,8 @@ import {
   type CrmKind,
 } from "@/lib/services/crm-global";
 import { listSchools, type SchoolRecord } from "@/lib/services/schools";
+import { CrmStatusSelect } from "@/components/crm/CrmStatusSelect";
+import { createPlatformAuditLog } from "@/lib/services/audit-logs";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const KINDS: CrmKind[] = ["lead", "scholarship", "inquiry", "demo"];
@@ -35,7 +37,7 @@ const KIND_BADGE: Record<CrmKind, string> = {
  * birleşik gördüğü panel. Okul ve tür filtreleri, arama, sayımlar ve CSV.
  */
 export function GlobalCrmPanel() {
-  const { firebaseReady, loading } = useAuth();
+  const { user, firebaseReady, loading } = useAuth();
   const isSuperAdmin = useHasRole([ROLES.SUPER_ADMIN]);
   const ready = firebaseReady && isSuperAdmin;
 
@@ -230,7 +232,23 @@ export function GlobalCrmPanel() {
                     {e.phone || "—"}
                     {e.email ? ` · ${e.email}` : ""}
                   </td>
-                  <td className="py-2.5 pr-4 text-muted">{e.status}</td>
+                  <td className="py-2.5 pr-4">
+                    <CrmStatusSelect
+                      tenantId={e.tenantId}
+                      kind={e.kind}
+                      id={e.id}
+                      status={e.status}
+                      onError={setError}
+                      onAction={(status) =>
+                        createPlatformAuditLog({
+                          actorId: user?.uid,
+                          action: "crm.status_change",
+                          resource: `tenants/${e.tenantId}/${e.kind}/${e.id}`,
+                          meta: { status, kind: e.kind },
+                        }).then(() => undefined)
+                      }
+                    />
+                  </td>
                   <td className="py-2.5 text-xs text-muted">{formatDate(e.createdAt)}</td>
                 </tr>
               ))}

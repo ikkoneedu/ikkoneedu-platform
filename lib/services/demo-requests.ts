@@ -104,6 +104,7 @@ export interface SchoolInquiryRecord {
   grade: string;
   message: string;
   type: string;
+  status: string;
   createdAt: number | null;
 }
 
@@ -126,6 +127,7 @@ export async function listSchoolInquiries(
       grade: String(data.grade ?? ""),
       message: String(data.message ?? ""),
       type: String(data.type ?? "school_inquiry"),
+      status: String(data.status ?? "new"),
       createdAt:
         ts && typeof ts.toMillis === "function" ? ts.toMillis() : null,
     };

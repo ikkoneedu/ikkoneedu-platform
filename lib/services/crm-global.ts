@@ -93,7 +93,7 @@ export async function listAllCrm(): Promise<GlobalCrmEntry[]> {
         name: String(data.fullName ?? "—"),
         phone: String(data.phone ?? ""),
         email: String(data.email ?? ""),
-        status: String(data.stage ?? "new"),
+        status: String(data.status ?? data.stage ?? "new"),
         detail: String(data.source ?? data.note ?? ""),
         createdAt: toMillis(data.createdAt),
       };

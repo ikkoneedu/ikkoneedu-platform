@@ -3,7 +3,7 @@
 import { useEffect, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ShieldAlert, ArrowRight } from "lucide-react";
+import { ShieldAlert, ArrowRight, Ban } from "lucide-react";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { getRequiredRoles } from "@/lib/auth/route-config";
@@ -19,7 +19,7 @@ import { getHomeRouteForRole } from "@/lib/auth/role-routing";
  * - Rol bu route için yetkili değilse 403 ekranı gösterir (kendi paneline link).
  */
 export function RoleGuard({ children }: { children: ReactNode }) {
-  const { user, profile, loading, firebaseReady } = useAuth();
+  const { user, profile, loading, firebaseReady, signOut } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -56,6 +56,36 @@ export function RoleGuard({ children }: { children: ReactNode }) {
         homeRoute="/login"
         homeLabel="Giriş ekranına dön"
       />
+    );
+  }
+
+  // Askıya alınmış hesap: hiçbir korumalı panele erişemez.
+  if (profile.status === "SUSPENDED") {
+    return (
+      <main className="mesh-bg flex min-h-screen w-full flex-col items-center justify-center px-6 text-center">
+        <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-brand/30 bg-brand/10 text-brand">
+          <Ban size={28} aria-hidden="true" />
+        </span>
+        <h1 className="mt-6 text-2xl font-bold tracking-tight text-content sm:text-3xl">
+          Hesabınız askıya alındı
+        </h1>
+        <p className="mt-3 max-w-md text-sm leading-relaxed text-muted">
+          Bu hesabın erişimi yönetici tarafından geçici olarak durduruldu. Daha
+          fazla bilgi için okul yöneticinizle veya sistem yöneticisiyle iletişime
+          geçin.
+        </p>
+        <PrimaryButton
+          size="lg"
+          className="mt-8"
+          onClick={async () => {
+            await signOut();
+            router.replace("/login");
+          }}
+        >
+          Çıkış Yap
+          <ArrowRight size={18} aria-hidden="true" />
+        </PrimaryButton>
+      </main>
     );
   }
 

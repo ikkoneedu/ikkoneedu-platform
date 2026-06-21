@@ -35,6 +35,7 @@ export interface LeadRecord {
   email: string;
   source: string;
   note: string;
+  status: string;
 }
 
 /** Tenant'taki lead'leri listeler (personel). */
@@ -50,6 +51,7 @@ export async function listLeads(tenantId: string): Promise<LeadRecord[]> {
       email: String(data.email ?? ""),
       source: String(data.source ?? ""),
       note: String(data.note ?? ""),
+      status: String(data.status ?? data.stage ?? "new"),
     };
   });
 }

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Inbox, Award, Contact, MessageSquare } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Inbox, Award, Contact, MessageSquare, AlertCircle } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
@@ -14,6 +14,7 @@ import {
   listSchoolInquiries,
   type SchoolInquiryRecord,
 } from "@/lib/services/demo-requests";
+import { CrmStatusSelect } from "@/components/crm/CrmStatusSelect";
 
 const STAFF_ROLES = [
   ROLES.SCHOOL_ADMIN,
@@ -37,31 +38,34 @@ export function CrmInbox() {
   const [apps, setApps] = useState<ScholarshipApplicationRecord[] | null>(null);
   const [leads, setLeads] = useState<LeadRecord[]>([]);
   const [inquiries, setInquiries] = useState<SchoolInquiryRecord[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  const refresh = useCallback(async () => {
+    if (!tenantId) return;
+    const [a, l, i] = await Promise.all([
+      listScholarshipApplications(tenantId),
+      listLeads(tenantId),
+      listSchoolInquiries(tenantId),
+    ]);
+    setApps(a);
+    setLeads(l);
+    setInquiries(i);
+  }, [tenantId]);
 
   useEffect(() => {
-    if (!firebaseReady || !tenantId || !canSee) return;
-    let active = true;
-    void (async () => {
-      const [a, l, i] = await Promise.all([
-        listScholarshipApplications(tenantId),
-        listLeads(tenantId),
-        listSchoolInquiries(tenantId),
-      ]);
-      if (active) {
-        setApps(a);
-        setLeads(l);
-        setInquiries(i);
-      }
-    })();
-    return () => {
-      active = false;
-    };
-  }, [firebaseReady, tenantId, canSee]);
+    if (firebaseReady && tenantId && canSee) void refresh();
+  }, [firebaseReady, tenantId, canSee, refresh]);
 
-  if (!firebaseReady || !canSee || apps === null) return null;
+  if (!firebaseReady || !canSee || apps === null || !tenantId) return null;
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      {error && (
+        <p className="flex items-center gap-2 rounded-xl border border-brand/30 bg-brand/10 px-4 py-3 text-sm text-brand lg:col-span-2">
+          <AlertCircle size={16} aria-hidden="true" />
+          {error}
+        </p>
+      )}
       <GlassCard tone="navy">
         <div className="mb-4 flex items-center gap-2">
           <Award size={18} className="text-accent" aria-hidden="true" />
@@ -81,6 +85,16 @@ export function CrmInbox() {
                 <p className="mt-0.5 text-xs text-muted">
                   Veli: {a.parentName || "—"} · {a.parentPhone || a.parentEmail || "—"}
                 </p>
+                <div className="mt-2">
+                  <CrmStatusSelect
+                    tenantId={tenantId}
+                    kind="scholarship"
+                    id={a.id}
+                    status={a.status}
+                    onChanged={refresh}
+                    onError={setError}
+                  />
+                </div>
               </li>
             ))}
           </ul>
@@ -111,6 +125,16 @@ export function CrmInbox() {
                   {l.email ? ` · ${l.email}` : ""}
                 </p>
                 {l.note && <p className="mt-1 text-xs text-muted/70">{l.note}</p>}
+                <div className="mt-2">
+                  <CrmStatusSelect
+                    tenantId={tenantId}
+                    kind="lead"
+                    id={l.id}
+                    status={l.status}
+                    onChanged={refresh}
+                    onError={setError}
+                  />
+                </div>
               </li>
             ))}
           </ul>
@@ -141,6 +165,16 @@ export function CrmInbox() {
                   {i.email ? ` · ${i.email}` : ""}
                 </p>
                 {i.message && <p className="mt-1 text-xs text-muted/70">{i.message}</p>}
+                <div className="mt-2">
+                  <CrmStatusSelect
+                    tenantId={tenantId}
+                    kind={i.type === "school_inquiry" ? "inquiry" : "demo"}
+                    id={i.id}
+                    status={i.status}
+                    onChanged={refresh}
+                    onError={setError}
+                  />
+                </div>
               </li>
             ))}
           </ul>
