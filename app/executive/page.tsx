@@ -6,6 +6,7 @@ import { GlassCard } from "@/components/shared/GlassCard";
 import { crmMetrics } from "@/lib/crm-mock-data";
 import { ExecutiveHero } from "@/components/executive/ExecutiveHero";
 import { ExecutiveMetrics } from "@/components/executive/ExecutiveMetrics";
+import { LiveExecutiveMetrics } from "@/components/executive/LiveExecutiveMetrics";
 import { AdmissionsFunnel } from "@/components/executive/AdmissionsFunnel";
 import { FinancialOverview } from "@/components/executive/FinancialOverview";
 import { AcademicTrends } from "@/components/executive/AcademicTrends";
@@ -43,7 +44,10 @@ export default function ExecutivePage() {
         {/* 1. Başlık */}
         <ExecutiveHero />
 
-        {/* 2. Yönetici özet kartları */}
+        {/* Canlı okul metrikleri (gerçek toplama) */}
+        <LiveExecutiveMetrics />
+
+        {/* 2. Yönetici özet kartları (örnek) */}
         <ExecutiveMetrics metrics={executiveMetrics} />
 
         {/* 3. Kayıt ve aday veli analitiği */}

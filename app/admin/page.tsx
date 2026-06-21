@@ -21,6 +21,7 @@ import { SectionHeader } from "@/components/shared/SectionHeader";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { MetricCard } from "@/components/dashboard/MetricCard";
 import { TenantOverview } from "@/components/dashboard/TenantOverview";
+import { LiveExecutiveMetrics } from "@/components/executive/LiveExecutiveMetrics";
 import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
 import { AiInsightCard } from "@/components/dashboard/AiInsightCard";
 import { PerformanceChart } from "@/components/dashboard/PerformanceChart";
@@ -215,6 +216,11 @@ export default function AdminPage() {
             {/* Okul özeti — gerçek Firestore verisi (yalnızca giriş yapmış personelde görünür) */}
             <div className="mb-10">
               <TenantOverview />
+            </div>
+
+            {/* Canlı okul metrikleri (lead/randevu/bursluluk/tahsilat) */}
+            <div className="mb-10">
+              <LiveExecutiveMetrics />
             </div>
 
             {/* Duyuru panosu (canlı) */}
