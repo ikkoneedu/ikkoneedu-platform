@@ -11,8 +11,20 @@ interface LeadDetailsProps {
  */
 export function LeadDetails({ lead }: LeadDetailsProps) {
   const rows = [
-    { id: "phone", label: "Telefon", value: lead.phone, icon: Phone },
-    { id: "email", label: "E-posta", value: lead.email, icon: Mail },
+    {
+      id: "phone",
+      label: "Telefon",
+      value: lead.phone,
+      icon: Phone,
+      href: `tel:${lead.phone.replace(/\s/g, "")}`,
+    },
+    {
+      id: "email",
+      label: "E-posta",
+      value: lead.email,
+      icon: Mail,
+      href: `mailto:${lead.email}`,
+    },
     { id: "student", label: "Öğrenci Bilgileri", value: lead.studentInfo, icon: GraduationCap },
     { id: "level", label: "İlgilendiği Kademe", value: lead.level, icon: GraduationCap },
     { id: "source", label: "Lead Kaynağı", value: lead.source, icon: Radio },
@@ -45,7 +57,15 @@ export function LeadDetails({ lead }: LeadDetailsProps) {
                 <Icon size={14} aria-hidden="true" />
                 {row.label}
               </dt>
-              <dd className="text-right text-content">{row.value}</dd>
+              <dd className="text-right text-content">
+                {row.href ? (
+                  <a href={row.href} className="transition-colors hover:text-accent">
+                    {row.value}
+                  </a>
+                ) : (
+                  row.value
+                )}
+              </dd>
             </div>
           );
         })}

@@ -1,5 +1,6 @@
 import { NotebookPen } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import type { SessionNote } from "@/lib/counseling-mock-data";
 
 interface SessionNotesProps {
@@ -12,9 +13,22 @@ interface SessionNotesProps {
 export function SessionNotes({ notes }: SessionNotesProps) {
   return (
     <GlassCard tone="navy" className="flex h-full flex-col">
-      <div className="mb-5 flex items-center gap-2">
+      <div className="mb-5 flex flex-wrap items-center gap-2">
         <NotebookPen size={18} className="text-accent" aria-hidden="true" />
         <h2 className="text-lg font-semibold text-content">Görüşme Notları</h2>
+        <DataExportButtons
+          className="ml-auto"
+          filename="gorusme-notlari"
+          title="Görüşme Notları"
+          formats={["pdf", "csv"]}
+          columns={[
+            { key: "student", label: "Öğrenci" },
+            { key: "tag", label: "Etiket" },
+            { key: "note", label: "Not" },
+            { key: "date", label: "Tarih" },
+          ]}
+          rows={notes as unknown as Record<string, unknown>[]}
+        />
       </div>
 
       <ul className="flex flex-1 flex-col gap-3">
