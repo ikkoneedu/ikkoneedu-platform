@@ -190,9 +190,15 @@ Aşağıdaki öncelikler bu rapordan sonra **gerçekleştirildi** (hepsi `main`'
 - ✅ **#9 Kurulum** — `docs/KURULUM.md` (ilk SUPER_ADMIN dahil)
 - ✅ **#10 AI dondurma** — `AiComingSoonNotice` tüm AI sayfalarında
 
-**Kalan (bilinçli ertelendi):**
-- #8 `DEFAULT_TENANT_ID` temizliği — public formları bozma riski (dikkatli yapılmalı)
-- Veli **public bursluluk sonuç sorgulama** — yeni `scholarshipResults` koleksiyonu + kural deploy gerektirir
+- ✅ **Public bursluluk sonuç sorgulama** — `scholarshipResults` koleksiyonu +
+  kural, `publishScholarshipResult`/`getPublicScholarshipResult`,
+  `RealSchoolScholarshipResults`. Bursluluk artık uçtan uca: başvuru → sonuç
+  girişi → yayımlama → veli sorgulama. **(Kural deploy gerekir.)**
+
+**Kalan (tek madde — bilinçli ertelendi):**
+- #8 `DEFAULT_TENANT_ID` temizliği — gerçek çağrılar zaten profilden `tenantId`
+  alıyor; kalan default'lar yalnızca tenant'sız PAZARLAMA/demo formları için
+  fallback. Kaldırmak bu formları bozar; bu yüzden bırakıldı (bug değil, kozmetik).
 
 ---
 
@@ -207,10 +213,11 @@ Aşağıdaki öncelikler bu rapordan sonra **gerçekleştirildi** (hepsi `main`'
 | Settings / Finans / Bildirim (gerçek) | ~%20 → **~%85** ✅ |
 | AI modülleri | %0 (kasıtlı dondurulmuş, net "Coming Soon") |
 
-### **Genel MVP tamamlanma: ~%65 → ~%82** (AI hariç ~%88)
+### **Genel MVP tamamlanma: ~%65 → ~%85** (AI hariç ~%90)
 
-> Güncelleme: #1–7, #9, #10 tamamlandı. Settings/Finans/Bildirim/Bursluluk-sonuç
-> artık gerçek Firestore. Kalan: #8 (temizlik) ve public sonuç sorgulama (deploy).
+> Güncelleme: #1–7, #9, #10 **ve** public bursluluk sonuç sorgulama tamamlandı.
+> Settings/Finans/Bildirim/Bursluluk uçtan uca gerçek Firestore. Kalan tek madde:
+> #8 (kozmetik temizlik). Bursluluk modülü tam: başvuru→sonuç→yayım→veli sorgu.
 
 Sistem **satılabilir MVP'ye yakın**. Eksik olan, birkaç uç modülün (settings,
 finans, bildirim, bursluluk sonuç) Firestore'a bağlanması.
