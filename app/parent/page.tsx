@@ -21,6 +21,7 @@ import { MessagingPanel } from "@/components/messaging/MessagingPanel";
 import { GradeBoard } from "@/components/grades/GradeBoard";
 import { ScheduleBoard } from "@/components/schedule/ScheduleBoard";
 import { AttendanceBoard } from "@/components/attendance/AttendanceBoard";
+import { ParentFinanceCard } from "@/components/parent/ParentFinanceCard";
 import { StatCard } from "@/components/shared/StatCard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -84,6 +85,9 @@ export default function ParentPage() {
 
         {/* Yoklama (canlı) */}
         <AttendanceBoard />
+
+        {/* Ödeme durumu (canlı — bağlı öğrenci) */}
+        <ParentFinanceCard />
 
         {/* 1. Öğrenci Seçimi */}
         <StudentSwitcher students={parentStudents} />
