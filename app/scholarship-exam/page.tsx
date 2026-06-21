@@ -4,6 +4,7 @@ import { ScholarshipDashboard } from "@/components/scholarship/ScholarshipDashbo
 import { ScholarshipExamBuilder } from "@/components/scholarship/ScholarshipExamBuilder";
 import { ScholarshipContentManager } from "@/components/scholarship/ScholarshipContentManager";
 import { ScholarshipApplicationsTable } from "@/components/scholarship/ScholarshipApplicationsTable";
+import { ScholarshipResultsManager } from "@/components/scholarship/ScholarshipResultsManager";
 import { ClassPlacementAdvisor } from "@/components/scholarship/ClassPlacementAdvisor";
 import { AiSessionPlanner } from "@/components/scholarship/AiSessionPlanner";
 import { RoomSeatPlanner } from "@/components/scholarship/RoomSeatPlanner";
@@ -44,7 +45,8 @@ export default function ScholarshipExamPage() {
           <ScholarshipContentManager />
         </div>
 
-        {/* 4. Başvuru yönetimi (tam genişlik) */}
+        {/* 4. Sonuç yönetimi (canlı Firestore) + başvuru tablosu */}
+        <ScholarshipResultsManager />
         <ScholarshipApplicationsTable />
 
         {/* 5 + 6. Yerleştirme ve AI oturum planlama */}

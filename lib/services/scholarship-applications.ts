@@ -3,7 +3,14 @@
  * Mock modda (env yok) gerçek yazma yapılmaz; başarı döner.
  */
 
-import { collection, getDocs, query } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  serverTimestamp,
+  updateDoc,
+} from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { createDocument, type CreateResult } from "@/lib/services/firestore-helpers";
 import { tenantScholarshipApplications } from "@/lib/firebase/collections";
@@ -77,6 +84,12 @@ export interface ScholarshipApplicationRecord {
   parentPhone: string;
   parentEmail: string;
   status: string;
+  /** Sonuç alanları (yönetici girer). */
+  examScore: string;
+  scholarshipRate: string;
+  resultStatus: string;
+  room: string;
+  seatNo: string;
 }
 
 /** Tenant'taki bursluluk başvurularını listeler (personel). */
@@ -97,6 +110,42 @@ export async function listScholarshipApplications(
       parentPhone: String(data.parentPhone ?? ""),
       parentEmail: String(data.parentEmail ?? ""),
       status: String(data.status ?? ""),
+      examScore: String(data.examScore ?? ""),
+      scholarshipRate: String(data.scholarshipRate ?? ""),
+      resultStatus: String(data.resultStatus ?? ""),
+      room: String(data.room ?? ""),
+      seatNo: String(data.seatNo ?? ""),
     };
   });
+}
+
+export interface ScholarshipResultInput {
+  examScore?: string;
+  scholarshipRate?: string;
+  resultStatus?: string;
+  room?: string;
+  seatNo?: string;
+}
+
+/** Yönetici bir başvuruya sınav sonucu / burs oranı / salon bilgisi girer. */
+export async function setScholarshipResult(
+  tenantId: string,
+  applicationId: string,
+  result: ScholarshipResultInput,
+): Promise<void> {
+  if (!isFirebaseConfigured() || !db) {
+    throw new Error("Firebase yapılandırılmamış.");
+  }
+  const data: Record<string, unknown> = { updatedAt: serverTimestamp() };
+  for (const [k, v] of Object.entries(result)) {
+    if (v !== undefined) data[k] = v;
+  }
+  // Sonuç girildiyse durumu "Sonuç Açıklandı" yap.
+  if (result.scholarshipRate || result.examScore) {
+    data.status = "result_published";
+  }
+  await updateDoc(
+    doc(db, `${tenantScholarshipApplications(tenantId)}/${applicationId}`),
+    data,
+  );
 }
