@@ -1,6 +1,6 @@
 import { Plug } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
-import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { IntegrationToggleButton } from "@/components/settings/IntegrationToggleButton";
 import type { Integration } from "@/lib/settings-mock-data";
 
 interface IntegrationSettingsProps {
@@ -42,11 +42,9 @@ export function IntegrationSettings({ integrations }: IntegrationSettingsProps) 
               </div>
               <h3 className="mt-3 text-sm font-semibold text-content">{integration.name}</h3>
               <p className="mt-0.5 text-xs text-muted">
-                {integration.status} · {integration.lastCheck}
+                Son kontrol: {integration.lastCheck}
               </p>
-              <PrimaryButton variant="secondary" size="sm" className="mt-3 w-full">
-                Ayarla
-              </PrimaryButton>
+              <IntegrationToggleButton id={integration.id} initialConnected={connected} />
             </div>
           );
         })}
