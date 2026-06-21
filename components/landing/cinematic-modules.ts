@@ -30,18 +30,18 @@ export interface NetworkModule {
 
 /** Çekirdeği saran 12 modül — kurumsal mavi ağırlıklı, seçili kırmızı vurgular. */
 export const NETWORK_MODULES: NetworkModule[] = [
-  { id: "admissions", label: "Admissions", Icon: UserPlus, tone: "red" },
+  { id: "admissions", label: "Kayıt Kabul", Icon: UserPlus, tone: "red" },
   { id: "crm", label: "CRM", Icon: Contact, tone: "blue" },
-  { id: "scholarship", label: "Scholarship", Icon: Award, tone: "blue" },
-  { id: "students", label: "Students", Icon: GraduationCap, tone: "blue" },
-  { id: "parents", label: "Parents", Icon: Users, tone: "blue" },
-  { id: "teachers", label: "Teachers", Icon: BookOpen, tone: "blue" },
-  { id: "exams", label: "Exams", Icon: ClipboardPen, tone: "blue" },
-  { id: "finance", label: "Finance", Icon: Wallet, tone: "red" },
-  { id: "reports", label: "Reports", Icon: BarChart3, tone: "blue" },
-  { id: "messages", label: "Messages", Icon: MessageSquare, tone: "blue" },
-  { id: "notifications", label: "Notifications", Icon: Bell, tone: "red" },
-  { id: "executive", label: "Executive", Icon: ShieldCheck, tone: "blue" },
+  { id: "scholarship", label: "Bursluluk", Icon: Award, tone: "blue" },
+  { id: "students", label: "Öğrenciler", Icon: GraduationCap, tone: "blue" },
+  { id: "parents", label: "Veliler", Icon: Users, tone: "blue" },
+  { id: "teachers", label: "Öğretmenler", Icon: BookOpen, tone: "blue" },
+  { id: "exams", label: "Sınavlar", Icon: ClipboardPen, tone: "blue" },
+  { id: "finance", label: "Finans", Icon: Wallet, tone: "red" },
+  { id: "reports", label: "Raporlar", Icon: BarChart3, tone: "blue" },
+  { id: "messages", label: "Mesajlar", Icon: MessageSquare, tone: "blue" },
+  { id: "notifications", label: "Bildirimler", Icon: Bell, tone: "red" },
+  { id: "executive", label: "Yönetim", Icon: ShieldCheck, tone: "blue" },
 ];
 
 /** Mavi (accent) ve kırmızı (brand) RGB üçlüleri — canvas çizimi için. */

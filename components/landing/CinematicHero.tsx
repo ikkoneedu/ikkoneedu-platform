@@ -77,9 +77,21 @@ export function CinematicHero() {
         />
       )}
 
-      {/* Okunabilirlik için yumuşak vinyet/gradyan */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_80%_at_50%_50%,transparent_40%,rgba(5,12,22,0.55)_100%)]" />
+      {/* Perspektif ızgara zemini — komuta merkezi hissi */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[42vh] overflow-hidden [perspective:520px]">
+        <div className="absolute inset-x-[-50%] bottom-[-10%] top-0 origin-bottom [transform:rotateX(72deg)] bg-[linear-gradient(rgba(178,199,239,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(178,199,239,0.18)_1px,transparent_1px)] bg-[length:54px_54px] opacity-40 [mask-image:linear-gradient(to_top,black,transparent_85%)]" />
+      </div>
+
+      {/* Okunabilirlik için sol karartma + yumuşak vinyet */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(130%_120%_at_0%_45%,rgba(5,12,22,0.92),rgba(5,12,22,0.35)_45%,transparent_68%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_85%_at_50%_50%,transparent_45%,rgba(5,12,22,0.5)_100%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
+
+      {/* HUD köşe çerçeveleri */}
+      <div className="pointer-events-none absolute left-5 top-5 h-7 w-7 border-l border-t border-accent/25 sm:left-7 sm:top-7" />
+      <div className="pointer-events-none absolute right-5 top-5 h-7 w-7 border-r border-t border-accent/25 sm:right-7 sm:top-7" />
+      <div className="pointer-events-none absolute bottom-5 left-5 h-7 w-7 border-b border-l border-accent/25 sm:bottom-7 sm:left-7" />
+      <div className="pointer-events-none absolute bottom-5 right-5 h-7 w-7 border-b border-r border-accent/25 sm:bottom-7 sm:right-7" />
 
       {/* Açılış metni — hazır olunca kaybolur */}
       <AnimatePresence>
@@ -97,7 +109,7 @@ export function CinematicHero() {
               transition={{ duration: 1.1, ease: "easeOut" }}
               className="font-mono text-[11px] uppercase text-accent/85 sm:text-xs"
             >
-              Initializing Education Network
+              Eğitim Ağı Başlatılıyor
               <BlinkingDots />
             </motion.span>
             <div className="mt-4 h-px w-44 overflow-hidden rounded-full bg-white/10">

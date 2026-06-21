@@ -149,9 +149,14 @@ export function EducationNetworkScene({
       rotY += (targetY - rotY) * 0.05;
       rotX += (targetX - rotX) * 0.05;
 
-      const cx = w / 2;
-      const cy = h * 0.46;
-      const R = Math.min(Math.min(w, h) * (isMobile ? 0.36 : 0.32), 360);
+      // Split kompozisyon: geniş ekranda ağ SAĞDA, metne yer açar.
+      const isWide = w >= 1024;
+      const cx = isWide ? w * 0.66 : w * 0.5;
+      const cy = isWide ? h * 0.48 : h * 0.44;
+      const R = Math.min(
+        Math.min(w, h) * (isMobile ? 0.34 : 0.3),
+        isWide ? 320 : 300,
+      );
 
       const cosY = Math.cos(rotY);
       const sinY = Math.sin(rotY);
