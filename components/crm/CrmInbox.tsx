@@ -15,6 +15,7 @@ import {
   type SchoolInquiryRecord,
 } from "@/lib/services/demo-requests";
 import { CrmStatusSelect } from "@/components/crm/CrmStatusSelect";
+import { ConvertToStudentAction } from "@/components/crm/ConvertToStudentAction";
 
 const STAFF_ROLES = [
   ROLES.SCHOOL_ADMIN,
@@ -25,13 +26,26 @@ const STAFF_ROLES = [
   ROLES.SUPER_ADMIN,
 ] as const;
 
+// Öğrenci kaydı (erişim kodu) açabilen roller — kurallarla tutarlı (SALES/PR hariç).
+const ENROLL_ROLES = [
+  ROLES.SCHOOL_ADMIN,
+  ROLES.FOUNDER,
+  ROLES.PRINCIPAL,
+  ROLES.VICE_PRINCIPAL,
+  ROLES.COORDINATOR,
+  ROLES.TEACHER,
+  ROLES.SUPER_ADMIN,
+] as const;
+
 /**
  * CRM gelen kutusu — gerçek bursluluk başvuruları + lead'ler (Firestore).
  * Yalnızca giriş yapmış CRM personeli + Firebase aktifken görünür.
  */
 export function CrmInbox() {
-  const { profile, firebaseReady } = useAuth();
+  const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
+  const canEnroll =
+    profile != null && (ENROLL_ROLES as readonly string[]).includes(profile.role);
   const canSee =
     profile != null && (STAFF_ROLES as readonly string[]).includes(profile.role);
 
@@ -85,7 +99,7 @@ export function CrmInbox() {
                 <p className="mt-0.5 text-xs text-muted">
                   Veli: {a.parentName || "—"} · {a.parentPhone || a.parentEmail || "—"}
                 </p>
-                <div className="mt-2">
+                <div className="mt-2 flex flex-wrap items-center gap-2">
                   <CrmStatusSelect
                     tenantId={tenantId}
                     kind="scholarship"
@@ -94,6 +108,17 @@ export function CrmInbox() {
                     onChanged={refresh}
                     onError={setError}
                   />
+                  {canEnroll && a.status !== "converted" && user && (
+                    <ConvertToStudentAction
+                      tenantId={tenantId}
+                      kind="scholarship"
+                      id={a.id}
+                      studentName={a.studentName}
+                      staffUid={user.uid}
+                      staffName={profile?.displayName}
+                      onConverted={refresh}
+                    />
+                  )}
                 </div>
               </li>
             ))}
@@ -165,7 +190,7 @@ export function CrmInbox() {
                   {i.email ? ` · ${i.email}` : ""}
                 </p>
                 {i.message && <p className="mt-1 text-xs text-muted/70">{i.message}</p>}
-                <div className="mt-2">
+                <div className="mt-2 flex flex-wrap items-center gap-2">
                   <CrmStatusSelect
                     tenantId={tenantId}
                     kind={i.type === "school_inquiry" ? "inquiry" : "demo"}
@@ -174,6 +199,17 @@ export function CrmInbox() {
                     onChanged={refresh}
                     onError={setError}
                   />
+                  {canEnroll && i.status !== "converted" && user && (
+                    <ConvertToStudentAction
+                      tenantId={tenantId}
+                      kind={i.type === "school_inquiry" ? "inquiry" : "demo"}
+                      id={i.id}
+                      studentName={i.fullName}
+                      staffUid={user.uid}
+                      staffName={profile?.displayName}
+                      onConverted={refresh}
+                    />
+                  )}
                 </div>
               </li>
             ))}
