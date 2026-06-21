@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
+import { PaymentManager } from "@/components/finance/PaymentManager";
 import { FinanceMetrics } from "@/components/finance/FinanceMetrics";
 import { PaymentTable } from "@/components/finance/PaymentTable";
 import { PendingPayments } from "@/components/finance/PendingPayments";
@@ -34,6 +35,9 @@ export default function FinancePage() {
           title="Finans Merkezi"
           description="Tahsilat, gelir, ödeme ve kayıt gelirlerini tek ekrandan takip edin."
         />
+
+        {/* Canlı ödeme yönetimi (gerçek Firestore — öğrenci bazlı) */}
+        <PaymentManager />
 
         {/* 1. Metrik kartları */}
         <FinanceMetrics metrics={financeMetrics} />
