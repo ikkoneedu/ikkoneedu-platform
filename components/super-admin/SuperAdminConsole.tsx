@@ -17,6 +17,8 @@ import {
   Inbox,
   UserPlus,
   FileClock,
+  Mail,
+  Download,
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -46,6 +48,7 @@ import {
   listPlatformAuditLogs,
   type PlatformAuditRecord,
 } from "@/lib/services/audit-logs";
+import { sendPasswordReset } from "@/lib/services/auth-actions";
 import { UserAdminActions } from "@/components/admin/UserAdminActions";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
@@ -179,6 +182,7 @@ export function SuperAdminConsole() {
     setBusy(true);
     setError(null);
     setOnboarded(null);
+    setResetState("idle");
     try {
       const school = await createSchool({
         name,
@@ -225,6 +229,26 @@ export function SuperAdminConsole() {
       setTimeout(() => setCopied(false), 2000);
     } catch {
       setCopied(false);
+    }
+  };
+
+  const [resetState, setResetState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [auditFilter, setAuditFilter] = useState<string>("ALL");
+
+  const filteredAuditLogs =
+    auditFilter === "ALL" ? auditLogs : auditLogs.filter((l) => l.action === auditFilter);
+
+  const sendReset = async () => {
+    if (!onboarded || resetState === "sending") return;
+    setResetState("sending");
+    const result = await sendPasswordReset(onboarded.email);
+    if (result.ok) {
+      setResetState("sent");
+      await logAction("founder.reset_sent", `users/${onboarded.email}`, {
+        email: onboarded.email,
+      });
+    } else {
+      setResetState("error");
     }
   };
 
@@ -348,13 +372,38 @@ export function SuperAdminConsole() {
               </p>
               <p className="mt-0.5 text-xs text-muted">
                 Bu bilgileri kurucuya iletin; e-posta + şifre ile /login üzerinden
-                giriş yapacak.
+                giriş yapacak. Alternatif olarak kurucunun kendi şifresini
+                belirlemesi için sıfırlama e-postası gönderebilirsiniz.
               </p>
+              {resetState === "sent" && (
+                <p className="mt-1 text-xs text-emerald-400">
+                  Şifre belirleme e-postası gönderildi.
+                </p>
+              )}
+              {resetState === "error" && (
+                <p className="mt-1 text-xs text-brand">E-posta gönderilemedi.</p>
+              )}
             </div>
-            <PrimaryButton type="button" variant="secondary" size="sm" onClick={copyPassword}>
-              {copied ? <CheckCircle2 size={15} /> : <Copy size={15} />}
-              {copied ? "Kopyalandı" : "Şifreyi Kopyala"}
-            </PrimaryButton>
+            <div className="flex shrink-0 flex-col gap-2">
+              <PrimaryButton type="button" variant="secondary" size="sm" onClick={copyPassword}>
+                {copied ? <CheckCircle2 size={15} /> : <Copy size={15} />}
+                {copied ? "Kopyalandı" : "Şifreyi Kopyala"}
+              </PrimaryButton>
+              <PrimaryButton
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={sendReset}
+                disabled={resetState === "sending" || resetState === "sent"}
+              >
+                <Mail size={15} aria-hidden="true" />
+                {resetState === "sending"
+                  ? "Gönderiliyor…"
+                  : resetState === "sent"
+                    ? "Gönderildi"
+                    : "Şifre E-postası Gönder"}
+              </PrimaryButton>
+            </div>
           </div>
         )}
       </GlassCard>
@@ -502,16 +551,42 @@ export function SuperAdminConsole() {
 
       {/* İşlem kayıtları (denetim) */}
       <GlassCard tone="navy">
-        <div className="mb-4 flex items-center gap-2">
+        <div className="mb-4 flex flex-wrap items-center gap-2">
           <FileClock size={18} className="text-accent" aria-hidden="true" />
           <h2 className="text-lg font-semibold text-content">İşlem Kayıtları</h2>
-          <span className="ml-auto text-xs text-muted">son {auditLogs.length}</span>
+          <span className="text-xs text-muted">son {auditLogs.length}</span>
+          <div className="ml-auto flex items-center gap-2">
+            <select
+              value={auditFilter}
+              onChange={(e) => setAuditFilter(e.target.value)}
+              className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent"
+              aria-label="İşlem türü filtrele"
+            >
+              <option value="ALL" className="bg-surface">Tümü</option>
+              {Object.keys(AUDIT_ACTION_LABELS).map((a) => (
+                <option key={a} value={a} className="bg-surface">
+                  {AUDIT_ACTION_LABELS[a]}
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={() => exportAuditCsv(filteredAuditLogs)}
+              disabled={filteredAuditLogs.length === 0}
+              className="inline-flex items-center gap-1 rounded-lg border border-white/10 px-2 py-1 text-xs text-muted transition hover:text-content disabled:opacity-50"
+            >
+              <Download size={13} aria-hidden="true" />
+              CSV
+            </button>
+          </div>
         </div>
-        {auditLogs.length === 0 ? (
-          <p className="text-sm text-muted">Henüz kayıt yok.</p>
+        {filteredAuditLogs.length === 0 ? (
+          <p className="text-sm text-muted">
+            {auditLogs.length === 0 ? "Henüz kayıt yok." : "Bu filtre için kayıt yok."}
+          </p>
         ) : (
           <ul className="flex flex-col gap-1.5">
-            {auditLogs.map((log) => (
+            {filteredAuditLogs.map((log) => (
               <li
                 key={log.id}
                 className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm"
@@ -544,6 +619,32 @@ const AUDIT_ACTION_LABELS: Record<string, string> = {
 
 function auditActionLabel(action: string): string {
   return AUDIT_ACTION_LABELS[action] ?? action;
+}
+
+/** Denetim kayıtlarını CSV olarak indirir. */
+function exportAuditCsv(logs: PlatformAuditRecord[]): void {
+  if (typeof window === "undefined" || logs.length === 0) return;
+  const escape = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+  const header = ["Tarih", "İşlem", "Eylem Kodu", "Kaynak", "Yapan", "Detay"];
+  const rows = logs.map((l) => [
+    formatAuditTime(l.createdAt),
+    auditActionLabel(l.action),
+    l.action,
+    l.resource,
+    l.actorId,
+    JSON.stringify(l.meta ?? {}),
+  ]);
+  const csv = [header, ...rows].map((r) => r.map(escape).join(",")).join("\r\n");
+  // UTF-8 BOM ile Excel Türkçe karakterleri doğru gösterir.
+  const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `denetim-kayitlari-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function formatAuditTime(ms: number | null): string {

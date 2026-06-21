@@ -36,6 +36,27 @@ export function generateApplicationNo(prefix = "IKK"): string {
   return `${prefix}-${year}-${sequence}`;
 }
 
+/**
+ * Okul adından başvuru numarası ön eki üretir.
+ * Örn. "Örnek Koleji" -> "OK", "Atael" -> "ATA".
+ */
+export function deriveApplicationPrefix(name: string): string {
+  const map: Record<string, string> = {
+    ç: "c", ğ: "g", ı: "i", ö: "o", ş: "s", ü: "u",
+    Ç: "C", Ğ: "G", İ: "I", Ö: "O", Ş: "S", Ü: "U",
+  };
+  const ascii = name
+    .split("")
+    .map((ch) => map[ch] ?? ch)
+    .join("");
+  const words = ascii.split(/\s+/).filter(Boolean);
+  const prefix =
+    words.length >= 2
+      ? words.map((w) => w[0]).join("").slice(0, 4)
+      : (words[0] ?? "OKL").slice(0, 3);
+  return prefix.replace(/[^A-Za-z0-9]/g, "").toUpperCase() || "OKL";
+}
+
 export async function createScholarshipApplication(
   data: ScholarshipApplicationInput,
 ): Promise<CreateResult> {

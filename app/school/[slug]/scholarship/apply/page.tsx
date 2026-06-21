@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { SchoolPublicShell } from "@/components/school/SchoolPublicShell";
 import { ScholarshipApplicationForm } from "@/components/scholarship/ScholarshipApplicationForm";
+import { RealSchoolScholarshipApply } from "@/components/school/RealSchoolScholarshipApply";
 import { PUBLIC_SCHOOLS, getPublicSchoolBySlug } from "@/lib/tenant/tenant-config";
 import { productName } from "@/lib/constants";
 
@@ -27,7 +27,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function SchoolScholarshipApplyPage({ params }: PageProps) {
   const { slug } = await params;
   const school = getPublicSchoolBySlug(slug);
-  if (!school) notFound();
+  // Statik mock okul yoksa gerçek tenant için başvuru sayfasını göster.
+  if (!school) return <RealSchoolScholarshipApply slug={slug} />;
 
   return (
     <SchoolPublicShell school={school}>

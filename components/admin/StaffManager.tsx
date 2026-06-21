@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   AlertCircle,
   Users,
+  Mail,
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -25,6 +26,7 @@ import {
   MANAGER_ASSIGNABLE_ROLES,
 } from "@/components/admin/UserAdminActions";
 import { createAuditLog } from "@/lib/services/audit-logs";
+import { sendPasswordReset } from "@/lib/services/auth-actions";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 /**
@@ -49,6 +51,14 @@ export function StaffManager() {
   const [busy, setBusy] = useState(false);
   const [created, setCreated] = useState<{ email: string; password: string } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [resetState, setResetState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+
+  const sendReset = async () => {
+    if (!created || resetState === "sending") return;
+    setResetState("sending");
+    const result = await sendPasswordReset(created.email);
+    setResetState(result.ok ? "sent" : "error");
+  };
 
   const refresh = useCallback(async () => {
     if (!tenantId) return;
@@ -79,6 +89,7 @@ export function StaffManager() {
     setBusy(true);
     setError(null);
     setCreated(null);
+    setResetState("idle");
     try {
       const result = await createStaffAccount({
         tenantId,
@@ -175,12 +186,37 @@ export function StaffManager() {
                 </p>
                 <p className="mt-0.5 text-xs text-muted">
                   Bu bilgileri personele iletin; e-posta + şifre ile giriş yapacak.
+                  Alternatif olarak şifre belirleme e-postası gönderebilirsiniz.
                 </p>
+                {resetState === "sent" && (
+                  <p className="mt-1 text-xs text-emerald-400">
+                    Şifre belirleme e-postası gönderildi.
+                  </p>
+                )}
+                {resetState === "error" && (
+                  <p className="mt-1 text-xs text-brand">E-posta gönderilemedi.</p>
+                )}
               </div>
-              <PrimaryButton type="button" variant="secondary" size="sm" onClick={copyPassword}>
-                {copied ? <CheckCircle2 size={15} /> : <Copy size={15} />}
-                {copied ? "Kopyalandı" : "Şifreyi Kopyala"}
-              </PrimaryButton>
+              <div className="flex shrink-0 flex-col gap-2">
+                <PrimaryButton type="button" variant="secondary" size="sm" onClick={copyPassword}>
+                  {copied ? <CheckCircle2 size={15} /> : <Copy size={15} />}
+                  {copied ? "Kopyalandı" : "Şifreyi Kopyala"}
+                </PrimaryButton>
+                <PrimaryButton
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={sendReset}
+                  disabled={resetState === "sending" || resetState === "sent"}
+                >
+                  <Mail size={15} aria-hidden="true" />
+                  {resetState === "sending"
+                    ? "Gönderiliyor…"
+                    : resetState === "sent"
+                      ? "Gönderildi"
+                      : "Şifre E-postası"}
+                </PrimaryButton>
+              </div>
             </div>
           )}
         </GlassCard>
