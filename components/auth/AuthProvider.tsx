@@ -24,6 +24,8 @@ import {
   getUserProfile,
   createPublicUserProfile,
 } from "@/lib/services/user-profile";
+import { getSchool } from "@/lib/services/schools";
+import { ROLES } from "@/lib/auth/role-constants";
 import type { UserProfile } from "@/lib/auth/firebase-auth-types";
 
 interface AuthContextValue {
@@ -39,6 +41,8 @@ interface AuthContextValue {
   isAuthenticated: boolean;
   /** Firebase env tanımlı mı (Mock Mod değil mi)? */
   firebaseReady: boolean;
+  /** Kullanıcının bağlı olduğu okul askıya alınmış mı? (süper admin hariç) */
+  tenantSuspended: boolean;
   signIn: (
     email: string,
     password: string,
@@ -72,14 +76,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [claims, setClaims] = useState<AuthClaims | null>(null);
   const [loading, setLoading] = useState(true);
+  const [tenantSuspended, setTenantSuspended] = useState(false);
+
+  // Kullanıcının okulunun (tenant) askıda olup olmadığını belirler.
+  // Süper admin, public/platform tenant'ları ve gerçek okul belgesi olmayan
+  // (mock) tenant'lar muaftır → geriye dönük uyumlu.
+  const resolveTenantSuspended = useCallback(
+    async (prof: UserProfile | null): Promise<boolean> => {
+      if (!prof || prof.role === ROLES.SUPER_ADMIN) return false;
+      const tid = prof.tenantId;
+      if (!tid || tid === "public" || tid === "platform") return false;
+      try {
+        const school = await getSchool(tid);
+        return school?.status === "SUSPENDED";
+      } catch {
+        return false;
+      }
+    },
+    [],
+  );
 
   const refreshProfile = useCallback(async () => {
     if (!user) {
       setProfile(null);
+      setTenantSuspended(false);
       return;
     }
-    setProfile(await getUserProfile(user.uid));
-  }, [user]);
+    const prof = await getUserProfile(user.uid);
+    setProfile(prof);
+    setTenantSuspended(await resolveTenantSuspended(prof));
+  }, [user, resolveTenantSuspended]);
 
   // Firebase oturum durumunu dinle.
   useEffect(() => {
@@ -91,7 +117,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       setUser(firebaseUser);
       // Kullanıcı geldiyse profilini oku (yoksa null kalır — fallback).
-      setProfile(firebaseUser ? await getUserProfile(firebaseUser.uid) : null);
+      const prof = firebaseUser ? await getUserProfile(firebaseUser.uid) : null;
+      setProfile(prof);
+      setTenantSuspended(await resolveTenantSuspended(prof));
       // Custom claims (varsa) — ileride rol/tenant kaynağı olarak kullanılabilir.
       if (firebaseUser) {
         try {
@@ -111,7 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [resolveTenantSuspended]);
 
   const signIn = useCallback(
     async (email: string, password: string, remember = true) => {
@@ -167,6 +195,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     isAuthenticated: Boolean(user),
     firebaseReady: isFirebaseConfigured(),
+    tenantSuspended,
     signIn,
     signUpPublic,
     signOut,

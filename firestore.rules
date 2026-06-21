@@ -92,6 +92,13 @@ service cloud.firestore {
       return isActiveUser() && (myTenant() == tenantId || isSuperAdmin());
     }
 
+    // Okul askıda DEĞİL mi? Gerçek tenant belgesi yoksa (mock/eski) muaftır
+    // (geriye dönük uyumlu). Belge varsa ve status == 'SUSPENDED' ise false.
+    function tenantNotSuspended(tenantId) {
+      return !exists(/databases/$(database)/documents/tenants/$(tenantId))
+        || get(/databases/$(database)/documents/tenants/$(tenantId)).data.status != 'SUSPENDED';
+    }
+
     // ---- Kök kullanıcı profilleri -----------------------------------------
     match /users/{uid} {
       // Kullanıcı kendi profilini okur; SUPER_ADMIN tümünü okur;
@@ -188,7 +195,9 @@ service cloud.firestore {
     // (öğrenci/veli tenant verisine yazamaz — ör. duyuru oluşturamaz).
     match /tenants/{tenantId}/{document=**} {
       allow read: if isTenantMember(tenantId);
-      allow write: if isStaff() && myTenant() == tenantId;
+      // Askıdaki okulun personeli veri yazamaz (süper admin ayrı kurallarla erişir).
+      allow write: if isStaff() && myTenant() == tenantId
+        && tenantNotSuspended(tenantId);
     }
 
     // ---- Global CRM (collection group) — yalnızca SUPER_ADMIN -------------
