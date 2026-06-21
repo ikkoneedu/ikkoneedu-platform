@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
+import { LiveSettings } from "@/components/settings/LiveSettings";
 import { PlatformSettings } from "@/components/settings/PlatformSettings";
 import { TenantSettings } from "@/components/settings/TenantSettings";
 import { RoleManagement } from "@/components/settings/RoleManagement";
@@ -32,6 +33,7 @@ export const metadata: Metadata = {
 };
 
 const categories = [
+  { id: "okul-ayarlari", label: "Okul Ayarları" },
   { id: "platform", label: "Platform" },
   { id: "okullar", label: "Okullar" },
   { id: "roller", label: "Roller" },
@@ -68,6 +70,11 @@ export default function SettingsPage() {
             ))}
           </div>
         </nav>
+
+        {/* Canlı okul ayarları — Firestore (tüm modüllerin tek kaynağı) */}
+        <section id="okul-ayarlari" className="scroll-mt-32">
+          <LiveSettings />
+        </section>
 
         <section id="platform" className="scroll-mt-32">
           <PlatformSettings />
