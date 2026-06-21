@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { Building2, Globe, Palette, Image as ImageIcon } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import type { SettingsTenant } from "@/lib/settings-mock-data";
 
 interface TenantSettingsProps {
@@ -14,9 +16,22 @@ interface TenantSettingsProps {
 export function TenantSettings({ tenants }: TenantSettingsProps) {
   return (
     <GlassCard tone="navy">
-      <div className="mb-5 flex items-center gap-2">
+      <div className="mb-5 flex flex-wrap items-center gap-2">
         <Building2 size={18} className="text-accent" aria-hidden="true" />
         <h2 className="text-lg font-semibold text-content">Okul Yönetimi</h2>
+        <DataExportButtons
+          className="ml-auto"
+          filename="okullar"
+          title="Okullar"
+          formats={["pdf", "csv", "xml"]}
+          columns={[
+            { key: "name", label: "Okul" },
+            { key: "domain", label: "Tenant Adresi" },
+            { key: "plan", label: "Paket" },
+            { key: "status", label: "Durum" },
+          ]}
+          rows={tenants as unknown as Record<string, unknown>[]}
+        />
       </div>
 
       {/* Tenant özet bilgileri */}
@@ -62,9 +77,11 @@ export function TenantSettings({ tenants }: TenantSettingsProps) {
               </span>
             </span>
             <span className="lg:text-right">
-              <PrimaryButton variant="secondary" size="sm" className="w-full lg:w-auto">
-                Yönet
-              </PrimaryButton>
+              <Link href="/super-admin">
+                <PrimaryButton variant="secondary" size="sm" className="w-full lg:w-auto">
+                  Yönet
+                </PrimaryButton>
+              </Link>
             </span>
           </li>
         ))}
