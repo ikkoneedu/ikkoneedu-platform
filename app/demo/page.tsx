@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -119,15 +120,7 @@ export default function DemoPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-sm text-muted sm:flex-row sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2">
-            <LogoMark size={24} />
-            <span className="font-medium text-content">{productName}</span>
-          </div>
-          <p>© {new Date().getFullYear()} {productName}. Tüm hakları saklıdır.</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

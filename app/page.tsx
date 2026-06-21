@@ -15,6 +15,7 @@ import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Reveal } from "@/components/landing/Reveal";
 import { CinematicHero } from "@/components/landing/CinematicHero";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildMetadata } from "@/lib/seo/seo";
 import {
@@ -325,15 +326,7 @@ export default function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-sm text-muted sm:flex-row sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2">
-            <LogoMark size={24} />
-            <span className="font-medium text-content">{productName}</span>
-          </div>
-          <p>© {new Date().getFullYear()} {productName}. Tüm hakları saklıdır.</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

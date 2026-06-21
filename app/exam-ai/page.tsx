@@ -19,7 +19,6 @@ import {
   examQualityMetrics,
   examWorksheetOptions,
   examQuizOptions,
-  examExportActions,
   examAiSuggestions,
 } from "@/lib/exam-mock-data";
 
@@ -64,7 +63,7 @@ export default function ExamAiPage() {
         </div>
 
         {/* 8. Dışa aktarma */}
-        <ExportCenter actions={examExportActions} />
+        <ExportCenter questions={examGeneratedQuestions} />
 
         {/* 9. AI önerileri */}
         <AiExamSuggestions suggestions={examAiSuggestions} />
