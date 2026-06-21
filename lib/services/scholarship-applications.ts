@@ -24,7 +24,7 @@ const resultsPath = (tenantId: string) =>
   `${COLLECTIONS.TENANTS}/${tenantId}/scholarshipResults`;
 
 /** Bir tenant belirtilmezse kullanılan varsayılan (genel bursluluk sayfası). */
-const DEFAULT_TENANT_ID = "tenant_ikk";
+const DEFAULT_TENANT_ID = "platform"; // tenant'siz fallback (demo/genel) — süper admin okur
 
 export interface ScholarshipApplicationInput {
   /** Başvurunun bağlı olduğu okul/tenant (slug resolver'dan gelir). */

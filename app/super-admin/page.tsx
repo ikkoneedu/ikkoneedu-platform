@@ -6,6 +6,7 @@ import { SectionHeader } from "@/components/shared/SectionHeader";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { SuperAdminConsole } from "@/components/super-admin/SuperAdminConsole";
+import { PlatformKpiStrip } from "@/components/super-admin/PlatformKpiStrip";
 import { GlobalCrmPanel } from "@/components/super-admin/GlobalCrmPanel";
 import { productName } from "@/lib/constants";
 import { siteRoutes, type RouteStatus } from "@/lib/super-admin-data";
@@ -30,6 +31,8 @@ export default function SuperAdminPage() {
           title="Super Admin Paneli"
           description="Tüm okulları ve kullanıcıları tek merkezden yönetin; yeni okul oluşturun."
         />
+
+        <PlatformKpiStrip />
 
         <SuperAdminConsole />
 

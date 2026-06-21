@@ -8,7 +8,7 @@ import { db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { createDocument, type CreateResult } from "@/lib/services/firestore-helpers";
 import { tenantLeads } from "@/lib/firebase/collections";
 
-const DEFAULT_TENANT_ID = "tenant_ikk";
+const DEFAULT_TENANT_ID = "platform"; // tenant'siz fallback (demo/genel) — süper admin okur
 
 export interface LeadInput {
   tenantId?: string;
