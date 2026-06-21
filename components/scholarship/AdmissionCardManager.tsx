@@ -1,10 +1,9 @@
 import { CalendarCheck, QrCode } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
-import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import {
   activeExam,
   applications,
-  admissionCardActions,
   examRules,
 } from "@/lib/scholarship-exam-mock-data";
 
@@ -84,16 +83,22 @@ export function AdmissionCardManager() {
         </div>
       </div>
 
-      <div className="mt-6 flex flex-wrap gap-3">
-        {admissionCardActions.map((action, index) => (
-          <PrimaryButton
-            key={action}
-            variant={index === 0 ? "primary" : "secondary"}
-            size="sm"
-          >
-            {action}
-          </PrimaryButton>
-        ))}
+      <div className="mt-6 flex flex-wrap items-center gap-3">
+        <span className="text-sm text-muted">Toplu giriş belgeleri:</span>
+        <DataExportButtons
+          size="md"
+          filename="giris-belgeleri"
+          title="Sınav Giriş Belgeleri"
+          columns={[
+            { key: "applicationNo", label: "Başvuru No" },
+            { key: "studentName", label: "Öğrenci" },
+            { key: "campusPreference", label: "Kampüs" },
+            { key: "room", label: "Salon" },
+            { key: "seatNo", label: "Sıra No" },
+            { key: "status", label: "Durum" },
+          ]}
+          rows={applications as unknown as Record<string, unknown>[]}
+        />
       </div>
     </GlassCard>
   );

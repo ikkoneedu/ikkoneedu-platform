@@ -1,6 +1,6 @@
 import { Users } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
-import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import { proctors } from "@/lib/scholarship-exam-mock-data";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -22,9 +22,18 @@ export function ProctorAssignment() {
           <Users size={18} className="text-accent" aria-hidden="true" />
           <h2 className="text-lg font-semibold text-content">Gözetmen Atama</h2>
         </div>
-        <PrimaryButton variant="secondary" size="sm">
-          Gözetmen Ata
-        </PrimaryButton>
+        <DataExportButtons
+          filename="gozetmen-atama"
+          title="Gözetmen Atama"
+          columns={[
+            { key: "room", label: "Salon" },
+            { key: "proctor", label: "Gözetmen" },
+            { key: "assistant", label: "Yardımcı" },
+            { key: "studentCount", label: "Öğrenci Sayısı" },
+            { key: "status", label: "Durum" },
+          ]}
+          rows={proctors as unknown as Record<string, unknown>[]}
+        />
       </div>
 
       <div className="-mx-6 overflow-x-auto px-6">
