@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AiComingSoonNotice } from "@/components/ai/AiComingSoonNotice";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { SchedulerHero } from "@/components/scheduler/SchedulerHero";
@@ -29,6 +30,8 @@ export default function SchedulerAiPage() {
   return (
     <PageShell title="AI Ders Programı Oluşturucu">
       <div className="flex flex-col gap-10">
+        <AiComingSoonNotice />
+
         <SectionHeader
           eyebrow="Yapay Zeka"
           title="AI Ders Programı Oluşturucu"

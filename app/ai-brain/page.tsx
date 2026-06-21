@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AiComingSoonNotice } from "@/components/ai/AiComingSoonNotice";
 import { Bot, Sparkles, Zap } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
@@ -29,6 +30,8 @@ export default function AiBrainPage() {
   return (
     <PageShell title="AI Brain">
       <div className="flex flex-col gap-10">
+        <AiComingSoonNotice />
+
         <SectionHeader
           eyebrow="AI Brain"
           title="AI Brain"

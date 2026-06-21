@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AiComingSoonNotice } from "@/components/ai/AiComingSoonNotice";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { StudentSelector } from "@/components/report-card/StudentSelector";
@@ -19,6 +20,8 @@ export default function ReportCardAiPage() {
   return (
     <PageShell title="AI Karne Asistanı">
       <div className="flex flex-col gap-10">
+        <AiComingSoonNotice />
+
         <SectionHeader
           eyebrow="Yapay Zeka"
           title="AI Karne Asistanı"

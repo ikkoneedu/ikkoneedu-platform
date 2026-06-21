@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AiComingSoonNotice } from "@/components/ai/AiComingSoonNotice";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { AiAdvisorChat } from "@/components/admissions/AiAdvisorChat";
@@ -32,6 +33,8 @@ export default function AdmissionsAiPage() {
   return (
     <PageShell title="AI Kayıt Danışmanı">
       <div className="flex flex-col gap-10">
+        <AiComingSoonNotice />
+
         {/* 1. Başlık */}
         <SectionHeader
           eyebrow="Kayıt"

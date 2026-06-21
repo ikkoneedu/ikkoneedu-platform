@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AiComingSoonNotice } from "@/components/ai/AiComingSoonNotice";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { ExamHero } from "@/components/exam/ExamHero";
@@ -32,6 +33,8 @@ export default function ExamAiPage() {
   return (
     <PageShell title="AI Sınav Oluşturucu">
       <div className="flex flex-col gap-10">
+        <AiComingSoonNotice />
+
         <SectionHeader
           eyebrow="Yapay Zeka"
           title="AI Sınav Oluşturucu"
