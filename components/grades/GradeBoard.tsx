@@ -9,6 +9,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { listMyCodes } from "@/lib/services/access-codes";
 import { addGrade, getStudentGrades, type GradeEntry } from "@/lib/services/grades";
+import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 interface Student {
@@ -151,11 +152,26 @@ export function GradeBoard() {
       )}
 
       <GlassCard tone="navy">
-        <div className="mb-4 flex items-center gap-2">
+        <div className="mb-4 flex flex-wrap items-center gap-2">
           <Star size={18} className="text-accent" aria-hidden="true" />
           <h2 className="text-lg font-semibold text-content">
             {isTeacher ? "Öğrenci Notları" : "Notlarım"}
           </h2>
+          {grades.length > 0 && (
+            <DataExportButtons
+              className="ml-auto"
+              filename="not-karnesi"
+              title="Not Karnesi"
+              formats={["pdf", "csv"]}
+              columns={[
+                { key: "subject", label: "Ders" },
+                { key: "score", label: "Not" },
+                { key: "note", label: "Açıklama" },
+                { key: "date", label: "Tarih" },
+              ]}
+              rows={grades as unknown as Record<string, unknown>[]}
+            />
+          )}
         </div>
         {grades.length === 0 ? (
           <p className="text-sm text-muted">Henüz not yok.</p>

@@ -5,6 +5,7 @@ import { Rocket } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
+import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import {
   listDemoRequests,
   type DemoRequestRecord,
@@ -35,10 +36,27 @@ export function DemoRequestsInbox() {
 
   return (
     <GlassCard tone="navy">
-      <div className="mb-4 flex items-center gap-2">
+      <div className="mb-4 flex flex-wrap items-center gap-2">
         <Rocket size={18} className="text-accent" aria-hidden="true" />
         <h2 className="text-lg font-semibold text-content">Demo Talepleri (canlı)</h2>
-        <span className="ml-auto text-xs text-muted">{items.length}</span>
+        <span className="text-xs text-muted">{items.length}</span>
+        {items.length > 0 && (
+          <DataExportButtons
+            className="ml-auto"
+            filename="demo-talepleri"
+            title="Demo Talepleri"
+            columns={[
+              { key: "institution", label: "Kurum" },
+              { key: "fullName", label: "Yetkili" },
+              { key: "phone", label: "Telefon" },
+              { key: "email", label: "E-posta" },
+              { key: "city", label: "Şehir" },
+              { key: "studentCount", label: "Öğrenci Sayısı" },
+              { key: "message", label: "Mesaj" },
+            ]}
+            rows={items as unknown as Record<string, unknown>[]}
+          />
+        )}
       </div>
       {items.length === 0 ? (
         <p className="text-sm text-muted">Henüz demo talebi yok.</p>

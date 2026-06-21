@@ -1,6 +1,7 @@
 import { FileText } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { SelectField } from "@/components/shared/SelectField";
+import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import {
   applications,
   applicationStatuses,
@@ -45,11 +46,29 @@ export function ScholarshipApplicationsTable() {
           <FileText size={18} className="text-accent" aria-hidden="true" />
           <h2 className="text-lg font-semibold text-content">Başvuru Yönetimi</h2>
         </div>
-        <SelectField
-          label="Durum Filtresi"
-          items={["Tümü", ...applicationStatuses]}
-          className="w-full sm:w-56"
-        />
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+          <SelectField
+            label="Durum Filtresi"
+            items={["Tümü", ...applicationStatuses]}
+            className="w-full sm:w-56"
+          />
+          <DataExportButtons
+            filename="bursluluk-basvurulari"
+            title="Bursluluk Başvuruları"
+            columns={[
+              { key: "applicationNo", label: "Başvuru No" },
+              { key: "studentName", label: "Öğrenci" },
+              { key: "parentName", label: "Veli" },
+              { key: "phone", label: "Telefon" },
+              { key: "grade", label: "Sınıf" },
+              { key: "currentSchool", label: "Mevcut Okul" },
+              { key: "campusPreference", label: "Kampüs Tercihi" },
+              { key: "status", label: "Durum" },
+              { key: "crmStatus", label: "CRM Durumu" },
+            ]}
+            rows={applications as unknown as Record<string, unknown>[]}
+          />
+        </div>
       </div>
 
       <div className="-mx-6 overflow-x-auto px-6">

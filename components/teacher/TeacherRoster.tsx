@@ -5,6 +5,7 @@ import { Users, GraduationCap } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
+import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import { listMyCodes, type AccessCodeRecord } from "@/lib/services/access-codes";
 
 /**
@@ -38,12 +39,27 @@ export function TeacherRoster() {
 
   return (
     <GlassCard tone="navy">
-      <div className="mb-4 flex items-center gap-2">
+      <div className="mb-4 flex flex-wrap items-center gap-2">
         <Users size={18} className="text-accent" aria-hidden="true" />
         <h2 className="text-lg font-semibold text-content">Sınıfım (canlı)</h2>
-        <span className="ml-auto text-xs text-muted">
+        <span className="text-xs text-muted">
           {students.length} öğrenci · {parents.length} veli
         </span>
+        {codes.length > 0 && (
+          <DataExportButtons
+            className="ml-auto"
+            filename="sinif-listesi"
+            title="Sınıf Listesi"
+            formats={["pdf", "csv", "xml"]}
+            columns={[
+              { key: "displayName", label: "Ad" },
+              { key: "role", label: "Tür" },
+              { key: "code", label: "Kod" },
+              { key: "classId", label: "Sınıf" },
+            ]}
+            rows={codes as unknown as Record<string, unknown>[]}
+          />
+        )}
       </div>
 
       {codes.length === 0 ? (
