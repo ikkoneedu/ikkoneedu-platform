@@ -25,6 +25,7 @@ import {
   UserAdminActions,
   MANAGER_ASSIGNABLE_ROLES,
 } from "@/components/admin/UserAdminActions";
+import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import { createAuditLog } from "@/lib/services/audit-logs";
 import { sendPasswordReset } from "@/lib/services/auth-actions";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
@@ -223,10 +224,22 @@ export function StaffManager() {
       )}
 
       <GlassCard tone="navy">
-        <div className="mb-4 flex items-center gap-2">
+        <div className="mb-4 flex flex-wrap items-center gap-2">
           <Users size={18} className="text-accent" aria-hidden="true" />
           <h2 className="text-lg font-semibold text-content">Okul Kullanıcıları</h2>
-          <span className="ml-auto text-xs text-muted">{users.length} kayıt</span>
+          <span className="text-xs text-muted">{users.length} kayıt</span>
+          <DataExportButtons
+            className="ml-auto"
+            filename="okul-kullanicilari"
+            title="Okul Kullanıcıları"
+            columns={[
+              { key: "displayName", label: "Ad" },
+              { key: "email", label: "E-posta" },
+              { key: "role", label: "Rol" },
+              { key: "status", label: "Durum" },
+            ]}
+            rows={users as unknown as Record<string, unknown>[]}
+          />
         </div>
         {users.length === 0 ? (
           <p className="text-sm text-muted">Henüz kullanıcı yok.</p>
