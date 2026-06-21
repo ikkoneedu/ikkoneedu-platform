@@ -12,8 +12,10 @@ import {
   Star,
   StarHalf,
 } from "lucide-react";
+import Link from "next/link";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
+import { AccountSummaryCard } from "@/components/shared/AccountSummaryCard";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -193,16 +195,22 @@ export default function AdminPage() {
           <div className="mx-auto w-full max-w-[1600px]">
             {/* Ana başlık */}
             <SectionHeader
-              className="mb-10"
+              className="mb-6"
               title="Yönetim Paneli"
               description="Sistem genel görünümü ve stratejik performans metrikleri."
               action={
-                <PrimaryButton variant="secondary" size="md">
-                  <Download size={18} aria-hidden="true" />
-                  Rapor Al
-                </PrimaryButton>
+                <Link href="/executive">
+                  <PrimaryButton variant="secondary" size="md">
+                    <Download size={18} aria-hidden="true" />
+                    Raporlar
+                  </PrimaryButton>
+                </Link>
               }
             />
+
+            <div className="mb-10">
+              <AccountSummaryCard />
+            </div>
 
             {/* Okul özeti — gerçek Firestore verisi (yalnızca giriş yapmış personelde görünür) */}
             <div className="mb-10">

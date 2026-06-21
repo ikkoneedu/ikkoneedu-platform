@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AccountSummaryCard } from "@/components/shared/AccountSummaryCard";
 import Link from "next/link";
 import {
   Megaphone,
@@ -52,6 +53,8 @@ export default function ParentPage() {
   return (
     <PageShell title="Veli Portalı">
       <div className="flex flex-col gap-10">
+        <AccountSummaryCard />
+
         <SectionHeader
           eyebrow="Veli Portalı"
           title="Hoş geldiniz, Yılmaz Ailesi"

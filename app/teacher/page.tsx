@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AccountSummaryCard } from "@/components/shared/AccountSummaryCard";
 import {
   BookOpen,
   School,
@@ -53,6 +54,8 @@ export default function TeacherPage() {
   return (
     <PageShell title="Öğretmen Portalı">
       <div className="flex flex-col gap-10">
+        <AccountSummaryCard />
+
         {/* 1. Karşılama */}
         <SectionHeader
           eyebrow="Öğretmen Portalı"

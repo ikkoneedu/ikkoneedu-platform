@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AccountSummaryCard } from "@/components/shared/AccountSummaryCard";
 import type { LucideIcon } from "lucide-react";
 import {
   Clock,
@@ -103,6 +104,8 @@ export default function StudentPage() {
   return (
     <PageShell title="Öğrenci Merkezi">
       <div className="flex flex-col gap-12">
+        <AccountSummaryCard />
+
         <Reveal>
           <SectionHeader
             eyebrow="Öğrenci Merkezi"
