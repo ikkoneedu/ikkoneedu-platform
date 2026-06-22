@@ -96,7 +96,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!tid || tid === "public" || tid === "platform") return false;
       try {
         const school = await getSchool(tid);
-        return school?.status === "SUSPENDED";
+        // Hem eski 'SUSPENDED' hem yeni enum 'suspended'/'cancelled' engellenir.
+        const status = (school?.status ?? "").toLowerCase();
+        return status === "suspended" || status === "cancelled";
       } catch {
         return false;
       }

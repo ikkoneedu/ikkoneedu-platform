@@ -67,12 +67,15 @@ export async function createManagedAccount(input: {
   role: Role;
   displayName: string;
   email: string;
+  /** Belirtilmezse schoolId = tenantId (okul başına tek tenant). */
+  schoolId?: string;
 }): Promise<CreatedStaff> {
   if (!isFirebaseConfigured() || !db) {
     throw new Error("Firebase yapılandırılmamış.");
   }
   const secondary = getSecondaryAuth();
   if (!secondary) throw new Error("Firebase yapılandırılmamış.");
+  const database = db;
 
   const email = input.email.trim().toLowerCase();
   const password = tempPassword();
@@ -86,18 +89,30 @@ export async function createManagedAccount(input: {
   const uid = credential.user.uid;
 
   // 2) Profil belgesini ana oturumla (yönetici/süper admin) yaz.
-  await setDoc(doc(db, userProfileDoc(uid)), {
-    uid,
-    email,
-    displayName: input.displayName,
-    role: input.role,
-    tenantId: input.tenantId,
-    schoolId: input.tenantId,
-    status: "ACTIVE",
-    createdBy: input.createdBy,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
+  //    Profil yazımı başarısız olursa AUTH hesabını GERİ AL (rollback) ki
+  //    profilsiz/yetkisiz bir hesap ortada kalmasın.
+  try {
+    await setDoc(doc(database, userProfileDoc(uid)), {
+      uid,
+      email,
+      displayName: input.displayName,
+      role: input.role,
+      tenantId: input.tenantId,
+      schoolId: input.schoolId ?? input.tenantId,
+      status: "ACTIVE",
+      createdBy: input.createdBy,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    try {
+      // İkincil oturumda hâlâ bu kullanıcı açık; hesabı sil (rollback).
+      await credential.user.delete();
+    } catch {
+      /* rollback başarısız olsa da asıl hatayı yükselt */
+    }
+    throw error;
+  }
 
   // 3) İkincil oturumu kapat.
   await signOut(secondary);

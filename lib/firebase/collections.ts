@@ -119,6 +119,16 @@ export const tenants = (): string => COLLECTIONS.TENANTS;
 export const tenantDoc = (tenantId: string): string =>
   `${COLLECTIONS.TENANTS}/${tenantId}`;
 
+/**
+ * Okul profilleri koleksiyonu (kök): `schools`.
+ * Tenant aboneliğinden (tenants/{tenantId}) ayrı; okulun iletişim/kimlik
+ * profilini taşır. MVP'de schoolId = tenantId (okul başına tek tenant).
+ */
+export const schools = (): string => "schools";
+
+/** Tek okul profili belgesi: schools/{schoolId} */
+export const schoolDoc = (schoolId: string): string => `schools/${schoolId}`;
+
 /** tenants/{tenantId}/users */
 export const tenantUsers = (tenantId: string): string =>
   tenantPath(tenantId, COLLECTIONS.USERS);

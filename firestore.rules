@@ -92,11 +92,13 @@ service cloud.firestore {
       return isActiveUser() && (myTenant() == tenantId || isSuperAdmin());
     }
 
-    // Okul askıda DEĞİL mi? Gerçek tenant belgesi yoksa (mock/eski) muaftır
-    // (geriye dönük uyumlu). Belge varsa ve status == 'SUSPENDED' ise false.
+    // Okul askıda/iptal DEĞİL mi? Gerçek tenant belgesi yoksa (mock/eski) muaftır
+    // (geriye dönük uyumlu). Hem eski büyük harf ('SUSPENDED') hem yeni enum
+    // ('suspended'/'cancelled') engellenir.
     function tenantNotSuspended(tenantId) {
       return !exists(/databases/$(database)/documents/tenants/$(tenantId))
-        || get(/databases/$(database)/documents/tenants/$(tenantId)).data.status != 'SUSPENDED';
+        || !(get(/databases/$(database)/documents/tenants/$(tenantId)).data.status
+             in ['SUSPENDED', 'suspended', 'cancelled']);
     }
 
     // ---- Halka açık form doğrulayıcıları ----------------------------------
@@ -239,6 +241,20 @@ service cloud.firestore {
     match /tenants/{tenantId} {
       allow read: if true;
       allow create, update, delete: if isSuperAdmin();
+    }
+
+    // ---- Okul profilleri (kök `schools`) ----------------------------------
+    // Okulun iletişim/kimlik profili (tenant aboneliğinden ayrı).
+    // Okuma: ilgili tenant üyesi veya SUPER_ADMIN.
+    // Oluşturma/silme: yalnızca SUPER_ADMIN (onboarding).
+    // Güncelleme: SUPER_ADMIN veya kendi okulunun yöneticisi.
+    match /schools/{schoolId} {
+      allow read: if isSuperAdmin()
+        || (isActiveUser() && resource.data.tenantId == myTenant());
+      allow create, delete: if isSuperAdmin();
+      allow update: if isSuperAdmin()
+        || (isSchoolManager() && resource.data.tenantId == myTenant()
+            && request.resource.data.tenantId == resource.data.tenantId);
     }
 
     // ---- Halka açık form gönderimleri (anonim oluşturma) ------------------

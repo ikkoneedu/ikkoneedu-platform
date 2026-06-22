@@ -4,6 +4,7 @@ import { SectionHeader } from "@/components/shared/SectionHeader";
 import { SaasOverview } from "@/components/saas/SaasOverview";
 import { DemoRequestsInbox } from "@/components/saas/DemoRequestsInbox";
 import { PlatformLeadsInbox } from "@/components/saas/PlatformLeadsInbox";
+import { TenantManagement } from "@/components/saas/TenantManagement";
 import { SchoolTable } from "@/components/saas/SchoolTable";
 import { NewSchoolForm } from "@/components/saas/NewSchoolForm";
 import { SubscriptionCards } from "@/components/saas/SubscriptionCards";
@@ -50,6 +51,9 @@ export default function SaasAdminPage() {
 
         {/* Platform satış lead pipeline'ı — demo dönüşümlerinden (canlı) */}
         <PlatformLeadsInbox />
+
+        {/* Tenant onboarding + tenant/okul/admin yönetimi (gerçek Firestore) */}
+        <TenantManagement />
 
         {/* 1. Genel durum */}
         <SaasOverview metrics={saasOverviewMetrics} />
