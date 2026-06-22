@@ -308,15 +308,55 @@ service cloud.firestore {
       allow read, write: if isTenantMember(tenantId);
     }
 
+    // ---- Mesajlar (gizli — yalnızca gönderen/alıcı) -----------------------
+    // ÖNEMLİ: Genel `{document=**}` kuralı bu yolu OKUMA için HARİÇ tutar
+    // (aşağıda `!document.matches('messages/.*')`), böylece tenant üyesi bile
+    // başkalarının mesajını okuyamaz; yalnızca bu kurallar geçerlidir.
+    match /tenants/{tenantId}/messages/{messageId} {
+      allow read: if isSignedIn() && (
+        resource.data.senderId == request.auth.uid
+        || request.auth.uid in resource.data.recipientIds
+      );
+      // Oluşturma: aktif tenant üyesi; senderId kendisi; tenantId yol ile aynı.
+      allow create: if isActiveUser() && myTenant() == tenantId
+        && tenantNotSuspended(tenantId)
+        && request.resource.data.tenantId == tenantId
+        && request.resource.data.senderId == request.auth.uid
+        && request.resource.data.status == 'sent';
+      // Güncelleme: gönderen (durum: archived/deleted) veya alıcı (readBy).
+      allow update: if isSignedIn() && (
+        resource.data.senderId == request.auth.uid
+        || request.auth.uid in resource.data.recipientIds
+      );
+      // Gerçek silme yok (soft delete = status).
+      allow delete: if false;
+    }
+
+    // ---- Bildirimler — sahibi okundu işaretleyebilir ----------------------
+    // Okuma genel tenant kuralından gelir (tenant üyesi); kişisel listeleme
+    // istemcide userId ile filtrelenir. Oluşturma genel kuraldan (personel).
+    // Bu blok yalnızca SAHİBİNİN kendi bildirimini güncellemesine (read flag)
+    // izin ekler — böylece veli/öğrenci de okundu işaretleyebilir.
+    match /tenants/{tenantId}/notifications/{notificationId} {
+      allow update: if isTenantMember(tenantId)
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == resource.data.userId;
+    }
+
     // ---- Diğer tüm tenant verileri ----------------------------------------
     // Öğrenci, öğretmen, veli, duyuru, mesaj, ayar, auditLog vb.
     // Okuma: tenant üyesi (öğrenci/veli dahil). Yazma: yalnızca personel
     // (öğrenci/veli tenant verisine yazamaz — ör. duyuru oluşturamaz).
     match /tenants/{tenantId}/{document=**} {
-      allow read: if isTenantMember(tenantId);
+      // Mesajlar HARİÇ (gizlilik): mesajlar yalnızca yukarıdaki özel kuralla
+      // gönderen/alıcı tarafından okunur; tenant üyesi geneli onları göremez.
+      allow read: if isTenantMember(tenantId)
+        && !document.matches('messages/.*');
       // Askıdaki okulun personeli veri yazamaz (süper admin ayrı kurallarla erişir).
+      // Mesaj yazımı da özel kuralla yönetilir (burada hariç).
       allow write: if isStaff() && myTenant() == tenantId
-        && tenantNotSuspended(tenantId);
+        && tenantNotSuspended(tenantId)
+        && !document.matches('messages/.*');
     }
 
     // ---- Global CRM (collection group) — yalnızca SUPER_ADMIN -------------

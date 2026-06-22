@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
+import { MessageCenter } from "@/components/messages/MessageCenter";
 import { MessageMetrics } from "@/components/messages/MessageMetrics";
 import { ChannelSelector } from "@/components/messages/ChannelSelector";
 import { MessageComposer } from "@/components/messages/MessageComposer";
@@ -38,6 +39,9 @@ export default function MessagesPage() {
           title="Message Center"
           description="Duyuru, mesaj, SMS, e-posta ve push bildirimlerinizi tek merkezden yönetin."
         />
+
+        {/* Gerçek uygulama içi mesajlaşma (canlı Firestore — FCM yok) */}
+        <MessageCenter />
 
         {/* 2. Metrikler */}
         <MessageMetrics metrics={communicationMetrics} />

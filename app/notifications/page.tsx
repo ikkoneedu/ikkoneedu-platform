@@ -11,6 +11,8 @@ import { FcmReadiness } from "@/components/notifications/FcmReadiness";
 import { NotificationAnalytics } from "@/components/notifications/NotificationAnalytics";
 import { EmergencyNotification } from "@/components/notifications/EmergencyNotification";
 import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
+import { AnnouncementComposer } from "@/components/announcements/AnnouncementComposer";
+import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 import { productName } from "@/lib/constants";
 import {
   notificationMetrics,
@@ -38,6 +40,12 @@ export default function NotificationsPage() {
           title="Bildirim Merkezi"
           description="Push bildirimleri, sistem içi uyarıları ve kullanıcı etkileşimlerini tek merkezden yönetin."
         />
+
+        {/* Kişisel bildirimler (canlı — userId == uid) */}
+        <NotificationCenter />
+
+        {/* Duyuru oluştur (yalnızca personel) + yayın bildirimleri */}
+        <AnnouncementComposer />
 
         {/* Gerçek duyuru akışı (canlı — giriş yapmış kullanıcıda) */}
         <AnnouncementBoard />
