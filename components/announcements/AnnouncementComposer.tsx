@@ -101,7 +101,9 @@ export function AnnouncementComposer({ onCreated }: { onCreated?: () => void }) 
           (u) =>
             u.status === "ACTIVE" &&
             u.uid !== uid &&
-            (roles.length === 0 || roles.includes(u.role)),
+            (roles.length === 0 || roles.includes(u.role)) &&
+            // Sınıf hedefi verildiyse yalnız o sınıftaki kullanıcılar.
+            (classIds.length === 0 || (u.classId && classIds.includes(u.classId))),
         );
         await Promise.all(
           targets.map((u) =>

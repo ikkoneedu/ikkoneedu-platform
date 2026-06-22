@@ -4,10 +4,22 @@ import { useCallback, useEffect, useState } from "react";
 import { BellRing, RefreshCw, Inbox } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { ROLES } from "@/lib/auth/role-constants";
 import {
   listNotifications,
   type NotificationRecord,
 } from "@/lib/services/notifications";
+
+/** Yayın akışını yalnızca personel görür (kişisel bildirim gizliliği için). */
+const STAFF_ROLES: string[] = [
+  ROLES.SCHOOL_ADMIN,
+  ROLES.FOUNDER,
+  ROLES.PRINCIPAL,
+  ROLES.VICE_PRINCIPAL,
+  ROLES.COORDINATOR,
+  ROLES.TEACHER,
+  ROLES.SUPER_ADMIN,
+];
 
 function formatDate(ms: number | null): string {
   if (!ms) return "";
@@ -26,7 +38,8 @@ function formatDate(ms: number | null): string {
 export function NotificationFeed() {
   const { profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
-  const usable = firebaseReady && Boolean(tenantId);
+  const isStaff = profile != null && STAFF_ROLES.includes(profile.role);
+  const usable = firebaseReady && Boolean(tenantId) && isStaff;
 
   const [items, setItems] = useState<NotificationRecord[] | null>(null);
   const [refreshing, setRefreshing] = useState(false);

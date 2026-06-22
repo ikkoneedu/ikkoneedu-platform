@@ -37,6 +37,9 @@ export interface SchoolProfile {
   email: string;
   website: string;
   status: string;
+  /** Okul iletişim adminliği — veli/öğrenci "okul yönetimine yaz" hedefi. */
+  primaryAdminUid: string;
+  primaryAdminName: string;
   createdAt: number | null;
   updatedAt: number | null;
 }
@@ -73,6 +76,8 @@ function mapProfile(id: string, data: Record<string, unknown>): SchoolProfile {
     email: String(data.email ?? ""),
     website: String(data.website ?? ""),
     status: String(data.status ?? "active"),
+    primaryAdminUid: String(data.primaryAdminUid ?? ""),
+    primaryAdminName: String(data.primaryAdminName ?? ""),
     createdAt: toMillis(data.createdAt),
     updatedAt: toMillis(data.updatedAt),
   };
@@ -130,6 +135,8 @@ export interface UpdateSchoolProfileInput {
   email?: string;
   website?: string;
   status?: SchoolStatus;
+  primaryAdminUid?: string;
+  primaryAdminName?: string;
 }
 
 /** Okul profilini günceller. */
@@ -150,6 +157,8 @@ export async function updateSchoolProfile(
     "email",
     "website",
     "status",
+    "primaryAdminUid",
+    "primaryAdminName",
   ] as const) {
     if (patch[key] !== undefined) data[key] = patch[key];
   }

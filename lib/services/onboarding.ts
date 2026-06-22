@@ -27,6 +27,7 @@ import {
 import {
   createSchoolProfile,
   getSchoolProfile,
+  updateSchoolProfile,
 } from "@/lib/services/school-profiles";
 import { createManagedAccount, type CreatedStaff } from "@/lib/services/users";
 import { ROLES } from "@/lib/auth/role-constants";
@@ -154,6 +155,17 @@ export async function onboardTenant(
     await safeDelete(schoolDoc(schoolId));
     await safeDelete(tenantDoc(tenantId));
     return fail(message(error, "Okul admini oluşturulamadı."));
+  }
+
+  // İlk admini okul profiline "okul yönetimi iletişim hedefi" olarak işle
+  // (veli/öğrenci bu uid'e mesaj atabilsin). Hata akışı bozmaz (best-effort).
+  try {
+    await updateSchoolProfile(schoolId, {
+      primaryAdminUid: admin.uid,
+      primaryAdminName: input.adminName?.trim() || name,
+    });
+  } catch {
+    /* profil güncellemesi başarısız olsa da onboarding başarılıdır */
   }
 
   return { ok: true, tenantId, schoolId, admin };

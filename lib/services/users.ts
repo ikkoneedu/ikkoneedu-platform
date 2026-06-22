@@ -136,6 +136,8 @@ export interface TenantUser {
   displayName: string;
   role: Role;
   status: string;
+  /** Öğrenci/veli sınıfı (sınıf hedefli duyuru fan-out'u için). */
+  classId: string;
 }
 
 /** Tenant'taki kullanıcıları listeler (yalnızca personel erişebilir). */
@@ -152,6 +154,7 @@ export async function listTenantUsers(tenantId: string): Promise<TenantUser[]> {
       displayName: String(data.displayName ?? ""),
       role: data.role as Role,
       status: String(data.status ?? ""),
+      classId: String(data.classId ?? ""),
     };
   });
 }
@@ -199,6 +202,7 @@ export async function listAllUsers(): Promise<AllUser[]> {
       displayName: String(data.displayName ?? ""),
       role: data.role as Role,
       status: String(data.status ?? ""),
+      classId: String(data.classId ?? ""),
       tenantId: String(data.tenantId ?? ""),
     };
   });

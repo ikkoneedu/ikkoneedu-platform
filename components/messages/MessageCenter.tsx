@@ -11,13 +11,15 @@ import {
   Trash2,
   MailOpen,
   Mail,
+  Reply,
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES, ROLE_LABELS } from "@/lib/auth/role-constants";
-import { listTenantUsers, type TenantUser } from "@/lib/services/users";
+import { listTenantUsers } from "@/lib/services/users";
+import { getSchoolProfile } from "@/lib/services/school-profiles";
 import { createUserNotification } from "@/lib/services/notifications";
 import {
   sendMessage,
@@ -73,6 +75,8 @@ export function MessageCenter() {
   const [tab, setTab] = useState<"inbox" | "sent">("inbox");
   const [openId, setOpenId] = useState<string | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [subject, setSubject] = useState("");
+  const [replyTo, setReplyTo] = useState<Candidate | null>(null);
   const [filter, setFilter] = useState("");
   const [busy, setBusy] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -109,18 +113,35 @@ export function MessageCenter() {
               .filter((u) => u.uid !== uid && u.status === "ACTIVE")
               .map((u) => ({ uid: u.uid, name: u.displayName || u.email, role: u.role })),
           );
-        } else if (profile.createdBy) {
-          // Veli/öğrenci yalnızca kendi öğretmenine yazabilir (kullanıcı listesi
-          // okuma yetkisi yok). Öğretmen, hesabı oluşturan kişidir.
-          setCandidates([
-            {
+        } else {
+          // Veli/öğrenci kullanıcı listesini okuyamaz. Sabit hedefler:
+          //  - hesabını oluşturan öğretmen (profile.createdBy)
+          //  - okul yönetimi (school profile.primaryAdminUid)
+          const list: Candidate[] = [];
+          if (profile.createdBy) {
+            list.push({
               uid: profile.createdBy,
               name: profile.createdByName || "Öğretmenim",
               role: ROLES.TEACHER,
-            },
-          ]);
-        } else {
-          setCandidates([]);
+            });
+          }
+          try {
+            const sp = await getSchoolProfile(profile.schoolId ?? tenantId);
+            if (
+              sp?.primaryAdminUid &&
+              sp.primaryAdminUid !== uid &&
+              sp.primaryAdminUid !== profile.createdBy
+            ) {
+              list.push({
+                uid: sp.primaryAdminUid,
+                name: sp.primaryAdminName || "Okul Yönetimi",
+                role: ROLES.SCHOOL_ADMIN,
+              });
+            }
+          } catch {
+            /* okul profili okunamazsa yalnızca öğretmen hedefi kalır */
+          }
+          if (active) setCandidates(list);
         }
       } catch {
         if (active) setCandidates([]);
@@ -131,13 +152,34 @@ export function MessageCenter() {
     };
   }, [usable, tenantId, profile, isStaff, uid]);
 
+  // Yanıt hedefi adaylarda yoksa (ör. veli, kendisine yazan başka bir admine
+  // yanıt veriyor) listeye ekle ki seçili görünsün.
+  const allCandidates = useMemo(() => {
+    if (replyTo && !candidates.some((c) => c.uid === replyTo.uid)) {
+      return [replyTo, ...candidates];
+    }
+    return candidates;
+  }, [candidates, replyTo]);
+
   const filteredCandidates = useMemo(() => {
     const q = filter.trim().toLowerCase();
-    if (!q) return candidates;
-    return candidates.filter(
+    if (!q) return allCandidates;
+    return allCandidates.filter(
       (c) => c.name.toLowerCase().includes(q) || c.role.toLowerCase().includes(q),
     );
-  }, [candidates, filter]);
+  }, [allCandidates, filter]);
+
+  const startReply = (m: MessageRecord) => {
+    const cand: Candidate = {
+      uid: m.senderId,
+      name: m.senderName || "Gönderen",
+      role: m.senderRole || "",
+    };
+    setReplyTo(cand);
+    setSelected(new Set([m.senderId]));
+    setSubject(m.subject.startsWith("Re:") ? m.subject : `Re: ${m.subject}`);
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const toggle = (id: string) =>
     setSelected((prev) => {
@@ -152,10 +194,10 @@ export function MessageCenter() {
     if (!tenantId || !profile || busy) return;
     const form = event.currentTarget;
     const fd = new FormData(form);
-    const subject = String(fd.get("subject") ?? "").trim();
+    const subjectValue = subject.trim();
     const body = String(fd.get("body") ?? "").trim();
     const recipientIds = Array.from(selected);
-    if (!subject || !body) {
+    if (!subjectValue || !body) {
       setError("Konu ve mesaj zorunludur.");
       return;
     }
@@ -169,7 +211,7 @@ export function MessageCenter() {
       const recipientRoles = Array.from(
         new Set(
           recipientIds
-            .map((id) => candidates.find((c) => c.uid === id)?.role)
+            .map((id) => allCandidates.find((c) => c.uid === id)?.role)
             .filter((r): r is string => Boolean(r)),
         ),
       );
@@ -182,7 +224,7 @@ export function MessageCenter() {
         senderRole: profile.role,
         recipientIds,
         recipientRoles,
-        subject,
+        subject: subjectValue,
         body,
       });
       // Her alıcıya uygulama içi bildirim (FCM yok).
@@ -191,7 +233,7 @@ export function MessageCenter() {
           createUserNotification(tenantId, {
             userId: rid,
             schoolId: profile.schoolId ?? tenantId,
-            title: `Yeni mesaj: ${subject}`,
+            title: `Yeni mesaj: ${subjectValue}`,
             body: `${profile.displayName || "Bir kullanıcı"} size mesaj gönderdi.`,
             type: "message",
             link: "/messages",
@@ -199,6 +241,8 @@ export function MessageCenter() {
         ),
       );
       form.reset();
+      setSubject("");
+      setReplyTo(null);
       setSelected(new Set());
       await load();
       setTab("sent");
@@ -262,7 +306,32 @@ export function MessageCenter() {
           <h2 className="text-lg font-semibold text-content">Mesaj Gönder</h2>
         </div>
         <form onSubmit={handleSend} className="flex flex-col gap-4">
-          <TextField label="Konu" name="subject" placeholder="Konu" required />
+          {replyTo && (
+            <p className="flex items-center justify-between gap-2 rounded-lg border border-accent/30 bg-accent/5 px-3 py-2 text-xs text-accent">
+              <span className="inline-flex items-center gap-1.5">
+                <Reply size={13} aria-hidden="true" /> Yanıt: {replyTo.name}
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setReplyTo(null);
+                  setSelected(new Set());
+                  setSubject("");
+                }}
+                className="text-muted hover:text-content"
+              >
+                Vazgeç
+              </button>
+            </p>
+          )}
+          <TextField
+            label="Konu"
+            name="subject"
+            placeholder="Konu"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            required
+          />
           <label className="flex flex-col gap-1.5 text-sm font-medium text-muted">
             Mesaj
             <textarea
@@ -428,6 +497,17 @@ export function MessageCenter() {
                   {open && (
                     <div className="border-t border-white/10 px-3 py-3">
                       <p className="whitespace-pre-wrap text-sm text-content">{m.body}</p>
+                      {tab === "inbox" && (
+                        <div className="mt-3">
+                          <button
+                            type="button"
+                            onClick={() => startReply(m)}
+                            className="inline-flex items-center gap-1 rounded-lg border border-accent/30 bg-accent/10 px-2.5 py-1 text-xs text-accent transition hover:bg-accent/20"
+                          >
+                            <Reply size={13} aria-hidden="true" /> Yanıtla
+                          </button>
+                        </div>
+                      )}
                       {tab === "sent" && (
                         <div className="mt-3 flex gap-2">
                           <button
