@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { AiComingSoonNotice } from "@/components/ai/AiComingSoonNotice";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
+import { AdmissionsBoard } from "@/components/admissions/AdmissionsBoard";
 import { AiAdvisorChat } from "@/components/admissions/AiAdvisorChat";
 import { AdmissionsFunnel } from "@/components/admissions/AdmissionsFunnel";
 import { CandidateProfiles } from "@/components/admissions/CandidateProfiles";
@@ -41,6 +42,9 @@ export default function AdmissionsAiPage() {
           title="AI Kayıt Danışmanı"
           description="Aday velilerin sorularını yanıtlayan, randevuya yönlendiren ve kayıt dönüşümünü artıran yapay zeka destekli danışman."
         />
+
+        {/* Kayıt Kabul operasyon panosu (gerçek Firestore — AI yok) */}
+        <AdmissionsBoard />
 
         {/* 2 + 3. Danışman önizleme ve funnel */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
