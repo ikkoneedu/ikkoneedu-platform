@@ -105,6 +105,13 @@ export const platformAuditLogs = (): string => "platformAuditLogs";
  */
 export const platformDemoRequests = (): string => "platformDemoRequests";
 
+/**
+ * Platform düzeyi SaaS satış lead'leri koleksiyonu (kök): `platformLeads`.
+ * Okul henüz müşteri/tenant olmadığından ilk satış lead'i bir tenant altına
+ * ZORLANMAZ; kökte tutulur. Yalnızca SUPER_ADMIN okur/yazar.
+ */
+export const platformLeads = (): string => "platformLeads";
+
 /** Tüm tenant'lar: tenants */
 export const tenants = (): string => COLLECTIONS.TENANTS;
 

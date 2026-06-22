@@ -1,36 +1,129 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Rocket } from "lucide-react";
+import {
+  Rocket,
+  ChevronDown,
+  ArrowRightCircle,
+  Save,
+  AlertCircle,
+  CheckCircle2,
+} from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import {
   listDemoRequests,
+  updateDemoRequest,
+  convertDemoToLead,
+  demoStatusLabel,
+  DEMO_STATUSES,
   type DemoRequestRecord,
+  type DemoStatus,
 } from "@/lib/services/demo-requests";
+import { listSchools, type SchoolRecord } from "@/lib/services/schools";
+import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 /**
- * Demo talepleri gelen kutusu (gerçek Firestore).
+ * Demo talepleri yönetim tablosu (gerçek Firestore — `platformDemoRequests`).
  * Yalnızca giriş yapmış SUPER_ADMIN + Firebase aktifken görünür.
+ *
+ * Süper admin: durum değiştirir, not + atanan kişi ekler, talebi CRM lead'ine
+ * çevirir (okul seçiliyse tenant lead'i; değilse platform satış lead'i).
  */
 export function DemoRequestsInbox() {
   const { profile, firebaseReady } = useAuth();
   const isSuper = profile?.role === ROLES.SUPER_ADMIN;
+
   const [items, setItems] = useState<DemoRequestRecord[] | null>(null);
+  const [schools, setSchools] = useState<SchoolRecord[]>([]);
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
     if (!firebaseReady || !isSuper) return;
     let active = true;
     void (async () => {
-      const result = await listDemoRequests();
-      if (active) setItems(result);
+      const [reqs, sch] = await Promise.all([listDemoRequests(), listSchools()]);
+      if (!active) return;
+      setItems(reqs);
+      setSchools(sch);
     })();
     return () => {
       active = false;
     };
   }, [firebaseReady, isSuper]);
+
+  const patchLocal = (id: string, patch: Partial<DemoRequestRecord>) =>
+    setItems((prev) =>
+      prev ? prev.map((r) => (r.id === id ? { ...r, ...patch } : r)) : prev,
+    );
+
+  const handleStatus = async (id: string, status: DemoStatus) => {
+    setBusyId(id);
+    setError(null);
+    try {
+      await updateDemoRequest(id, { status });
+      patchLocal(id, { status });
+    } catch (err) {
+      setError(getAuthErrorMessage(err));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleSaveDetail = async (
+    id: string,
+    note: string,
+    assignedTo: string,
+  ) => {
+    setBusyId(id);
+    setError(null);
+    setNotice(null);
+    try {
+      await updateDemoRequest(id, { note, assignedTo });
+      patchLocal(id, { note, assignedTo });
+      setNotice("Kaydedildi.");
+    } catch (err) {
+      setError(getAuthErrorMessage(err));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleConvert = async (demo: DemoRequestRecord, tenantId: string) => {
+    setBusyId(demo.id);
+    setError(null);
+    setNotice(null);
+    try {
+      const result = await convertDemoToLead({
+        demo,
+        tenantId: tenantId || undefined,
+      });
+      if (!result.ok) {
+        setError(result.error ?? "Lead oluşturulamadı.");
+        return;
+      }
+      patchLocal(demo.id, {
+        status: "converted",
+        leadId: result.leadId ?? "",
+        leadTenantId: result.tenantId ?? "",
+      });
+      setNotice(
+        result.tenantId
+          ? `Lead "${result.tenantId}" okuluna eklendi.`
+          : "Platform satış lead'i oluşturuldu.",
+      );
+    } catch (err) {
+      setError(getAuthErrorMessage(err));
+    } finally {
+      setBusyId(null);
+    }
+  };
 
   if (!firebaseReady || !isSuper || items === null) return null;
 
@@ -51,39 +144,203 @@ export function DemoRequestsInbox() {
               { key: "phone", label: "Telefon" },
               { key: "email", label: "E-posta" },
               { key: "city", label: "Şehir" },
+              { key: "institutionType", label: "Kurum Türü" },
               { key: "studentCount", label: "Öğrenci Sayısı" },
+              { key: "status", label: "Durum" },
+              { key: "assignedTo", label: "Atanan" },
               { key: "message", label: "Mesaj" },
             ]}
             rows={items as unknown as Record<string, unknown>[]}
           />
         )}
       </div>
+
+      {notice && (
+        <p className="mb-3 flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-2.5 text-sm text-emerald-300">
+          <CheckCircle2 size={16} aria-hidden="true" /> {notice}
+        </p>
+      )}
+      {error && (
+        <p className="mb-3 flex items-center gap-2 rounded-xl border border-brand/30 bg-brand/10 px-4 py-2.5 text-sm text-brand">
+          <AlertCircle size={16} aria-hidden="true" /> {error}
+        </p>
+      )}
+
       {items.length === 0 ? (
         <p className="text-sm text-muted">Henüz demo talebi yok.</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="text-xs uppercase tracking-wide text-muted">
-                <th className="pb-2 pr-4 font-medium">Kurum</th>
-                <th className="pb-2 pr-4 font-medium">Yetkili</th>
-                <th className="pb-2 pr-4 font-medium">İletişim</th>
-                <th className="pb-2 font-medium">Şehir</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {items.map((r) => (
-                <tr key={r.id} className="text-content">
-                  <td className="py-2.5 pr-4 font-medium">{r.institution || "—"}</td>
-                  <td className="py-2.5 pr-4 text-muted">{r.fullName || "—"}</td>
-                  <td className="py-2.5 pr-4 text-muted">{r.phone || r.email || "—"}</td>
-                  <td className="py-2.5 text-muted">{r.city || "—"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="flex flex-col gap-2">
+          {items.map((r) => (
+            <DemoRow
+              key={r.id}
+              record={r}
+              schools={schools}
+              open={openId === r.id}
+              busy={busyId === r.id}
+              onToggle={() => setOpenId(openId === r.id ? null : r.id)}
+              onStatus={(s) => handleStatus(r.id, s)}
+              onSave={(note, assignedTo) =>
+                handleSaveDetail(r.id, note, assignedTo)
+              }
+              onConvert={(tenantId) => handleConvert(r, tenantId)}
+            />
+          ))}
         </div>
       )}
     </GlassCard>
+  );
+}
+
+const STATUS_TONES: Record<string, string> = {
+  new: "border-accent/20 bg-accent/10 text-accent",
+  contacted: "border-sky-400/20 bg-sky-400/10 text-sky-300",
+  demo_booked: "border-amber-400/20 bg-amber-400/10 text-amber-300",
+  converted: "border-emerald-400/20 bg-emerald-400/10 text-emerald-300",
+  lost: "border-white/15 bg-white/5 text-muted",
+};
+
+function DemoRow({
+  record,
+  schools,
+  open,
+  busy,
+  onToggle,
+  onStatus,
+  onSave,
+  onConvert,
+}: {
+  record: DemoRequestRecord;
+  schools: SchoolRecord[];
+  open: boolean;
+  busy: boolean;
+  onToggle: () => void;
+  onStatus: (status: DemoStatus) => void;
+  onSave: (note: string, assignedTo: string) => void;
+  onConvert: (tenantId: string) => void;
+}) {
+  const [note, setNote] = useState(record.note);
+  const [assignedTo, setAssignedTo] = useState(record.assignedTo);
+  const [tenantId, setTenantId] = useState(record.leadTenantId);
+  const converted = record.status === "converted" || Boolean(record.leadId);
+
+  return (
+    <div className="rounded-xl border border-white/10 bg-white/[0.02]">
+      <div className="flex flex-wrap items-center gap-3 px-4 py-3">
+        <button
+          type="button"
+          onClick={onToggle}
+          className="flex min-w-0 flex-1 items-center gap-3 text-left"
+        >
+          <ChevronDown
+            size={16}
+            className={`shrink-0 text-muted transition-transform ${open ? "rotate-180" : ""}`}
+            aria-hidden="true"
+          />
+          <span className="min-w-0">
+            <span className="block truncate font-medium text-content">
+              {record.institution || "—"}
+            </span>
+            <span className="block truncate text-xs text-muted">
+              {record.fullName} · {record.phone || record.email || "—"}
+              {record.city ? ` · ${record.city}` : ""}
+            </span>
+          </span>
+        </button>
+
+        <span
+          className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${
+            STATUS_TONES[record.status] ?? STATUS_TONES.new
+          }`}
+        >
+          {demoStatusLabel(record.status)}
+        </span>
+
+        <select
+          value={record.status}
+          disabled={busy}
+          onChange={(e) => onStatus(e.target.value as DemoStatus)}
+          className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
+          aria-label="Durum"
+        >
+          {DEMO_STATUSES.map((s) => (
+            <option key={s} value={s} className="bg-surface">
+              {demoStatusLabel(s)}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {open && (
+        <div className="border-t border-white/10 px-4 py-4">
+          {record.message && (
+            <p className="mb-3 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-sm text-muted">
+              {record.message}
+            </p>
+          )}
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
+              Not
+              <textarea
+                value={note}
+                onChange={(e) => setNote(e.target.value)}
+                rows={2}
+                className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
+              />
+            </label>
+            <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
+              Atanan kişi (opsiyonel)
+              <input
+                value={assignedTo}
+                onChange={(e) => setAssignedTo(e.target.value)}
+                placeholder="Ör. satış temsilcisi"
+                className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
+              />
+            </label>
+          </div>
+
+          <div className="mt-3 flex flex-wrap items-end gap-3">
+            <PrimaryButton
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={busy}
+              onClick={() => onSave(note, assignedTo)}
+            >
+              <Save size={15} aria-hidden="true" /> Kaydet
+            </PrimaryButton>
+
+            <div className="ml-auto flex items-end gap-2">
+              <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
+                Lead hedefi
+                <select
+                  value={tenantId}
+                  disabled={busy || converted}
+                  onChange={(e) => setTenantId(e.target.value)}
+                  className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
+                >
+                  <option value="" className="bg-surface">
+                    Platform (okul yok)
+                  </option>
+                  {schools.map((s) => (
+                    <option key={s.id} value={s.id} className="bg-surface">
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <PrimaryButton
+                type="button"
+                size="sm"
+                disabled={busy || converted}
+                onClick={() => onConvert(tenantId)}
+              >
+                <ArrowRightCircle size={15} aria-hidden="true" />
+                {converted ? "Lead'e Çevrildi" : "Lead'e Çevir"}
+              </PrimaryButton>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

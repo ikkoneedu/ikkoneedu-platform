@@ -265,6 +265,13 @@ service cloud.firestore {
       allow read, update, delete: if isSuperAdmin();
     }
 
+    // ---- Platform düzeyi SaaS satış lead'leri (kök) ----------------------
+    // Okul henüz tenant değildir; ilk satış lead'i burada tutulur. Yalnızca
+    // SUPER_ADMIN okur/yazar (demo talebinden "Lead'e Çevir" ile oluşturulur).
+    match /platformLeads/{leadId} {
+      allow read, write: if isSuperAdmin();
+    }
+
     // Yayımlanmış bursluluk SONUÇLARI — veli/aday başvuru numarasıyla sorgular.
     // Okuma HERKESE açıktır (belge id = başvuru no, erişim anahtarıdır; içerik
     // hassas değildir: ad, puan, burs oranı, salon). Yazma yalnızca personel.

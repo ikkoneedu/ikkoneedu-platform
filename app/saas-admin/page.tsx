@@ -3,6 +3,7 @@ import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { SaasOverview } from "@/components/saas/SaasOverview";
 import { DemoRequestsInbox } from "@/components/saas/DemoRequestsInbox";
+import { PlatformLeadsInbox } from "@/components/saas/PlatformLeadsInbox";
 import { SchoolTable } from "@/components/saas/SchoolTable";
 import { NewSchoolForm } from "@/components/saas/NewSchoolForm";
 import { SubscriptionCards } from "@/components/saas/SubscriptionCards";
@@ -46,6 +47,9 @@ export default function SaasAdminPage() {
 
         {/* Demo talepleri — gerçek Firestore (canlı) */}
         <DemoRequestsInbox />
+
+        {/* Platform satış lead pipeline'ı — demo dönüşümlerinden (canlı) */}
+        <PlatformLeadsInbox />
 
         {/* 1. Genel durum */}
         <SaasOverview metrics={saasOverviewMetrics} />
