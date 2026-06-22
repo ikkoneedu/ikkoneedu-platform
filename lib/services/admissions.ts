@@ -24,9 +24,13 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
-import { tenantLeads, tenantScholarshipApplications } from "@/lib/firebase/collections";
+import {
+  tenantLeads,
+  tenantScholarshipApplications,
+  platformLeads,
+} from "@/lib/firebase/collections";
 import { toMillis } from "@/lib/services/people-validation";
-import type { LeadRecord } from "@/lib/services/leads";
+import type { LeadRecord, PlatformLeadRecord } from "@/lib/services/leads";
 import type { ScholarshipApplicationRecord } from "@/lib/services/scholarship-applications";
 
 const admissionsPath = (t: string) => `tenants/${t}/admissions`;
@@ -532,6 +536,43 @@ export async function createAdmissionFromLead(
     });
   } catch {
     /* lead güncellemesi başarısız olsa da admission oluşturuldu */
+  }
+  return admissionId;
+}
+
+/**
+ * Platform satış lead'inden (kök platformLeads) aday oluşturur. Yalnızca
+ * SUPER_ADMIN bağlamı (platformLeads okuma/yazma süper admin). Hedef tenant
+ * çağıran tarafından seçilir. Aynı lead'den ikinci aday engellenir.
+ */
+export async function createAdmissionFromPlatformLead(
+  tenantId: string,
+  schoolId: string,
+  lead: PlatformLeadRecord,
+): Promise<string> {
+  if (!isFirebaseConfigured() || !db) {
+    throw new Error("Firebase yapılandırılmamış.");
+  }
+  if (await admissionExistsForLead(tenantId, lead.id)) {
+    throw new Error("Bu platform lead'i zaten adaya dönüştürülmüş.");
+  }
+  const admissionId = await createAdmission(tenantId, schoolId, {
+    source: "platform_lead",
+    leadId: lead.id,
+    studentName: lead.contactName || lead.institution || "Aday öğrenci",
+    parentName: lead.contactName || "Veli",
+    parentPhone: lead.phone || "—",
+    parentEmail: lead.email,
+    city: lead.city,
+    currentSchool: lead.institution,
+  });
+  try {
+    await updateDoc(doc(db, `${platformLeads()}/${lead.id}`), {
+      convertedToAdmissionId: admissionId,
+      updatedAt: serverTimestamp(),
+    });
+  } catch {
+    /* platform lead güncellemesi başarısız olsa da admission oluşturuldu */
   }
   return admissionId;
 }

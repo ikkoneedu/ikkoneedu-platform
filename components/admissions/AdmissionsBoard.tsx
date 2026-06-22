@@ -21,8 +21,9 @@ import {
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
+import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { ROLES, ROLE_LABELS } from "@/lib/auth/role-constants";
+import { ROLES } from "@/lib/auth/role-constants";
 import { listTenantUsers, type TenantUser } from "@/lib/services/users";
 import { listLeads, type LeadRecord } from "@/lib/services/leads";
 import {
@@ -30,8 +31,13 @@ import {
   type ScholarshipApplicationRecord,
 } from "@/lib/services/scholarship-applications";
 import { createStudent } from "@/lib/services/students";
-import { createParent } from "@/lib/services/parents";
+import { createParent, getParent } from "@/lib/services/parents";
 import { linkParentToStudent } from "@/lib/services/parents";
+import { createUserNotification } from "@/lib/services/notifications";
+import {
+  provisionParentAccount,
+  type ProvisionResult,
+} from "@/lib/services/account-provisioning";
 import {
   listAdmissions,
   createAdmission,
@@ -375,11 +381,38 @@ export function AdmissionsBoard() {
           <UserCheck size={18} className="text-accent" aria-hidden="true" />
           <h2 className="text-lg font-semibold text-content">Adaylar</h2>
           <span className="text-xs text-muted">{visible.length}</span>
+          {visible.length > 0 && (
+            <DataExportButtons
+              className="ml-auto"
+              filename="adaylar"
+              title="Adaylar"
+              columns={[
+                { key: "ogrenci", label: "Öğrenci" },
+                { key: "veli", label: "Veli" },
+                { key: "telefon", label: "Telefon" },
+                { key: "sinif", label: "Sınıf" },
+                { key: "kaynak", label: "Kaynak" },
+                { key: "durum", label: "Durum" },
+                { key: "oncelik", label: "Öncelik" },
+                { key: "atanan", label: "Atanan" },
+              ]}
+              rows={visible.map((a) => ({
+                ogrenci: a.studentName,
+                veli: a.parentName,
+                telefon: a.parentPhone,
+                sinif: a.studentGrade,
+                kaynak: sourceLabel(a.source),
+                durum: admissionStatusLabel(a.status),
+                oncelik: priorityLabel(a.priority),
+                atanan: userName(a.assignedTo),
+              }))}
+            />
+          )}
           <button
             type="button"
             onClick={() => void load()}
             disabled={refreshing}
-            className="ml-auto text-muted transition hover:text-content disabled:opacity-50"
+            className={`${visible.length > 0 ? "" : "ml-auto"} text-muted transition hover:text-content disabled:opacity-50`}
             aria-label="Yenile"
           >
             <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} />
@@ -541,7 +574,23 @@ function AdmissionDetail({
 }) {
   const a = admission;
   const [note, setNote] = useState("");
+  const [acctResult, setAcctResult] = useState<ProvisionResult | null>(null);
   const registered = Boolean(a.registeredStudentId);
+
+  const createParentLogin = () =>
+    run(async () => {
+      const parent = await getParent(tenantId, a.registeredParentId);
+      if (!parent) throw new Error("Veli kaydı bulunamadı.");
+      const res = await provisionParentAccount(
+        tenantId,
+        schoolId,
+        parent,
+        a.parentEmail,
+        uid,
+      );
+      if (!res.ok) throw new Error(res.error ?? "Giriş hesabı oluşturulamadı.");
+      setAcctResult(res);
+    });
 
   const doRegister = () =>
     run(async () => {
@@ -638,7 +687,22 @@ function AdmissionDetail({
                 <select
                   value={a.assignedTo}
                   disabled={busy}
-                  onChange={(e) => void run(() => assignAdmission(tenantId, a.id, e.target.value))}
+                  onChange={(e) => {
+                    const assignee = e.target.value;
+                    void run(async () => {
+                      await assignAdmission(tenantId, a.id, assignee);
+                      // Atanana uygulama içi bildirim (FCM yok).
+                      if (assignee && assignee !== a.assignedTo) {
+                        await createUserNotification(tenantId, {
+                          userId: assignee,
+                          title: `Aday atandı: ${a.studentName}`,
+                          body: `${a.parentName} · ${a.parentPhone}`,
+                          type: "crm",
+                          link: "/admissions-ai",
+                        });
+                      }
+                    });
+                  }}
                   className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-2 text-sm text-content outline-none focus:border-accent"
                 >
                   <option value="" className="bg-surface">—</option>
@@ -786,10 +850,45 @@ function AdmissionDetail({
         {/* Kesin kayıt */}
         <div className="mt-4 rounded-xl border border-emerald-400/20 bg-emerald-400/5 p-3">
           {registered ? (
-            <p className="flex items-center gap-2 text-sm text-emerald-300">
-              <CheckCircle2 size={16} aria-hidden="true" />
-              Kesin kayıt yapıldı (öğrenci ve veli kaydı oluşturuldu).
-            </p>
+            <div className="flex flex-col gap-2">
+              <p className="flex items-center gap-2 text-sm text-emerald-300">
+                <CheckCircle2 size={16} aria-hidden="true" />
+                Kesin kayıt yapıldı (öğrenci ve veli kaydı oluşturuldu).
+              </p>
+              {acctResult?.ok ? (
+                <p className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm">
+                  <span className="text-muted">Veli girişi: </span>
+                  <span className="font-mono text-content">{acctResult.email}</span>
+                  {acctResult.tempPassword && (
+                    <>
+                      <span className="text-muted"> · geçici şifre: </span>
+                      <span className="font-mono text-accent">{acctResult.tempPassword}</span>
+                      <span className="ml-1 block text-xs text-amber-300">
+                        Bu şifre yalnız şimdi gösterilir, saklanmaz.
+                      </span>
+                    </>
+                  )}
+                  {acctResult.mode === "linked" && (
+                    <span className="text-xs text-muted"> (mevcut hesap bağlandı)</span>
+                  )}
+                </p>
+              ) : (
+                canRegister &&
+                a.parentEmail && (
+                  <div>
+                    <PrimaryButton
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      disabled={busy}
+                      onClick={() => void createParentLogin()}
+                    >
+                      <UserCheck size={15} aria-hidden="true" /> Veli Giriş Hesabı Oluştur
+                    </PrimaryButton>
+                  </div>
+                )
+              )}
+            </div>
           ) : canRegister ? (
             <div className="flex flex-wrap items-center gap-3">
               <p className="flex-1 text-sm text-muted">

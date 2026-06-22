@@ -119,6 +119,8 @@ export interface PlatformLeadRecord {
   status: string;
   notes: string;
   assignedTo: string;
+  /** Adaya dönüştürüldüyse oluşan admission kimliği. */
+  convertedToAdmissionId: string;
   createdAt: number | null;
   updatedAt: number | null;
 }
@@ -171,6 +173,7 @@ export async function listPlatformLeads(): Promise<PlatformLeadRecord[]> {
       status: String(data.status ?? "new"),
       notes: String(data.notes ?? data.note ?? ""),
       assignedTo: String(data.assignedTo ?? ""),
+      convertedToAdmissionId: String(data.convertedToAdmissionId ?? ""),
       createdAt: toMillis(data.createdAt),
       updatedAt: toMillis(data.updatedAt),
     };

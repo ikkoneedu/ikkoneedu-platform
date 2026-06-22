@@ -21,6 +21,8 @@ import {
   type PlatformLeadRecord,
   type LeadStatus,
 } from "@/lib/services/leads";
+import { listSchools, type SchoolRecord } from "@/lib/services/schools";
+import { createAdmissionFromPlatformLead } from "@/lib/services/admissions";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const STATUS_TONES: Record<string, string> = {
@@ -42,6 +44,7 @@ export function PlatformLeadsInbox() {
   const isSuper = profile?.role === ROLES.SUPER_ADMIN;
 
   const [items, setItems] = useState<PlatformLeadRecord[] | null>(null);
+  const [schools, setSchools] = useState<SchoolRecord[]>([]);
   const [openId, setOpenId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -51,13 +54,34 @@ export function PlatformLeadsInbox() {
     if (!firebaseReady || !isSuper) return;
     let active = true;
     void (async () => {
-      const rows = await listPlatformLeads();
-      if (active) setItems(rows);
+      const [rows, sch] = await Promise.all([listPlatformLeads(), listSchools()]);
+      if (!active) return;
+      setItems(rows);
+      setSchools(sch);
     })();
     return () => {
       active = false;
     };
   }, [firebaseReady, isSuper]);
+
+  const handleConvert = async (record: PlatformLeadRecord, tenantId: string) => {
+    if (!tenantId) {
+      setError("Önce bir okul seçin.");
+      return;
+    }
+    setBusyId(record.id);
+    setError(null);
+    setNotice(null);
+    try {
+      const admissionId = await createAdmissionFromPlatformLead(tenantId, tenantId, record);
+      patchLocal(record.id, { convertedToAdmissionId: admissionId });
+      setNotice(`Aday oluşturuldu (${tenantId}). Kayıt Kabul panosunda görünür.`);
+    } catch (err) {
+      setError(getAuthErrorMessage(err));
+    } finally {
+      setBusyId(null);
+    }
+  };
 
   const patchLocal = (id: string, patch: Partial<PlatformLeadRecord>) =>
     setItems((prev) =>
@@ -140,11 +164,13 @@ export function PlatformLeadsInbox() {
           <LeadRow
             key={r.id}
             record={r}
+            schools={schools}
             open={openId === r.id}
             busy={busyId === r.id}
             onToggle={() => setOpenId(openId === r.id ? null : r.id)}
             onStatus={(s) => handleStatus(r.id, s)}
             onSave={(notes, assignedTo) => handleSave(r.id, notes, assignedTo)}
+            onConvert={(tenantId) => handleConvert(r, tenantId)}
           />
         ))}
       </div>
@@ -154,21 +180,27 @@ export function PlatformLeadsInbox() {
 
 function LeadRow({
   record,
+  schools,
   open,
   busy,
   onToggle,
   onStatus,
   onSave,
+  onConvert,
 }: {
   record: PlatformLeadRecord;
+  schools: SchoolRecord[];
   open: boolean;
   busy: boolean;
   onToggle: () => void;
   onStatus: (status: LeadStatus) => void;
   onSave: (notes: string, assignedTo: string) => void;
+  onConvert: (tenantId: string) => void;
 }) {
   const [notes, setNotes] = useState(record.notes);
   const [assignedTo, setAssignedTo] = useState(record.assignedTo);
+  const [targetTenant, setTargetTenant] = useState("");
+  const converted = Boolean(record.convertedToAdmissionId);
 
   return (
     <div className="rounded-xl border border-white/10 bg-white/[0.02]">
@@ -239,7 +271,7 @@ function LeadRow({
               />
             </label>
           </div>
-          <div className="mt-3">
+          <div className="mt-3 flex flex-wrap items-end gap-3">
             <PrimaryButton
               type="button"
               variant="secondary"
@@ -249,6 +281,42 @@ function LeadRow({
             >
               <Save size={15} aria-hidden="true" /> Kaydet
             </PrimaryButton>
+
+            {/* Adaya aktar (okul seç → admission) */}
+            <div className="ml-auto flex items-end gap-2">
+              {converted ? (
+                <span className="inline-flex items-center gap-1 rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-1.5 text-xs text-emerald-300">
+                  <CheckCircle2 size={13} aria-hidden="true" /> Adaya aktarıldı
+                </span>
+              ) : (
+                <>
+                  <label className="flex flex-col gap-1 text-xs text-muted">
+                    Okul
+                    <select
+                      value={targetTenant}
+                      disabled={busy}
+                      onChange={(e) => setTargetTenant(e.target.value)}
+                      className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent"
+                    >
+                      <option value="" className="bg-surface">Seçiniz…</option>
+                      {schools.map((s) => (
+                        <option key={s.id} value={s.id} className="bg-surface">
+                          {s.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <PrimaryButton
+                    type="button"
+                    size="sm"
+                    disabled={busy || !targetTenant}
+                    onClick={() => onConvert(targetTenant)}
+                  >
+                    Adaya Aktar
+                  </PrimaryButton>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}
