@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AccountSummaryCard } from "@/components/shared/AccountSummaryCard";
+import { MyChildren } from "@/components/parent/MyChildren";
 import Link from "next/link";
 import {
   Megaphone,
@@ -61,6 +62,9 @@ export default function ParentPage() {
           title="Hoş geldiniz, Yılmaz Ailesi"
           description="Çocuğunuzun okul yaşamını, duyurularını ve gelişimini tek ekrandan takip edin."
         />
+
+        {/* Bağlı öğrenciler (gerçek Firestore — profile.linkedStudentIds kapsamı) */}
+        <MyChildren />
 
         {/* Canlı bağlı öğrenci (gerçek Firestore — yalnızca giriş yapmış velide) */}
         <ParentChildCard />

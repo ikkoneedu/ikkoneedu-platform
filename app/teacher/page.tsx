@@ -16,6 +16,7 @@ import { MessagingPanel } from "@/components/messaging/MessagingPanel";
 import { GradeBoard } from "@/components/grades/GradeBoard";
 import { ScheduleBoard } from "@/components/schedule/ScheduleBoard";
 import { MyTimetable } from "@/components/teacher/MyTimetable";
+import { MyClasses } from "@/components/teacher/MyClasses";
 import { AttendanceBoard } from "@/components/attendance/AttendanceBoard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -63,6 +64,9 @@ export default function TeacherPage() {
 
         {/* Kendi ders programım (canlı) + sıradaki ders hatırlatması */}
         <MyTimetable />
+
+        {/* Bağlı sınıflarım + öğrenci listesi (gerçek Firestore — profile.classIds) */}
+        <MyClasses />
 
         {/* Canlı sınıf listesi (gerçek Firestore — yalnızca giriş yapmış öğretmende) */}
         <TeacherRoster />

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AccountSummaryCard } from "@/components/shared/AccountSummaryCard";
+import { MyRecord } from "@/components/student/MyRecord";
 import type { LucideIcon } from "lucide-react";
 import {
   Clock,
@@ -105,6 +106,9 @@ export default function StudentPage() {
     <PageShell title="Öğrenci Merkezi">
       <div className="flex flex-col gap-12">
         <AccountSummaryCard />
+
+        {/* Kendi öğrenci kaydı (gerçek Firestore — profile.linkedStudentId) */}
+        <MyRecord />
 
         <Reveal>
           <SectionHeader
