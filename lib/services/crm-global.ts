@@ -16,12 +16,20 @@
  */
 
 import {
+  collection,
   collectionGroup,
   getDocs,
   type QueryDocumentSnapshot,
 } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
-import { COLLECTIONS } from "@/lib/firebase/collections";
+import { COLLECTIONS, platformDemoRequests } from "@/lib/firebase/collections";
+
+/** Geliştirmede sessiz hataları görünür kılar (üretimde sessiz). */
+function logDevError(context: string, error: unknown): void {
+  if (process.env.NODE_ENV !== "production") {
+    console.error(`[crm-global] ${context}:`, error);
+  }
+}
 
 export type CrmKind = "lead" | "scholarship" | "inquiry" | "demo";
 
@@ -72,8 +80,39 @@ async function fetchGroup(
     return snap.docs
       .map(map)
       .filter((e): e is GlobalCrmEntry => e !== null);
-  } catch {
-    // Kurallar/izin yoksa sessizce boş dön (panel diğer kaynakları gösterir).
+  } catch (error) {
+    // İzin/kural hatası: panel diğer kaynakları göstersin diye boş dön, ANCAK
+    // geliştirmede hatayı logla (izin sorunu "boş veri" gibi görünmesin).
+    logDevError(`collectionGroup(${collectionId})`, error);
+    return [];
+  }
+}
+
+/**
+ * Kök `platformDemoRequests` koleksiyonundan platform demo taleplerini çeker.
+ * (Collection group "demoRequests" yalnızca tenant alt koleksiyonlarını kapsar;
+ * platform demoları kökte tutulduğundan ayrı çekilir.)
+ */
+async function fetchPlatformDemos(): Promise<GlobalCrmEntry[]> {
+  if (!isFirebaseConfigured() || !db) return [];
+  try {
+    const snap = await getDocs(collection(db, platformDemoRequests()));
+    return snap.docs.map((d) => {
+      const data = d.data();
+      return {
+        id: d.id,
+        tenantId: "platform",
+        kind: "demo" as CrmKind,
+        name: String(data.fullName ?? "—"),
+        phone: String(data.phone ?? ""),
+        email: String(data.email ?? ""),
+        status: String(data.status ?? "new"),
+        detail: String(data.institution ?? data.city ?? ""),
+        createdAt: toMillis(data.createdAt),
+      };
+    });
+  } catch (error) {
+    logDevError("platformDemoRequests", error);
     return [];
   }
 }
@@ -83,7 +122,7 @@ async function fetchGroup(
  * normalize edilmiş şekilde, en yeni önce sıralı döndürür.
  */
 export async function listAllCrm(): Promise<GlobalCrmEntry[]> {
-  const [leads, applications, requests] = await Promise.all([
+  const [leads, applications, requests, platformDemos] = await Promise.all([
     fetchGroup(COLLECTIONS.LEADS, (d) => {
       const data = d.data();
       return {
@@ -127,9 +166,10 @@ export async function listAllCrm(): Promise<GlobalCrmEntry[]> {
         createdAt: toMillis(data.createdAt),
       };
     }),
+    fetchPlatformDemos(),
   ]);
 
-  return [...leads, ...applications, ...requests].sort(
+  return [...leads, ...applications, ...requests, ...platformDemos].sort(
     (a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0),
   );
 }

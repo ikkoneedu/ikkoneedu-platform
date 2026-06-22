@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ShieldAlert, ArrowRight, Ban } from "lucide-react";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { getRequiredRoles } from "@/lib/auth/route-config";
+import { getRequiredRoles, isPublicRoute } from "@/lib/auth/route-config";
 import { getHomeRouteForRole } from "@/lib/auth/role-routing";
 
 /**
@@ -23,16 +23,24 @@ export function RoleGuard({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
+  // Halka açık yol (ör. /scholarship-exam/apply): korumalı bir segmentin altında
+  // olsa bile koruma UYGULANMAZ. Böylece bursluluk başvuru/sonuç sayfaları
+  // /scholarship-exam layout'u altında kalsa da herkese açık kalır.
+  const publicRoute = isPublicRoute(pathname);
+
   const required = getRequiredRoles(pathname);
   const roleAllowed =
     required.length === 0 || (profile != null && required.includes(profile.role));
 
   useEffect(() => {
-    if (!firebaseReady || loading) return;
+    if (!firebaseReady || loading || publicRoute) return;
     if (!user) {
       router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
     }
-  }, [firebaseReady, loading, user, pathname, router]);
+  }, [firebaseReady, loading, user, pathname, router, publicRoute]);
+
+  // Halka açık yol: doğrudan render et (oturum gerektirmez).
+  if (publicRoute) return <>{children}</>;
 
   // Mock Mod: koruma uygulanmaz (mevcut demo akışı korunur).
   if (!firebaseReady) return <>{children}</>;
@@ -48,14 +56,32 @@ export function RoleGuard({ children }: { children: ReactNode }) {
 
   if (!user) return null; // /login'e yönlendiriliyor
 
+  // Profil yoksa: oturumu kapat (yarım oturumla korumalı panelde takılı kalmasın).
   if (!profile) {
     return (
-      <GuardNotice
-        title="Yetki profiliniz bulunamadı"
-        message="Hesabınız var ancak yetki profiliniz tanımlı değil. Lütfen sistem yöneticisiyle iletişime geçin."
-        homeRoute="/login"
-        homeLabel="Giriş ekranına dön"
-      />
+      <main className="mesh-bg flex min-h-screen w-full flex-col items-center justify-center px-6 text-center">
+        <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-400/30 bg-amber-400/10 text-amber-400">
+          <ShieldAlert size={28} aria-hidden="true" />
+        </span>
+        <h1 className="mt-6 text-2xl font-bold tracking-tight text-content sm:text-3xl">
+          Yetki profiliniz bulunamadı
+        </h1>
+        <p className="mt-3 max-w-md text-sm leading-relaxed text-muted">
+          Hesabınız var ancak yetki profiliniz tanımlı değil. Güvenliğiniz için
+          oturumunuz kapatılacak. Lütfen sistem yöneticisiyle iletişime geçin.
+        </p>
+        <PrimaryButton
+          size="lg"
+          className="mt-8"
+          onClick={async () => {
+            await signOut();
+            router.replace("/login");
+          }}
+        >
+          Çıkış Yap
+          <ArrowRight size={18} aria-hidden="true" />
+        </PrimaryButton>
+      </main>
     );
   }
 

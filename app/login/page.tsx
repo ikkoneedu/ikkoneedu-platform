@@ -23,6 +23,7 @@ import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { getUserProfile } from "@/lib/services/user-profile";
 import { getHomeRouteForRole } from "@/lib/auth/role-routing";
+import { canRoleAccess } from "@/lib/auth/route-config";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 import { productName, productFullName, tagline } from "@/lib/constants";
 
@@ -40,6 +41,19 @@ const fadeUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
 };
+
+/**
+ * Redirect parametresini güvenli hale getirir: yalnızca site içi mutlak yollara
+ * izin verir ("/..."), protokol-bağıl ("//...") ve dış URL'leri (http..) reddeder.
+ * Açık yönlendirme (open redirect) açığını kapatır.
+ */
+function sanitizeRedirect(raw: string): string | null {
+  if (!raw) return null;
+  if (!raw.startsWith("/")) return null; // yalnızca site içi yollar
+  if (raw.startsWith("//")) return null; // protokol-bağıl dış URL'yi engelle
+  if (raw.startsWith("/\\")) return null; // ters eğik çizgi ile kaçış denemesi
+  return raw;
+}
 
 /** role parametresine göre alt başlık ve giriş hedefi. */
 const ROLE_CONFIG: Record<string, { subtitle: string; target: string }> = {
@@ -115,8 +129,13 @@ function LoginContent() {
         return;
       }
 
-      // Role göre yönlendir (redirect parametresi varsa ona öncelik ver).
-      router.push(redirectParam || getHomeRouteForRole(profile.role));
+      // Güvenli yönlendirme: redirect parametresi yalnızca site içi VE bu rolün
+      // erişebileceği bir yolsa kullanılır; aksi halde rolün ana sayfasına gidilir.
+      const home = getHomeRouteForRole(profile.role);
+      const safe = sanitizeRedirect(redirectParam);
+      const safeRedirect =
+        safe && canRoleAccess(profile.role, safe) ? safe : home;
+      router.push(safeRedirect);
     } catch (err) {
       setError(getAuthErrorMessage(err));
       setSubmitting(false);

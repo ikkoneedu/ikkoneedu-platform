@@ -26,7 +26,12 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
     const snap = await getDoc(doc(db, userProfileDoc(uid)));
     if (!snap.exists()) return null;
     return { uid, ...(snap.data() as Omit<UserProfile, "uid">) };
-  } catch {
+  } catch (error) {
+    // Belge YOK durumu yukarıda ele alınır; buraya yalnızca izin/ağ hatası düşer.
+    // Bu kritik akıştır (kimlik) — hatayı "boş profil" gibi gizleme, geliştirmede logla.
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[user-profile] getUserProfile başarısız:", error);
+    }
     return null;
   }
 }

@@ -21,6 +21,7 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   query,
   serverTimestamp,
@@ -127,6 +128,8 @@ export interface GenerateCodeInput {
   linkedStudentIds?: string[];
   /** Veli kodu için bağlı öğrenci özetleri (denormalize). */
   linkedStudents?: { uid: string; displayName: string }[];
+  /** Kodun geçerlilik bitiş zamanı (ms epoch). Boşsa süresiz. */
+  expiresAt?: number;
 }
 
 export interface GeneratedCode {
@@ -175,6 +178,10 @@ export async function createCodedAccount(
     createdBy: input.teacherUid,
     ...(input.teacherName ? { createdByName: input.teacherName } : {}),
     accessCode: code,
+    // Kod kimlik bilgisidir; durum/son kullanma profilde tutulur ve giriş
+    // sonrası doğrulanır (yalnızca deterministik e-posta/şifreye güvenilmez).
+    accessCodeStatus: "ACTIVE",
+    ...(input.expiresAt ? { accessCodeExpiresAt: input.expiresAt } : {}),
     linkedStudentIds: input.linkedStudentIds ?? [],
     linkedStudents: input.linkedStudents ?? [],
     ...(input.classId ? { classId: input.classId } : {}),
@@ -190,6 +197,8 @@ export async function createCodedAccount(
     role: input.role,
     displayName: input.displayName,
     createdBy: input.teacherUid,
+    status: "ACTIVE",
+    ...(input.expiresAt ? { expiresAt: input.expiresAt } : {}),
     ...(input.classId ? { classId: input.classId } : {}),
     createdAt: serverTimestamp(),
   });
@@ -234,19 +243,43 @@ export async function listMyCodes(
 
 /**
  * Kod ile giriş: kodu gizli email/şifreye çevirip ana oturumu açar.
+ *
+ * Güvenlik: yalnızca deterministik e-posta/şifreye güvenilmez. Giriş başarılı
+ * olduktan SONRA kullanıcının kendi profili (`users/{uid}`) okunur ve hesap
+ * aktif değilse ya da kodun süresi geçmişse oturum kapatılıp giriş reddedilir.
+ * (Giriş öncesi kod araması anonim kullanıcıya kapalıdır; bu yüzden doğrulama
+ * giriş sonrası, kullanıcının okuyabildiği kendi profili üzerinden yapılır.)
+ *
  * Geçersiz kodda Firebase auth hatası fırlatır (çağıran Türkçeye çevirir).
  */
 export async function signInWithCode(code: string): Promise<void> {
-  if (!isFirebaseConfigured() || !auth) {
+  if (!isFirebaseConfigured() || !auth || !db) {
     throw new Error("Firebase yapılandırılmamış.");
   }
   const compact = code.trim().toUpperCase().replace(/[\s-]/g, "");
   if (!/^(OGR|VEL)[A-Z0-9]{6}$/.test(compact)) {
     throw { code: "auth/invalid-credential" };
   }
-  await signInWithEmailAndPassword(
+  const credential = await signInWithEmailAndPassword(
     auth,
     compactToEmail(compact),
     compactToPassword(compact),
   );
+
+  // Giriş sonrası profil doğrulaması: aktif mi ve süresi geçmemiş mi?
+  const snap = await getDoc(doc(db, userProfileDoc(credential.user.uid)));
+  const profile = snap.exists() ? snap.data() : null;
+  const active =
+    profile != null &&
+    profile.status === "ACTIVE" &&
+    (profile.accessCodeStatus === undefined ||
+      profile.accessCodeStatus === "ACTIVE");
+  const notExpired =
+    !profile?.accessCodeExpiresAt ||
+    Date.now() <= Number(profile.accessCodeExpiresAt);
+
+  if (!active || !notExpired) {
+    await signOut(auth);
+    throw { code: "auth/invalid-credential" };
+  }
 }

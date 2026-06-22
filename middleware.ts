@@ -4,17 +4,20 @@ import { isProtectedRoute } from "@/lib/auth/route-config";
 /**
  * Güvenlik ve route koruma middleware'i.
  *
- * MEVCUT DURUM: Gerçek kimlik doğrulama YOK. Bu middleware şu an hiçbir isteği
- * engellemez; yalnızca güvenlik header'larını pekiştirir ve korumalı route'ları
- * işaretler. Mimari, Firebase Auth bağlandığında tek noktadan koruma sağlayacak
- * şekilde hazırlanmıştır.
+ * KORUMA STRATEJİSİ (bilinçli karar):
+ *   Bu middleware YALNIZCA güvenlik header'ları ekler; route YETKİLENDİRMESİ
+ *   yapmaz. Yetkilendirme tek noktadan, İSTEMCİ tarafında `RoleGuard` ile
+ *   yapılır: her korumalı segmentin `layout.tsx` dosyası `<RoleGuard>` sarmalar
+ *   ve `lib/auth/route-config.ts`'teki rol haritasını uygular. Bu sayede yarım
+ *   çalışan/oturumu bozan bir middleware riski olmaz.
  *
- * FIREBASE BAĞLANINCA:
- *   1. `AUTH_ENABLED` true yapılır.
- *   2. Oturum çerezi/ID token (`__session`) doğrulanır (Edge uyumlu doğrulama
- *      veya hafif bir kontrol + sayfa tarafında tam doğrulama).
- *   3. `isProtectedRoute(pathname)` true ve oturum yoksa `/login`e yönlendirilir.
- *   4. `getRequiredRoles(pathname)` ile claim'lerdeki rol kontrol edilir.
+ *   Not: İstemci tarafı koruma, kullanıcı deneyimi ve UX yönlendirmesi içindir;
+ *   GERÇEK veri güvenliği Firestore Security Rules ile sağlanır (sunucu tarafı).
+ *
+ * SUNUCU TARAFI KORUMAYA GEÇİŞ (gelecekte, Admin SDK ile):
+ *   `AUTH_ENABLED` true yapılır; `__session` oturum çerezi Edge'de doğrulanır;
+ *   `isProtectedRoute`/`getRequiredRoles` ile sunucuda da yönlendirme yapılır.
+ *   Şu an bu yol PASİFTİR (riskli yarım entegrasyon eklemiyoruz).
  */
 const AUTH_ENABLED = false;
 const SESSION_COOKIE = "__session";
@@ -32,6 +35,7 @@ export function middleware(request: NextRequest) {
   // Güvenlik header'larının her yanıtta bulunmasını garanti et.
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("X-Frame-Options", "DENY");
 
   // Firebase Auth bağlanınca devreye girecek koruma (şu an pasif).
   if (AUTH_ENABLED && protectedRoute) {

@@ -98,6 +98,13 @@ export const platformConfig = (): string => PLATFORM.CONFIG;
  */
 export const platformAuditLogs = (): string => "platformAuditLogs";
 
+/**
+ * Platform düzeyi SaaS demo talepleri koleksiyonu (kök): `platformDemoRequests`.
+ * Bir okula (tenant) ait değildir; bu yüzden `tenants/...` altında DEĞİL kökte
+ * tutulur. Oluşturma halka açıktır (doğrulamalı), okuma yalnızca SUPER_ADMIN.
+ */
+export const platformDemoRequests = (): string => "platformDemoRequests";
+
 /** Tüm tenant'lar: tenants */
 export const tenants = (): string => COLLECTIONS.TENANTS;
 

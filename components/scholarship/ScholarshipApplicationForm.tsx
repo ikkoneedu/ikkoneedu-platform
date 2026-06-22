@@ -142,7 +142,8 @@ export function ScholarshipApplicationForm({
 
     setSubmitting(false);
     if (result.ok) {
-      setApplicationNo(newApplicationNo);
+      // Sunucu çakışma nedeniyle numarayı değiştirmiş olabilir; dönen no'yu kullan.
+      setApplicationNo(result.applicationNo ?? newApplicationNo);
       setSubmitted(true);
     } else {
       setError(

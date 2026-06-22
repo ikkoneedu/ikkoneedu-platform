@@ -31,9 +31,17 @@ import type { UserProfile } from "@/lib/auth/firebase-auth-types";
 interface AuthContextValue {
   /** Firebase Auth kullanıcısı (oturum yoksa null). */
   user: User | null;
-  /** Firestore `users/{uid}` profili (yoksa null — graceful fallback). */
+  /**
+   * Firestore `users/{uid}` profili (yoksa null — graceful fallback).
+   * MVP'de rol ve tenant'ın TEK doğruluk kaynağıdır; yetkilendirme yalnızca
+   * buradan yapılır (RoleGuard `profile.role` kullanır).
+   */
   profile: UserProfile | null;
-  /** Firebase Auth custom claims (atanmışsa). */
+  /**
+   * Firebase Auth custom claims (atanmışsa). YALNIZCA bilgilendirme amaçlıdır;
+   * ileride sunucu tarafı (Admin SDK / middleware) doğrulaması için saklanır.
+   * İstemci tarafı yetkilendirmede KULLANILMAZ — kaynak `profile`'dır.
+   */
   claims: AuthClaims | null;
   /** Oturum durumu henüz çözülmedi mi? */
   loading: boolean;
@@ -120,7 +128,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const prof = firebaseUser ? await getUserProfile(firebaseUser.uid) : null;
       setProfile(prof);
       setTenantSuspended(await resolveTenantSuspended(prof));
-      // Custom claims (varsa) — ileride rol/tenant kaynağı olarak kullanılabilir.
+      // Custom claims (varsa) — YALNIZCA bilgilendirme/gelecekte sunucu tarafı
+      // doğrulama içindir. İstemci yetkilendirmesi `profile`'dan yapılır.
       if (firebaseUser) {
         try {
           const token = await firebaseUser.getIdTokenResult();

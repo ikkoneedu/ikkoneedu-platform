@@ -99,6 +99,76 @@ service cloud.firestore {
         || get(/databases/$(database)/documents/tenants/$(tenantId)).data.status != 'SUSPENDED';
     }
 
+    // ---- Halka açık form doğrulayıcıları ----------------------------------
+    // `allow create: if true` yerine alan/boyut/değer doğrulaması yapılır.
+    function isShortString(v, maxLen) {
+      return v is string && v.size() <= maxLen;
+    }
+    function isFilledString(v, maxLen) {
+      return v is string && v.size() > 0 && v.size() <= maxLen;
+    }
+    // createdAt istemciden TRUST edilmez: serverTimestamp() == request.time olmalı.
+    function createdAtIsServer(d) {
+      return d.createdAt == request.time;
+    }
+
+    // Okula özel aday/iletişim talebi (tenants/{id}/demoRequests).
+    function validSchoolInquiry(tenantId) {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['schoolName','institution','fullName','phone','email','grade','message','type','status','createdAt'])
+        && d.keys().hasAll(['fullName','phone','email','type','status','createdAt'])
+        && d.type == 'school_inquiry'
+        && d.status == 'new'
+        && isFilledString(d.fullName, 120)
+        && isFilledString(d.phone, 40)
+        && isFilledString(d.email, 200)
+        && (!('schoolName' in d) || isShortString(d.schoolName, 200))
+        && (!('institution' in d) || isShortString(d.institution, 200))
+        && (!('grade' in d) || isShortString(d.grade, 60))
+        && (!('message' in d) || isShortString(d.message, 2000))
+        && createdAtIsServer(d);
+    }
+
+    // Platform düzeyi SaaS demo talebi (platformDemoRequests).
+    function validPlatformDemo() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['institution','fullName','role','phone','email','city','institutionType','studentCount','message','type','status','createdAt'])
+        && d.keys().hasAll(['institution','fullName','phone','email','type','status','createdAt'])
+        && d.type == 'demo_request'
+        && d.status == 'new'
+        && isFilledString(d.institution, 200)
+        && isFilledString(d.fullName, 120)
+        && isFilledString(d.phone, 40)
+        && isFilledString(d.email, 200)
+        && (!('role' in d) || isShortString(d.role, 80))
+        && (!('city' in d) || isShortString(d.city, 80))
+        && (!('institutionType' in d) || isShortString(d.institutionType, 80))
+        && (!('studentCount' in d) || isShortString(d.studentCount, 40))
+        && (!('message' in d) || isShortString(d.message, 2000))
+        && createdAtIsServer(d);
+    }
+
+    // Bursluluk başvurusu (tenants/{id}/scholarshipApplications).
+    // tenantId alanı belge yolundaki tenant ile AYNI olmalı (tutarlılık).
+    function validScholarshipApplication(tenantId) {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['tenantId','applicationNo','studentName','studentTc','birthDate','parentName','parentPhone','parentEmail','district','address','type','status','createdAt'])
+        && d.keys().hasAll(['tenantId','applicationNo','studentName','parentName','parentPhone','parentEmail','type','status','createdAt'])
+        && d.type == 'scholarship_application'
+        && d.status == 'received'
+        && d.tenantId == tenantId
+        && isFilledString(d.applicationNo, 60)
+        && isFilledString(d.studentName, 120)
+        && isFilledString(d.parentName, 120)
+        && isFilledString(d.parentPhone, 40)
+        && isFilledString(d.parentEmail, 200)
+        && (!('studentTc' in d) || isShortString(d.studentTc, 20))
+        && (!('birthDate' in d) || isShortString(d.birthDate, 20))
+        && (!('district' in d) || isShortString(d.district, 80))
+        && (!('address' in d) || isShortString(d.address, 300))
+        && createdAtIsServer(d);
+    }
+
     // ---- Kök kullanıcı profilleri -----------------------------------------
     match /users/{uid} {
       // Kullanıcı kendi profilini okur; SUPER_ADMIN tümünü okur;
@@ -172,16 +242,27 @@ service cloud.firestore {
     }
 
     // ---- Halka açık form gönderimleri (anonim oluşturma) ------------------
-    // Demo talepleri — herkes gönderebilir, yalnızca tenant üyesi okur.
+    // Okula özel aday/iletişim talepleri — herkes DOĞRULAMALI gönderebilir,
+    // yalnızca tenant üyesi okur. (Platform SaaS demoları kökte: aşağıya bkz.)
     match /tenants/{tenantId}/demoRequests/{docId} {
-      allow create: if true;
+      allow create: if validSchoolInquiry(tenantId);
       allow read, update, delete: if isTenantMember(tenantId);
     }
 
-    // Bursluluk başvuruları — herkes gönderebilir, yalnızca tenant üyesi okur.
+    // Bursluluk başvuruları — herkes DOĞRULAMALI gönderebilir, tenant üyesi okur.
+    // applicationNo belge kimliğidir; create-only kuralı üzerine yazmayı önler
+    // (mevcut belgeye yazım update sayılır ve yalnızca tenant üyesine açıktır).
     match /tenants/{tenantId}/scholarshipApplications/{docId} {
-      allow create: if true;
+      allow create: if validScholarshipApplication(tenantId);
       allow read, update, delete: if isTenantMember(tenantId);
+    }
+
+    // ---- Platform düzeyi SaaS demo talepleri (kök) ------------------------
+    // Bir okula ait değildir. Herkes DOĞRULAMALI oluşturabilir; yalnızca
+    // SUPER_ADMIN okur/günceller/siler.
+    match /platformDemoRequests/{docId} {
+      allow create: if validPlatformDemo();
+      allow read, update, delete: if isSuperAdmin();
     }
 
     // Yayımlanmış bursluluk SONUÇLARI — veli/aday başvuru numarasıyla sorgular.
@@ -267,11 +348,11 @@ service cloud.firestore {
     }
 
     // ---- Bağlantı testi (firebase-check.mjs) ------------------------------
-    // Anonim yazıma izinli; okuma/temizlik yalnızca SUPER_ADMIN.
-    // Üretimde tamamen kaldırılabilir.
+    // ÜRETİM: yazma kapalı. `firebase-check.mjs` bu durumda "permission-denied"
+    // alır ve bunu "bağlantı VAR, kurallar sıkı" olarak BAŞARI sayar (exit 0);
+    // dolayısıyla bağlantı testi yine çalışır, veri sızıntısı/şişmesi olmaz.
     match /connectionTests/{docId} {
-      allow create: if true;
-      allow read, delete: if isSuperAdmin();
+      allow create, read, update, delete: if false;
     }
 
     // ---- Varsayılan: her şey kapalı ---------------------------------------

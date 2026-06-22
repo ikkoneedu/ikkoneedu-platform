@@ -14,7 +14,6 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
-import { createDocument, type CreateResult } from "@/lib/services/firestore-helpers";
 import {
   tenantScholarshipApplications,
   COLLECTIONS,
@@ -72,16 +71,99 @@ export function deriveApplicationPrefix(name: string): string {
   return prefix.replace(/[^A-Za-z0-9]/g, "").toUpperCase() || "OKL";
 }
 
+export interface CreateApplicationResult {
+  ok: boolean;
+  /** Firebase yapılandırılmamışsa (Mock Mod) true. */
+  mock: boolean;
+  /** Oluşturulan belge kimliği (= applicationNo) — başarısızsa null. */
+  id: string | null;
+  /** Kesinleşen başvuru numarası — çakışma olursa yeniden üretilmiş olabilir. */
+  applicationNo: string | null;
+  error?: string;
+}
+
+/**
+ * Bursluluk başvurusunu, `applicationNo`'yu BELGE KİMLİĞİ olarak kullanarak
+ * oluşturur. Böylece aynı numara iki kez yazılamaz (çakışma güvenli).
+ *
+ * Çakışma stratejisi:
+ *  - Okuma izni olan (personel) için önce belge var mı diye bakılır.
+ *  - Anonim aday okuyamaz; bu durumda "create-only" güvenlik kuralına güvenilir:
+ *    var olan belgeye yazım `update` sayılır ve reddedilir → yeni numara ile
+ *    en çok 5 kez yeniden denenir.
+ *  - `createdAt` istemciden ALINMAZ; her zaman `serverTimestamp()` kullanılır.
+ *  - `tenantId` alanı belge yolundaki tenant ile aynıdır (tutarlılık kuralı).
+ */
 export async function createScholarshipApplication(
   data: ScholarshipApplicationInput,
-): Promise<CreateResult> {
+): Promise<CreateApplicationResult> {
   const tenantId = data.tenantId ?? DEFAULT_TENANT_ID;
-  return createDocument(tenantScholarshipApplications(tenantId), {
-    ...data,
-    tenantId,
-    type: "scholarship_application",
-    status: "received",
-  });
+
+  // Mock Mod: Firestore'a yazma; istemcinin/üretilen numarayı geri döndür.
+  if (!isFirebaseConfigured() || !db) {
+    const no = (data.applicationNo || generateApplicationNo()).trim();
+    return { ok: true, mock: true, id: no, applicationNo: no };
+  }
+  const database = db;
+
+  const buildPayload = (applicationNo: string): Record<string, unknown> => {
+    const payload: Record<string, unknown> = {
+      tenantId,
+      applicationNo,
+      studentName: data.studentName,
+      parentName: data.parentName,
+      parentPhone: data.parentPhone,
+      parentEmail: data.parentEmail,
+      type: "scholarship_application",
+      status: "received",
+      createdAt: serverTimestamp(),
+    };
+    // Opsiyonel alanlar yalnızca doluysa eklenir (Firestore undefined kabul etmez).
+    if (data.studentTc) payload.studentTc = data.studentTc;
+    if (data.birthDate) payload.birthDate = data.birthDate;
+    if (data.district) payload.district = data.district;
+    if (data.address) payload.address = data.address;
+    return payload;
+  };
+
+  let lastError: unknown = null;
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const applicationNo =
+      attempt === 0 && data.applicationNo
+        ? data.applicationNo.trim()
+        : generateApplicationNo();
+    const ref = doc(
+      database,
+      `${tenantScholarshipApplications(tenantId)}/${applicationNo}`,
+    );
+    try {
+      // Personel (okuma izinli) için çakışmayı erken yakala.
+      try {
+        const existing = await getDoc(ref);
+        if (existing.exists()) {
+          lastError = new Error("Başvuru numarası çakıştı.");
+          continue;
+        }
+      } catch {
+        // Anonim aday okuyamaz; create-only kuralı üzerine yazmayı engeller.
+      }
+      await setDoc(ref, buildPayload(applicationNo));
+      return { ok: true, mock: false, id: applicationNo, applicationNo };
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  return {
+    ok: false,
+    mock: false,
+    id: null,
+    applicationNo: null,
+    error:
+      lastError instanceof Error
+        ? lastError.message
+        : "Başvuru oluşturulamadı.",
+  };
 }
 
 export interface ScholarshipApplicationRecord {

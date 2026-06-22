@@ -6,10 +6,10 @@
 import { collection, getDocs, query } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { createDocument, type CreateResult } from "@/lib/services/firestore-helpers";
-import { tenantDemoRequests } from "@/lib/firebase/collections";
-
-/** Demo talepleri platform düzeyinde toplanır (henüz bir tenant'a bağlı değildir). */
-const DEMO_TENANT_ID = "platform";
+import {
+  tenantDemoRequests,
+  platformDemoRequests,
+} from "@/lib/firebase/collections";
 
 export interface DemoRequestInput {
   institution: string;
@@ -26,7 +26,8 @@ export interface DemoRequestInput {
 export async function createDemoRequest(
   data: DemoRequestInput,
 ): Promise<CreateResult> {
-  return createDocument(tenantDemoRequests(DEMO_TENANT_ID), {
+  // Platform düzeyi (kök) koleksiyon — bir okula bağlı değildir.
+  return createDocument(platformDemoRequests(), {
     ...data,
     type: "demo_request",
     status: "new",
@@ -48,7 +49,7 @@ export interface DemoRequestRecord {
 export async function listDemoRequests(): Promise<DemoRequestRecord[]> {
   if (!isFirebaseConfigured() || !db) return [];
   const snap = await getDocs(
-    query(collection(db, tenantDemoRequests(DEMO_TENANT_ID))),
+    query(collection(db, platformDemoRequests())),
   );
   return snap.docs.map((d) => {
     const data = d.data();
