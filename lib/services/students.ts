@@ -42,6 +42,8 @@ export interface StudentRecord {
   classId: string;
   parentIds: string[];
   status: string;
+  /** Bağlı giriş hesabı (users/{uid}) — yoksa boş. */
+  userId: string;
   createdAt: number | null;
   updatedAt: number | null;
 }
@@ -67,6 +69,7 @@ function mapStudent(id: string, data: Record<string, unknown>): StudentRecord {
     classId: String(data.classId ?? ""),
     parentIds: Array.isArray(data.parentIds) ? (data.parentIds as string[]) : [],
     status: String(data.status ?? "active"),
+    userId: String(data.userId ?? ""),
     createdAt: toMillis(data.createdAt),
     updatedAt: toMillis(data.updatedAt),
   };

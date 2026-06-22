@@ -222,10 +222,20 @@ service cloud.firestore {
       // ANCAK rol/tenant/status'ü değiştiremez.
       allow update: if isSuperAdmin()
         || (
+          // Kullanıcı kendi profilini günceller AMA kritik/bağ alanlarını
+          // DEĞİŞTİREMEZ (yetki yükseltme önlenir): rol, tenant, schoolId, status
+          // ve linked* / classId(s) alanları yalnız yönetici tarafından set edilir.
           isSelf(uid)
           && request.resource.data.role == resource.data.role
           && request.resource.data.tenantId == resource.data.tenantId
           && request.resource.data.status == resource.data.status
+          && request.resource.data.get('schoolId', '') == resource.data.get('schoolId', '')
+          && request.resource.data.get('linkedStudentIds', []) == resource.data.get('linkedStudentIds', [])
+          && request.resource.data.get('linkedParentId', '') == resource.data.get('linkedParentId', '')
+          && request.resource.data.get('linkedTeacherId', '') == resource.data.get('linkedTeacherId', '')
+          && request.resource.data.get('linkedStudentId', '') == resource.data.get('linkedStudentId', '')
+          && request.resource.data.get('classId', '') == resource.data.get('classId', '')
+          && request.resource.data.get('classIds', []) == resource.data.get('classIds', [])
         )
         || (
           // Okul yönetimi (kurucu/okul yön./müdür) kendi tenant'ındaki bir
@@ -370,9 +380,11 @@ service cloud.firestore {
     match /tenants/{tenantId}/students/{studentId} {
       allow read: if isSuperAdmin()
         || (isTenantMember(tenantId) && isStaff())
-        || isSelf(studentId)
-        || (hasProfile() && 'parentIds' in resource.data
-            && request.auth.uid in resource.data.parentIds);
+        // Öğrenci kendi kaydı (profilindeki linkedStudentId ile eşleşir).
+        || (hasProfile() && myProfile().get('linkedStudentId', '') == studentId)
+        // Veli: profilindeki linkedStudentIds bu öğrenci kaydını içeriyorsa.
+        || (hasProfile() && 'linkedStudentIds' in myProfile()
+            && myProfile().linkedStudentIds.hasAny([studentId]));
       allow create: if isSuperAdmin()
         || (canManageRecords() && myTenant() == tenantId
             && tenantNotSuspended(tenantId)

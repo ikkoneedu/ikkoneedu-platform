@@ -54,6 +54,16 @@ export interface UserProfile {
   linkedStudentIds?: string[];
   /** Bağlı öğrenci özetleri (denormalize — veli panelinde gösterim için). */
   linkedStudents?: { uid: string; displayName: string }[];
+  /** Veli kullanıcının bağlandığı veli kaydı (tenants/{id}/parents/{id}). */
+  linkedParentId?: string;
+  /** Öğretmen kullanıcının bağlandığı öğretmen kaydı. */
+  linkedTeacherId?: string;
+  /** Öğrenci kullanıcının bağlandığı öğrenci kaydı. */
+  linkedStudentId?: string;
+  /** Öğretmenin bağlı sınıf kimlikleri (denormalize — teacher.classIds). */
+  classIds?: string[];
+  /** İlk girişte şifre değiştirmesi gerekiyor mu (geçici şifreyle açıldıysa). */
+  mustChangePassword?: boolean;
   /** Öğrencinin giriş kodu (öğretmen referansı). */
   accessCode?: string;
   createdAt: string;

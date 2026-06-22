@@ -18,6 +18,10 @@ import {
   Search,
   UserMinus,
   Archive,
+  KeyRound,
+  Copy,
+  X,
+  CheckCircle2,
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -51,6 +55,12 @@ import {
   archiveClass,
   type SchoolClass,
 } from "@/lib/services/classes";
+import {
+  provisionParentAccount,
+  provisionTeacherAccount,
+  provisionStudentAccount,
+  type ProvisionResult,
+} from "@/lib/services/account-provisioning";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const MANAGER_ROLES: string[] = [
@@ -61,6 +71,22 @@ const MANAGER_ROLES: string[] = [
   ROLES.COORDINATOR,
   ROLES.SUPER_ADMIN,
 ];
+
+/** Giriş hesabı oluşturma yetkisi (kurallar TEACHER create + link için isSchoolManager ister). */
+const ACCOUNT_ROLES: string[] = [
+  ROLES.SCHOOL_ADMIN,
+  ROLES.FOUNDER,
+  ROLES.PRINCIPAL,
+  ROLES.SUPER_ADMIN,
+];
+
+type AccountKind = "parent" | "teacher" | "student";
+interface AccountTarget {
+  kind: AccountKind;
+  id: string;
+  name: string;
+  defaultEmail: string;
+}
 
 type Tab = "students" | "parents" | "teachers" | "classes";
 
@@ -92,10 +118,11 @@ function StatusBadge({ status }: { status: string }) {
  * (servis katmanı batch ile tutar). Soft delete.
  */
 export function SchoolRecordsManager() {
-  const { profile, firebaseReady } = useAuth();
+  const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const schoolId = profile?.schoolId ?? tenantId ?? "";
   const canManage = profile != null && MANAGER_ROLES.includes(profile.role);
+  const canCreateAccounts = profile != null && ACCOUNT_ROLES.includes(profile.role);
   const usable = firebaseReady && Boolean(tenantId) && canManage;
 
   const [tab, setTab] = useState<Tab>("students");
@@ -108,6 +135,14 @@ export function SchoolRecordsManager() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+
+  // Giriş hesabı oluşturma modalı.
+  const [acctTarget, setAcctTarget] = useState<AccountTarget | null>(null);
+  const [acctEmail, setAcctEmail] = useState("");
+  const [acctBusy, setAcctBusy] = useState(false);
+  const [acctError, setAcctError] = useState<string | null>(null);
+  const [acctResult, setAcctResult] = useState<ProvisionResult | null>(null);
+  const [acctCopied, setAcctCopied] = useState(false);
 
   const refresh = useCallback(async () => {
     if (!tenantId) return;
@@ -143,6 +178,51 @@ export function SchoolRecordsManager() {
   const className = (id: string) =>
     classes.find((c) => c.id === id)?.name ?? "—";
 
+  const openAccount = (t: AccountTarget) => {
+    setAcctTarget(t);
+    setAcctEmail(t.defaultEmail);
+    setAcctError(null);
+    setAcctResult(null);
+    setAcctCopied(false);
+  };
+  const closeAccount = () => {
+    setAcctTarget(null);
+    setAcctResult(null);
+    setAcctError(null);
+    setAcctEmail("");
+  };
+  const submitAccount = async () => {
+    if (!tenantId || !acctTarget || !user || acctBusy) return;
+    setAcctBusy(true);
+    setAcctError(null);
+    try {
+      let res: ProvisionResult;
+      if (acctTarget.kind === "parent") {
+        const rec = parents.find((p) => p.id === acctTarget.id);
+        if (!rec) throw new Error("Kayıt bulunamadı.");
+        res = await provisionParentAccount(tenantId, schoolId, rec, acctEmail, user.uid);
+      } else if (acctTarget.kind === "teacher") {
+        const rec = teachers.find((t) => t.id === acctTarget.id);
+        if (!rec) throw new Error("Kayıt bulunamadı.");
+        res = await provisionTeacherAccount(tenantId, schoolId, rec, acctEmail, user.uid);
+      } else {
+        const rec = students.find((s) => s.id === acctTarget.id);
+        if (!rec) throw new Error("Kayıt bulunamadı.");
+        res = await provisionStudentAccount(tenantId, schoolId, rec, acctEmail, user.uid);
+      }
+      if (!res.ok) {
+        setAcctError(res.error ?? "Hesap oluşturulamadı.");
+      } else {
+        setAcctResult(res);
+        await refresh();
+      }
+    } catch (err) {
+      setAcctError(getAuthErrorMessage(err));
+    } finally {
+      setAcctBusy(false);
+    }
+  };
+
   const run = async (fn: () => Promise<unknown>) => {
     if (busy) return;
     setBusy(true);
@@ -171,6 +251,28 @@ export function SchoolRecordsManager() {
 
   const q = search.trim().toLowerCase();
   const matchName = (s: string) => !q || s.toLowerCase().includes(q);
+
+  const acctButton = (
+    kind: AccountKind,
+    id: string,
+    name: string,
+    email: string,
+    userId: string,
+  ) =>
+    userId ? (
+      <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
+        <KeyRound size={11} aria-hidden="true" /> Hesap Bağlı
+      </span>
+    ) : canCreateAccounts ? (
+      <button
+        type="button"
+        onClick={() => openAccount({ kind, id, name, defaultEmail: email })}
+        disabled={busy}
+        className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-accent/30 bg-accent/10 px-2 py-1 text-xs text-accent transition hover:bg-accent/20 disabled:opacity-50"
+      >
+        <KeyRound size={13} aria-hidden="true" /> Giriş Hesabı
+      </button>
+    ) : null;
 
   return (
     <div className="flex flex-col gap-5">
@@ -321,6 +423,7 @@ export function SchoolRecordsManager() {
                               </option>
                             ))}
                           </select>
+                          {acctButton("student", s.id, s.fullName, "", s.userId)}
                           {s.status === "active" && (
                             <button
                               type="button"
@@ -411,6 +514,7 @@ export function SchoolRecordsManager() {
                                 </option>
                               ))}
                           </select>
+                          {acctButton("parent", p.id, p.fullName, p.email, p.userId)}
                           {p.status === "active" && (
                             <button
                               type="button"
@@ -505,6 +609,7 @@ export function SchoolRecordsManager() {
                                 </option>
                               ))}
                           </select>
+                          {acctButton("teacher", t.id, t.fullName, t.email, t.userId)}
                           {t.status === "active" && (
                             <button
                               type="button"
@@ -596,6 +701,119 @@ export function SchoolRecordsManager() {
             </div>
           )}
         </>
+      )}
+
+      {/* Giriş hesabı oluşturma / sonuç modalı */}
+      {acctTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-surface p-5 shadow-2xl">
+            <div className="mb-4 flex items-center gap-2">
+              <KeyRound size={18} className="text-accent" aria-hidden="true" />
+              <h3 className="text-base font-semibold text-content">
+                Giriş Hesabı · {acctTarget.name}
+              </h3>
+              <button
+                type="button"
+                onClick={closeAccount}
+                className="ml-auto text-muted transition hover:text-content"
+                aria-label="Kapat"
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+            </div>
+
+            {acctResult && acctResult.ok ? (
+              <div className="flex flex-col gap-3">
+                <p className="flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-3 py-2.5 text-sm text-emerald-300">
+                  <CheckCircle2 size={16} aria-hidden="true" />
+                  {acctResult.mode === "created"
+                    ? "Hesap oluşturuldu."
+                    : "Mevcut kullanıcı bu kayda bağlandı."}
+                </p>
+                <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-sm">
+                  <p className="text-muted">
+                    E-posta:{" "}
+                    <span className="font-mono text-content">{acctResult.email}</span>
+                  </p>
+                  {acctResult.tempPassword && (
+                    <p className="mt-1 flex items-center gap-2 text-muted">
+                      Geçici şifre:{" "}
+                      <span className="font-mono text-accent">
+                        {acctResult.tempPassword}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(acctResult.tempPassword ?? "");
+                            setAcctCopied(true);
+                            setTimeout(() => setAcctCopied(false), 2000);
+                          } catch {
+                            setAcctCopied(false);
+                          }
+                        }}
+                        className="text-muted transition hover:text-content"
+                        aria-label="Şifreyi kopyala"
+                      >
+                        {acctCopied ? <CheckCircle2 size={14} /> : <Copy size={14} />}
+                      </button>
+                    </p>
+                  )}
+                </div>
+                {acctResult.tempPassword && (
+                  <p className="text-xs text-amber-300">
+                    Bu şifre yalnızca şimdi gösterilir ve hiçbir yere kaydedilmez.
+                    Kullanıcıya iletin; ilk girişte değiştirmesi istenir.
+                  </p>
+                )}
+                <PrimaryButton type="button" size="md" onClick={closeAccount}>
+                  Tamam
+                </PrimaryButton>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                <p className="text-sm text-muted">
+                  {acctTarget.kind === "student"
+                    ? "Öğrenci için bir giriş e-postası girin. Güçlü geçici şifre üretilecek."
+                    : "Giriş e-postasını onaylayın. Güçlü geçici şifre üretilecek."}
+                </p>
+                <TextField
+                  label="E-posta"
+                  name="acctEmail"
+                  type="email"
+                  value={acctEmail}
+                  onChange={(e) => setAcctEmail(e.target.value)}
+                  placeholder="kullanici@okul.com"
+                />
+                {acctError && (
+                  <p className="flex items-center gap-2 rounded-xl border border-brand/30 bg-brand/10 px-3 py-2.5 text-sm text-brand">
+                    <AlertCircle size={16} aria-hidden="true" /> {acctError}
+                  </p>
+                )}
+                <div className="flex gap-2">
+                  <PrimaryButton
+                    type="button"
+                    size="md"
+                    onClick={() => void submitAccount()}
+                    disabled={acctBusy}
+                  >
+                    <KeyRound size={16} aria-hidden="true" />
+                    {acctBusy ? "Oluşturuluyor…" : "Hesabı Oluştur"}
+                  </PrimaryButton>
+                  <PrimaryButton
+                    type="button"
+                    variant="secondary"
+                    size="md"
+                    onClick={closeAccount}
+                    disabled={acctBusy}
+                  >
+                    Vazgeç
+                  </PrimaryButton>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

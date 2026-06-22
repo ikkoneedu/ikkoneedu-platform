@@ -47,6 +47,8 @@ export interface TeacherRecord {
   branch: string;
   classIds: string[];
   status: string;
+  /** Bağlı giriş hesabı (users/{uid}) — yoksa boş. */
+  userId: string;
   createdAt: number | null;
   updatedAt: number | null;
 }
@@ -72,6 +74,7 @@ function mapTeacher(id: string, data: Record<string, unknown>): TeacherRecord {
     branch: String(data.branch ?? ""),
     classIds: Array.isArray(data.classIds) ? (data.classIds as string[]) : [],
     status: String(data.status ?? "active"),
+    userId: String(data.userId ?? ""),
     createdAt: toMillis(data.createdAt),
     updatedAt: toMillis(data.updatedAt),
   };

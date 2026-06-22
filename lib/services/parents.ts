@@ -44,6 +44,8 @@ export interface ParentRecord {
   email: string;
   linkedStudentIds: string[];
   status: string;
+  /** Bağlı giriş hesabı (users/{uid}) — yoksa boş. */
+  userId: string;
   createdAt: number | null;
   updatedAt: number | null;
 }
@@ -69,6 +71,7 @@ function mapParent(id: string, data: Record<string, unknown>): ParentRecord {
       ? (data.linkedStudentIds as string[])
       : [],
     status: String(data.status ?? "active"),
+    userId: String(data.userId ?? ""),
     createdAt: toMillis(data.createdAt),
     updatedAt: toMillis(data.updatedAt),
   };
