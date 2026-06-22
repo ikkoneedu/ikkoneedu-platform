@@ -69,6 +69,11 @@ export const ROUTE_ROLES: Record<string, Role[]> = {
     ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL,
     ROLES.VICE_PRINCIPAL, ROLES.SUPER_ADMIN,
   ],
+  // Okul kayıt yönetimi — koordinatör de erişebilir (daha spesifik prefix).
+  "/admin/records": [
+    ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL,
+    ROLES.VICE_PRINCIPAL, ROLES.COORDINATOR, ROLES.SUPER_ADMIN,
+  ],
   "/portal": [
     ROLES.PUBLIC, ROLES.PARENT, ROLES.STUDENT, ROLES.TEACHER,
     ROLES.SCHOOL_ADMIN, ROLES.SUPER_ADMIN,
@@ -149,12 +154,20 @@ export function isProtectedRoute(pathname: string): boolean {
   return PROTECTED_PREFIXES.some((prefix) => matchesPrefix(pathname, prefix));
 }
 
-/** Verilen yol için gerekli roller (tanımsızsa boş dizi). */
+/**
+ * Verilen yol için gerekli roller. EN SPESİFİK (en uzun) eşleşen önek kazanır
+ * (ör. `/admin/records`, `/admin`'den önce gelir). Eşleşme yoksa boş dizi.
+ */
 export function getRequiredRoles(pathname: string): Role[] {
-  const entry = Object.entries(ROUTE_ROLES).find(([prefix]) =>
-    matchesPrefix(pathname, prefix),
-  );
-  return entry ? entry[1] : [];
+  let best: { prefix: string; roles: Role[] } | null = null;
+  for (const [prefix, roles] of Object.entries(ROUTE_ROLES)) {
+    if (matchesPrefix(pathname, prefix)) {
+      if (!best || prefix.length > best.prefix.length) {
+        best = { prefix, roles };
+      }
+    }
+  }
+  return best ? best.roles : [];
 }
 
 /**

@@ -15,13 +15,18 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   query,
   serverTimestamp,
+  setDoc,
+  updateDoc,
+  where,
   writeBatch,
 } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { tenantClasses, classDoc } from "@/lib/firebase/collections";
+import { toMillis } from "@/lib/services/people-validation";
 
 /** Şube harfleri (karışan harf yok, Türkçe sıralı: A, B, C, D…). */
 export const BRANCH_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -44,12 +49,23 @@ export interface SchoolClass {
   /** Atanmış sınıf öğretmeni (varsa). */
   classTeacherUid?: string;
   classTeacherName?: string;
+  /** Kademe (spec alanı; `gradeLevel` ile aynı değer). */
+  grade: string;
+  /** Atanmış öğretmen kayıtları (teachers/{id}) — iki taraflı tutulur. */
+  teacherIds: string[];
+  /** Atanmış öğrenci kayıtları (students/{id}) — iki taraflı tutulur. */
+  studentIds: string[];
+  /** active / archived (soft delete). */
+  status: string;
+  createdAt?: number | null;
+  updatedAt?: number | null;
 }
 
 function mapClass(id: string, data: Record<string, unknown>): SchoolClass {
+  const gradeLevel = String(data.gradeLevel ?? data.grade ?? "");
   return {
     id,
-    gradeLevel: String(data.gradeLevel ?? ""),
+    gradeLevel,
     branch: String(data.branch ?? ""),
     name: String(data.name ?? ""),
     kind: data.kind === "structure" ? "structure" : "teacher",
@@ -59,6 +75,12 @@ function mapClass(id: string, data: Record<string, unknown>): SchoolClass {
     classTeacherName: data.classTeacherName
       ? String(data.classTeacherName)
       : undefined,
+    grade: String(data.grade ?? gradeLevel),
+    teacherIds: Array.isArray(data.teacherIds) ? (data.teacherIds as string[]) : [],
+    studentIds: Array.isArray(data.studentIds) ? (data.studentIds as string[]) : [],
+    status: String(data.status ?? "active"),
+    createdAt: toMillis(data.createdAt),
+    updatedAt: toMillis(data.updatedAt),
   };
 }
 
@@ -148,7 +170,7 @@ export async function addClass(
   });
 }
 
-/** Bir sınıfı siler. */
+/** Bir sınıfı siler (yapı yönetimi — sert silme). */
 export async function deleteClass(
   tenantId: string,
   classId: string,
@@ -157,4 +179,104 @@ export async function deleteClass(
     throw new Error("Firebase yapılandırılmamış.");
   }
   await deleteDoc(doc(db, classDoc(tenantId, classId)));
+}
+
+/* -------------------------------------------------------------------------- */
+/*  Sınıf yönetimi (admin) — ad/kademe/öğretmen/öğrenci ilişkili tam model     */
+/* -------------------------------------------------------------------------- */
+
+export async function getClass(
+  tenantId: string,
+  id: string,
+): Promise<SchoolClass | null> {
+  if (!isFirebaseConfigured() || !db) return null;
+  const snap = await getDoc(doc(db, classDoc(tenantId, id)));
+  return snap.exists() ? mapClass(snap.id, snap.data()) : null;
+}
+
+export interface CreateClassFullInput {
+  name: string;
+  grade: string;
+}
+
+/**
+ * Yönetim sınıfı oluşturur (ad + kademe). Tenant içinde (ad + kademe) benzersiz
+ * olmalı. `teacherIds`/`studentIds` boş başlar; ilişkiler ayrı atanır.
+ * NOT: Aynı koleksiyon (tenants/{id}/classes); `kind:"structure"`.
+ */
+export async function createClass(
+  tenantId: string,
+  schoolId: string,
+  input: CreateClassFullInput,
+): Promise<string> {
+  if (!isFirebaseConfigured() || !db) {
+    throw new Error("Firebase yapılandırılmamış.");
+  }
+  const name = input.name.trim();
+  const grade = input.grade.trim();
+  if (!name) throw new Error("Sınıf adı zorunludur.");
+
+  // (ad + kademe) benzersizlik kontrolü.
+  const snap = await getDocs(
+    query(collection(db, tenantClasses(tenantId)), where("name", "==", name)),
+  );
+  const clash = snap.docs.some(
+    (d) => String(d.data().grade ?? d.data().gradeLevel ?? "") === grade,
+  );
+  if (clash) {
+    throw new Error(`"${name}" (${grade}. kademe) sınıfı zaten mevcut.`);
+  }
+
+  const ref = doc(collection(db, tenantClasses(tenantId)));
+  await setDoc(ref, {
+    tenantId,
+    schoolId: schoolId || tenantId,
+    name,
+    grade,
+    gradeLevel: grade,
+    branch: "",
+    kind: "structure",
+    teacherIds: [],
+    studentIds: [],
+    status: "active",
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  return ref.id;
+}
+
+export interface UpdateClassInput {
+  name?: string;
+  grade?: string;
+}
+
+export async function updateClass(
+  tenantId: string,
+  id: string,
+  patch: UpdateClassInput,
+): Promise<void> {
+  if (!isFirebaseConfigured() || !db) {
+    throw new Error("Firebase yapılandırılmamış.");
+  }
+  const data: Record<string, unknown> = { updatedAt: serverTimestamp() };
+  if (patch.name !== undefined) data.name = patch.name.trim();
+  if (patch.grade !== undefined) {
+    data.grade = patch.grade.trim();
+    data.gradeLevel = patch.grade.trim();
+  }
+  await updateDoc(doc(db, classDoc(tenantId, id)), data);
+}
+
+/** Soft delete — status = archived (sert silme deleteClass'tadır). */
+export async function archiveClass(
+  tenantId: string,
+  id: string,
+): Promise<void> {
+  if (!isFirebaseConfigured() || !db) {
+    throw new Error("Firebase yapılandırılmamış.");
+  }
+  await updateDoc(doc(db, classDoc(tenantId, id)), {
+    status: "archived",
+    updatedAt: serverTimestamp(),
+  });
 }
