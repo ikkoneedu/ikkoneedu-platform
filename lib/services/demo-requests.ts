@@ -76,13 +76,14 @@ export interface DemoRequestRecord {
   studentCount: string;
   message: string;
   status: string;
-  note: string;
+  notes: string;
   assignedTo: string;
-  /** Lead'e çevrildiyse oluşan lead kimliği. */
-  leadId: string;
+  /** Lead'e çevrildiyse oluşan platform lead kimliği (tek seferlik dönüşüm). */
+  convertedToLeadId: string;
   /** Lead bir okula bağlandıysa o tenant; platform lead ise boş. */
   leadTenantId: string;
   createdAt: number | null;
+  updatedAt: number | null;
 }
 
 /** Platform düzeyindeki demo taleplerini listeler (yalnızca SUPER_ADMIN). */
@@ -91,9 +92,12 @@ export async function listDemoRequests(): Promise<DemoRequestRecord[]> {
   const snap = await getDocs(
     query(collection(db, platformDemoRequests())),
   );
+  const toMillis = (v: unknown): number | null => {
+    const ts = v as { toMillis?: () => number } | undefined;
+    return ts && typeof ts.toMillis === "function" ? ts.toMillis() : null;
+  };
   const rows = snap.docs.map((d) => {
     const data = d.data();
-    const ts = data.createdAt as { toMillis?: () => number } | undefined;
     return {
       id: d.id,
       institution: String(data.institution ?? ""),
@@ -105,11 +109,13 @@ export async function listDemoRequests(): Promise<DemoRequestRecord[]> {
       studentCount: String(data.studentCount ?? ""),
       message: String(data.message ?? ""),
       status: String(data.status ?? "new"),
-      note: String(data.note ?? ""),
+      // Geriye dönük uyum: eski `note`/`leadId` alanlarını da oku.
+      notes: String(data.notes ?? data.note ?? ""),
       assignedTo: String(data.assignedTo ?? ""),
-      leadId: String(data.leadId ?? ""),
+      convertedToLeadId: String(data.convertedToLeadId ?? data.leadId ?? ""),
       leadTenantId: String(data.leadTenantId ?? ""),
-      createdAt: ts && typeof ts.toMillis === "function" ? ts.toMillis() : null,
+      createdAt: toMillis(data.createdAt),
+      updatedAt: toMillis(data.updatedAt),
     };
   });
   return rows.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
@@ -118,9 +124,9 @@ export async function listDemoRequests(): Promise<DemoRequestRecord[]> {
 /** Demo talebini günceller (durum / not / atanan kişi). Yalnızca SUPER_ADMIN. */
 export interface DemoRequestPatch {
   status?: DemoStatus;
-  note?: string;
+  notes?: string;
   assignedTo?: string;
-  leadId?: string;
+  convertedToLeadId?: string;
   leadTenantId?: string;
 }
 
@@ -133,9 +139,10 @@ export async function updateDemoRequest(
   }
   const data: Record<string, unknown> = { updatedAt: serverTimestamp() };
   if (patch.status !== undefined) data.status = patch.status;
-  if (patch.note !== undefined) data.note = patch.note;
+  if (patch.notes !== undefined) data.notes = patch.notes;
   if (patch.assignedTo !== undefined) data.assignedTo = patch.assignedTo;
-  if (patch.leadId !== undefined) data.leadId = patch.leadId;
+  if (patch.convertedToLeadId !== undefined)
+    data.convertedToLeadId = patch.convertedToLeadId;
   if (patch.leadTenantId !== undefined) data.leadTenantId = patch.leadTenantId;
   await updateDoc(doc(db, `${platformDemoRequests()}/${id}`), data);
 }
@@ -160,7 +167,18 @@ export async function convertDemoToLead(params: {
   tenantId?: string;
 }): Promise<ConvertResult> {
   const { demo, tenantId } = params;
-  const note = demo.message || demo.note || "";
+
+  // Tek seferlik dönüşüm: aynı talep birden fazla kez lead'e çevrilemez.
+  if (demo.convertedToLeadId || demo.status === "converted") {
+    return {
+      ok: false,
+      leadId: null,
+      tenantId: null,
+      error: "Bu talep zaten lead'e çevrildi.",
+    };
+  }
+
+  const notes = demo.notes || demo.message || "";
 
   const result = tenantId
     ? await createLead({
@@ -169,17 +187,19 @@ export async function convertDemoToLead(params: {
         phone: demo.phone,
         email: demo.email,
         source: "demo_request",
-        note,
+        note: notes,
       })
     : await createPlatformLead({
-        fullName: demo.fullName,
+        sourceRequestId: demo.id,
+        institution: demo.institution,
+        contactName: demo.fullName,
         phone: demo.phone,
         email: demo.email,
-        institution: demo.institution,
         city: demo.city,
-        source: "demo_request",
-        note,
-        demoRequestId: demo.id,
+        institutionType: demo.institutionType,
+        studentCount: demo.studentCount,
+        notes,
+        assignedTo: demo.assignedTo,
       });
 
   if (!result.ok || !result.id) {
@@ -195,7 +215,7 @@ export async function convertDemoToLead(params: {
   if (!result.mock) {
     await updateDemoRequest(demo.id, {
       status: "converted",
-      leadId: result.id,
+      convertedToLeadId: result.id,
       leadTenantId: tenantId ?? "",
     });
   }

@@ -78,15 +78,15 @@ export function DemoRequestsInbox() {
 
   const handleSaveDetail = async (
     id: string,
-    note: string,
+    notes: string,
     assignedTo: string,
   ) => {
     setBusyId(id);
     setError(null);
     setNotice(null);
     try {
-      await updateDemoRequest(id, { note, assignedTo });
-      patchLocal(id, { note, assignedTo });
+      await updateDemoRequest(id, { notes, assignedTo });
+      patchLocal(id, { notes, assignedTo });
       setNotice("Kaydedildi.");
     } catch (err) {
       setError(getAuthErrorMessage(err));
@@ -110,7 +110,7 @@ export function DemoRequestsInbox() {
       }
       patchLocal(demo.id, {
         status: "converted",
-        leadId: result.leadId ?? "",
+        convertedToLeadId: result.leadId ?? "",
         leadTenantId: result.tenantId ?? "",
       });
       setNotice(
@@ -215,13 +215,14 @@ function DemoRow({
   busy: boolean;
   onToggle: () => void;
   onStatus: (status: DemoStatus) => void;
-  onSave: (note: string, assignedTo: string) => void;
+  onSave: (notes: string, assignedTo: string) => void;
   onConvert: (tenantId: string) => void;
 }) {
-  const [note, setNote] = useState(record.note);
+  const [notes, setNotes] = useState(record.notes);
   const [assignedTo, setAssignedTo] = useState(record.assignedTo);
   const [tenantId, setTenantId] = useState(record.leadTenantId);
-  const converted = record.status === "converted" || Boolean(record.leadId);
+  const converted =
+    record.status === "converted" || Boolean(record.convertedToLeadId);
 
   return (
     <div className="rounded-xl border border-white/10 bg-white/[0.02]">
@@ -281,8 +282,8 @@ function DemoRow({
             <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
               Not
               <textarea
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
                 rows={2}
                 className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
               />
@@ -304,7 +305,7 @@ function DemoRow({
               variant="secondary"
               size="sm"
               disabled={busy}
-              onClick={() => onSave(note, assignedTo)}
+              onClick={() => onSave(notes, assignedTo)}
             >
               <Save size={15} aria-hidden="true" /> Kaydet
             </PrimaryButton>

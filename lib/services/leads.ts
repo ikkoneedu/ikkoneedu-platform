@@ -93,29 +93,34 @@ export async function listLeads(tenantId: string): Promise<LeadRecord[]> {
 /* -------------------------------------------------------------------------- */
 
 export interface PlatformLeadInput {
-  fullName: string;
+  /** Türetildiği demo talebi (platformDemoRequests/{id}). */
+  sourceRequestId?: string;
+  institution?: string;
+  contactName: string;
   phone: string;
   email?: string;
-  institution?: string;
   city?: string;
-  source?: string;
-  note?: string;
-  /** Bu lead'in türetildiği demo talebi (varsa). */
-  demoRequestId?: string;
+  institutionType?: string;
+  studentCount?: string;
+  notes?: string;
+  assignedTo?: string;
 }
 
 export interface PlatformLeadRecord {
   id: string;
-  fullName: string;
+  sourceRequestId: string;
+  institution: string;
+  contactName: string;
   phone: string;
   email: string;
-  institution: string;
   city: string;
-  source: string;
-  note: string;
+  institutionType: string;
+  studentCount: string;
   status: string;
-  demoRequestId: string;
+  notes: string;
+  assignedTo: string;
   createdAt: number | null;
+  updatedAt: number | null;
 }
 
 /**
@@ -127,53 +132,77 @@ export async function createPlatformLead(
 ): Promise<CreateResult> {
   // Boş opsiyonel alanları yazma (temiz belge).
   const payload: Record<string, unknown> = {
-    fullName: data.fullName,
+    contactName: data.contactName,
     phone: data.phone,
     status: "new",
   };
-  if (data.email) payload.email = data.email;
+  if (data.sourceRequestId) payload.sourceRequestId = data.sourceRequestId;
   if (data.institution) payload.institution = data.institution;
+  if (data.email) payload.email = data.email;
   if (data.city) payload.city = data.city;
-  if (data.source) payload.source = data.source;
-  if (data.note) payload.note = data.note;
-  if (data.demoRequestId) payload.demoRequestId = data.demoRequestId;
+  if (data.institutionType) payload.institutionType = data.institutionType;
+  if (data.studentCount) payload.studentCount = data.studentCount;
+  if (data.notes) payload.notes = data.notes;
+  if (data.assignedTo) payload.assignedTo = data.assignedTo;
   return createDocument(platformLeads(), payload);
 }
 
 /** Platform satış lead'lerini listeler (yalnızca SUPER_ADMIN). */
 export async function listPlatformLeads(): Promise<PlatformLeadRecord[]> {
   if (!isFirebaseConfigured() || !db) return [];
+  const toMillis = (v: unknown): number | null => {
+    const ts = v as { toMillis?: () => number } | undefined;
+    return ts && typeof ts.toMillis === "function" ? ts.toMillis() : null;
+  };
   const snap = await getDocs(query(collection(db, platformLeads())));
   const rows = snap.docs.map((d) => {
     const data = d.data();
-    const ts = data.createdAt as { toMillis?: () => number } | undefined;
     return {
       id: d.id,
-      fullName: String(data.fullName ?? ""),
+      sourceRequestId: String(data.sourceRequestId ?? ""),
+      institution: String(data.institution ?? ""),
+      // Geriye dönük uyum: eski `fullName`/`note` alanlarını da oku.
+      contactName: String(data.contactName ?? data.fullName ?? ""),
       phone: String(data.phone ?? ""),
       email: String(data.email ?? ""),
-      institution: String(data.institution ?? ""),
       city: String(data.city ?? ""),
-      source: String(data.source ?? ""),
-      note: String(data.note ?? ""),
+      institutionType: String(data.institutionType ?? ""),
+      studentCount: String(data.studentCount ?? ""),
       status: String(data.status ?? "new"),
-      demoRequestId: String(data.demoRequestId ?? ""),
-      createdAt: ts && typeof ts.toMillis === "function" ? ts.toMillis() : null,
+      notes: String(data.notes ?? data.note ?? ""),
+      assignedTo: String(data.assignedTo ?? ""),
+      createdAt: toMillis(data.createdAt),
+      updatedAt: toMillis(data.updatedAt),
     };
   });
   return rows.sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
 }
 
-/** Platform lead'inin pipeline durumunu günceller (yalnızca SUPER_ADMIN). */
-export async function updatePlatformLeadStatus(
+export interface PlatformLeadPatch {
+  status?: LeadStatus;
+  notes?: string;
+  assignedTo?: string;
+}
+
+/** Platform lead'ini günceller (durum / not / atanan). Yalnızca SUPER_ADMIN. */
+export async function updatePlatformLead(
   id: string,
-  status: LeadStatus,
+  patch: PlatformLeadPatch,
 ): Promise<void> {
   if (!isFirebaseConfigured() || !db) {
     throw new Error("Firebase yapılandırılmamış.");
   }
-  await updateDoc(doc(db, `${platformLeads()}/${id}`), {
-    status,
-    updatedAt: serverTimestamp(),
-  });
+  const data: Record<string, unknown> = { updatedAt: serverTimestamp() };
+  if (patch.status !== undefined) data.status = patch.status;
+  if (patch.notes !== undefined) data.notes = patch.notes;
+  if (patch.assignedTo !== undefined) data.assignedTo = patch.assignedTo;
+  await updateDoc(doc(db, `${platformLeads()}/${id}`), data);
+}
+
+/** Platform lead'inin yalnızca durumunu günceller (kısa yol). */
+export async function updatePlatformLeadStatus(
+  id: string,
+  status: LeadStatus,
+): Promise<void> {
+  await updatePlatformLead(id, { status });
 }

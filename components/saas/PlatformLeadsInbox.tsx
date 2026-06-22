@@ -1,14 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Target, AlertCircle } from "lucide-react";
+import {
+  Target,
+  ChevronDown,
+  Save,
+  AlertCircle,
+  CheckCircle2,
+} from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import {
   listPlatformLeads,
-  updatePlatformLeadStatus,
+  updatePlatformLead,
   leadStatusLabel,
   LEAD_STATUSES,
   type PlatformLeadRecord,
@@ -27,16 +34,18 @@ const STATUS_TONES: Record<string, string> = {
 
 /**
  * Platform satış lead pipeline'ı (gerçek Firestore — kök `platformLeads`).
- * Demo talebinden "Lead'e Çevir" ile oluşan platform lead'leri burada izlenir.
- * Yalnızca SUPER_ADMIN + Firebase aktifken görünür.
+ * Demo talebinden "Lead'e Çevir" ile oluşan platform lead'leri burada izlenir:
+ * durum güncelleme, not + atanan kişi. Yalnızca SUPER_ADMIN + Firebase aktifken.
  */
 export function PlatformLeadsInbox() {
   const { profile, firebaseReady } = useAuth();
   const isSuper = profile?.role === ROLES.SUPER_ADMIN;
 
   const [items, setItems] = useState<PlatformLeadRecord[] | null>(null);
+  const [openId, setOpenId] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
     if (!firebaseReady || !isSuper) return;
@@ -50,14 +59,32 @@ export function PlatformLeadsInbox() {
     };
   }, [firebaseReady, isSuper]);
 
+  const patchLocal = (id: string, patch: Partial<PlatformLeadRecord>) =>
+    setItems((prev) =>
+      prev ? prev.map((r) => (r.id === id ? { ...r, ...patch } : r)) : prev,
+    );
+
   const handleStatus = async (id: string, status: LeadStatus) => {
     setBusyId(id);
     setError(null);
     try {
-      await updatePlatformLeadStatus(id, status);
-      setItems((prev) =>
-        prev ? prev.map((r) => (r.id === id ? { ...r, status } : r)) : prev,
-      );
+      await updatePlatformLead(id, { status });
+      patchLocal(id, { status });
+    } catch (err) {
+      setError(getAuthErrorMessage(err));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleSave = async (id: string, notes: string, assignedTo: string) => {
+    setBusyId(id);
+    setError(null);
+    setNotice(null);
+    try {
+      await updatePlatformLead(id, { notes, assignedTo });
+      patchLocal(id, { notes, assignedTo });
+      setNotice("Kaydedildi.");
     } catch (err) {
       setError(getAuthErrorMessage(err));
     } finally {
@@ -82,19 +109,26 @@ export function PlatformLeadsInbox() {
           filename="platform-leadler"
           title="Platform Satış Leadleri"
           columns={[
-            { key: "fullName", label: "Yetkili" },
+            { key: "contactName", label: "Yetkili" },
             { key: "institution", label: "Kurum" },
             { key: "phone", label: "Telefon" },
             { key: "email", label: "E-posta" },
             { key: "city", label: "Şehir" },
+            { key: "institutionType", label: "Kurum Türü" },
+            { key: "studentCount", label: "Öğrenci Sayısı" },
             { key: "status", label: "Durum" },
-            { key: "source", label: "Kaynak" },
-            { key: "note", label: "Not" },
+            { key: "assignedTo", label: "Atanan" },
+            { key: "notes", label: "Not" },
           ]}
           rows={items as unknown as Record<string, unknown>[]}
         />
       </div>
 
+      {notice && (
+        <p className="mb-3 flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-2.5 text-sm text-emerald-300">
+          <CheckCircle2 size={16} aria-hidden="true" /> {notice}
+        </p>
+      )}
       {error && (
         <p className="mb-3 flex items-center gap-2 rounded-xl border border-brand/30 bg-brand/10 px-4 py-2.5 text-sm text-brand">
           <AlertCircle size={16} aria-hidden="true" /> {error}
@@ -103,44 +137,121 @@ export function PlatformLeadsInbox() {
 
       <div className="flex flex-col gap-2">
         {items.map((r) => (
-          <div
+          <LeadRow
             key={r.id}
-            className="flex flex-wrap items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3"
-          >
-            <span className="min-w-0 flex-1">
-              <span className="block truncate font-medium text-content">
-                {r.institution || r.fullName || "—"}
-              </span>
-              <span className="block truncate text-xs text-muted">
-                {r.fullName} · {r.phone || r.email || "—"}
-                {r.city ? ` · ${r.city}` : ""}
-              </span>
-            </span>
-
-            <span
-              className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${
-                STATUS_TONES[r.status] ?? STATUS_TONES.new
-              }`}
-            >
-              {leadStatusLabel(r.status)}
-            </span>
-
-            <select
-              value={r.status}
-              disabled={busyId === r.id}
-              onChange={(e) => handleStatus(r.id, e.target.value as LeadStatus)}
-              className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
-              aria-label="Lead durumu"
-            >
-              {LEAD_STATUSES.map((s) => (
-                <option key={s} value={s} className="bg-surface">
-                  {leadStatusLabel(s)}
-                </option>
-              ))}
-            </select>
-          </div>
+            record={r}
+            open={openId === r.id}
+            busy={busyId === r.id}
+            onToggle={() => setOpenId(openId === r.id ? null : r.id)}
+            onStatus={(s) => handleStatus(r.id, s)}
+            onSave={(notes, assignedTo) => handleSave(r.id, notes, assignedTo)}
+          />
         ))}
       </div>
     </GlassCard>
+  );
+}
+
+function LeadRow({
+  record,
+  open,
+  busy,
+  onToggle,
+  onStatus,
+  onSave,
+}: {
+  record: PlatformLeadRecord;
+  open: boolean;
+  busy: boolean;
+  onToggle: () => void;
+  onStatus: (status: LeadStatus) => void;
+  onSave: (notes: string, assignedTo: string) => void;
+}) {
+  const [notes, setNotes] = useState(record.notes);
+  const [assignedTo, setAssignedTo] = useState(record.assignedTo);
+
+  return (
+    <div className="rounded-xl border border-white/10 bg-white/[0.02]">
+      <div className="flex flex-wrap items-center gap-3 px-4 py-3">
+        <button
+          type="button"
+          onClick={onToggle}
+          className="flex min-w-0 flex-1 items-center gap-3 text-left"
+        >
+          <ChevronDown
+            size={16}
+            className={`shrink-0 text-muted transition-transform ${open ? "rotate-180" : ""}`}
+            aria-hidden="true"
+          />
+          <span className="min-w-0">
+            <span className="block truncate font-medium text-content">
+              {record.institution || record.contactName || "—"}
+            </span>
+            <span className="block truncate text-xs text-muted">
+              {record.contactName} · {record.phone || record.email || "—"}
+              {record.city ? ` · ${record.city}` : ""}
+            </span>
+          </span>
+        </button>
+
+        <span
+          className={`rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${
+            STATUS_TONES[record.status] ?? STATUS_TONES.new
+          }`}
+        >
+          {leadStatusLabel(record.status)}
+        </span>
+
+        <select
+          value={record.status}
+          disabled={busy}
+          onChange={(e) => onStatus(e.target.value as LeadStatus)}
+          className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
+          aria-label="Lead durumu"
+        >
+          {LEAD_STATUSES.map((s) => (
+            <option key={s} value={s} className="bg-surface">
+              {leadStatusLabel(s)}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {open && (
+        <div className="border-t border-white/10 px-4 py-4">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
+              Not
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                rows={2}
+                className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
+              />
+            </label>
+            <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
+              Atanan kişi (opsiyonel)
+              <input
+                value={assignedTo}
+                onChange={(e) => setAssignedTo(e.target.value)}
+                placeholder="Ör. satış temsilcisi"
+                className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
+              />
+            </label>
+          </div>
+          <div className="mt-3">
+            <PrimaryButton
+              type="button"
+              variant="secondary"
+              size="sm"
+              disabled={busy}
+              onClick={() => onSave(notes, assignedTo)}
+            >
+              <Save size={15} aria-hidden="true" /> Kaydet
+            </PrimaryButton>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
