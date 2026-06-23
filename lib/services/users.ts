@@ -1,26 +1,21 @@
 /**
  * Personel/kullanıcı yönetim servisi (okul yöneticisi için).
  *
- * - createStaffAccount: öğretmen/müdür hesabı oluşturur (ikincil app ile,
- *   yöneticinin oturumu bozulmadan) ve geçici şifre döndürür.
+ * - createStaffAccount: öğretmen/müdür hesabını server-side Admin SDK endpoint'i
+ *   üzerinden oluşturur ve geçici şifre döndürür.
  * - listTenantUsers: tenant'taki kullanıcıları listeler.
- *
- * Firebase Admin SDK kullanılmaz.
  */
 
-import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import {
   collection,
   doc,
   getDocs,
   query,
   serverTimestamp,
-  setDoc,
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db, isFirebaseConfigured } from "@/lib/firebase/client";
-import { getSecondaryAuth } from "@/lib/firebase/secondary-app";
+import { auth, db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { userProfileDoc, usersRoot } from "@/lib/firebase/collections";
 import { ROLES, type Role } from "@/lib/auth/role-constants";
 
@@ -30,17 +25,6 @@ export type StaffRole =
   | typeof ROLES.VICE_PRINCIPAL
   | typeof ROLES.COORDINATOR
   | typeof ROLES.PR;
-
-const PASSWORD_ALPHABET =
-  "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
-
-function tempPassword(len = 10): string {
-  let out = "";
-  for (let i = 0; i < len; i += 1) {
-    out += PASSWORD_ALPHABET[Math.floor(Math.random() * PASSWORD_ALPHABET.length)];
-  }
-  return out;
-}
 
 export interface CreateStaffInput {
   tenantId: string;
@@ -56,68 +40,59 @@ export interface CreatedStaff {
   tempPassword: string;
 }
 
-/**
- * Belirli rolde yönetilen hesap oluşturur (öğretmen, müdür, kurucu vb.).
- * Geçici şifre döndürür. Hesap gizli (ikincil) oturumda oluşturulur ki
- * işlemi yapan yöneticinin/süper adminin oturumu bozulmasın.
- */
-export async function createManagedAccount(input: {
+export interface CreateManagedAccountInput {
   tenantId: string;
-  createdBy: string;
+  createdBy?: string;
   role: Role;
   displayName: string;
   email: string;
   /** Belirtilmezse schoolId = tenantId (okul başına tek tenant). */
   schoolId?: string;
-}): Promise<CreatedStaff> {
-  if (!isFirebaseConfigured() || !db) {
+}
+
+async function currentIdToken(): Promise<string> {
+  if (!auth?.currentUser) {
+    throw new Error("Oturum bulunamadı. Lütfen tekrar giriş yapın.");
+  }
+  return auth.currentUser.getIdToken();
+}
+
+/**
+ * Belirli rolde yönetilen hesap oluşturur (öğretmen, müdür, kurucu vb.).
+ * Geçici şifre döndürür. Hesap artık client-side secondary Auth ile değil,
+ * Admin SDK destekli `/api/admin/create-managed-account` endpoint'iyle açılır.
+ */
+export async function createManagedAccount(
+  input: CreateManagedAccountInput,
+): Promise<CreatedStaff> {
+  if (!isFirebaseConfigured()) {
     throw new Error("Firebase yapılandırılmamış.");
   }
-  const secondary = getSecondaryAuth();
-  if (!secondary) throw new Error("Firebase yapılandırılmamış.");
-  const database = db;
 
-  const email = input.email.trim().toLowerCase();
-  const password = tempPassword();
-
-  // 1) Gizli (ikincil) oturumda hesabı oluştur.
-  const credential = await createUserWithEmailAndPassword(
-    secondary,
-    email,
-    password,
-  );
-  const uid = credential.user.uid;
-
-  // 2) Profil belgesini ana oturumla (yönetici/süper admin) yaz.
-  //    Profil yazımı başarısız olursa AUTH hesabını GERİ AL (rollback) ki
-  //    profilsiz/yetkisiz bir hesap ortada kalmasın.
-  try {
-    await setDoc(doc(database, userProfileDoc(uid)), {
-      uid,
-      email,
-      displayName: input.displayName,
-      role: input.role,
+  const response = await fetch("/api/admin/create-managed-account", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      idToken: await currentIdToken(),
       tenantId: input.tenantId,
-      schoolId: input.schoolId ?? input.tenantId,
-      status: "ACTIVE",
-      createdBy: input.createdBy,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-    });
-  } catch (error) {
-    try {
-      // İkincil oturumda hâlâ bu kullanıcı açık; hesabı sil (rollback).
-      await credential.user.delete();
-    } catch {
-      /* rollback başarısız olsa da asıl hatayı yükselt */
-    }
-    throw error;
+      schoolId: input.schoolId,
+      role: input.role,
+      displayName: input.displayName,
+      email: input.email,
+    }),
+  });
+
+  const payload = (await response.json().catch(() => ({}))) as Partial<CreatedStaff> & {
+    error?: string;
+  };
+  if (!response.ok || !payload.uid || !payload.email || !payload.tempPassword) {
+    throw new Error(payload.error ?? "Hesap oluşturulamadı.");
   }
-
-  // 3) İkincil oturumu kapat.
-  await signOut(secondary);
-
-  return { uid, email, tempPassword: password };
+  return {
+    uid: payload.uid,
+    email: payload.email,
+    tempPassword: payload.tempPassword,
+  };
 }
 
 /**

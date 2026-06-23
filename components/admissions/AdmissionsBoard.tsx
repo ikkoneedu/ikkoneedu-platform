@@ -500,6 +500,7 @@ export function AdmissionsBoard() {
           onClose={() => setOpenId(null)}
           run={run}
           uid={uid}
+          getIdToken={() => user!.getIdToken()}
         />
       )}
     </div>
@@ -558,6 +559,7 @@ function AdmissionDetail({
   onClose,
   run,
   uid,
+  getIdToken,
 }: {
   admission: AdmissionRecord;
   meetings: AdmissionMeetingRecord[];
@@ -571,6 +573,7 @@ function AdmissionDetail({
   onClose: () => void;
   run: (fn: () => Promise<unknown>) => Promise<void>;
   uid: string;
+  getIdToken: () => Promise<string>;
 }) {
   const a = admission;
   const [note, setNote] = useState("");
@@ -586,7 +589,7 @@ function AdmissionDetail({
         schoolId,
         parent,
         a.parentEmail,
-        uid,
+        await getIdToken(),
       );
       if (!res.ok) throw new Error(res.error ?? "Giriş hesabı oluşturulamadı.");
       setAcctResult(res);
