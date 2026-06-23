@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { ShieldAlert, ArrowRight, Ban } from "lucide-react";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { ForcePasswordChange } from "@/components/auth/ForcePasswordChange";
 import { getRequiredRoles, isPublicRoute } from "@/lib/auth/route-config";
 import { getHomeRouteForRole } from "@/lib/auth/role-routing";
 
@@ -114,6 +115,11 @@ export function RoleGuard({ children }: { children: ReactNode }) {
         </PrimaryButton>
       </main>
     );
+  }
+
+  // Geçici şifreyle açılan hesap: önce yeni şifre belirlemeli (ilk giriş).
+  if (profile.mustChangePassword) {
+    return <ForcePasswordChange />;
   }
 
   if (!roleAllowed) {

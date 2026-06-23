@@ -54,6 +54,22 @@ export async function updateMyProfile(
 }
 
 /**
+ * `mustChangePassword` bayrağını günceller. Geçici şifreyle açılan hesap, ilk
+ * girişte yeni şifre belirledikten sonra bu bayrağı temizler (false yapar).
+ * Kullanıcı kendi belgesini günceller (kurallar bu alanı kilitlemez).
+ */
+export async function setMustChangePassword(
+  uid: string,
+  value: boolean,
+): Promise<void> {
+  if (!isFirebaseConfigured() || !db) return;
+  await updateDoc(doc(db, userProfileDoc(uid)), {
+    mustChangePassword: value,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+/**
  * Halk (genel kullanıcı) için `users/{uid}` profil belgesi oluşturur.
  * Yalnızca PUBLIC rolü + public tenant ile yazılır (yetki yükseltme yok).
  * Güvenlik kuralları bu kısıtı zorunlu kılar.

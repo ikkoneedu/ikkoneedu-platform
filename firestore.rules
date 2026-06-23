@@ -389,7 +389,13 @@ service cloud.firestore {
     // veli (parentIds) ileri uyum için. Yazma: kayıt yönetimi. Soft delete.
     match /tenants/{tenantId}/students/{studentId} {
       allow read: if isSuperAdmin()
-        || (isTenantMember(tenantId) && isStaff())
+        // Yönetim (admin/müdür/yrd./koordinatör) tüm öğrencileri okur.
+        || (myTenant() == tenantId && canManageRecords())
+        // ÖĞRETMEN yalnız KENDİ sınıflarındaki öğrencileri okur
+        // (öğrencinin classId'si öğretmenin classIds'inde olmalı).
+        || (isActiveUser() && myTenant() == tenantId && myRole() == 'TEACHER'
+            && 'classId' in resource.data && resource.data.classId != ''
+            && myProfile().get('classIds', []).hasAny([resource.data.classId]))
         // Öğrenci kendi kaydı (profilindeki linkedStudentId ile eşleşir).
         || (hasProfile() && myProfile().get('linkedStudentId', '') == studentId)
         // Veli: profilindeki linkedStudentIds bu öğrenci kaydını içeriyorsa.
