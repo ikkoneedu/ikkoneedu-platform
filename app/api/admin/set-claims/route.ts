@@ -99,7 +99,11 @@ export async function POST(request: Request) {
 
   // 2) Çağıran SUPER_ADMIN mi? (Firestore profilinden)
   const callerSnap = await adminDb.doc(`users/${callerUid}`).get();
-  if (!callerSnap.exists || callerSnap.get("role") !== "SUPER_ADMIN") {
+  if (
+    !callerSnap.exists ||
+    callerSnap.get("role") !== "SUPER_ADMIN" ||
+    callerSnap.get("status") !== "ACTIVE"
+  ) {
     await writeClaimAudit(adminDb, {
       actorId: callerUid,
       targetUid,
@@ -138,6 +142,23 @@ export async function POST(request: Request) {
         body: parsed.data,
       });
       return NextResponse.json({ error: "Tenant/okul bulunamadı." }, { status: 404 });
+    }
+  }
+
+  if (schoolId) {
+    const schoolSnap = await adminDb.doc(`schools/${schoolId}`).get();
+    if (!schoolSnap.exists || schoolSnap.get("tenantId") !== tenantId) {
+      await writeClaimAudit(adminDb, {
+        actorId: callerUid,
+        targetUid,
+        ok: false,
+        reason: "school_not_found_or_mismatch",
+        body: parsed.data,
+      });
+      return NextResponse.json(
+        { error: "Okul bulunamadı veya tenant ile eşleşmiyor." },
+        { status: 404 },
+      );
     }
   }
 
