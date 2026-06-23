@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
+import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
+import { Sparkles, FileText, PenLine, ChevronRight } from "lucide-react";
 import { AccountSummaryCard } from "@/components/shared/AccountSummaryCard";
-import {
-  School,
-  BarChart3,
-  PenLine,
-  ChevronRight,
-  ArrowRight,
-} from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { TeacherRoster } from "@/components/teacher/TeacherRoster";
@@ -20,35 +15,40 @@ import { MyTimetable } from "@/components/teacher/MyTimetable";
 import { MyClasses } from "@/components/teacher/MyClasses";
 import { AttendanceBoard } from "@/components/attendance/AttendanceBoard";
 import { GlassCard } from "@/components/shared/GlassCard";
-import { PrimaryButton } from "@/components/shared/PrimaryButton";
-import { ClassCard } from "@/components/teacher/ClassCard";
-import { TeacherAiAssistant } from "@/components/teacher/TeacherAiAssistant";
-import { AssignmentOverview } from "@/components/teacher/AssignmentOverview";
-import { ExamBuilderPreview } from "@/components/teacher/ExamBuilderPreview";
-import { ParentMessages } from "@/components/teacher/ParentMessages";
 import { productName } from "@/lib/constants";
-import {
-  teacherClasses,
-  teacherAiSuggestions,
-  teacherAssignmentStats,
-  teacherAssignments,
-  teacherExamOptions,
-  teacherPerformance,
-  teacherParentMessages,
-  teacherQuickActions,
-} from "@/lib/mock-data";
+import { teacherQuickActions } from "@/lib/mock-data";
 
 export const metadata: Metadata = {
   title: `Öğretmen Portalı — ${productName}`,
   description:
-    "Sınıflarınızı yönetin, içerik üretin ve öğrencilerinizin gelişimini yapay zeka desteğiyle takip edin.",
+    "Sınıflarınızı yönetin, ödev ve notları takip edin, veli ve öğrencilerle iletişim kurun.",
 };
 
-const performanceMetrics = [
-  { key: "success" as const, label: "Genel Başarı" },
-  { key: "participation" as const, label: "Katılım" },
-  { key: "homework" as const, label: "Ödev Tamamlama" },
-];
+/** Dürüst "Yakında" kartı — sahte veri yerine net placeholder (premium görünüm). */
+function ComingSoonCard({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}) {
+  return (
+    <GlassCard tone="navy" className="flex h-full flex-col">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent/20 bg-navy/50 text-accent">
+          <Icon size={20} aria-hidden="true" />
+        </span>
+        <span className="rounded-full border border-accent/20 bg-accent/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
+          Yakında
+        </span>
+      </div>
+      <h2 className="text-base font-semibold text-content">{title}</h2>
+      <p className="mt-1 text-sm leading-relaxed text-muted">{description}</p>
+    </GlassCard>
+  );
+}
 
 export default function TeacherPage() {
   return (
@@ -56,11 +56,10 @@ export default function TeacherPage() {
       <div className="flex flex-col gap-10">
         <AccountSummaryCard />
 
-        {/* 1. Karşılama */}
         <SectionHeader
           eyebrow="Öğretmen Portalı"
-          title="Merhaba Ayşe Öğretmen 👋"
-          description="Bugün 4 dersiniz, 2 bekleyen ödev kontrolünüz ve 1 veli mesajınız var."
+          title="Öğretmen Portalı"
+          description="Sınıflarınızı, ödevlerinizi, notlarınızı ve iletişiminizi tek ekrandan yönetin."
         />
 
         {/* Kendi ders programım (canlı) + sıradaki ders hatırlatması */}
@@ -90,98 +89,29 @@ export default function TeacherPage() {
         {/* Yoklama (canlı) */}
         <AttendanceBoard />
 
-        {/* 3. Sınıflarım */}
+        {/* Yakında gelecek öğretmen özellikleri — dürüst placeholder (sahte veri yok). */}
         <section>
-          <div className="mb-4 flex items-center gap-2 text-content">
-            <School size={18} className="text-accent" aria-hidden="true" />
-            <h2 className="text-lg font-semibold">Sınıflarım</h2>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {teacherClasses.map((classItem) => (
-              <ClassCard key={classItem.id} classItem={classItem} />
-            ))}
+          <h2 className="mb-4 text-lg font-semibold text-content">Yakında</h2>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+            <ComingSoonCard
+              icon={Sparkles}
+              title="AI Öğretmen Asistanı"
+              description="Ders planı, etkinlik ve içerik üretiminde yapay zeka desteği."
+            />
+            <ComingSoonCard
+              icon={FileText}
+              title="Sınav Oluşturucu"
+              description="Soru bankasından hızlıca sınav ve quiz hazırlama."
+            />
+            <ComingSoonCard
+              icon={PenLine}
+              title="AI Karne Yorumu"
+              description="Öğrenci performansına göre gelişim odaklı karne yorumları."
+            />
           </div>
         </section>
 
-        {/* 4. AI Öğretmen Asistanı */}
-        <TeacherAiAssistant suggestions={teacherAiSuggestions} />
-
-        {/* 5 + 6. Ödev Yönetimi ve Sınav Merkezi */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <AssignmentOverview
-            stats={teacherAssignmentStats}
-            assignments={teacherAssignments}
-          />
-          <ExamBuilderPreview options={teacherExamOptions} />
-        </div>
-
-        {/* 7. Öğrenci Performans Analizi */}
-        <GlassCard tone="navy">
-          <div className="mb-5 flex items-center gap-2">
-            <BarChart3 size={18} className="text-accent" aria-hidden="true" />
-            <h2 className="text-lg font-semibold text-content">
-              Öğrenci Performans Analizi
-            </h2>
-          </div>
-          <div className="space-y-5">
-            {teacherPerformance.map((row) => (
-              <div key={row.classGroup}>
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-semibold text-content">
-                    {row.classGroup}
-                  </span>
-                  <span className="rounded-full bg-emerald-400/10 px-2 py-0.5 text-xs font-medium text-emerald-400">
-                    Gelişim +%{row.trend}
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                  {performanceMetrics.map((metric) => (
-                    <div key={metric.key}>
-                      <div className="mb-1 flex items-center justify-between text-xs">
-                        <span className="text-muted">{metric.label}</span>
-                        <span className="font-semibold text-accent">
-                          {row[metric.key]}
-                        </span>
-                      </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
-                        <div
-                          className="h-full rounded-full bg-accent/70"
-                          style={{ width: `${row[metric.key]}%` }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </GlassCard>
-
-        {/* 8 + 9. Veli Mesajları ve Karne Yorumu Asistanı */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <ParentMessages messages={teacherParentMessages} />
-
-          <GlassCard className="ai-gradient flex flex-col border-accent/20">
-            <div className="flex items-center gap-3">
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-accent/30 bg-accent/15 text-accent">
-                <PenLine size={22} aria-hidden="true" />
-              </span>
-              <h2 className="text-lg font-semibold text-content">AI Karne Yorumu</h2>
-            </div>
-            <p className="mt-4 text-sm leading-relaxed text-muted">
-              Öğrenci performansına göre profesyonel, pozitif ve gelişim odaklı
-              karne yorumları oluşturun.
-            </p>
-            <Link href="/coming-soon" className="mt-auto w-full sm:w-fit">
-              <PrimaryButton size="lg" className="w-full sm:w-fit">
-                Karne Yorumu Oluştur
-                <ArrowRight size={18} aria-hidden="true" />
-              </PrimaryButton>
-            </Link>
-          </GlassCard>
-        </div>
-
-        {/* 10. Hızlı İşlemler */}
+        {/* Hızlı İşlemler — gerçek bağlantılar */}
         <section>
           <h2 className="mb-4 text-lg font-semibold text-content">Hızlı İşlemler</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
