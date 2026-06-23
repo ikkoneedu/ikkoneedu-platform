@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { AccountSummaryCard } from "@/components/shared/AccountSummaryCard";
 import {
   School,
@@ -49,6 +50,15 @@ const performanceMetrics = [
   { key: "homework" as const, label: "Ödev Tamamlama" },
 ];
 
+const teacherActionTargets: Record<string, string> = {
+  yoklama: "#teacher-attendance",
+  odev: "#teacher-assignments",
+  sinav: "/exam-ai",
+  "ders-plani": "#teacher-ai",
+  "veli-mesaj": "#teacher-messages",
+  karne: "/report-card-ai",
+};
+
 export default function TeacherPage() {
   return (
     <PageShell title="Öğretmen Portalı">
@@ -72,13 +82,19 @@ export default function TeacherPage() {
         <TeacherRoster />
 
         {/* Duyuru panosu (canlı) */}
-        <AnnouncementBoard />
+        <div id="teacher-announcements">
+          <AnnouncementBoard />
+        </div>
 
         {/* Ödev panosu (canlı) */}
-        <AssignmentBoard />
+        <div id="teacher-assignments">
+          <AssignmentBoard />
+        </div>
 
         {/* Mesajlaşma (canlı) */}
-        <MessagingPanel />
+        <div id="teacher-messages">
+          <MessagingPanel />
+        </div>
 
         {/* Notlar (canlı) */}
         <GradeBoard />
@@ -87,7 +103,9 @@ export default function TeacherPage() {
         <ScheduleBoard />
 
         {/* Yoklama (canlı) */}
-        <AttendanceBoard />
+        <div id="teacher-attendance">
+          <AttendanceBoard />
+        </div>
 
         {/* 3. Sınıflarım */}
         <section>
@@ -103,7 +121,9 @@ export default function TeacherPage() {
         </section>
 
         {/* 4. AI Öğretmen Asistanı */}
-        <TeacherAiAssistant suggestions={teacherAiSuggestions} />
+        <div id="teacher-ai">
+          <TeacherAiAssistant suggestions={teacherAiSuggestions} />
+        </div>
 
         {/* 5 + 6. Ödev Yönetimi ve Sınav Merkezi */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -185,9 +205,9 @@ export default function TeacherPage() {
             {teacherQuickActions.map((action) => {
               const Icon = action.icon;
               return (
-                <button
+                <Link
                   key={action.id}
-                  type="button"
+                  href={teacherActionTargets[action.id] ?? "#"}
                   className="group flex flex-col items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:bg-white/[0.06]"
                 >
                   <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent/20 bg-navy/50 text-accent">
@@ -201,7 +221,7 @@ export default function TeacherPage() {
                       aria-hidden="true"
                     />
                   </span>
-                </button>
+                </Link>
               );
             })}
           </div>

@@ -25,15 +25,21 @@ const STAFF_ROLES = [
   ROLES.SUPER_ADMIN,
 ] as const;
 
+interface AssignmentBoardProps {
+  readOnly?: boolean;
+}
+
 /**
  * Ödev panosu — personel ödev verir; öğrenci/veli kendi sınıfının ödevlerini görür.
  * Yalnızca giriş yapmış kullanıcı + Firebase aktifken görünür.
  */
-export function AssignmentBoard() {
+export function AssignmentBoard({ readOnly = false }: AssignmentBoardProps) {
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const isStaff =
-    profile != null && (STAFF_ROLES as readonly string[]).includes(profile.role);
+    !readOnly &&
+    profile != null &&
+    (STAFF_ROLES as readonly string[]).includes(profile.role);
   const isTeacher = profile?.role === ROLES.TEACHER;
 
   const [items, setItems] = useState<Assignment[] | null>(null);

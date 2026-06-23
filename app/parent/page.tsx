@@ -51,6 +51,14 @@ export const metadata: Metadata = {
     "Çocuğunuzun okul yaşamını, duyurularını ve gelişimini tek ekrandan takip edin.",
 };
 
+const parentActionTargets: Record<string, string> = {
+  mesaj: "#parent-messages",
+  etkinlik: "#parent-events",
+  yemek: "#parent-lunch",
+  rapor: "#parent-reports",
+  servis: "#parent-service",
+};
+
 export default function ParentPage() {
   return (
     <PageShell title="Veli Portalı">
@@ -73,10 +81,10 @@ export default function ParentPage() {
         <ParentSummary />
 
         {/* Okul duyuruları (canlı) */}
-        <AnnouncementBoard />
+        <AnnouncementBoard readOnly />
 
         {/* Ödevler (canlı) */}
-        <AssignmentBoard />
+        <AssignmentBoard readOnly />
 
         {/* Mesajlaşma (canlı) */}
         <MessagingPanel />
@@ -136,7 +144,7 @@ export default function ParentPage() {
             </section>
 
             {/* 5. Etkinlik Takvimi */}
-            <GlassCard tone="navy">
+            <GlassCard id="parent-events" tone="navy">
               <div className="mb-4 flex items-center gap-2">
                 <CalendarDays size={18} className="text-accent" aria-hidden="true" />
                 <h2 className="text-lg font-semibold text-content">Etkinlik Takvimi</h2>
@@ -149,7 +157,7 @@ export default function ParentPage() {
             </GlassCard>
 
             {/* 6. Öğretmen Mesajları */}
-            <GlassCard tone="navy">
+            <GlassCard id="parent-messages" tone="navy">
               <div className="mb-4 flex items-center gap-2">
                 <MessageSquare size={18} className="text-accent" aria-hidden="true" />
                 <h2 className="text-lg font-semibold text-content">Öğretmen Mesajları</h2>
@@ -193,10 +201,12 @@ export default function ParentPage() {
           {/* Sağ kolon (dar) */}
           <div className="flex flex-col gap-6">
             {/* 4. Yemek Listesi */}
-            <LunchMenuCard menu={parentLunchMenu} />
+            <div id="parent-lunch">
+              <LunchMenuCard menu={parentLunchMenu} />
+            </div>
 
             {/* 7. Servis Takibi */}
-            <GlassCard tone="navy">
+            <GlassCard id="parent-service" tone="navy">
               <div className="mb-4 flex items-center gap-2">
                 <Bus size={18} className="text-accent" aria-hidden="true" />
                 <h2 className="text-lg font-semibold text-content">Servis Takibi</h2>
@@ -225,7 +235,7 @@ export default function ParentPage() {
             </GlassCard>
 
             {/* 8. Ödeme ve Finans */}
-            <GlassCard tone="navy">
+            <GlassCard id="parent-reports" tone="navy">
               <div className="mb-4 flex items-center gap-2">
                 <CreditCard size={18} className="text-accent" aria-hidden="true" />
                 <h2 className="text-lg font-semibold text-content">Ödeme ve Finans</h2>
@@ -254,9 +264,9 @@ export default function ParentPage() {
             {parentQuickActions.map((action) => {
               const Icon = action.icon;
               return (
-                <button
+                <Link
                   key={action.id}
-                  type="button"
+                  href={parentActionTargets[action.id] ?? "#"}
                   className="group flex flex-col items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:bg-white/[0.06]"
                 >
                   <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent/20 bg-navy/50 text-accent">
@@ -270,7 +280,7 @@ export default function ParentPage() {
                       aria-hidden="true"
                     />
                   </span>
-                </button>
+                </Link>
               );
             })}
           </div>

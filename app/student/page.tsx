@@ -122,10 +122,10 @@ export default function StudentPage() {
         <StudentProfileCard />
 
         {/* Okul duyuruları (canlı) */}
-        <AnnouncementBoard />
+        <AnnouncementBoard readOnly />
 
         {/* Ödevler (canlı) */}
-        <AssignmentBoard />
+        <AssignmentBoard readOnly />
 
         {/* Mesajlaşma (canlı) */}
         <MessagingPanel />

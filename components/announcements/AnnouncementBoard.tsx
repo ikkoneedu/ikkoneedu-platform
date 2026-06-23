@@ -9,9 +9,10 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import {
   createAnnouncement,
-  listAnnouncements,
-  type Announcement,
+  listAnnouncementsForCurrentUser,
+  type AnnouncementRecord,
 } from "@/lib/services/announcements";
+import { listMyClasses, type ClassRecord } from "@/lib/services/access-codes";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const STAFF_ROLES = [
@@ -35,29 +36,45 @@ function formatDate(date: Date | null): string {
   }).format(date);
 }
 
+interface AnnouncementBoardProps {
+  readOnly?: boolean;
+}
+
 /**
  * Duyuru panosu — tüm tenant üyeleri okur; personel yeni duyuru yazar.
  * Yalnızca giriş yapmış kullanıcı + Firebase aktifken görünür.
  */
-export function AnnouncementBoard() {
+export function AnnouncementBoard({ readOnly = false }: AnnouncementBoardProps) {
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const canPost =
-    profile != null && (STAFF_ROLES as readonly string[]).includes(profile.role);
+    !readOnly &&
+    profile != null &&
+    (STAFF_ROLES as readonly string[]).includes(profile.role);
 
-  const [items, setItems] = useState<Announcement[] | null>(null);
+  const [items, setItems] = useState<AnnouncementRecord[] | null>(null);
+  const [classes, setClasses] = useState<ClassRecord[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [posted, setPosted] = useState(false);
 
   const refresh = useCallback(async () => {
-    if (!tenantId) return;
+    if (!tenantId || !profile) return;
     try {
-      setItems(await listAnnouncements(tenantId));
+      setItems(
+        await listAnnouncementsForCurrentUser(
+          tenantId,
+          profile.role,
+          profile.classId,
+        ),
+      );
+      if (profile.role === ROLES.TEACHER && user) {
+        setClasses(await listMyClasses(tenantId, user.uid));
+      }
     } catch (err) {
       setError(getAuthErrorMessage(err));
     }
-  }, [tenantId]);
+  }, [tenantId, profile, user]);
 
   useEffect(() => {
     if (firebaseReady && tenantId) void refresh();
@@ -70,7 +87,19 @@ export function AnnouncementBoard() {
     const data = new FormData(form);
     const title = String(data.get("title") ?? "").trim();
     const body = String(data.get("body") ?? "").trim();
+    const targetMode = String(data.get("targetMode") ?? "school");
+    const targetClassId = String(data.get("targetClassId") ?? "").trim();
     if (!title || !body) return;
+    if (profile?.role === ROLES.TEACHER && classes.length > 0 && !targetClassId) {
+      setError("Öğretmen duyurusu için hedef sınıf seçin.");
+      return;
+    }
+
+    const selectedClass = classes.find((c) => c.id === targetClassId);
+    const teacherTargets =
+      targetMode === "parents"
+        ? [ROLES.PARENT]
+        : [ROLES.STUDENT, ROLES.PARENT];
 
     setBusy(true);
     setError(null);
@@ -82,6 +111,16 @@ export function AnnouncementBoard() {
         authorName: profile?.displayName ?? "Yetkili",
         title,
         body,
+        targetRoles:
+          profile?.role === ROLES.TEACHER
+            ? teacherTargets
+            : targetMode === "parents"
+              ? [ROLES.PARENT]
+              : [],
+        targetClassIds:
+          profile?.role === ROLES.TEACHER && selectedClass
+            ? [selectedClass.id]
+            : [],
       });
       form.reset();
       setPosted(true);
@@ -105,6 +144,45 @@ export function AnnouncementBoard() {
           </div>
           <form onSubmit={handlePost} className="space-y-3">
             <TextField label="Başlık" name="title" placeholder="Duyuru başlığı" required />
+            {profile.role === ROLES.TEACHER && (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-medium text-muted">Hedef</label>
+                  <select
+                    name="targetMode"
+                    defaultValue="class"
+                    className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                  >
+                    <option value="class" className="bg-surface">
+                      Sınıf + veliler
+                    </option>
+                    <option value="parents" className="bg-surface">
+                      Sadece veliler
+                    </option>
+                  </select>
+                </div>
+                <div className="flex flex-col gap-1.5">
+                  <label className="text-xs font-medium text-muted">Sınıf</label>
+                  <select
+                    name="targetClassId"
+                    defaultValue={classes[0]?.id ?? ""}
+                    className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                  >
+                    {classes.length === 0 ? (
+                      <option value="" className="bg-surface">
+                        Sınıf bulunamadı
+                      </option>
+                    ) : (
+                      classes.map((c) => (
+                        <option key={c.id} value={c.id} className="bg-surface">
+                          {c.name}
+                        </option>
+                      ))
+                    )}
+                  </select>
+                </div>
+              </div>
+            )}
             <div className="flex flex-col gap-1.5">
               <label htmlFor="ann-body" className="text-sm font-medium text-muted">
                 İçerik
