@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV === "development";
+const isVercel = process.env.VERCEL === "1";
+const vercelLiveSource = isVercel ? " https://vercel.live" : "";
 
 /**
  * Content-Security-Policy.
@@ -14,12 +16,12 @@ const isDev = process.env.NODE_ENV === "development";
  */
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}${vercelLiveSource}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   `connect-src 'self' https: wss:${isDev ? " ws:" : ""}`,
-  "frame-src 'self'",
+  `frame-src 'self'${vercelLiveSource}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
