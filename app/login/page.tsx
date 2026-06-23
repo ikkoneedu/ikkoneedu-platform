@@ -26,6 +26,7 @@ import { getHomeRouteForRole } from "@/lib/auth/role-routing";
 import { canRoleAccess } from "@/lib/auth/route-config";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 import { productName, productFullName, tagline } from "@/lib/constants";
+import { firebaseConfig } from "@/lib/firebase/client";
 
 const benefits = [
   { id: "okul", icon: School, text: "Tek platformda okul yönetimi" },
@@ -72,6 +73,22 @@ const DEMO_BUTTONS = [
   { id: "student", label: "Öğrenci Demo", href: "/student", icon: GraduationCap },
 ];
 
+function getFirebaseLoginDiagnostic(error: unknown): string | null {
+  const code = (error as { code?: string })?.code;
+  if (!code) return null;
+
+  const apiKeySuffix = firebaseConfig.apiKey
+    ? `…${firebaseConfig.apiKey.slice(-6)}`
+    : "yok";
+
+  return [
+    `Kod: ${code}`,
+    `Project: ${firebaseConfig.projectId ?? "yok"}`,
+    `Auth domain: ${firebaseConfig.authDomain ?? "yok"}`,
+    `API key: ${apiKeySuffix}`,
+  ].join(" · ");
+}
+
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -92,7 +109,7 @@ function LoginContent() {
 
     const data = new FormData(event.currentTarget);
     const identifier = String(data.get("identifier") ?? "").trim();
-    const password = String(data.get("password") ?? "");
+    const password = String(data.get("password") ?? "").trim();
     const remember = data.get("remember") === "on";
 
     // Firebase bağlı değilse SAHTE giriş yapma; net uyarı ver.
@@ -137,7 +154,12 @@ function LoginContent() {
         safe && canRoleAccess(profile.role, safe) ? safe : home;
       router.push(safeRedirect);
     } catch (err) {
-      setError(getAuthErrorMessage(err));
+      const diagnostic = getFirebaseLoginDiagnostic(err);
+      setError(
+        diagnostic
+          ? `${getAuthErrorMessage(err)} (${diagnostic})`
+          : getAuthErrorMessage(err),
+      );
       setSubmitting(false);
     }
   };

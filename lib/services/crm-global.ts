@@ -24,8 +24,20 @@ import {
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { COLLECTIONS, platformDemoRequests } from "@/lib/firebase/collections";
 
+function getErrorCode(error: unknown): string {
+  return String((error as { code?: unknown })?.code ?? "");
+}
+
+function isPermissionDenied(error: unknown): boolean {
+  return getErrorCode(error) === "permission-denied";
+}
+
 /** Geliştirmede sessiz hataları görünür kılar (üretimde sessiz). */
 function logDevError(context: string, error: unknown): void {
+  if (isPermissionDenied(error)) {
+    return;
+  }
+
   if (process.env.NODE_ENV !== "production") {
     console.error(`[crm-global] ${context}:`, error);
   }
@@ -112,7 +124,11 @@ async function fetchPlatformDemos(): Promise<GlobalCrmEntry[]> {
       };
     });
   } catch (error) {
-    logDevError("platformDemoRequests", error);
+    // SUPER_ADMIN token/profil hazır değilken bu kök koleksiyon bilinçli olarak
+    // reddedilir. Bu beklenen güvenlik davranışı login sorunu gibi görünmesin.
+    if (!isPermissionDenied(error)) {
+      logDevError("platformDemoRequests", error);
+    }
     return [];
   }
 }

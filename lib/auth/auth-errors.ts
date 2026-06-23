@@ -17,6 +17,16 @@ const AUTH_ERROR_MESSAGES: Record<string, string> = {
   "auth/weak-password": "Şifre çok zayıf (en az 6 karakter).",
   "auth/operation-not-allowed":
     "E-posta/şifre girişi Firebase Console'da etkinleştirilmemiş.",
+  "auth/unauthorized-domain":
+    "Bu domain Firebase Authentication > Authorized domains listesinde değil. Vercel domainini Firebase Console'a ekleyip yeniden deneyin.",
+  "auth/api-key-not-valid":
+    "Firebase API anahtarı geçersiz görünüyor. Vercel NEXT_PUBLIC_FIREBASE_* ortam değişkenlerini kontrol edin.",
+  "auth/invalid-api-key":
+    "Firebase API anahtarı geçersiz görünüyor. Vercel NEXT_PUBLIC_FIREBASE_* ortam değişkenlerini kontrol edin.",
+  "auth/project-not-found":
+    "Firebase projesi bulunamadı. Vercel NEXT_PUBLIC_FIREBASE_PROJECT_ID değerini kontrol edin.",
+  "auth/configuration-not-found":
+    "Firebase Authentication yapılandırması bulunamadı. Firebase Console'da Email/Password girişinin açık olduğundan ve doğru projeye bağlı olduğunuzdan emin olun.",
 };
 
 interface FirebaseLikeError {
