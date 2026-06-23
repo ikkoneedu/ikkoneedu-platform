@@ -10,11 +10,13 @@ import { ForcePasswordChange } from "@/components/auth/ForcePasswordChange";
 import { getRequiredRoles, isPublicRoute } from "@/lib/auth/route-config";
 import { getHomeRouteForRole } from "@/lib/auth/role-routing";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 /**
  * Rol bazlı route koruması (client-side).
  *
  * Korumalı panel segmentlerine `layout.tsx` ile uygulanır:
- * - Firebase env yoksa (Mock Mod) içerik doğrudan render edilir (mevcut akış korunur).
+ * - Firebase env yoksa dev'de Mock Mod korunur; production'da panel kilitlenir.
  * - Oturum yoksa /login'e yönlendirir.
  * - Profil yoksa yetki uyarısı gösterir.
  * - Rol bu route için yetkili değilse 403 ekranı gösterir (kendi paneline link).
@@ -43,8 +45,20 @@ export function RoleGuard({ children }: { children: ReactNode }) {
   // Halka açık yol: doğrudan render et (oturum gerektirmez).
   if (publicRoute) return <>{children}</>;
 
-  // Mock Mod: koruma uygulanmaz (mevcut demo akışı korunur).
-  if (!firebaseReady) return <>{children}</>;
+  // Mock Mod: geliştirmede mevcut demo akışı korunur; production'da güvenli
+  // başarısız ol. Böylece eksik Firebase env ile deploy edilen korumalı paneller
+  // yanlışlıkla herkese açık render edilmez.
+  if (!firebaseReady) {
+    if (!isProduction) return <>{children}</>;
+    return (
+      <GuardNotice
+        title="Firebase yapılandırması eksik"
+        message="Bu korumalı panel production ortamında Firebase Auth yapılandırması olmadan açılamaz. Lütfen ortam değişkenlerini tamamlayıp tekrar deneyin."
+        homeRoute="/"
+        homeLabel="Ana sayfaya dön"
+      />
+    );
+  }
 
   if (loading) {
     return (
