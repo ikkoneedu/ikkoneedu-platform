@@ -6,11 +6,13 @@ import { ROLE_PERMISSIONS } from "@/lib/auth/roles";
 import type { Permission } from "@/lib/auth/permissions";
 import type { Role } from "@/lib/auth/role-constants";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 /** Mevcut kullanıcının belirli bir izni var mı? */
 export function useHasPermission(permission: Permission): boolean {
   const { profile, firebaseReady } = useAuth();
-  // Mock Mod: izin kontrolü uygulanmaz (mevcut akış korunur).
-  if (!firebaseReady) return true;
+  // Mock Mod: dev'de mevcut akış korunur; production'da güvenli başarısız ol.
+  if (!firebaseReady) return !isProduction;
   if (!profile) return false;
   return ROLE_PERMISSIONS[profile.role]?.includes(permission) ?? false;
 }
@@ -18,7 +20,7 @@ export function useHasPermission(permission: Permission): boolean {
 /** Mevcut kullanıcının rolü verilen roller arasında mı? */
 export function useHasRole(roles: Role[]): boolean {
   const { profile, firebaseReady } = useAuth();
-  if (!firebaseReady) return true;
+  if (!firebaseReady) return !isProduction;
   if (!profile) return false;
   return roles.includes(profile.role);
 }
