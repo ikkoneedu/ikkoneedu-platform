@@ -4,28 +4,14 @@ import { Zap, ArrowRight } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { GlassCard } from "@/components/shared/GlassCard";
-import { CrmMetrics } from "@/components/crm/CrmMetrics";
+import { RealCrmMetrics } from "@/components/crm/RealCrmMetrics";
 import { RealLeadPipeline } from "@/components/crm/RealLeadPipeline";
-import { LeadDetails } from "@/components/crm/LeadDetails";
-import { LeadSources } from "@/components/crm/LeadSources";
-import { Appointments } from "@/components/crm/Appointments";
-import { AiCrmInsights } from "@/components/crm/AiCrmInsights";
-import { TaskCenter } from "@/components/crm/TaskCenter";
-import { RevenueForecast } from "@/components/crm/RevenueForecast";
+import { RealLeadSources } from "@/components/crm/RealLeadSources";
 import { NewLeadForm } from "@/components/crm/NewLeadForm";
 import { CrmInbox } from "@/components/crm/CrmInbox";
 import { AppointmentManager } from "@/components/crm/AppointmentManager";
 import { productName } from "@/lib/constants";
-import {
-  crmMetrics,
-  leadDetail,
-  leadSources,
-  crmAppointments,
-  crmAiInsights,
-  taskGroups,
-  crmForecast,
-  crmActions,
-} from "@/lib/crm-mock-data";
+import { crmActions } from "@/lib/crm-mock-data";
 
 export const metadata: Metadata = {
   title: `CRM & Lead Yönetimi — ${productName}`,
@@ -76,41 +62,26 @@ export default function CrmPage() {
           description="Aday velileri, görüşmeleri ve kayıt süreçlerini tek merkezden yönetin."
         />
 
+        {/* Genel metrikler — GERÇEK (lead + randevu sayımları, tenant izole) */}
+        <RealCrmMetrics />
+
         {/* Gerçek gelen kutusu — bursluluk başvuruları + lead'ler (canlı) */}
         <CrmInbox />
 
-        {/* Randevular (canlı — pipeline APPOINTMENT aşaması) */}
-        <AppointmentManager />
-
-        {/* 2. Metrikler */}
-        <CrmMetrics metrics={crmMetrics} />
-
-        {/* 3. Yeni lead ekle (Firestore'a hazır) */}
+        {/* Yeni lead ekle (Firestore'a yazar) */}
         <NewLeadForm />
 
-        {/* 4. Pipeline — GERÇEK Firestore lead'leri (tenant izole) */}
+        {/* Pipeline — GERÇEK Firestore lead'leri (tenant izole) */}
         <RealLeadPipeline />
 
-        {/* 4 + 5. Lead detay ve kaynaklar */}
+        {/* Lead kaynakları (gerçek) + randevu yönetimi (gerçek) */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <LeadDetails lead={leadDetail} />
-          <LeadSources sources={leadSources} />
-        </div>
-
-        {/* 6. Randevu yönetimi */}
-        <Appointments appointments={crmAppointments} />
-
-        {/* 7. AI içgörüleri */}
-        <AiCrmInsights insights={crmAiInsights} />
-
-        {/* 8. Görev merkezi */}
-        <TaskCenter groups={taskGroups} />
-
-        {/* 9 + 10. Hızlı işlemler ve kayıt tahmini */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <RealLeadSources />
           <CrmQuickActions />
-          <RevenueForecast forecast={crmForecast} />
         </div>
+
+        {/* Randevu yönetimi — GERÇEK Firestore (aday veli görüşmeleri) */}
+        <AppointmentManager />
       </div>
     </PageShell>
   );
