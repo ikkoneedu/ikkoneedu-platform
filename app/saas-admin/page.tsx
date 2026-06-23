@@ -1,34 +1,15 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
-import { SaasOverview } from "@/components/saas/SaasOverview";
+import { RealSaasOverview } from "@/components/saas/RealSaasOverview";
 import { DemoRequestsInbox } from "@/components/saas/DemoRequestsInbox";
 import { PlatformLeadsInbox } from "@/components/saas/PlatformLeadsInbox";
 import { TenantManagement } from "@/components/saas/TenantManagement";
-import { SchoolTable } from "@/components/saas/SchoolTable";
+import { RealSchoolTable } from "@/components/saas/RealSchoolTable";
 import { NewSchoolForm } from "@/components/saas/NewSchoolForm";
-import { SubscriptionCards } from "@/components/saas/SubscriptionCards";
-import { RevenueAnalytics } from "@/components/saas/RevenueAnalytics";
-import { AiUsageAnalytics } from "@/components/saas/AiUsageAnalytics";
-import { TenantArchitecture } from "@/components/saas/TenantArchitecture";
-import { LicenseTable } from "@/components/saas/LicenseTable";
-import { PlatformHealth } from "@/components/saas/PlatformHealth";
 import { VisionCard } from "@/components/saas/VisionCard";
 import { productName } from "@/lib/constants";
-import {
-  saasOverviewMetrics,
-  saasSchools,
-  saasPlanTypes,
-  saasSubscriptions,
-  saasRevenueByMonth,
-  saasRevenueMetrics,
-  saasAiUsage,
-  saasTenants,
-  saasTenantFeatures,
-  saasLicenses,
-  saasPlatformHealth,
-  saasVisionTiers,
-} from "@/lib/saas-mock-data";
+import { saasPlanTypes, saasVisionTiers } from "@/lib/saas-mock-data";
 
 export const metadata: Metadata = {
   title: `SaaS Yönetim Merkezi — ${productName}`,
@@ -46,6 +27,9 @@ export default function SaasAdminPage() {
           description="Tüm okulları, abonelikleri, kullanıcıları ve yapay zeka kullanımını tek merkezden yönetin."
         />
 
+        {/* Genel durum — GERÇEK (okul/lead/demo sayımları) */}
+        <RealSaasOverview />
+
         {/* Demo talepleri — gerçek Firestore (canlı) */}
         <DemoRequestsInbox />
 
@@ -55,42 +39,13 @@ export default function SaasAdminPage() {
         {/* Tenant onboarding + tenant/okul/admin yönetimi (gerçek Firestore) */}
         <TenantManagement />
 
-        {/* 1. Genel durum */}
-        <SaasOverview metrics={saasOverviewMetrics} />
+        {/* Okullar listesi — GERÇEK Firestore (kök schools) */}
+        <RealSchoolTable />
 
-        {/* 2. Okullar listesi */}
-        <SchoolTable schools={saasSchools} />
-
-        {/* 3. Yeni okul ekle */}
+        {/* Yeni okul ekle (gerçek Firestore'a yazar) */}
         <NewSchoolForm plans={saasPlanTypes} />
 
-        {/* 4. Abonelik yönetimi */}
-        <section>
-          <h2 className="mb-4 text-lg font-semibold text-content">
-            Abonelik Yönetimi
-          </h2>
-          <SubscriptionCards subscriptions={saasSubscriptions} />
-        </section>
-
-        {/* 5. Gelir analitiği */}
-        <RevenueAnalytics
-          revenueByMonth={saasRevenueByMonth}
-          metrics={saasRevenueMetrics}
-        />
-
-        {/* 6. AI kullanım analitiği */}
-        <AiUsageAnalytics usage={saasAiUsage} />
-
-        {/* 7. Tenant yönetimi */}
-        <TenantArchitecture tenants={saasTenants} features={saasTenantFeatures} />
-
-        {/* 8. Lisans ve paket durumu */}
-        <LicenseTable licenses={saasLicenses} />
-
-        {/* 9. Platform sağlığı */}
-        <PlatformHealth metrics={saasPlatformHealth} />
-
-        {/* 10. Gelecek vizyonu */}
+        {/* Gelecek vizyonu (bilgilendirici — abonelik/gelir/AI fazları sonra) */}
         <VisionCard tiers={saasVisionTiers} />
       </div>
     </PageShell>
