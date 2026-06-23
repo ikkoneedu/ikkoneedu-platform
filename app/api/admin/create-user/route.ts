@@ -200,5 +200,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Profil yazılamadı; işlem geri alındı." }, { status: 500 });
   }
 
+  // Custom claims (role + tenantId + schoolId) → kullanıcı token'ında taşınır.
+  // En iyi çaba: profil zaten kayıtlı (kurallar profil get() ile çalışır), bu
+  // yüzden claim atama başarısız olsa bile hesap çalışır; sonraki girişte/token
+  // yenilemesinde claim etkin olur. Hatada işlemi BAŞARISIZ saymayız.
+  try {
+    await adminAuth.setCustomUserClaims(uid, { role, tenantId, schoolId });
+  } catch {
+    /* claim atanamadıysa profil otoritedir; sessizce devam */
+  }
+
   return NextResponse.json({ ok: true, mode: "created", uid, email, tempPassword: password });
 }
