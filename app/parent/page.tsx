@@ -254,9 +254,9 @@ export default function ParentPage() {
             {parentQuickActions.map((action) => {
               const Icon = action.icon;
               return (
-                <button
+                <Link
                   key={action.id}
-                  type="button"
+                  href={action.href ?? "/coming-soon"}
                   className="group flex flex-col items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:bg-white/[0.06]"
                 >
                   <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent/20 bg-navy/50 text-accent">
@@ -270,7 +270,7 @@ export default function ParentPage() {
                       aria-hidden="true"
                     />
                   </span>
-                </button>
+                </Link>
               );
             })}
           </div>

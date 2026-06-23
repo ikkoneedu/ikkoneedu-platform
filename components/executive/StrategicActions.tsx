@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowRight, Target } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import type { StrategicAction } from "@/lib/executive-mock-data";
@@ -19,9 +20,9 @@ export function StrategicActions({ actions }: StrategicActionsProps) {
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {actions.map((action) => (
-          <button
+          <Link
             key={action.id}
-            type="button"
+            href={action.href ?? "/coming-soon"}
             className="group flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:bg-white/[0.06]"
           >
             <span className="text-sm font-medium text-content">{action.label}</span>
@@ -30,7 +31,7 @@ export function StrategicActions({ actions }: StrategicActionsProps) {
               className="shrink-0 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-accent"
               aria-hidden="true"
             />
-          </button>
+          </Link>
         ))}
       </div>
     </GlassCard>

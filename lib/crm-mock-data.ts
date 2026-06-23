@@ -204,13 +204,15 @@ export interface CrmAction {
   id: string;
   label: string;
   icon: LucideIcon;
+  /** Varsa gerçek hedef route; yoksa render tarafı /coming-soon kullanır. */
+  href?: string;
 }
 
 export const crmActions: CrmAction[] = [
   { id: "lead", label: "Yeni Lead Ekle", icon: UserPlus },
   { id: "randevu", label: "Randevu Oluştur", icon: CalendarClock },
-  { id: "whatsapp", label: "WhatsApp Gönder", icon: MessageCircle },
-  { id: "eposta", label: "E-posta Hazırla", icon: Mail },
+  { id: "whatsapp", label: "WhatsApp Gönder", icon: MessageCircle, href: "/messages" },
+  { id: "eposta", label: "E-posta Hazırla", icon: Mail, href: "/messages" },
   { id: "rapor", label: "CRM Raporu Al", icon: FileText },
 ];
 

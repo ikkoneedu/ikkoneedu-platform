@@ -678,10 +678,12 @@ export interface QuickAction {
   id: string;
   label: string;
   icon: LucideIcon;
+  /** Varsa gerçek hedef route; yoksa render tarafı /coming-soon kullanır. */
+  href?: string;
 }
 
 export const parentQuickActions: QuickAction[] = [
-  { id: "mesaj", label: "Öğretmene Mesaj Gönder", icon: MessageSquare },
+  { id: "mesaj", label: "Öğretmene Mesaj Gönder", icon: MessageSquare, href: "/messages" },
   { id: "etkinlik", label: "Etkinliğe Katıl", icon: CalendarCheck },
   { id: "yemek", label: "Yemek Listesini Gör", icon: UtensilsCrossed },
   { id: "rapor", label: "Raporları İncele", icon: FileText },
@@ -791,11 +793,11 @@ export const teacherParentMessages: TeacherMessage[] = [
 ];
 
 export const teacherQuickActions: QuickAction[] = [
-  { id: "yoklama", label: "Yoklama Al", icon: ClipboardCheck },
+  { id: "yoklama", label: "Yoklama Al", icon: ClipboardCheck, href: "/teacher/classes" },
   { id: "odev", label: "Ödev Ver", icon: FilePlus },
   { id: "sinav", label: "Sınav Oluştur", icon: FileText },
   { id: "ders-plani", label: "Ders Planı Hazırla", icon: CalendarDays },
-  { id: "veli-mesaj", label: "Veliye Mesaj Gönder", icon: MessageSquare },
+  { id: "veli-mesaj", label: "Veliye Mesaj Gönder", icon: MessageSquare, href: "/messages" },
   { id: "karne", label: "Karne Yorumu Yaz", icon: PenLine },
 ];
 

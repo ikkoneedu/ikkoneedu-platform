@@ -188,13 +188,15 @@ export const executiveInsights: string[] = [
 export interface StrategicAction {
   id: string;
   label: string;
+  /** Varsa gerçek hedef route; yoksa render tarafı /coming-soon kullanır. */
+  href?: string;
 }
 
 export const strategicActions: StrategicAction[] = [
   { id: "kayit", label: "Kayıt Raporunu İncele" },
   { id: "memnuniyet", label: "Veli Memnuniyet Raporu" },
   { id: "ai", label: "AI Kullanım Raporu" },
-  { id: "finans", label: "Finansal Rapor" },
+  { id: "finans", label: "Finansal Rapor", href: "/finance" },
   { id: "kampus", label: "Kampüs Karşılaştırması" },
   { id: "sunum", label: "Yönetim Sunumu Oluştur" },
 ];

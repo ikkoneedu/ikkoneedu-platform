@@ -45,28 +45,20 @@ function CrmQuickActions() {
       <div className="grid grid-cols-1 gap-3">
         {crmActions.map((action) => {
           const Icon = action.icon;
-          // Mesajlaşma aksiyonları Message Center'a yönlendirir.
-          const messagingHref =
-            action.id === "whatsapp" || action.id === "eposta" ? "/messages" : undefined;
-          const inner = (
-            <>
+          const className =
+            "group flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3.5 text-left transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:bg-white/[0.06]";
+          return (
+            <Link
+              key={action.id}
+              href={action.href ?? "/coming-soon"}
+              className={className}
+            >
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-accent/20 bg-navy/50 text-accent">
                 <Icon size={18} aria-hidden="true" />
               </span>
               <span className="flex-1 text-sm font-medium text-content">{action.label}</span>
               <ArrowRight size={15} className="shrink-0 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-accent" aria-hidden="true" />
-            </>
-          );
-          const className =
-            "group flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3.5 text-left transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:bg-white/[0.06]";
-          return messagingHref ? (
-            <Link key={action.id} href={messagingHref} className={className}>
-              {inner}
             </Link>
-          ) : (
-            <button key={action.id} type="button" className={className}>
-              {inner}
-            </button>
           );
         })}
       </div>

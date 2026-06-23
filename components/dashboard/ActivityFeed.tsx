@@ -19,13 +19,13 @@ export function ActivityFeed({ title, items }: ActivityFeedProps) {
     <GlassCard tone="navy" className="flex h-full flex-col">
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-xl font-semibold text-content">{title}</h2>
-        <button
-          type="button"
-          aria-label="Daha fazla"
+        <Link
+          href="/notifications"
+          aria-label="Tüm aktiviteler"
           className="text-muted transition-colors hover:text-accent"
         >
           <MoreHorizontal size={20} aria-hidden="true" />
-        </button>
+        </Link>
       </div>
 
       <ul className="flex-1 space-y-4">

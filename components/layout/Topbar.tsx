@@ -25,13 +25,14 @@ interface TopbarProps {
 function DefaultActions() {
   return (
     <>
-      <button
-        type="button"
-        aria-label="Ara"
+      <Link
+        href="/coming-soon"
+        aria-label="Ara (yakında)"
+        title="Arama yakında"
         className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-muted transition-colors hover:bg-white/[0.08] hover:text-content"
       >
         <Search size={18} aria-hidden="true" />
-      </button>
+      </Link>
       <Link
         href="/notifications"
         aria-label="Bildirimler"
