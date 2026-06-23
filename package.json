@@ -10,6 +10,7 @@
     "firebase:check": "node scripts/firebase-check.mjs",
     "firebase:create-admin-profile": "node scripts/create-admin-profile.mjs",
     "firebase:set-claims": "node scripts/set-claims.mjs",
+    "firebase:set-password": "node scripts/set-password.mjs",
     "firebase:import-sa": "node scripts/import-service-account.mjs"
   },
   "dependencies": {
