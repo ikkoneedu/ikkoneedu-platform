@@ -22,6 +22,8 @@ import {
   Copy,
   X,
   CheckCircle2,
+  Pencil,
+  Save,
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -31,27 +33,34 @@ import { ROLES } from "@/lib/auth/role-constants";
 import {
   listStudents,
   createStudent,
+  updateStudent,
   deactivateStudent,
   assignStudentToClass,
+  removeStudentFromClass,
   type StudentRecord,
 } from "@/lib/services/students";
 import {
   listParents,
   createParent,
+  updateParent,
   deactivateParent,
   linkParentToStudent,
+  unlinkParentFromStudent,
   type ParentRecord,
 } from "@/lib/services/parents";
 import {
   listTeachers,
   createTeacher,
+  updateTeacher,
   deactivateTeacher,
   assignTeacherToClass,
+  removeTeacherFromClass,
   type TeacherRecord,
 } from "@/lib/services/teachers";
 import {
   listClasses,
   createClass,
+  updateClass,
   archiveClass,
   type SchoolClass,
 } from "@/lib/services/classes";
@@ -144,6 +153,12 @@ export function SchoolRecordsManager() {
   const [acctResult, setAcctResult] = useState<ProvisionResult | null>(null);
   const [acctCopied, setAcctCopied] = useState(false);
 
+  // Kayıt düzenleme modalı.
+  const [edit, setEdit] = useState<{
+    kind: "student" | "parent" | "teacher" | "class";
+    id: string;
+  } | null>(null);
+
   const refresh = useCallback(async () => {
     if (!tenantId) return;
     setRefreshing(true);
@@ -222,6 +237,37 @@ export function SchoolRecordsManager() {
       setAcctBusy(false);
     }
   };
+
+  const saveEdit = (patch: Record<string, string>) =>
+    run(async () => {
+      if (!edit || !tenantId) return;
+      if (edit.kind === "student") {
+        await updateStudent(tenantId, edit.id, {
+          firstName: patch.firstName,
+          lastName: patch.lastName,
+          studentNo: patch.studentNo,
+          grade: patch.grade,
+        });
+      } else if (edit.kind === "parent") {
+        await updateParent(tenantId, edit.id, {
+          firstName: patch.firstName,
+          lastName: patch.lastName,
+          phone: patch.phone,
+          email: patch.email,
+        });
+      } else if (edit.kind === "teacher") {
+        await updateTeacher(tenantId, edit.id, {
+          firstName: patch.firstName,
+          lastName: patch.lastName,
+          branch: patch.branch,
+          phone: patch.phone,
+          email: patch.email,
+        });
+      } else {
+        await updateClass(tenantId, edit.id, { name: patch.name, grade: patch.grade });
+      }
+      setEdit(null);
+    });
 
   const run = async (fn: () => Promise<unknown>) => {
     if (busy) return;
@@ -408,21 +454,25 @@ export function SchoolRecordsManager() {
                           <select
                             value={s.classId}
                             disabled={busy}
-                            onChange={(e) =>
+                            onChange={(e) => {
+                              const cid = e.target.value;
                               void run(() =>
-                                assignStudentToClass(tenantId, s.id, e.target.value),
-                              )
-                            }
+                                cid
+                                  ? assignStudentToClass(tenantId, s.id, cid)
+                                  : removeStudentFromClass(tenantId, s.id),
+                              );
+                            }}
                             className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
                             aria-label="Sınıf ata"
                           >
-                            <option value="" className="bg-surface">Sınıf seç…</option>
+                            <option value="" className="bg-surface">Sınıfsız</option>
                             {activeClasses.map((c) => (
                               <option key={c.id} value={c.id} className="bg-surface">
                                 {c.name}
                               </option>
                             ))}
                           </select>
+                          <EditButton onClick={() => setEdit({ kind: "student", id: s.id })} />
                           {acctButton("student", s.id, s.fullName, "", s.userId)}
                           {s.status === "active" && (
                             <button
@@ -514,6 +564,7 @@ export function SchoolRecordsManager() {
                                 </option>
                               ))}
                           </select>
+                          <EditButton onClick={() => setEdit({ kind: "parent", id: p.id })} />
                           {acctButton("parent", p.id, p.fullName, p.email, p.userId)}
                           {p.status === "active" && (
                             <button
@@ -524,6 +575,29 @@ export function SchoolRecordsManager() {
                             >
                               <UserMinus size={13} aria-hidden="true" /> Pasifleştir
                             </button>
+                          )}
+                          {p.linkedStudentIds.length > 0 && (
+                            <div className="flex w-full flex-wrap gap-1.5">
+                              {p.linkedStudentIds.map((sid) => (
+                                <span
+                                  key={sid}
+                                  className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/[0.03] px-2 py-0.5 text-xs text-muted"
+                                >
+                                  {students.find((s) => s.id === sid)?.fullName || sid}
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      void run(() => unlinkParentFromStudent(tenantId, p.id, sid))
+                                    }
+                                    disabled={busy}
+                                    aria-label="Bağı kaldır"
+                                    className="text-muted transition hover:text-brand"
+                                  >
+                                    <X size={11} aria-hidden="true" />
+                                  </button>
+                                </span>
+                              ))}
+                            </div>
                           )}
                         </li>
                       ))}
@@ -609,6 +683,7 @@ export function SchoolRecordsManager() {
                                 </option>
                               ))}
                           </select>
+                          <EditButton onClick={() => setEdit({ kind: "teacher", id: t.id })} />
                           {acctButton("teacher", t.id, t.fullName, t.email, t.userId)}
                           {t.status === "active" && (
                             <button
@@ -619,6 +694,29 @@ export function SchoolRecordsManager() {
                             >
                               <UserMinus size={13} aria-hidden="true" /> Pasifleştir
                             </button>
+                          )}
+                          {t.classIds.length > 0 && (
+                            <div className="flex w-full flex-wrap gap-1.5">
+                              {t.classIds.map((cid) => (
+                                <span
+                                  key={cid}
+                                  className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/[0.03] px-2 py-0.5 text-xs text-muted"
+                                >
+                                  {className(cid)}
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      void run(() => removeTeacherFromClass(tenantId, t.id, cid))
+                                    }
+                                    disabled={busy}
+                                    aria-label="Sınıftan çıkar"
+                                    className="text-muted transition hover:text-brand"
+                                  >
+                                    <X size={11} aria-hidden="true" />
+                                  </button>
+                                </span>
+                              ))}
+                            </div>
                           )}
                         </li>
                       ))}
@@ -683,6 +781,9 @@ export function SchoolRecordsManager() {
                           </span>
                         </span>
                         <StatusBadge status={c.status} />
+                        {c.status !== "archived" && (
+                          <EditButton onClick={() => setEdit({ kind: "class", id: c.id })} />
+                        )}
                         {c.status !== "archived" && (
                           <button
                             type="button"
@@ -815,6 +916,140 @@ export function SchoolRecordsManager() {
           </div>
         </div>
       )}
+
+      {/* Kayıt düzenleme modalı */}
+      {edit && (
+        <RecordEditModal
+          kind={edit.kind}
+          record={
+            edit.kind === "student"
+              ? students.find((s) => s.id === edit.id)
+              : edit.kind === "parent"
+                ? parents.find((p) => p.id === edit.id)
+                : edit.kind === "teacher"
+                  ? teachers.find((t) => t.id === edit.id)
+                  : classes.find((c) => c.id === edit.id)
+          }
+          busy={busy}
+          onClose={() => setEdit(null)}
+          onSave={saveEdit}
+        />
+      )}
+    </div>
+  );
+}
+
+function EditButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label="Düzenle"
+      className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-white/10 px-2 py-1 text-xs text-muted transition hover:text-content"
+    >
+      <Pencil size={13} aria-hidden="true" /> Düzenle
+    </button>
+  );
+}
+
+interface AnyRecord {
+  firstName?: string;
+  lastName?: string;
+  studentNo?: string;
+  grade?: string;
+  phone?: string;
+  email?: string;
+  branch?: string;
+  name?: string;
+}
+
+function RecordEditModal({
+  kind,
+  record,
+  busy,
+  onClose,
+  onSave,
+}: {
+  kind: "student" | "parent" | "teacher" | "class";
+  record: AnyRecord | undefined;
+  busy: boolean;
+  onClose: () => void;
+  onSave: (patch: Record<string, string>) => void;
+}) {
+  const [v, setV] = useState<Record<string, string>>(() => ({
+    firstName: record?.firstName ?? "",
+    lastName: record?.lastName ?? "",
+    studentNo: record?.studentNo ?? "",
+    grade: record?.grade ?? "",
+    phone: record?.phone ?? "",
+    email: record?.email ?? "",
+    branch: record?.branch ?? "",
+    name: record?.name ?? "",
+  }));
+  if (!record) return null;
+  const set = (k: string, val: string) => setV((p) => ({ ...p, [k]: val }));
+
+  const titles: Record<string, string> = {
+    student: "Öğrenci Düzenle",
+    parent: "Veli Düzenle",
+    teacher: "Öğretmen Düzenle",
+    class: "Sınıf Düzenle",
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-surface p-5 shadow-2xl">
+        <div className="mb-4 flex items-center gap-2">
+          <Pencil size={18} className="text-accent" aria-hidden="true" />
+          <h3 className="text-base font-semibold text-content">{titles[kind]}</h3>
+          <button
+            type="button"
+            onClick={onClose}
+            className="ml-auto text-muted transition hover:text-content"
+            aria-label="Kapat"
+          >
+            <X size={18} aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {kind === "class" ? (
+            <>
+              <TextField label="Sınıf Adı" name="name" value={v.name} onChange={(e) => set("name", e.target.value)} />
+              <TextField label="Kademe" name="grade" value={v.grade} onChange={(e) => set("grade", e.target.value)} />
+            </>
+          ) : (
+            <>
+              <TextField label="Ad" name="firstName" value={v.firstName} onChange={(e) => set("firstName", e.target.value)} />
+              <TextField label="Soyad" name="lastName" value={v.lastName} onChange={(e) => set("lastName", e.target.value)} />
+              {kind === "student" && (
+                <>
+                  <TextField label="Öğrenci No" name="studentNo" value={v.studentNo} onChange={(e) => set("studentNo", e.target.value)} />
+                  <TextField label="Kademe" name="grade" value={v.grade} onChange={(e) => set("grade", e.target.value)} />
+                </>
+              )}
+              {kind === "teacher" && (
+                <TextField label="Branş" name="branch" value={v.branch} onChange={(e) => set("branch", e.target.value)} />
+              )}
+              {(kind === "parent" || kind === "teacher") && (
+                <>
+                  <TextField label="Telefon" name="phone" value={v.phone} onChange={(e) => set("phone", e.target.value)} />
+                  <TextField label="E-posta" name="email" type="email" value={v.email} onChange={(e) => set("email", e.target.value)} />
+                </>
+              )}
+            </>
+          )}
+        </div>
+
+        <div className="mt-4 flex justify-end gap-2">
+          <PrimaryButton type="button" variant="secondary" size="sm" onClick={onClose} disabled={busy}>
+            Vazgeç
+          </PrimaryButton>
+          <PrimaryButton type="button" size="sm" onClick={() => onSave(v)} disabled={busy}>
+            <Save size={15} aria-hidden="true" /> Kaydet
+          </PrimaryButton>
+        </div>
+      </div>
     </div>
   );
 }
