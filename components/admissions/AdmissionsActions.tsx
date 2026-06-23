@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Zap, ArrowRight } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import type { AdmissionsAction } from "@/lib/admissions-ai-mock-data";
@@ -21,9 +22,9 @@ export function AdmissionsActions({ actions }: AdmissionsActionsProps) {
         {actions.map((action) => {
           const Icon = action.icon;
           return (
-            <button
+            <Link
               key={action.id}
-              type="button"
+              href={action.href ?? "/coming-soon"}
               className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:bg-white/[0.06]"
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-navy/50 text-accent">
@@ -35,7 +36,7 @@ export function AdmissionsActions({ actions }: AdmissionsActionsProps) {
                 className="shrink-0 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-accent"
                 aria-hidden="true"
               />
-            </button>
+            </Link>
           );
         })}
       </div>

@@ -137,12 +137,14 @@ export interface AdmissionsAction {
   id: string;
   label: string;
   icon: LucideIcon;
+  /** Varsa gerçek hedef route; yoksa render tarafı /coming-soon kullanır. */
+  href?: string;
 }
 
 export const admissionsActions: AdmissionsAction[] = [
-  { id: "lead", label: "Yeni Lead Ekle", icon: UserPlus },
+  { id: "lead", label: "Yeni Lead Ekle", icon: UserPlus, href: "/crm" },
   { id: "randevu", label: "Randevu Oluştur", icon: CalendarPlus },
-  { id: "whatsapp", label: "WhatsApp Mesajı Hazırla", icon: MessageCircle },
-  { id: "eposta", label: "Veliye E-posta Taslağı Oluştur", icon: Mail },
+  { id: "whatsapp", label: "WhatsApp Mesajı Hazırla", icon: MessageCircle, href: "/messages" },
+  { id: "eposta", label: "Veliye E-posta Taslağı Oluştur", icon: Mail, href: "/messages" },
   { id: "rapor", label: "Kayıt Raporu Al", icon: FileText },
 ];
