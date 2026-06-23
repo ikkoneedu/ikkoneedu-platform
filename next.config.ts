@@ -52,6 +52,21 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  /**
+   * Sunucu-yalnızca ağır paketler bundle EDİLMEZ ve output file tracing'e
+   * sokulmaz. firebase-admin → @google-cloud/* (grpc/gax) zinciri devasadır;
+   * trace toplama (build sonu) bu yüzden takılır/çok yavaşlar. Bunları external
+   * bırakmak üretim build'ini stabilize eder. (Yalnızca API route'larda,
+   * Node runtime'da require edilirler.)
+   */
+  serverExternalPackages: [
+    "firebase-admin",
+    "@google-cloud/firestore",
+    "@google-cloud/storage",
+    "google-gax",
+    "@grpc/grpc-js",
+    "protobufjs",
+  ],
   async headers() {
     return [
       {

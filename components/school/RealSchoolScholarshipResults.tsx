@@ -55,7 +55,7 @@ function Lookup({ tenantId, schoolName }: { tenantId: string; schoolName: string
     setResult(null);
     setNotFound(false);
     try {
-      const r = await getPublicScholarshipResult(tenantId, applicationNo);
+      const r = await getPublicScholarshipResult(tenantId, applicationNo, tc);
       if (r && (r.scholarshipRate || r.examScore)) setResult(r);
       else setNotFound(true);
     } catch {

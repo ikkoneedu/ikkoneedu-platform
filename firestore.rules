@@ -101,6 +101,17 @@ service cloud.firestore {
             || myRole() == 'PR' || myRole() == 'SUPER_ADMIN');
     }
 
+    // CRM (lead/randevu) yetkisi: yönetim + koordinatör + SALES + PR + SUPPORT.
+    // PARENT/STUDENT/sıradan TEACHER HARİÇ.
+    function canAccessCrm() {
+      return isActiveUser()
+        && (myRole() == 'SCHOOL_ADMIN' || myRole() == 'FOUNDER'
+            || myRole() == 'PRINCIPAL' || myRole() == 'VICE_PRINCIPAL'
+            || myRole() == 'COORDINATOR' || myRole() == 'SALES'
+            || myRole() == 'PR' || myRole() == 'SUPPORT'
+            || myRole() == 'SUPER_ADMIN');
+    }
+
     // Üst yönetim rolleri — yetki yükseltme engellerinde kullanılır.
     function isManagementRole(role) {
       return role == 'SUPER_ADMIN' || role == 'FOUNDER' || role == 'SCHOOL_ADMIN';
@@ -232,20 +243,13 @@ service cloud.firestore {
       // ANCAK rol/tenant/status'ü değiştiremez.
       allow update: if isSuperAdmin()
         || (
-          // Kullanıcı kendi profilini günceller AMA kritik/bağ alanlarını
-          // DEĞİŞTİREMEZ (yetki yükseltme önlenir): rol, tenant, schoolId, status
-          // ve linked* / classId(s) alanları yalnız yönetici tarafından set edilir.
+          // Kullanıcı kendi profilini günceller AMA YALNIZCA güvenli alanları
+          // değiştirebilir (allow-list). role/tenantId/schoolId/status/linked*/
+          // classId(s)/permissions vb. yetki-kritik alanlara dokunulamaz; yeni
+          // rastgele alan da eklenemez (affectedKeys hasOnly).
           isSelf(uid)
-          && request.resource.data.role == resource.data.role
-          && request.resource.data.tenantId == resource.data.tenantId
-          && request.resource.data.status == resource.data.status
-          && request.resource.data.get('schoolId', '') == resource.data.get('schoolId', '')
-          && request.resource.data.get('linkedStudentIds', []) == resource.data.get('linkedStudentIds', [])
-          && request.resource.data.get('linkedParentId', '') == resource.data.get('linkedParentId', '')
-          && request.resource.data.get('linkedTeacherId', '') == resource.data.get('linkedTeacherId', '')
-          && request.resource.data.get('linkedStudentId', '') == resource.data.get('linkedStudentId', '')
-          && request.resource.data.get('classId', '') == resource.data.get('classId', '')
-          && request.resource.data.get('classIds', []) == resource.data.get('classIds', [])
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['displayName', 'phone', 'photoURL', 'mustChangePassword', 'updatedAt'])
         )
         || (
           // Okul yönetimi (kurucu/okul yön./müdür) kendi tenant'ındaki bir
@@ -329,24 +333,28 @@ service cloud.firestore {
       allow read, write: if isSuperAdmin();
     }
 
-    // Yayımlanmış bursluluk SONUÇLARI — veli/aday başvuru numarasıyla sorgular.
-    // Okuma HERKESE açıktır (belge id = başvuru no, erişim anahtarıdır; içerik
-    // hassas değildir: ad, puan, burs oranı, salon). Yazma yalnızca personel.
+    // Yayımlanmış bursluluk SONUÇLARI — ARTIK HALKA AÇIK DEĞİL.
+    // Sızıntı riski (başvuru no tek başına sonucu açığa çıkarıyordu) kapatıldı.
+    // Halka açık sorgu, doğrulayıcı (TC/telefon) gerektiren sunucu route'undan
+    // yapılır: app/api/public/scholarship-result (Admin SDK ile, kuralları aşar).
+    // Doğrudan okuma yalnızca personel; yazma yalnızca personel.
     match /tenants/{tenantId}/scholarshipResults/{appNo} {
-      allow read: if true;
+      allow read: if isStaff() && myTenant() == tenantId;
       allow write: if isStaff() && myTenant() == tenantId
         && tenantNotSuspended(tenantId);
     }
 
-    // CRM lead — iç kullanım; yalnızca tenant üyesi oluşturur/okur.
+    // CRM lead — yalnızca CRM yetkili roller (yönetim/koordinatör/SALES/PR/SUPPORT).
+    // PARENT/STUDENT/sıradan TEACHER ERİŞEMEZ. Genel kuraldan da hariç tutulur.
     match /tenants/{tenantId}/leads/{docId} {
-      allow read, write: if isTenantMember(tenantId);
+      allow read, write: if isSuperAdmin()
+        || (canAccessCrm() && myTenant() == tenantId && tenantNotSuspended(tenantId));
     }
 
-    // CRM randevuları — lead'ler gibi; PR/SALES dahil tenant üyesi yönetir.
-    // (Genel tenant kuralı yazımı isStaff ister; PR/SALES isStaff değildir.)
+    // CRM randevuları — lead'ler gibi CRM yetkili roller.
     match /tenants/{tenantId}/appointments/{docId} {
-      allow read, write: if isTenantMember(tenantId);
+      allow read, write: if isSuperAdmin()
+        || (canAccessCrm() && myTenant() == tenantId && tenantNotSuspended(tenantId));
     }
 
     // ---- Mesajlar (gizli — yalnızca gönderen/alıcı) -----------------------
@@ -364,10 +372,22 @@ service cloud.firestore {
         && request.resource.data.tenantId == tenantId
         && request.resource.data.senderId == request.auth.uid
         && request.resource.data.status == 'sent';
-      // Güncelleme: gönderen (durum: archived/deleted) veya alıcı (readBy).
+      // Güncelleme: KIMLIK/İÇERİK alanları (senderId/senderRole/senderName/
+      // recipientIds/recipientRoles/subject/body/tenantId/schoolId/createdAt)
+      // create sonrası DEĞİŞMEZ. Alıcı yalnız readBy'ı, gönderen yalnız status'ü
+      // değiştirebilir (affectedKeys ile zorlanır).
       allow update: if isSignedIn() && (
-        resource.data.senderId == request.auth.uid
-        || request.auth.uid in resource.data.recipientIds
+        (
+          request.auth.uid in resource.data.recipientIds
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['readBy', 'updatedAt'])
+        )
+        || (
+          resource.data.senderId == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['status', 'updatedAt'])
+          && request.resource.data.status in ['sent', 'archived', 'deleted']
+        )
       );
       // Gerçek silme yok (soft delete = status).
       allow delete: if false;
@@ -383,13 +403,26 @@ service cloud.firestore {
         || !('userId' in resource.data)
         || resource.data.userId == request.auth.uid
       );
-      // Oluşturma: aktif tenant üyesi (mesaj fan-out'u veli/öğrenci tarafından
-      // da tetiklenebilir). Personel duyuru fan-out'u da buradan geçer.
-      allow create: if isTenantMember(tenantId) && tenantNotSuspended(tenantId);
-      // Güncelleme: yalnızca sahibi (okundu işareti) — userId değiştirilemez.
+      // Oluşturma:
+      //  - Personel: operasyonel/yayın bildirimi (serbest).
+      //  - Veli/öğrenci: YALNIZCA kişiye özel 'message' bildirimi (mesaj fan-out);
+      //    rastgele yayın (userId'siz) veya başka tür OLUŞTURAMAZ.
+      allow create: if isTenantMember(tenantId) && tenantNotSuspended(tenantId)
+        && (
+          isStaff()
+          || (
+            request.resource.data.keys()
+              .hasOnly(['userId','schoolId','title','body','type','read','link','createdAt'])
+            && request.resource.data.userId is string
+            && request.resource.data.userId.size() > 0
+            && request.resource.data.type == 'message'
+            && request.resource.data.read == false
+          )
+        );
+      // Güncelleme: yalnızca sahibi ve YALNIZCA `read` (+updatedAt) — başka alan değişmez.
       allow update: if isTenantMember(tenantId)
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.userId == resource.data.userId;
+        && resource.data.get('userId', '') == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read', 'updatedAt']);
       allow delete: if false;
     }
 
@@ -423,11 +456,13 @@ service cloud.firestore {
       allow delete: if false; // soft delete (status) — gerçek silme yok
     }
 
-    // Veliler: yönetim/öğretmen okur. Yazma: kayıt yönetimi. Soft delete.
+    // Veliler: yönetim/öğretmen okur + veli KENDİ kaydını okur. Yazma: kayıt yön.
     match /tenants/{tenantId}/parents/{parentId} {
       allow read: if isSuperAdmin()
         || (isTenantMember(tenantId) && isStaff())
-        || isSelf(parentId);
+        // Veli kendi kaydı: kayıttaki userId == auth uid VEYA profil linkedParentId.
+        || (hasProfile() && resource.data.get('userId', '') == request.auth.uid)
+        || (hasProfile() && myProfile().get('linkedParentId', '') == parentId);
       allow create: if isSuperAdmin()
         || (canManageRecords() && myTenant() == tenantId
             && tenantNotSuspended(tenantId)
@@ -443,7 +478,9 @@ service cloud.firestore {
     match /tenants/{tenantId}/teachers/{teacherId} {
       allow read: if isSuperAdmin()
         || (isTenantMember(tenantId) && isStaff())
-        || isSelf(teacherId);
+        // Öğretmen kendi kaydı: kayıttaki userId == auth uid VEYA profil linkedTeacherId.
+        || (hasProfile() && resource.data.get('userId', '') == request.auth.uid)
+        || (hasProfile() && myProfile().get('linkedTeacherId', '') == teacherId);
       allow create: if isSuperAdmin()
         || (canManageRecords() && myTenant() == tenantId
             && tenantNotSuspended(tenantId)
@@ -482,33 +519,51 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // ---- Finans (ödemeler) — hassas: yalnız yönetim okur/yazar ------------
+    // PARENT/STUDENT/TEACHER erişemez. Genel kuraldan da hariç tutulur.
+    match /tenants/{tenantId}/payments/{docId} {
+      allow read: if isSuperAdmin()
+        || (canManageRecords() && myTenant() == tenantId);
+      allow write: if isSuperAdmin()
+        || (canManageRecords() && myTenant() == tenantId && tenantNotSuspended(tenantId));
+    }
+
+    // ---- Okul ayarları — tenant üyesi okur, yalnız okul yönetimi yazar ----
+    match /tenants/{tenantId}/settings/{docId} {
+      allow read: if isTenantMember(tenantId);
+      allow write: if isSuperAdmin()
+        || (isSchoolManager() && myTenant() == tenantId && tenantNotSuspended(tenantId));
+    }
+
+    // ---- Tenant denetim kayıtları — yönetim okur, personel ekler, kilitli --
+    match /tenants/{tenantId}/auditLogs/{docId} {
+      allow read: if isSuperAdmin()
+        || (canManageRecords() && myTenant() == tenantId);
+      allow create: if isStaff() && myTenant() == tenantId;
+      allow update, delete: if false;
+    }
+
     // ---- Diğer tüm tenant verileri ----------------------------------------
-    // Öğrenci, öğretmen, veli, duyuru, mesaj, ayar, auditLog vb.
-    // Okuma: tenant üyesi (öğrenci/veli dahil). Yazma: yalnızca personel
-    // (öğrenci/veli tenant verisine yazamaz — ör. duyuru oluşturamaz).
+    // Duyuru, ders programı, sınıf, not, yoklama, rehberlik vb.
+    // Okuma: tenant üyesi. Yazma: yalnızca personel. Hassas/özel koleksiyonlar
+    // (mesaj/bildirim/öğrenci/veli/öğretmen/admissions/lead/randevu/ödeme/ayar/
+    //  auditLog) bu kuraldan HARİÇ — kendi özel kurallarıyla yönetilir.
     match /tenants/{tenantId}/{document=**} {
       // Mesaj ve bildirimler OKUMA için HARİÇ (gizlilik): bunlar yalnızca
       // yukarıdaki özel kurallarla okunur; tenant üyesi geneli göremez.
       // `document[0]` ilk alt koleksiyon adıdır (ör. 'messages').
       allow read: if isTenantMember(tenantId)
-        && document[0] != 'messages'
-        && document[0] != 'notifications'
-        && document[0] != 'students'
-        && document[0] != 'parents'
-        && document[0] != 'teachers'
-        && document[0] != 'admissions'
-        && document[0] != 'admissionMeetings';
+        && !(document[0] in ['messages', 'notifications', 'students', 'parents',
+             'teachers', 'admissions', 'admissionMeetings', 'leads', 'appointments',
+             'payments', 'auditLogs']);
       // Askıdaki okulun personeli veri yazamaz (süper admin ayrı kurallarla erişir).
-      // Mesaj/öğrenci/veli/öğretmen/admissions yazımı özel kurallarla yönetilir.
-      // (Sınıflar bu kuralda kalır: öğretmen kendi ders sınıfını oluşturabilir.)
+      // Özel-kurallı koleksiyonlar bu yazımdan HARİÇ.
+      // (Sınıflar/duyuru/program/not/yoklama bu kuralda kalır: personel yazar.)
       allow write: if isStaff() && myTenant() == tenantId
         && tenantNotSuspended(tenantId)
-        && document[0] != 'messages'
-        && document[0] != 'students'
-        && document[0] != 'parents'
-        && document[0] != 'teachers'
-        && document[0] != 'admissions'
-        && document[0] != 'admissionMeetings';
+        && !(document[0] in ['messages', 'students', 'parents', 'teachers',
+             'admissions', 'admissionMeetings', 'leads', 'appointments',
+             'payments', 'settings', 'auditLogs']);
     }
 
     // ---- Global CRM (collection group) — yalnızca SUPER_ADMIN -------------

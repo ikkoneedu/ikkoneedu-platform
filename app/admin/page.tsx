@@ -53,20 +53,20 @@ function SidebarFooter() {
       </PrimaryButton>
 
       <div className="space-y-1 border-t border-white/5 pt-4">
-        <button
-          type="button"
+        <Link
+          href="/notifications"
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-white/[0.04] hover:text-content"
         >
           <Bell size={20} aria-hidden="true" />
           Bildirimler
-        </button>
-        <button
-          type="button"
+        </Link>
+        <Link
+          href="/coming-soon"
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-white/[0.04] hover:text-content"
         >
           <HelpCircle size={20} aria-hidden="true" />
           Yardım
-        </button>
+        </Link>
       </div>
     </div>
   );
@@ -76,31 +76,35 @@ function SidebarFooter() {
 function TopbarActions() {
   return (
     <>
-      <PrimaryButton size="sm" className="bg-accent text-navy hover:bg-accent/90">
-        <Sparkles size={16} aria-hidden="true" />
-        AI Brain
-      </PrimaryButton>
-      <button
-        type="button"
-        aria-label="Dil"
+      <Link href="/ai-brain">
+        <PrimaryButton size="sm" className="bg-accent text-navy hover:bg-accent/90">
+          <Sparkles size={16} aria-hidden="true" />
+          AI Brain
+        </PrimaryButton>
+      </Link>
+      <Link
+        href="/coming-soon"
+        aria-label="Dil (yakında)"
+        title="Dil seçimi yakında"
         className="flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-white/[0.06] hover:text-content"
       >
         <Languages size={18} aria-hidden="true" />
-      </button>
-      <button
-        type="button"
-        aria-label="Karanlık mod"
+      </Link>
+      <Link
+        href="/coming-soon"
+        aria-label="Karanlık mod (yakında)"
+        title="Tema seçimi yakında"
         className="flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-white/[0.06] hover:text-content"
       >
         <Moon size={18} aria-hidden="true" />
-      </button>
-      <button
-        type="button"
+      </Link>
+      <Link
+        href="/profile"
         aria-label="Profil"
         className="flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-white/[0.06] hover:text-content"
       >
         <CircleUser size={20} aria-hidden="true" />
-      </button>
+      </Link>
     </>
   );
 }

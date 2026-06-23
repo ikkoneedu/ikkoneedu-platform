@@ -100,6 +100,8 @@ export async function createManagedAccount(input: {
       tenantId: input.tenantId,
       schoolId: input.schoolId ?? input.tenantId,
       status: "ACTIVE",
+      // Geçici şifreyle açılan yönetilen hesap: ilk girişte şifre zorunlu değişir.
+      mustChangePassword: true,
       createdBy: input.createdBy,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),

@@ -240,6 +240,49 @@ export async function setScholarshipResult(
   );
 }
 
+export interface PublicAdmissionCard {
+  applicationNo: string;
+  studentName: string;
+  room: string;
+  seatNo: string;
+  examName: string;
+  examDate: string;
+  examTime: string;
+  campus: string;
+}
+
+/**
+ * Sınav giriş belgesini DOĞRULAYICILI sorgular (halka açık).
+ *
+ * Gizlilik: başvuru belgesi halka açık değildir; sorgu sunucu route'una
+ * (app/api/public/scholarship-admission-card) gider ve başvuru no + doğrulayıcı
+ * (TC veya veli telefonu) birlikte doğrulanmadan belge dönmez.
+ *
+ * Döner:
+ *   - doğrulanırsa PublicAdmissionCard
+ *   - bulunamaz/doğrulanmazsa null
+ *   - servis kullanılamıyorsa hata fırlatır (çağıran kullanıcıya gösterir)
+ */
+export async function getPublicAdmissionCard(
+  tenantId: string,
+  applicationNo: string,
+  verifier: string,
+): Promise<PublicAdmissionCard | null> {
+  if (!tenantId || !applicationNo || !verifier) return null;
+  const res = await fetch("/api/public/scholarship-admission-card", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ slug: tenantId, applicationNo: applicationNo.trim(), verifier: verifier.trim() }),
+  });
+  if (res.status === 404) return null; // bulunamadı/doğrulanamadı (genel)
+  if (!res.ok) {
+    throw new Error("Giriş belgesi servisi şu anda kullanılamıyor.");
+  }
+  const data = (await res.json()) as { ok: boolean; card?: PublicAdmissionCard };
+  if (!data.ok || !data.card) return null;
+  return data.card;
+}
+
 export interface PublicScholarshipResult {
   applicationNo: string;
   studentName: string;
@@ -268,26 +311,38 @@ export async function publishScholarshipResult(
   );
 }
 
-/** Başvuru numarasıyla yayımlanmış sonucu getirir (halka açık). */
+/**
+ * Yayımlanmış sonucu DOĞRULAYICILI sorgular (halka açık).
+ *
+ * Gizlilik: sonuç belgesi artık halka açık değildir; sorgu sunucu route'una
+ * (app/api/public/scholarship-result) gider ve başvuru no + doğrulayıcı
+ * (TC veya veli telefonu) birlikte doğrulanmadan sonuç dönmez.
+ *
+ * Döner:
+ *   - sonuç bulunur ve doğrulanırsa PublicScholarshipResult
+ *   - bulunamaz/doğrulanmazsa null
+ *   - servis kullanılamıyorsa hata fırlatır (çağıran kullanıcıya gösterir)
+ */
 export async function getPublicScholarshipResult(
   tenantId: string,
   applicationNo: string,
+  verifier: string,
 ): Promise<PublicScholarshipResult | null> {
-  if (!isFirebaseConfigured() || !db || !tenantId || !applicationNo) return null;
-  try {
-    const snap = await getDoc(doc(db, `${resultsPath(tenantId)}/${applicationNo.trim()}`));
-    if (!snap.exists()) return null;
-    const d = snap.data();
-    return {
-      applicationNo: String(d.applicationNo ?? applicationNo),
-      studentName: String(d.studentName ?? ""),
-      examScore: String(d.examScore ?? ""),
-      scholarshipRate: String(d.scholarshipRate ?? ""),
-      status: String(d.status ?? ""),
-      room: String(d.room ?? ""),
-      seatNo: String(d.seatNo ?? ""),
-    };
-  } catch {
-    return null;
+  if (!tenantId || !applicationNo || !verifier) return null;
+  const res = await fetch("/api/public/scholarship-result", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ slug: tenantId, applicationNo: applicationNo.trim(), verifier: verifier.trim() }),
+  });
+  if (res.status === 404) return null; // bulunamadı/doğrulanamadı (genel)
+  if (!res.ok) {
+    throw new Error("Sonuç sorgu servisi şu anda kullanılamıyor.");
   }
+  const data = (await res.json()) as {
+    ok: boolean;
+    published?: boolean;
+    result?: PublicScholarshipResult;
+  };
+  if (!data.ok || !data.published || !data.result) return null;
+  return data.result;
 }

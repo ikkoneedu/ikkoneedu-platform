@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState, type FormEvent } from "react";
+import { Suspense, useRef, useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import {
   Mail,
@@ -25,6 +25,7 @@ import { getUserProfile } from "@/lib/services/user-profile";
 import { getHomeRouteForRole } from "@/lib/auth/role-routing";
 import { canRoleAccess } from "@/lib/auth/route-config";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { sendPasswordReset } from "@/lib/services/auth-actions";
 import { productName, productFullName, tagline } from "@/lib/constants";
 
 const benefits = [
@@ -82,6 +83,25 @@ function LoginContent() {
   const { signIn, signOut, firebaseReady } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [resetMsg, setResetMsg] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Şifremi unuttum — girilen e-postaya Firebase sıfırlama bağlantısı gönderir.
+  const handleForgotPassword = async () => {
+    setResetMsg(null);
+    const email = (formRef.current?.elements.namedItem("identifier") as HTMLInputElement | null)?.value?.trim() ?? "";
+    if (!email || !email.includes("@")) {
+      setError("Şifre sıfırlama için önce e-posta adresinizi girin.");
+      return;
+    }
+    setError(null);
+    const result = await sendPasswordReset(email);
+    if (result.ok) {
+      setResetMsg("Şifre sıfırlama bağlantısı e-postanıza gönderildi (varsa).");
+    } else {
+      setError(result.error ?? "Sıfırlama e-postası gönderilemedi.");
+    }
+  };
 
   const config = ROLE_CONFIG[role];
   const subtitle = config?.subtitle ?? "Hesabınıza giriş yapın.";
@@ -203,7 +223,7 @@ function LoginContent() {
               </p>
             )}
 
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            <form ref={formRef} onSubmit={handleSubmit} className="mt-6 space-y-4">
               <TextField
                 label="E-posta veya Telefon"
                 name="identifier"
@@ -231,7 +251,11 @@ function LoginContent() {
                   />
                   Beni hatırla
                 </label>
-                <button type="button" className="font-medium text-accent transition-colors hover:text-content">
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  className="font-medium text-accent transition-colors hover:text-content"
+                >
                   Şifremi unuttum
                 </button>
               </div>
@@ -240,6 +264,13 @@ function LoginContent() {
                 <p className="flex items-center gap-2 rounded-xl border border-brand/30 bg-brand/10 px-4 py-3 text-sm text-brand">
                   <AlertCircle size={16} aria-hidden="true" />
                   {error}
+                </p>
+              )}
+
+              {resetMsg && (
+                <p className="flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-300">
+                  <Mail size={16} aria-hidden="true" />
+                  {resetMsg}
                 </p>
               )}
 

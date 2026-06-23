@@ -17,7 +17,16 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: ["/", ...publicExceptions],
-      disallow: PROTECTED_PREFIXES.map((prefix) => `${prefix}/`),
+      disallow: [
+        ...PROTECTED_PREFIXES.map((prefix) => `${prefix}/`),
+        // Kimlik/araç sayfaları (korumalı önek değil ama indekslenmemeli) + API.
+        "/login",
+        "/register",
+        "/code-login",
+        "/profile",
+        "/school-select",
+        "/api/",
+      ],
     },
     sitemap: `${siteUrl}/sitemap.xml`,
     host: siteUrl,

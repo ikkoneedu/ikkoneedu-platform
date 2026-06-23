@@ -20,7 +20,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { doc, serverTimestamp, setDoc, updateDoc } from "firebase/firestore";
-import { db, isFirebaseConfigured } from "@/lib/firebase/client";
+import { auth, db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { getSecondaryAuth } from "@/lib/firebase/secondary-app";
 import {
   userProfileDoc,
@@ -71,10 +71,67 @@ interface ProvisionInput {
   email: string;
   displayName: string;
   createdBy: string;
-  /** users/{uid} profiline yazılacak bağ alanları. */
+  /** Sunucu route'u için bağ türü/kaydı (üretim yolu). */
+  linkKind: "parent" | "teacher" | "student";
+  linkRecordId: string;
+  /** users/{uid} profiline yazılacak bağ alanları (ikincil-app fallback için). */
   linkFields: Record<string, unknown>;
-  /** userId yazılacak kayıt belgesinin tam yolu. */
+  /** userId yazılacak kayıt belgesinin tam yolu (fallback için). */
   recordPath: string;
+}
+
+/**
+ * ÜRETİM YOLU: hesabı sunucu Admin SDK route'unda oluştur (çağıranın ID token'ı
+ * doğrulanır, yetki sunucuda zorlanır). Admin SDK yapılandırılmamışsa (503) ya
+ * da ağ hatasında `null` döner → çağıran ikincil-app fallback'ine geçer.
+ */
+async function tryServerCreate(
+  input: ProvisionInput,
+  email: string,
+): Promise<ProvisionResult | null> {
+  const current = auth?.currentUser;
+  if (!current) return null;
+  let idToken: string;
+  try {
+    idToken = await current.getIdToken();
+  } catch {
+    return null;
+  }
+  let res: Response;
+  try {
+    res = await fetch("/api/admin/create-user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        idToken,
+        email,
+        displayName: input.displayName,
+        role: input.role,
+        tenantId: input.tenantId,
+        schoolId: input.schoolId,
+        link: { kind: input.linkKind, recordId: input.linkRecordId },
+      }),
+    });
+  } catch {
+    return null; // ağ hatası → fallback
+  }
+  if (res.status === 503) return null; // Admin SDK yok → fallback (dev/legacy)
+  let data: ProvisionResult & { tempPassword?: string };
+  try {
+    data = await res.json();
+  } catch {
+    return fail("Sunucu yanıtı okunamadı.");
+  }
+  if (!res.ok || !data.ok) {
+    return fail(data.error ?? "Hesap oluşturulamadı.");
+  }
+  return {
+    ok: true,
+    mode: data.mode ?? "created",
+    uid: data.uid ?? null,
+    email: data.email ?? email,
+    tempPassword: data.tempPassword,
+  };
 }
 
 function fail(error: string): ProvisionResult {
@@ -86,6 +143,12 @@ async function provisionAccount(input: ProvisionInput): Promise<ProvisionResult>
   const database = db;
   const email = input.email.trim().toLowerCase();
   if (!EMAIL_RE.test(email)) return fail("Geçerli bir e-posta girin.");
+
+  // ÜRETİM: önce sunucu Admin SDK route'unu dene (güvenli, token doğrulamalı).
+  const server = await tryServerCreate(input, email);
+  if (server) return server;
+
+  // FALLBACK (yalnız Admin SDK YOKKEN — dev/legacy): ikincil-app ile oluştur.
   const secondary = getSecondaryAuth();
   if (!secondary) return fail("Firebase yapılandırılmamış.");
 
@@ -182,6 +245,8 @@ export async function provisionParentAccount(
     email,
     displayName: parent.fullName,
     createdBy,
+    linkKind: "parent",
+    linkRecordId: parent.id,
     linkFields: {
       linkedParentId: parent.id,
       linkedStudentIds: parent.linkedStudentIds ?? [],
@@ -204,6 +269,8 @@ export async function provisionTeacherAccount(
     email,
     displayName: teacher.fullName,
     createdBy,
+    linkKind: "teacher",
+    linkRecordId: teacher.id,
     linkFields: {
       linkedTeacherId: teacher.id,
       classIds: teacher.classIds ?? [],
@@ -226,6 +293,8 @@ export async function provisionStudentAccount(
     email,
     displayName: student.fullName,
     createdBy,
+    linkKind: "student",
+    linkRecordId: student.id,
     linkFields: {
       linkedStudentId: student.id,
       classId: student.classId ?? "",

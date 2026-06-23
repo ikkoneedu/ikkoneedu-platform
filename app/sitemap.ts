@@ -17,7 +17,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ["/demo", 0.8],
     ["/founder-school", 0.7],
     ["/mobile-app", 0.7],
-    ["/login", 0.5],
     ["/scholarship-exam/apply", 0.8],
     ["/scholarship-exam/admission-card", 0.6],
     ["/scholarship-exam/results", 0.6],
