@@ -172,10 +172,12 @@ export default function TeacherPage() {
               Öğrenci performansına göre profesyonel, pozitif ve gelişim odaklı
               karne yorumları oluşturun.
             </p>
-            <PrimaryButton size="lg" className="mt-auto w-full sm:w-fit">
-              Karne Yorumu Oluştur
-              <ArrowRight size={18} aria-hidden="true" />
-            </PrimaryButton>
+            <Link href="/coming-soon" className="mt-auto w-full sm:w-fit">
+              <PrimaryButton size="lg" className="w-full sm:w-fit">
+                Karne Yorumu Oluştur
+                <ArrowRight size={18} aria-hidden="true" />
+              </PrimaryButton>
+            </Link>
           </GlassCard>
         </div>
 

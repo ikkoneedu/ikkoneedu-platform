@@ -236,10 +236,12 @@ export default function ParentPage() {
               <p className="mt-3 text-xs text-muted">
                 Son ödeme: {parentPaymentInfo.lastPayment}
               </p>
-              <PrimaryButton variant="secondary" size="sm" className="mt-4 w-full">
-                <FileText size={16} aria-hidden="true" />
-                Dekontlar ve Ödeme Geçmişi
-              </PrimaryButton>
+              <Link href="/coming-soon" className="mt-4 block">
+                <PrimaryButton variant="secondary" size="sm" className="w-full">
+                  <FileText size={16} aria-hidden="true" />
+                  Dekontlar ve Ödeme Geçmişi
+                </PrimaryButton>
+              </Link>
             </GlassCard>
           </div>
         </div>
