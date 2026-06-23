@@ -211,19 +211,20 @@ export function SchoolRecordsManager() {
     setAcctBusy(true);
     setAcctError(null);
     try {
+      const idToken = await user.getIdToken();
       let res: ProvisionResult;
       if (acctTarget.kind === "parent") {
         const rec = parents.find((p) => p.id === acctTarget.id);
         if (!rec) throw new Error("Kayıt bulunamadı.");
-        res = await provisionParentAccount(tenantId, schoolId, rec, acctEmail, user.uid);
+        res = await provisionParentAccount(tenantId, schoolId, rec, acctEmail, idToken);
       } else if (acctTarget.kind === "teacher") {
         const rec = teachers.find((t) => t.id === acctTarget.id);
         if (!rec) throw new Error("Kayıt bulunamadı.");
-        res = await provisionTeacherAccount(tenantId, schoolId, rec, acctEmail, user.uid);
+        res = await provisionTeacherAccount(tenantId, schoolId, rec, acctEmail, idToken);
       } else {
         const rec = students.find((s) => s.id === acctTarget.id);
         if (!rec) throw new Error("Kayıt bulunamadı.");
-        res = await provisionStudentAccount(tenantId, schoolId, rec, acctEmail, user.uid);
+        res = await provisionStudentAccount(tenantId, schoolId, rec, acctEmail, idToken);
       }
       if (!res.ok) {
         setAcctError(res.error ?? "Hesap oluşturulamadı.");
