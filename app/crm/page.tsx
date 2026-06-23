@@ -5,7 +5,7 @@ import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { CrmMetrics } from "@/components/crm/CrmMetrics";
-import { LeadPipeline } from "@/components/crm/LeadPipeline";
+import { RealLeadPipeline } from "@/components/crm/RealLeadPipeline";
 import { LeadDetails } from "@/components/crm/LeadDetails";
 import { LeadSources } from "@/components/crm/LeadSources";
 import { Appointments } from "@/components/crm/Appointments";
@@ -18,7 +18,6 @@ import { AppointmentManager } from "@/components/crm/AppointmentManager";
 import { productName } from "@/lib/constants";
 import {
   crmMetrics,
-  pipeline,
   leadDetail,
   leadSources,
   crmAppointments,
@@ -89,8 +88,8 @@ export default function CrmPage() {
         {/* 3. Yeni lead ekle (Firestore'a hazır) */}
         <NewLeadForm />
 
-        {/* 4. Pipeline */}
-        <LeadPipeline columns={pipeline} />
+        {/* 4. Pipeline — GERÇEK Firestore lead'leri (tenant izole) */}
+        <RealLeadPipeline />
 
         {/* 4 + 5. Lead detay ve kaynaklar */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
