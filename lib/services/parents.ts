@@ -19,7 +19,11 @@ import {
   arrayRemove,
 } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
-import { tenantParents, tenantStudents } from "@/lib/firebase/collections";
+import {
+  tenantParents,
+  tenantStudents,
+  userProfileDoc,
+} from "@/lib/firebase/collections";
 import {
   normalizeName,
   validateEmailOptional,
@@ -167,7 +171,11 @@ export async function deactivateParent(
   });
 }
 
-/** Veli ↔ öğrenci bağı kurar (iki taraflı, tek batch). */
+/**
+ * Veli ↔ öğrenci bağı kurar (iki taraflı, tek batch). Velinin giriş hesabı
+ * varsa (parent.userId) profil `linkedStudentIds`'i de senkron tutulur — böylece
+ * veli paneli (MyChildren) bayatlamaz.
+ */
 export async function linkParentToStudent(
   tenantId: string,
   parentId: string,
@@ -176,6 +184,7 @@ export async function linkParentToStudent(
   if (!isFirebaseConfigured() || !db) {
     throw new Error("Firebase yapılandırılmamış.");
   }
+  const parent = await getParent(tenantId, parentId);
   const batch = writeBatch(db);
   batch.update(doc(db, parentDoc(tenantId, parentId)), {
     linkedStudentIds: arrayUnion(studentId),
@@ -185,10 +194,16 @@ export async function linkParentToStudent(
     parentIds: arrayUnion(parentId),
     updatedAt: serverTimestamp(),
   });
+  if (parent?.userId) {
+    batch.update(doc(db, userProfileDoc(parent.userId)), {
+      linkedStudentIds: arrayUnion(studentId),
+      updatedAt: serverTimestamp(),
+    });
+  }
   await batch.commit();
 }
 
-/** Veli ↔ öğrenci bağını kaldırır (iki taraflı). */
+/** Veli ↔ öğrenci bağını kaldırır (iki taraflı + varsa veli profili). */
 export async function unlinkParentFromStudent(
   tenantId: string,
   parentId: string,
@@ -197,6 +212,7 @@ export async function unlinkParentFromStudent(
   if (!isFirebaseConfigured() || !db) {
     throw new Error("Firebase yapılandırılmamış.");
   }
+  const parent = await getParent(tenantId, parentId);
   const batch = writeBatch(db);
   batch.update(doc(db, parentDoc(tenantId, parentId)), {
     linkedStudentIds: arrayRemove(studentId),
@@ -206,5 +222,11 @@ export async function unlinkParentFromStudent(
     parentIds: arrayRemove(parentId),
     updatedAt: serverTimestamp(),
   });
+  if (parent?.userId) {
+    batch.update(doc(db, userProfileDoc(parent.userId)), {
+      linkedStudentIds: arrayRemove(studentId),
+      updatedAt: serverTimestamp(),
+    });
+  }
   await batch.commit();
 }

@@ -24,7 +24,11 @@ import {
   arrayRemove,
 } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
-import { tenantStudents, classDoc } from "@/lib/firebase/collections";
+import {
+  tenantStudents,
+  classDoc,
+  userProfileDoc,
+} from "@/lib/firebase/collections";
 import { normalizeName, toMillis, type RecordStatus } from "@/lib/services/people-validation";
 
 const studentDoc = (tenantId: string, id: string) =>
@@ -222,6 +226,13 @@ export async function assignStudentToClass(
     studentIds: arrayUnion(studentId),
     updatedAt: serverTimestamp(),
   });
+  // Öğrencinin giriş hesabı varsa profil classId'sini de senkron tut.
+  if (current?.userId) {
+    batch.update(doc(db, userProfileDoc(current.userId)), {
+      classId,
+      updatedAt: serverTimestamp(),
+    });
+  }
   await batch.commit();
 }
 
@@ -246,5 +257,11 @@ export async function removeStudentFromClass(
     studentIds: arrayRemove(studentId),
     updatedAt: serverTimestamp(),
   });
+  if (current?.userId) {
+    batch.update(doc(db, userProfileDoc(current.userId)), {
+      classId: "",
+      updatedAt: serverTimestamp(),
+    });
+  }
   await batch.commit();
 }

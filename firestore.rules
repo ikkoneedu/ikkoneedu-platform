@@ -257,6 +257,18 @@ service cloud.firestore {
           && request.resource.data.tenantId == resource.data.tenantId
           && !isManagementRole(resource.data.role)
           && !isManagementRole(request.resource.data.role)
+        )
+        || (
+          // Kayıt yönetimi (koordinatör/müdür yrd. dahil) bağlı bir
+          // öğrenci/veli/öğretmen kullanıcısının DENORMALİZE bağ alanlarını
+          // (linkedStudentIds/classId/classIds) senkron tutabilir. Rol, tenant
+          // ve status DEĞİŞTİRİLEMEZ; hedef üst yönetim olamaz (yetki yükseltme yok).
+          canManageRecords()
+          && resource.data.tenantId == myTenant()
+          && request.resource.data.tenantId == resource.data.tenantId
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.status == resource.data.status
+          && !isManagementRole(resource.data.role)
         );
       allow delete: if isSuperAdmin();
     }

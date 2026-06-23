@@ -23,7 +23,11 @@ import {
   arrayRemove,
 } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
-import { tenantTeachers, classDoc } from "@/lib/firebase/collections";
+import {
+  tenantTeachers,
+  classDoc,
+  userProfileDoc,
+} from "@/lib/firebase/collections";
 import {
   normalizeName,
   validateEmailOptional,
@@ -173,7 +177,11 @@ export async function deactivateTeacher(
   });
 }
 
-/** Öğretmeni bir sınıfa atar (iki taraflı, tek batch). */
+/**
+ * Öğretmeni bir sınıfa atar (iki taraflı, tek batch). Öğretmenin giriş hesabı
+ * varsa (teacher.userId) profil `classIds`'i de senkron tutulur — böylece
+ * öğretmen paneli (MyClasses) ve sınıf-kapsamlı öğrenci okuması bayatlamaz.
+ */
 export async function assignTeacherToClass(
   tenantId: string,
   teacherId: string,
@@ -182,6 +190,7 @@ export async function assignTeacherToClass(
   if (!isFirebaseConfigured() || !db) {
     throw new Error("Firebase yapılandırılmamış.");
   }
+  const teacher = await getTeacher(tenantId, teacherId);
   const batch = writeBatch(db);
   batch.update(doc(db, teacherDoc(tenantId, teacherId)), {
     classIds: arrayUnion(classId),
@@ -191,10 +200,16 @@ export async function assignTeacherToClass(
     teacherIds: arrayUnion(teacherId),
     updatedAt: serverTimestamp(),
   });
+  if (teacher?.userId) {
+    batch.update(doc(db, userProfileDoc(teacher.userId)), {
+      classIds: arrayUnion(classId),
+      updatedAt: serverTimestamp(),
+    });
+  }
   await batch.commit();
 }
 
-/** Öğretmeni sınıftan çıkarır (iki taraflı). */
+/** Öğretmeni sınıftan çıkarır (iki taraflı + varsa öğretmen profili). */
 export async function removeTeacherFromClass(
   tenantId: string,
   teacherId: string,
@@ -203,6 +218,7 @@ export async function removeTeacherFromClass(
   if (!isFirebaseConfigured() || !db) {
     throw new Error("Firebase yapılandırılmamış.");
   }
+  const teacher = await getTeacher(tenantId, teacherId);
   const batch = writeBatch(db);
   batch.update(doc(db, teacherDoc(tenantId, teacherId)), {
     classIds: arrayRemove(classId),
@@ -212,5 +228,11 @@ export async function removeTeacherFromClass(
     teacherIds: arrayRemove(teacherId),
     updatedAt: serverTimestamp(),
   });
+  if (teacher?.userId) {
+    batch.update(doc(db, userProfileDoc(teacher.userId)), {
+      classIds: arrayRemove(classId),
+      updatedAt: serverTimestamp(),
+    });
+  }
   await batch.commit();
 }
