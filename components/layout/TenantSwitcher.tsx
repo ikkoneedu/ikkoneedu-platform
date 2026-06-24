@@ -37,7 +37,7 @@ export function TenantSwitcher() {
 
   return (
     <label
-      className="relative hidden items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs text-muted sm:flex"
+      className="relative flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs text-muted"
       title="Görüntülenen okulu seçin (süper admin)"
     >
       <Building2 size={14} className="shrink-0 text-accent" aria-hidden="true" />
@@ -45,7 +45,7 @@ export function TenantSwitcher() {
       <select
         value={activeTenantId ?? ""}
         onChange={(e) => setActiveTenant(e.target.value || null)}
-        className="max-w-[160px] cursor-pointer appearance-none truncate bg-transparent pr-4 text-content outline-none"
+        className="max-w-[110px] cursor-pointer appearance-none truncate bg-transparent pr-4 text-content outline-none sm:max-w-[160px]"
       >
         <option value="" className="bg-surface">Platform (sistem)</option>
         {tenants.map((t) => (
