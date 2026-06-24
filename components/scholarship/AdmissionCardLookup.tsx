@@ -17,6 +17,7 @@ import {
   Mail,
   MapPinned,
 } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
@@ -30,15 +31,31 @@ import {
 
 /**
  * Sınav Giriş Belgesi sorgulama — halka açık (aday veli) mock.
- * Gerçek QR / PDF / SMS / e-posta yoktur; TC + Başvuru No ile mock belge gösterilir.
+ * Belge taranabilir GERÇEK bir QR kod taşır (salonda doğrulama). PDF/SMS/e-posta
+ * gönderimi henüz yoktur; TC + Başvuru No ile belge gösterilir.
  */
 export function AdmissionCardLookup() {
   const [shown, setShown] = useState(false);
+  const [applicationNo, setApplicationNo] = useState("");
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    setApplicationNo(String(data.get("applicationNo") ?? "").trim());
     setShown(true);
   };
+
+  // QR içeriği — salonda hızlı doğrulama için belge kimliği (başvuru no + aday +
+  // sınav/tarih/salon/sıra). Makine okunur, tek satır.
+  const qrPayload = [
+    `IKK-ADMISSION`,
+    applicationNo || "—",
+    sampleResult.studentName,
+    activeExam.name,
+    activeExam.examDate,
+    "Salon A",
+    "A-12",
+  ].join("|");
 
   const [copied, setCopied] = useState(false);
 
@@ -169,12 +186,21 @@ export function AdmissionCardLookup() {
               })}
             </div>
 
-            {/* QR kod placeholder */}
-            <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-6">
-              <div className="flex h-32 w-32 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-muted">
-                <QrCode size={64} aria-hidden="true" />
+            {/* QR kod — salonda hızlı doğrulama (gerçek, taranabilir) */}
+            <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/[0.02] p-6">
+              <div className="rounded-xl bg-white p-3">
+                <QRCodeSVG
+                  value={qrPayload}
+                  size={128}
+                  level="M"
+                  marginSize={0}
+                  aria-label="Sınav giriş belgesi QR kodu"
+                />
               </div>
-              <p className="text-xs text-muted">QR kod (yakında)</p>
+              <p className="flex items-center gap-1 text-xs text-muted">
+                <QrCode size={13} aria-hidden="true" />
+                Salonda doğrulama için okutun
+              </p>
             </div>
           </div>
 
