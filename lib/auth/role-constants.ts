@@ -18,6 +18,8 @@ export const ROLES = {
   STUDENT: "STUDENT",
   SUPPORT: "SUPPORT",
   SALES: "SALES",
+  /** Servis şoförü — yalnızca atandığı servisin canlı konumunu paylaşır. */
+  DRIVER: "DRIVER",
   /** Halkla ilişkiler — CRM/aday veli ve duyuru yönetimi. */
   PR: "PR",
   /** Halk / aday veli — kendi kayıt olan genel kullanıcı. */
@@ -38,6 +40,7 @@ export const ROLE_LABELS: Record<Role, string> = {
   PARENT: "Veli",
   STUDENT: "Öğrenci",
   SUPPORT: "Teknik Destek",
+  DRIVER: "Servis Şoförü",
   SALES: "Satış Ekibi",
   PR: "Halkla İlişkiler",
   PUBLIC: "Genel Kullanıcı",
@@ -55,6 +58,7 @@ export const ROLE_LEVELS: Record<Role, number> = {
   SALES: 50,
   PR: 45,
   TEACHER: 40,
+  DRIVER: 30,
   PARENT: 20,
   STUDENT: 10,
   PUBLIC: 5,

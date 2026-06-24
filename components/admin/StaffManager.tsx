@@ -169,6 +169,7 @@ export function StaffManager() {
                 <option value={ROLES.VICE_PRINCIPAL} className="bg-surface">{ROLE_LABELS.VICE_PRINCIPAL}</option>
                 <option value={ROLES.COORDINATOR} className="bg-surface">{ROLE_LABELS.COORDINATOR}</option>
                 <option value={ROLES.PR} className="bg-surface">{ROLE_LABELS.PR}</option>
+                <option value={ROLES.DRIVER} className="bg-surface">{ROLE_LABELS.DRIVER}</option>
               </select>
             </div>
             <PrimaryButton type="submit" size="md" disabled={busy}>

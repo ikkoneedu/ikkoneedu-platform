@@ -136,6 +136,12 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     PERMISSIONS.CRM_WRITE,
     PERMISSIONS.AI_USE,
   ],
+  // Servis şoförü: yalnızca okul üyesi olarak temel okuma (servis konumunu
+  // paylaşır; yetki /bus-routes rol kapısıyla zorlanır).
+  [ROLES.DRIVER]: [
+    PERMISSIONS.TENANT_READ,
+    PERMISSIONS.ANNOUNCEMENT_READ,
+  ],
   // Halk / genel kullanıcı: yalnızca halka açık içerik + kendi başvuruları.
   [ROLES.PUBLIC]: [
     PERMISSIONS.ANNOUNCEMENT_READ,

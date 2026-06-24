@@ -87,6 +87,11 @@ export function CinematicHero() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_85%_at_50%_50%,transparent_45%,rgba(5,12,22,0.5)_100%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
 
+      {/* Mobil okunabilirlik scrim'i — küçük ekranda ağ düğümleri metnin arkasından
+          taşıp metinle iç içe girmesin diye. Masaüstünde sol vinyet yeterli olduğu
+          için yalnızca mobilde (sm altı) uygulanır. */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/75 via-background/60 to-background/90 sm:hidden" />
+
       {/* HUD köşe çerçeveleri */}
       <div className="pointer-events-none absolute left-5 top-5 h-7 w-7 border-l border-t border-accent/25 sm:left-7 sm:top-7" />
       <div className="pointer-events-none absolute right-5 top-5 h-7 w-7 border-r border-t border-accent/25 sm:right-7 sm:top-7" />

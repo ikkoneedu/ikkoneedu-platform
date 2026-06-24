@@ -29,7 +29,8 @@ export type StaffRole =
   | typeof ROLES.PRINCIPAL
   | typeof ROLES.VICE_PRINCIPAL
   | typeof ROLES.COORDINATOR
-  | typeof ROLES.PR;
+  | typeof ROLES.PR
+  | typeof ROLES.DRIVER;
 
 const PASSWORD_ALPHABET =
   "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";

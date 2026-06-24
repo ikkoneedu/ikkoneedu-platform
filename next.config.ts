@@ -25,7 +25,8 @@ const csp = [
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   `connect-src 'self' https: wss:${isDev ? " ws:" : ""}`,
-  `frame-src 'self'${vercelLive}`,
+  // Google Maps embed (servis canlı konum haritası) iframe'i için izin.
+  `frame-src 'self' https://www.google.com https://maps.google.com${vercelLive}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",

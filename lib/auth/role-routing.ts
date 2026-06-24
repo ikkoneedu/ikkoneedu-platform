@@ -19,6 +19,7 @@ export const ROLE_HOME_ROUTE: Record<Role, string> = {
   [ROLES.STUDENT]: "/student",
   [ROLES.SALES]: "/crm",
   [ROLES.SUPPORT]: "/messages",
+  [ROLES.DRIVER]: "/bus-routes",
   [ROLES.PUBLIC]: "/portal",
 };
 

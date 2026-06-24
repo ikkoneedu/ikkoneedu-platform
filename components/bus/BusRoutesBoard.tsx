@@ -1,13 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { Bus, Phone, User, Send, AlertCircle, CheckCircle2, Navigation, Trash2, Pencil, X } from "lucide-react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { Bus, Phone, User, Send, AlertCircle, CheckCircle2, Navigation, Trash2, Pencil, X, MapPin, Radio, Square } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
-import { createBusRoute, updateBusRoute, deleteBusRoute, listBusRoutes, type BusRouteRecord } from "@/lib/services/bus-routes";
+import { createBusRoute, updateBusRoute, deleteBusRoute, updateBusRouteLocation, listBusRoutes, type BusRouteRecord } from "@/lib/services/bus-routes";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const STAFF_ROLES: string[] = [
@@ -15,20 +15,37 @@ const STAFF_ROLES: string[] = [
   ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.SUPER_ADMIN,
 ];
 
+/** Konum güncelleme zamanını "x dk önce" gibi gösterir. */
+function relTime(ms: number | null): string {
+  if (!ms) return "";
+  const s = Math.max(0, Math.round((Date.now() - ms) / 1000));
+  if (s < 60) return `${s} sn önce`;
+  const m = Math.round(s / 60);
+  if (m < 60) return `${m} dk önce`;
+  return `${Math.round(m / 60)} sa önce`;
+}
+
 /**
- * Servis takibi — GERÇEK Firestore. Yönetim rota/durak/saat bilgisi ekler;
- * tenant üyeleri görür (canlı GPS değil, statik bilgi). `readOnly` ile form gizli.
+ * Servis takibi — GERÇEK Firestore. Yönetim rota/durak/şoför bilgisi ekler;
+ * şoför (DRIVER) veya personel telefonundan CANLI KONUM paylaşır; tüm tenant
+ * üyeleri haritada görür. Tenant izole. `readOnly` ile form gizli.
  */
 export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const canCreate = !readOnly && profile != null && STAFF_ROLES.includes(profile.role);
+  const isDriver = profile?.role === ROLES.DRIVER;
+  const canShare = !readOnly && (canCreate || isDriver);
 
   const [items, setItems] = useState<BusRouteRecord[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
+  const [sharingId, setSharingId] = useState<string | null>(null);
+  const [geoError, setGeoError] = useState<string | null>(null);
+  const watchRef = useRef<number | null>(null);
+  const lastWriteRef = useRef<number>(0);
 
   const refresh = useCallback(async () => {
     if (!tenantId) return;
@@ -42,6 +59,51 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
   useEffect(() => {
     if (firebaseReady && tenantId) void refresh();
   }, [firebaseReady, tenantId, refresh]);
+
+  // Periyodik yenileme — izleyiciler servisin canlı konumunu görsün (20 sn).
+  useEffect(() => {
+    if (!firebaseReady || !tenantId) return;
+    const t = setInterval(() => void refresh(), 20000);
+    return () => clearInterval(t);
+  }, [firebaseReady, tenantId, refresh]);
+
+  const stopShare = useCallback(() => {
+    if (watchRef.current !== null && typeof navigator !== "undefined") {
+      navigator.geolocation.clearWatch(watchRef.current);
+      watchRef.current = null;
+    }
+    setSharingId(null);
+  }, []);
+
+  // Bileşen kaldırılırken konum paylaşımını durdur.
+  useEffect(() => () => stopShare(), [stopShare]);
+
+  const startShare = (routeId: string) => {
+    if (!tenantId) return;
+    if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
+      setGeoError("Cihaz konum servisini desteklemiyor.");
+      return;
+    }
+    setGeoError(null);
+    setSharingId(routeId);
+    lastWriteRef.current = 0;
+    watchRef.current = navigator.geolocation.watchPosition(
+      (pos) => {
+        const now = Date.now();
+        // En fazla ~8 sn'de bir yaz (aşırı yazımı önle).
+        if (now - lastWriteRef.current < 8000) return;
+        lastWriteRef.current = now;
+        void updateBusRouteLocation(tenantId, routeId, pos.coords.latitude, pos.coords.longitude)
+          .then(() => refresh())
+          .catch(() => {});
+      },
+      (err) => {
+        setGeoError(err.message || "Konum alınamadı (izin verilmedi).");
+        stopShare();
+      },
+      { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 },
+    );
+  };
 
   const editing = editId ? items?.find((x) => x.id === editId) ?? null : null;
   const startEdit = (r: BusRouteRecord) => {
@@ -162,6 +224,11 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
           <Bus size={18} className="text-accent" aria-hidden="true" />
           <h2 className="text-lg font-semibold text-content">Servis Rotaları</h2>
         </div>
+        {geoError && (
+          <p className="mb-4 flex items-center gap-2 rounded-xl border border-brand/30 bg-brand/10 px-4 py-3 text-sm text-brand">
+            <AlertCircle size={16} aria-hidden="true" />{geoError}
+          </p>
+        )}
         {items.length === 0 ? (
           <p className="text-sm text-muted">Henüz rota tanımlı değil.</p>
         ) : (
@@ -210,6 +277,55 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
                     ))}
                   </ul>
                 )}
+
+                {/* Canlı konum — şoför telefonundan paylaşılır, haritada görünür */}
+                <div className="mt-3 border-t border-white/5 pt-3">
+                  {r.currentLat != null && r.currentLng != null ? (
+                    <>
+                      <div className="mb-2 flex items-center gap-1.5 text-xs">
+                        <span className="relative flex h-2 w-2">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/60" />
+                          <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                        </span>
+                        <span className="font-medium text-emerald-400">Canlı konum</span>
+                        <span className="text-muted">· {relTime(r.locationUpdatedAt)}</span>
+                      </div>
+                      <iframe
+                        title={`${r.routeName} canlı konum`}
+                        src={`https://maps.google.com/maps?q=${r.currentLat},${r.currentLng}&z=15&output=embed`}
+                        className="h-44 w-full rounded-lg border border-white/10"
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                      />
+                    </>
+                  ) : (
+                    <p className="flex items-center gap-1.5 text-xs text-muted">
+                      <MapPin size={12} aria-hidden="true" />Servis konumu henüz paylaşılmıyor.
+                    </p>
+                  )}
+
+                  {canShare && (
+                    sharingId === r.id ? (
+                      <button
+                        type="button"
+                        onClick={stopShare}
+                        className="mt-2 flex items-center gap-1.5 rounded-lg border border-brand/30 bg-brand/10 px-3 py-1.5 text-xs font-medium text-brand transition-colors hover:bg-brand/20"
+                      >
+                        <Square size={12} aria-hidden="true" />Paylaşımı Durdur
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => startShare(r.id)}
+                        disabled={sharingId !== null}
+                        title="Konumunuzu bu servis için canlı paylaşın"
+                        className="mt-2 flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-medium text-accent transition-colors hover:bg-accent/20 disabled:opacity-50"
+                      >
+                        <Radio size={12} aria-hidden="true" />Konumu Paylaş
+                      </button>
+                    )
+                  )}
+                </div>
               </li>
             ))}
           </ul>

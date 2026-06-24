@@ -535,6 +535,17 @@ service cloud.firestore {
         || (isSchoolManager() && myTenant() == tenantId && tenantNotSuspended(tenantId));
     }
 
+    // ---- Servis rotaları — okuma/oluşturma/silme catch-all (personel) ile
+    //      yönetilir. Bu EK kural yalnızca SERVİS ŞOFÖRÜNÜN (DRIVER) canlı KONUM
+    //      alanlarını güncellemesine izin verir (başka alana dokunamaz). Additive
+    //      kuraldır; personel yazımı catch-all'da kalır.
+    match /tenants/{tenantId}/busRoutes/{routeId} {
+      allow update: if isActiveUser() && myTenant() == tenantId
+        && myRole() == 'DRIVER'
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['currentLat', 'currentLng', 'locationUpdatedAt', 'updatedAt']);
+    }
+
     // ---- Tenant denetim kayıtları — yönetim okur, personel ekler, kilitli --
     match /tenants/{tenantId}/auditLogs/{docId} {
       allow read: if isSuperAdmin()
