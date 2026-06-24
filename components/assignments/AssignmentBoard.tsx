@@ -13,7 +13,7 @@ import {
   type Assignment,
 } from "@/lib/services/assignments";
 import { listMyClasses, type ClassRecord } from "@/lib/services/access-codes";
-import { createNotification } from "@/lib/services/notifications";
+import { createNotification, notifyClassMembers } from "@/lib/services/notifications";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const STAFF_ROLES = [
@@ -96,6 +96,15 @@ export function AssignmentBoard({ readOnly = false }: { readOnly?: boolean }) {
           createdBy: user.uid,
           createdByName: profile?.displayName ?? "Öğretmen",
         });
+        // Sınıf hedefliyse o sınıfın öğrenci+velisine kişiye özel bildirim.
+        if (classId) {
+          await notifyClassMembers(tenantId, classId, {
+            title: `Yeni ödev: ${title}`,
+            body: dueDate ? `Son tarih: ${dueDate}` : description,
+            type: "announcement",
+            link: "/notifications",
+          });
+        }
       } catch {
         /* bildirim best-effort */
       }

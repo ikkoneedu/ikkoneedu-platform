@@ -18,6 +18,8 @@ import {
 } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { tenantNotifications } from "@/lib/firebase/collections";
+import { listStudents } from "@/lib/services/students";
+import { listParents } from "@/lib/services/parents";
 
 export interface NotificationInput {
   title: string;
@@ -132,6 +134,48 @@ export async function createUserNotification(
     link: input.link ?? "",
     createdAt: serverTimestamp(),
   });
+}
+
+/**
+ * Bir sınıfın üyelerine (öğrenci + bağlı veli) kişiye özel bildirim düşürür.
+ * Duyuru/ödev sınıf hedefli paylaşıldığında çağrılır. Best-effort; hesabı
+ * (userId) olmayan kayıtlar atlanır. classId boşsa (okul geneli) hiçbir şey
+ * yapmaz — okul geneli için tenant bildirim akışı yeterlidir (yüzlerce yazımı
+ * önler). Tenant izole; personel yazımına kurallar izin verir.
+ */
+export async function notifyClassMembers(
+  tenantId: string,
+  classId: string,
+  input: { title: string; body: string; type: NotificationType; link?: string },
+): Promise<number> {
+  if (!isFirebaseConfigured() || !db || !tenantId || !classId) return 0;
+  const [students, parents] = await Promise.all([
+    listStudents(tenantId),
+    listParents(tenantId),
+  ]);
+  const classStudents = students.filter((s) => s.classId === classId);
+  const classStudentIds = new Set(classStudents.map((s) => s.id));
+  const classParents = parents.filter((p) =>
+    (p.linkedStudentIds ?? []).some((sid) => classStudentIds.has(sid)),
+  );
+
+  // Hesabı olan benzersiz alıcılar (öğrenci + veli userId'leri).
+  const recipients = new Set<string>();
+  for (const s of classStudents) if (s.userId) recipients.add(s.userId);
+  for (const p of classParents) if (p.userId) recipients.add(p.userId);
+
+  await Promise.all(
+    [...recipients].map((userId) =>
+      createUserNotification(tenantId, {
+        userId,
+        title: input.title,
+        body: input.body,
+        type: input.type,
+        link: input.link,
+      }),
+    ),
+  );
+  return recipients.size;
 }
 
 /** Geçerli kullanıcının kişisel bildirimleri (userId == uid), en yeni önce. */

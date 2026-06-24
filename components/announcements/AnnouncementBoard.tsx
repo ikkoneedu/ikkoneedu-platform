@@ -13,7 +13,7 @@ import {
   type Announcement,
 } from "@/lib/services/announcements";
 import { listMyClasses, type ClassRecord } from "@/lib/services/access-codes";
-import { createNotification } from "@/lib/services/notifications";
+import { createNotification, notifyClassMembers } from "@/lib/services/notifications";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const STAFF_ROLES = [
@@ -107,6 +107,15 @@ export function AnnouncementBoard({ readOnly = false }: { readOnly?: boolean }) 
           createdBy: user.uid,
           createdByName: profile?.displayName ?? "Yetkili",
         });
+        // Sınıf hedefliyse o sınıfın öğrenci+velisine kişiye özel bildirim.
+        if (classId) {
+          await notifyClassMembers(tenantId, classId, {
+            title: `Yeni duyuru: ${title}`,
+            body,
+            type: "announcement",
+            link: "/notifications",
+          });
+        }
       } catch {
         /* bildirim best-effort */
       }
