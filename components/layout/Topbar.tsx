@@ -2,9 +2,10 @@
 
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { Bell, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { Logo } from "@/components/shared/LogoMark";
 import { UserMenu } from "@/components/layout/UserMenu";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 interface TopbarLink {
   id: string;
@@ -33,14 +34,7 @@ function DefaultActions() {
       >
         <Search size={18} aria-hidden="true" />
       </Link>
-      <Link
-        href="/notifications"
-        aria-label="Bildirimler"
-        className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-muted transition-colors hover:bg-white/[0.08] hover:text-content"
-      >
-        <Bell size={18} aria-hidden="true" />
-        <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-brand" />
-      </Link>
+      <NotificationBell />
       <UserMenu />
     </>
   );
