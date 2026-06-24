@@ -10,6 +10,8 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   getDocs,
   orderBy,
   query,
@@ -54,6 +56,12 @@ export async function createEvent(input: EventInput): Promise<string | null> {
     updatedAt: serverTimestamp(),
   });
   return ref.id;
+}
+
+/** Etkinliği siler (personel — kurallar zorlar). */
+export async function deleteEvent(tenantId: string, id: string): Promise<void> {
+  if (!isFirebaseConfigured() || !db) return;
+  await deleteDoc(doc(db, `${tenantEvents(tenantId)}/${id}`));
 }
 
 /** Etkinlikleri tarihe göre (yakın → uzak) listeler. */

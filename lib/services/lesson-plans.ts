@@ -10,6 +10,8 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   getDocs,
   orderBy,
   query,
@@ -61,6 +63,12 @@ export async function createLessonPlan(input: LessonPlanInput): Promise<string |
     updatedAt: serverTimestamp(),
   });
   return ref.id;
+}
+
+/** Ders planını siler (personel — kurallar zorlar). */
+export async function deleteLessonPlan(tenantId: string, id: string): Promise<void> {
+  if (!isFirebaseConfigured() || !db) return;
+  await deleteDoc(doc(db, `${tenantLessonPlans(tenantId)}/${id}`));
 }
 
 /** Planları en yeni önce listeler. */

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { NotebookPen, Send, AlertCircle, CheckCircle2, BookOpen } from "lucide-react";
+import { NotebookPen, Send, AlertCircle, CheckCircle2, BookOpen, Trash2 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
@@ -9,6 +9,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import {
   createLessonPlan,
+  deleteLessonPlan,
   listLessonPlans,
   type LessonPlanRecord,
 } from "@/lib/services/lesson-plans";
@@ -52,6 +53,16 @@ export function LessonPlansBoard({ readOnly = false }: { readOnly?: boolean }) {
   useEffect(() => {
     if (firebaseReady && tenantId) void refresh();
   }, [firebaseReady, tenantId, refresh]);
+
+  const handleDelete = async (id: string) => {
+    if (!tenantId) return;
+    try {
+      await deleteLessonPlan(tenantId, id);
+      setItems((prev) => prev?.filter((x) => x.id !== id) ?? prev);
+    } catch (err) {
+      setError(getAuthErrorMessage(err));
+    }
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -173,6 +184,16 @@ export function LessonPlansBoard({ readOnly = false }: { readOnly?: boolean }) {
                     <span className="rounded-full bg-accent/10 px-2 py-0.5 font-medium text-accent">
                       {p.className || "Okul geneli"}
                     </span>
+                    {canCreate && (
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(p.id)}
+                        aria-label="Planı sil"
+                        className="text-muted transition-colors hover:text-brand"
+                      >
+                        <Trash2 size={14} aria-hidden="true" />
+                      </button>
+                    )}
                   </div>
                 </div>
                 <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-muted">{p.content}</p>

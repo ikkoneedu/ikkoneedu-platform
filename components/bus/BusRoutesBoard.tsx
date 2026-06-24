@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { Bus, Phone, User, Send, AlertCircle, CheckCircle2, Navigation } from "lucide-react";
+import { Bus, Phone, User, Send, AlertCircle, CheckCircle2, Navigation, Trash2 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
-import { createBusRoute, listBusRoutes, type BusRouteRecord } from "@/lib/services/bus-routes";
+import { createBusRoute, deleteBusRoute, listBusRoutes, type BusRouteRecord } from "@/lib/services/bus-routes";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const STAFF_ROLES: string[] = [
@@ -41,6 +41,16 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
   useEffect(() => {
     if (firebaseReady && tenantId) void refresh();
   }, [firebaseReady, tenantId, refresh]);
+
+  const handleDelete = async (id: string) => {
+    if (!tenantId) return;
+    try {
+      await deleteBusRoute(tenantId, id);
+      setItems((prev) => prev?.filter((x) => x.id !== id) ?? prev);
+    } catch (err) {
+      setError(getAuthErrorMessage(err));
+    }
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -128,7 +138,19 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
           <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {items.map((r) => (
               <li key={r.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                <h3 className="font-semibold text-content">{r.routeName}</h3>
+                <div className="flex items-start justify-between gap-2">
+                  <h3 className="font-semibold text-content">{r.routeName}</h3>
+                  {canCreate && (
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(r.id)}
+                      aria-label="Rotayı sil"
+                      className="shrink-0 text-muted transition-colors hover:text-brand"
+                    >
+                      <Trash2 size={15} aria-hidden="true" />
+                    </button>
+                  )}
+                </div>
                 <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
                   {r.driver && (
                     <span className="flex items-center gap-1"><User size={12} aria-hidden="true" />{r.driver}</span>

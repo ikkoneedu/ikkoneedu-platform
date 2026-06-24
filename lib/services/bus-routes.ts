@@ -11,6 +11,8 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   getDocs,
   orderBy,
   query,
@@ -51,6 +53,12 @@ export async function createBusRoute(input: BusRouteInput): Promise<string | nul
     updatedAt: serverTimestamp(),
   });
   return ref.id;
+}
+
+/** Rotayı siler (personel — kurallar zorlar). */
+export async function deleteBusRoute(tenantId: string, id: string): Promise<void> {
+  if (!isFirebaseConfigured() || !db) return;
+  await deleteDoc(doc(db, `${tenantBusRoutes(tenantId)}/${id}`));
 }
 
 /** Rotaları ada göre listeler. */

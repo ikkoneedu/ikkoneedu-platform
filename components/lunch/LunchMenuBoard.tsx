@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { UtensilsCrossed, Send, AlertCircle, CheckCircle2 } from "lucide-react";
+import { UtensilsCrossed, Send, AlertCircle, CheckCircle2, Trash2 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
-import { createLunchMenu, listLunchMenu, type LunchMenuRecord } from "@/lib/services/lunch-menu";
+import { createLunchMenu, deleteLunchMenu, listLunchMenu, type LunchMenuRecord } from "@/lib/services/lunch-menu";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const STAFF_ROLES: string[] = [
@@ -48,6 +48,16 @@ export function LunchMenuBoard({ readOnly = false }: { readOnly?: boolean }) {
   useEffect(() => {
     if (firebaseReady && tenantId) void refresh();
   }, [firebaseReady, tenantId, refresh]);
+
+  const handleDelete = async (id: string) => {
+    if (!tenantId) return;
+    try {
+      await deleteLunchMenu(tenantId, id);
+      setItems((prev) => prev?.filter((x) => x.id !== id) ?? prev);
+    } catch (err) {
+      setError(getAuthErrorMessage(err));
+    }
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -129,9 +139,21 @@ export function LunchMenuBoard({ readOnly = false }: { readOnly?: boolean }) {
           <ul className="flex flex-col gap-3">
             {items.map((m) => (
               <li key={m.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
-                <span className="rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
-                  {fmtDate(m.date)}
-                </span>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
+                    {fmtDate(m.date)}
+                  </span>
+                  {canCreate && (
+                    <button
+                      type="button"
+                      onClick={() => handleDelete(m.id)}
+                      aria-label="Menüyü sil"
+                      className="text-muted transition-colors hover:text-brand"
+                    >
+                      <Trash2 size={15} aria-hidden="true" />
+                    </button>
+                  )}
+                </div>
                 <ul className="mt-3 flex flex-wrap gap-2">
                   {m.items.map((it, i) => (
                     <li key={i} className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm text-content">

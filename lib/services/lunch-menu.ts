@@ -10,6 +10,8 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   getDocs,
   orderBy,
   query,
@@ -45,6 +47,12 @@ export async function createLunchMenu(input: LunchMenuInput): Promise<string | n
     updatedAt: serverTimestamp(),
   });
   return ref.id;
+}
+
+/** Menü kaydını siler (personel — kurallar zorlar). */
+export async function deleteLunchMenu(tenantId: string, id: string): Promise<void> {
+  if (!isFirebaseConfigured() || !db) return;
+  await deleteDoc(doc(db, `${tenantLunchMenu(tenantId)}/${id}`));
 }
 
 /** Menüleri tarihe göre (yeni → eski) listeler. */

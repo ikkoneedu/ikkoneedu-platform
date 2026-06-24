@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { CalendarDays, MapPin, Send, AlertCircle, CheckCircle2 } from "lucide-react";
+import { CalendarDays, MapPin, Send, AlertCircle, CheckCircle2, Trash2 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
-import { createEvent, listEvents, type EventRecord } from "@/lib/services/events";
+import { createEvent, deleteEvent, listEvents, type EventRecord } from "@/lib/services/events";
 import { createNotification } from "@/lib/services/notifications";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
@@ -49,6 +49,16 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
   useEffect(() => {
     if (firebaseReady && tenantId) void refresh();
   }, [firebaseReady, tenantId, refresh]);
+
+  const handleDelete = async (id: string) => {
+    if (!tenantId) return;
+    try {
+      await deleteEvent(tenantId, id);
+      setItems((prev) => prev?.filter((x) => x.id !== id) ?? prev);
+    } catch (err) {
+      setError(getAuthErrorMessage(err));
+    }
+  };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -148,9 +158,21 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
               <li key={ev.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="font-semibold text-content">{ev.title}</h3>
-                  <span className="shrink-0 rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
-                    {fmtDate(ev.date)}
-                  </span>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <span className="rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
+                      {fmtDate(ev.date)}
+                    </span>
+                    {canCreate && (
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(ev.id)}
+                        aria-label="Etkinliği sil"
+                        className="text-muted transition-colors hover:text-brand"
+                      >
+                        <Trash2 size={15} aria-hidden="true" />
+                      </button>
+                    )}
+                  </div>
                 </div>
                 {ev.location && (
                   <p className="mt-1 flex items-center gap-1 text-xs text-muted">
