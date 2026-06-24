@@ -1,4 +1,5 @@
-import { CalendarCheck, QrCode } from "lucide-react";
+import { CalendarCheck } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import {
@@ -31,9 +32,20 @@ export function AdmissionCardManager() {
               <p className="text-xs uppercase tracking-wide text-muted">Giriş Belgesi</p>
               <p className="mt-1 font-semibold text-content">{activeExam.name}</p>
             </div>
-            <div className="grid size-20 shrink-0 place-items-center rounded-xl bg-white/10 text-xs font-medium text-muted">
-              <QrCode size={28} className="text-content/80" aria-hidden="true" />
-              <span className="mt-1">QR</span>
+            <div className="shrink-0 rounded-xl bg-white p-1.5">
+              <QRCodeSVG
+                value={[
+                  "IKK-ADMISSION",
+                  sample.applicationNo,
+                  sample.studentName,
+                  activeExam.name,
+                  activeExam.examDate,
+                ].join("|")}
+                size={64}
+                level="M"
+                marginSize={0}
+                aria-label="Giriş belgesi QR kodu"
+              />
             </div>
           </div>
 
