@@ -18,7 +18,9 @@ export function QuickPromptGrid({ prompts }: QuickPromptGridProps) {
           <button
             key={prompt.id}
             type="button"
-            className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:bg-white/[0.06]"
+            disabled
+            title="Yakında (AI)"
+            className="group flex cursor-not-allowed items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left opacity-60"
           >
             <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-navy/50 text-accent">
               <Icon size={20} aria-hidden="true" />

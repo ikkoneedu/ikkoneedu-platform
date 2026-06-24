@@ -22,7 +22,9 @@ export function AdmissionsFAQ({ questions }: AdmissionsFAQProps) {
           <button
             key={question}
             type="button"
-            className="group flex items-center gap-2.5 rounded-xl border border-white/5 bg-white/[0.03] px-4 py-2.5 text-left transition-colors hover:border-accent/30 hover:bg-white/[0.05]"
+            disabled
+            title="Yakında (AI)"
+            className="group flex cursor-not-allowed items-center gap-2.5 rounded-xl border border-white/5 bg-white/[0.03] px-4 py-2.5 text-left opacity-70"
           >
             <MessageCircle size={15} className="shrink-0 text-accent" aria-hidden="true" />
             <span className="text-sm text-content">{question}</span>

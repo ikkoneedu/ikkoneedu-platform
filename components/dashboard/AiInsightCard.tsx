@@ -37,7 +37,9 @@ export function AiInsightCard({
 
         <button
           type="button"
-          className="mt-4 flex items-center gap-1 text-sm font-medium text-accent transition-colors hover:text-content"
+          disabled
+          title="Yakında (AI)"
+          className="mt-4 flex cursor-not-allowed items-center gap-1 text-sm font-medium text-accent/60"
         >
           {actionLabel}
           <ArrowRight size={16} aria-hidden="true" />
