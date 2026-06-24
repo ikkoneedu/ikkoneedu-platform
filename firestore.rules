@@ -535,6 +535,30 @@ service cloud.firestore {
         || (isSchoolManager() && myTenant() == tenantId && tenantNotSuspended(tenantId));
     }
 
+    // ---- Ödev teslimleri — öğrenci kendi teslimini işaretler ----------------
+    // Gizli: öğrenci YALNIZCA kendi teslimini okur; personel hepsini okur (sayım).
+    // Genel `{document=**}` OKUMA/YAZMA kuralından HARİÇ (dışlama listeleri).
+    //  - Oluşturma/güncelleme: ÖĞRENCİ kendi adına (studentUid==uid).
+    match /tenants/{tenantId}/assignmentSubmissions/{submissionId} {
+      allow read: if isSuperAdmin()
+        || (isStaff() && myTenant() == tenantId)
+        || (isSignedIn() && resource.data.studentUid == request.auth.uid);
+      allow create: if isActiveUser() && myTenant() == tenantId
+        && tenantNotSuspended(tenantId)
+        && myRole() == 'STUDENT'
+        && request.resource.data.studentUid == request.auth.uid
+        && request.resource.data.status == 'submitted';
+      // Öğrenci kendi teslim durumunu günceller (teslim et / geri al). Kendi
+      // belgesi olduğundan alan kısıtı yerine SAHİPLİK zorlanır: studentUid
+      // değiştirilemez (başkasının teslimine dönüştürülemez) ve status geçerli.
+      allow update: if isActiveUser() && myTenant() == tenantId
+        && resource.data.studentUid == request.auth.uid
+        && request.resource.data.studentUid == request.auth.uid
+        && request.resource.data.assignmentId == resource.data.assignmentId
+        && request.resource.data.status in ['submitted', 'withdrawn'];
+      allow delete: if false;
+    }
+
     // ---- Görüşme (randevu) talepleri — veli ↔ öğretmen/yönetim --------------
     // Gizli: veli YALNIZCA kendi talebini okur; personel hepsini okur. Genel
     // `{document=**}` OKUMA kuralından HARİÇ tutulur (aşağıdaki dışlama listesi).
@@ -587,7 +611,7 @@ service cloud.firestore {
       allow read: if isTenantMember(tenantId)
         && !(document[0] in ['messages', 'notifications', 'students', 'parents',
              'teachers', 'admissions', 'admissionMeetings', 'leads', 'appointments',
-             'payments', 'auditLogs', 'meetingRequests']);
+             'payments', 'auditLogs', 'meetingRequests', 'assignmentSubmissions']);
       // Askıdaki okulun personeli veri yazamaz (süper admin ayrı kurallarla erişir).
       // Özel-kurallı koleksiyonlar bu yazımdan HARİÇ.
       // (Sınıflar/duyuru/program/not/yoklama bu kuralda kalır: personel yazar.)
@@ -595,7 +619,8 @@ service cloud.firestore {
         && tenantNotSuspended(tenantId)
         && !(document[0] in ['messages', 'students', 'parents', 'teachers',
              'admissions', 'admissionMeetings', 'leads', 'appointments',
-             'payments', 'settings', 'auditLogs', 'meetingRequests']);
+             'payments', 'settings', 'auditLogs', 'meetingRequests',
+             'assignmentSubmissions']);
     }
 
     // ---- Global CRM (collection group) — yalnızca SUPER_ADMIN -------------

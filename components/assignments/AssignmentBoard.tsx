@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { ClipboardList, Send, AlertCircle, CheckCircle2, CalendarClock } from "lucide-react";
+import { ClipboardList, Send, AlertCircle, CheckCircle2, CalendarClock, Check, Undo2, Users } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
@@ -14,6 +14,12 @@ import {
 } from "@/lib/services/assignments";
 import { listMyClasses, type ClassRecord } from "@/lib/services/access-codes";
 import { createNotification, notifyClassMembers } from "@/lib/services/notifications";
+import {
+  markSubmitted,
+  withdrawSubmission,
+  listMySubmissions,
+  listAllSubmissions,
+} from "@/lib/services/submissions";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const STAFF_ROLES = [
@@ -36,11 +42,15 @@ export function AssignmentBoard({ readOnly = false }: { readOnly?: boolean }) {
   const isStaff =
     profile != null && (STAFF_ROLES as readonly string[]).includes(profile.role);
   const isTeacher = profile?.role === ROLES.TEACHER;
+  const isStudent = profile?.role === ROLES.STUDENT;
   // Veli/öğrenci paneli (readOnly): ödev verme formu hiç gösterilmez.
   const canCompose = !readOnly && isStaff;
 
   const [items, setItems] = useState<Assignment[] | null>(null);
   const [classes, setClasses] = useState<ClassRecord[]>([]);
+  const [submittedIds, setSubmittedIds] = useState<Set<string>>(new Set());
+  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [togglingId, setTogglingId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [posted, setPosted] = useState(false);
@@ -52,10 +62,47 @@ export function AssignmentBoard({ readOnly = false }: { readOnly?: boolean }) {
       if (isTeacher && user) {
         setClasses(await listMyClasses(tenantId, user.uid));
       }
+      // Öğrenci: kendi teslimleri. Personel: ödev başına teslim sayısı.
+      if (isStudent && user) {
+        const subs = await listMySubmissions(tenantId, user.uid);
+        setSubmittedIds(
+          new Set(subs.filter((s) => s.status === "submitted").map((s) => s.assignmentId)),
+        );
+      } else if (isStaff) {
+        const subs = await listAllSubmissions(tenantId);
+        const map: Record<string, number> = {};
+        for (const s of subs) {
+          if (s.status === "submitted") map[s.assignmentId] = (map[s.assignmentId] ?? 0) + 1;
+        }
+        setCounts(map);
+      }
     } catch (err) {
       setError(getAuthErrorMessage(err));
     }
-  }, [tenantId, isTeacher, user]);
+  }, [tenantId, isTeacher, isStudent, isStaff, user]);
+
+  const toggleSubmission = async (assignmentId: string) => {
+    if (!tenantId || !user || togglingId) return;
+    setTogglingId(assignmentId);
+    setError(null);
+    try {
+      if (submittedIds.has(assignmentId)) {
+        await withdrawSubmission(tenantId, assignmentId, user.uid);
+        setSubmittedIds((prev) => {
+          const next = new Set(prev);
+          next.delete(assignmentId);
+          return next;
+        });
+      } else {
+        await markSubmitted(tenantId, assignmentId, user.uid, profile?.displayName ?? "Öğrenci");
+        setSubmittedIds((prev) => new Set(prev).add(assignmentId));
+      }
+    } catch (err) {
+      setError(getAuthErrorMessage(err));
+    } finally {
+      setTogglingId(null);
+    }
+  };
 
   useEffect(() => {
     if (firebaseReady && tenantId) void refresh();
@@ -208,10 +255,46 @@ export function AssignmentBoard({ readOnly = false }: { readOnly?: boolean }) {
                   )}
                 </div>
                 <p className="mt-1 text-sm leading-relaxed text-muted">{a.description}</p>
-                <p className="mt-2 text-xs text-muted/70">
-                  {a.className ? `${a.className} · ` : "Tüm okul · "}
-                  {a.authorName}
-                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <p className="text-xs text-muted/70">
+                    {a.className ? `${a.className} · ` : "Tüm okul · "}
+                    {a.authorName}
+                  </p>
+                  {/* Personel: kaç öğrenci teslim etti */}
+                  {isStaff && (
+                    <span className="ml-auto inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] font-medium text-muted">
+                      <Users size={12} aria-hidden="true" />
+                      {counts[a.id] ?? 0} teslim
+                    </span>
+                  )}
+                  {/* Öğrenci: teslim et / geri al */}
+                  {isStudent && submittedIds.has(a.id) && (
+                    <span className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-300">
+                      <Check size={13} aria-hidden="true" /> Teslim Edildi
+                    </span>
+                  )}
+                  {isStudent && submittedIds.has(a.id) && (
+                    <button
+                      type="button"
+                      onClick={() => void toggleSubmission(a.id)}
+                      disabled={togglingId === a.id}
+                      className="inline-flex items-center gap-1 text-[11px] text-muted transition hover:text-content disabled:opacity-50"
+                      aria-label="Teslimi geri al"
+                    >
+                      <Undo2 size={12} aria-hidden="true" /> geri al
+                    </button>
+                  )}
+                  {isStudent && !submittedIds.has(a.id) && (
+                    <button
+                      type="button"
+                      onClick={() => void toggleSubmission(a.id)}
+                      disabled={togglingId === a.id}
+                      className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-medium text-accent transition hover:bg-accent/20 disabled:opacity-50"
+                    >
+                      <Send size={14} aria-hidden="true" /> Teslim Et
+                    </button>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
