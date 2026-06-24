@@ -17,6 +17,7 @@ import { ParentSummary } from "@/components/parent/ParentSummary";
 import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
 import { AssignmentBoard } from "@/components/assignments/AssignmentBoard";
 import { MessagingPanel } from "@/components/messaging/MessagingPanel";
+import { MeetingRequests } from "@/components/meetings/MeetingRequests";
 import { GradeBoard } from "@/components/grades/GradeBoard";
 import { ScheduleBoard } from "@/components/schedule/ScheduleBoard";
 import { AttendanceBoard } from "@/components/attendance/AttendanceBoard";
@@ -88,6 +89,9 @@ export default function ParentPage() {
 
         {/* Mesajlaşma (canlı — veli öğretmene mesaj gönderebilir) */}
         <MessagingPanel />
+
+        {/* Öğretmen görüşmesi (canlı — veli randevu talep eder, durumunu görür) */}
+        <MeetingRequests />
 
         {/* Notlar (canlı — "Notları/Raporları İncele" buraya kaydırır) */}
         <div id="notlar" className="scroll-mt-20">

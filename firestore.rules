@@ -535,6 +535,27 @@ service cloud.firestore {
         || (isSchoolManager() && myTenant() == tenantId && tenantNotSuspended(tenantId));
     }
 
+    // ---- Görüşme (randevu) talepleri — veli ↔ öğretmen/yönetim --------------
+    // Gizli: veli YALNIZCA kendi talebini okur; personel hepsini okur. Genel
+    // `{document=**}` OKUMA kuralından HARİÇ tutulur (aşağıdaki dışlama listesi).
+    //  - Oluşturma: VELİ kendi adına ('requested', parentUid==uid).
+    //  - Güncelleme: yalnızca personel (onayla/reddet + not).
+    match /tenants/{tenantId}/meetingRequests/{requestId} {
+      allow read: if isSuperAdmin()
+        || (isStaff() && myTenant() == tenantId)
+        || (isSignedIn() && resource.data.parentUid == request.auth.uid);
+      // Veli kendi görüşme talebini oluşturur (status 'requested').
+      allow create: if isActiveUser() && myTenant() == tenantId
+        && tenantNotSuspended(tenantId)
+        && myRole() == 'PARENT'
+        && request.resource.data.parentUid == request.auth.uid
+        && request.resource.data.status == 'requested';
+      // Yanıt yalnızca personel: durum/yanıt notu güncellenir.
+      allow update: if isStaff() && myTenant() == tenantId
+        && tenantNotSuspended(tenantId);
+      allow delete: if false;
+    }
+
     // ---- Servis rotaları — okuma/oluşturma/silme catch-all (personel) ile
     //      yönetilir. Bu EK kural yalnızca SERVİS ŞOFÖRÜNÜN (DRIVER) canlı KONUM
     //      alanlarını güncellemesine izin verir (başka alana dokunamaz). Additive
@@ -566,7 +587,7 @@ service cloud.firestore {
       allow read: if isTenantMember(tenantId)
         && !(document[0] in ['messages', 'notifications', 'students', 'parents',
              'teachers', 'admissions', 'admissionMeetings', 'leads', 'appointments',
-             'payments', 'auditLogs']);
+             'payments', 'auditLogs', 'meetingRequests']);
       // Askıdaki okulun personeli veri yazamaz (süper admin ayrı kurallarla erişir).
       // Özel-kurallı koleksiyonlar bu yazımdan HARİÇ.
       // (Sınıflar/duyuru/program/not/yoklama bu kuralda kalır: personel yazar.)
@@ -574,7 +595,7 @@ service cloud.firestore {
         && tenantNotSuspended(tenantId)
         && !(document[0] in ['messages', 'students', 'parents', 'teachers',
              'admissions', 'admissionMeetings', 'leads', 'appointments',
-             'payments', 'settings', 'auditLogs']);
+             'payments', 'settings', 'auditLogs', 'meetingRequests']);
     }
 
     // ---- Global CRM (collection group) — yalnızca SUPER_ADMIN -------------

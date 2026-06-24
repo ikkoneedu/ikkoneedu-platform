@@ -14,6 +14,7 @@ import { ScheduleBoard } from "@/components/schedule/ScheduleBoard";
 import { MyTimetable } from "@/components/teacher/MyTimetable";
 import { MyClasses } from "@/components/teacher/MyClasses";
 import { AttendanceBoard } from "@/components/attendance/AttendanceBoard";
+import { MeetingRequests } from "@/components/meetings/MeetingRequests";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { productName } from "@/lib/constants";
 import { teacherQuickActions } from "@/lib/mock-data";
@@ -81,6 +82,9 @@ export default function TeacherPage() {
 
         {/* Mesajlaşma (canlı) */}
         <MessagingPanel />
+
+        {/* Veli görüşme talepleri (canlı — öğretmen onaylar/reddeder) */}
+        <MeetingRequests />
 
         {/* Notlar (canlı) */}
         <GradeBoard />
