@@ -6,6 +6,7 @@ import {
   CalendarDays,
   Bus,
   UtensilsCrossed,
+  NotebookPen,
   ChevronRight,
   ArrowRight,
   type LucideIcon,
@@ -110,7 +111,13 @@ export default function ParentPage() {
         {/* Okul yaşamı — gerçek modüller (etkinlik, yemek, servis). */}
         <section>
           <h2 className="mb-4 text-lg font-semibold text-content">Okul Yaşamı</h2>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <FeatureLinkCard
+              href="/lesson-plans"
+              icon={NotebookPen}
+              title="Ders Planları"
+              description="Çocuğunuzun sınıfının ders planlarını görüntüleyin."
+            />
             <FeatureLinkCard
               href="/events"
               icon={CalendarDays}
