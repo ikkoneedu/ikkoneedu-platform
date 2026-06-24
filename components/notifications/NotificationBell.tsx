@@ -18,16 +18,30 @@ export function NotificationBell() {
   useEffect(() => {
     if (!firebaseReady || !tenantId || !user) return;
     let active = true;
-    void (async () => {
+
+    const fetchUnread = async () => {
       try {
         const rows = await listNotificationsForCurrentUser(tenantId, user.uid);
         if (active) setUnread(rows.filter((n) => !n.read).length);
       } catch {
         if (active) setUnread(0);
       }
-    })();
+    };
+
+    void fetchUnread();
+
+    // Sekmeye geri dönünce / pencere odaklanınca sayacı tazele (canlı his).
+    const onFocus = () => void fetchUnread();
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void fetchUnread();
+    };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onVisible);
+
     return () => {
       active = false;
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, [firebaseReady, tenantId, user]);
 
