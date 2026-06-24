@@ -27,6 +27,10 @@ import {
   HeartHandshake,
   Wallet,
   Award,
+  CalendarCheck,
+  UtensilsCrossed,
+  Bus,
+  NotebookPen,
   type LucideIcon,
 } from "lucide-react";
 
@@ -85,6 +89,10 @@ export const navigationItems: NavigationItem[] = [
   { id: "bursluluk", label: "Bursluluk Sınavı", href: "/scholarship-exam", icon: Award },
   { id: "karne-asistani", label: "AI Karne Asistanı", href: "/report-card-ai", icon: ClipboardPen },
   { id: "rehberlik", label: "Rehberlik Merkezi", href: "/counseling", icon: HeartHandshake },
+  { id: "ders-planlari", label: "Ders Planları", href: "/lesson-plans", icon: NotebookPen },
+  { id: "etkinlikler", label: "Etkinlikler", href: "/events", icon: CalendarCheck },
+  { id: "yemek", label: "Yemek Listesi", href: "/lunch-menu", icon: UtensilsCrossed },
+  { id: "servis", label: "Servis Takibi", href: "/bus-routes", icon: Bus },
   { id: "finans", label: "Finans Merkezi", href: "/finance", icon: Wallet },
   { id: "crm", label: "CRM", href: "/crm", icon: Contact },
   { id: "messages", label: "Mesajlar", href: "/messages", icon: MessageSquare },
