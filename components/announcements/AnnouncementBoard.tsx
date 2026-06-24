@@ -12,6 +12,7 @@ import {
   listAnnouncements,
   type Announcement,
 } from "@/lib/services/announcements";
+import { listMyClasses, type ClassRecord } from "@/lib/services/access-codes";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const STAFF_ROLES = [
@@ -37,15 +38,20 @@ function formatDate(date: Date | null): string {
 
 /**
  * Duyuru panosu — tüm tenant üyeleri okur; personel yeni duyuru yazar.
- * Yalnızca giriş yapmış kullanıcı + Firebase aktifken görünür.
+ * `readOnly` verildiğinde (veli/öğrenci paneli) yayınlama formu hiç gösterilmez,
+ * kim bakarsa baksın salt-okunur kalır.
  */
-export function AnnouncementBoard() {
+export function AnnouncementBoard({ readOnly = false }: { readOnly?: boolean }) {
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const canPost =
-    profile != null && (STAFF_ROLES as readonly string[]).includes(profile.role);
+    !readOnly &&
+    profile != null &&
+    (STAFF_ROLES as readonly string[]).includes(profile.role);
+  const isTeacher = profile?.role === ROLES.TEACHER;
 
   const [items, setItems] = useState<Announcement[] | null>(null);
+  const [classes, setClasses] = useState<ClassRecord[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [posted, setPosted] = useState(false);
@@ -54,10 +60,14 @@ export function AnnouncementBoard() {
     if (!tenantId) return;
     try {
       setItems(await listAnnouncements(tenantId));
+      // Öğretmen kendi sınıflarına hedefli duyuru yayınlayabilsin diye yükle.
+      if (canPost && isTeacher && user) {
+        setClasses(await listMyClasses(tenantId, user.uid));
+      }
     } catch (err) {
       setError(getAuthErrorMessage(err));
     }
-  }, [tenantId]);
+  }, [tenantId, canPost, isTeacher, user]);
 
   useEffect(() => {
     if (firebaseReady && tenantId) void refresh();
@@ -70,6 +80,7 @@ export function AnnouncementBoard() {
     const data = new FormData(form);
     const title = String(data.get("title") ?? "").trim();
     const body = String(data.get("body") ?? "").trim();
+    const classId = String(data.get("classId") ?? "").trim();
     if (!title || !body) return;
 
     setBusy(true);
@@ -82,6 +93,8 @@ export function AnnouncementBoard() {
         authorName: profile?.displayName ?? "Yetkili",
         title,
         body,
+        // Sınıf seçildiyse yalnızca o sınıfa hedeflenir; boşsa tüm okul.
+        targetClassIds: classId ? [classId] : [],
       });
       form.reset();
       setPosted(true);
@@ -118,6 +131,23 @@ export function AnnouncementBoard() {
                 className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
+            {isTeacher && classes.length > 0 && (
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-muted">Hedef</label>
+                <select
+                  name="classId"
+                  defaultValue=""
+                  className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                >
+                  <option value="" className="bg-surface">Tüm okul</option>
+                  {classes.map((c) => (
+                    <option key={c.id} value={c.id} className="bg-surface">
+                      {c.name} (sınıf + velileri)
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
             {error && (
               <p className="flex items-center gap-2 rounded-xl border border-brand/30 bg-brand/10 px-4 py-3 text-sm text-brand">
                 <AlertCircle size={16} aria-hidden="true" />

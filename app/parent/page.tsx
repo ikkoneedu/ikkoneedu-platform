@@ -77,20 +77,22 @@ export default function ParentPage() {
         {/* Canlı özet — çocuğun not/yoklama/ödev sayıları */}
         <ParentSummary />
 
-        {/* Okul duyuruları (canlı) */}
-        <AnnouncementBoard />
+        {/* Okul duyuruları (canlı — veli yalnızca görüntüler) */}
+        <AnnouncementBoard readOnly />
 
-        {/* Ödevler (canlı) */}
-        <AssignmentBoard />
+        {/* Ödevler (canlı — veli yalnızca görüntüler) */}
+        <AssignmentBoard readOnly />
 
-        {/* Mesajlaşma (canlı) */}
+        {/* Mesajlaşma (canlı — veli öğretmene mesaj gönderebilir) */}
         <MessagingPanel />
 
-        {/* Notlar (canlı) */}
-        <GradeBoard />
+        {/* Notlar (canlı — "Notları/Raporları İncele" buraya kaydırır) */}
+        <div id="notlar" className="scroll-mt-20">
+          <GradeBoard />
+        </div>
 
-        {/* Ders programı (canlı) */}
-        <ScheduleBoard />
+        {/* Ders programı (canlı — veli yalnızca görüntüler) */}
+        <ScheduleBoard readOnly />
 
         {/* Yoklama (canlı) */}
         <AttendanceBoard />

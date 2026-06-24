@@ -30,12 +30,14 @@ const STAFF_ROLES = [
  * Ders programı panosu — personel program ekler; öğrenci/veli kendi sınıfının
  * programını görür. Yalnızca giriş yapmış kullanıcı + Firebase aktifken görünür.
  */
-export function ScheduleBoard() {
+export function ScheduleBoard({ readOnly = false }: { readOnly?: boolean }) {
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const isStaff =
     profile != null && (STAFF_ROLES as readonly string[]).includes(profile.role);
   const isTeacher = profile?.role === ROLES.TEACHER;
+  // Veli/öğrenci paneli (readOnly): program düzenleme formu hiç gösterilmez.
+  const canCompose = !readOnly && isStaff;
 
   const [entries, setEntries] = useState<ScheduleEntry[] | null>(null);
   const [classes, setClasses] = useState<ClassRecord[]>([]);
@@ -99,7 +101,7 @@ export function ScheduleBoard() {
 
   return (
     <div className="flex flex-col gap-6">
-      {isStaff && (
+      {canCompose && (
         <GlassCard tone="navy">
           <div className="mb-4 flex items-center gap-2">
             <CalendarDays size={18} className="text-accent" aria-hidden="true" />

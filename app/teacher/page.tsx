@@ -74,8 +74,10 @@ export default function TeacherPage() {
         {/* Duyuru panosu (canlı) */}
         <AnnouncementBoard />
 
-        {/* Ödev panosu (canlı) */}
-        <AssignmentBoard />
+        {/* Ödev panosu (canlı — öğretmen ödev verir) */}
+        <div id="odev" className="scroll-mt-20">
+          <AssignmentBoard />
+        </div>
 
         {/* Mesajlaşma (canlı) */}
         <MessagingPanel />
@@ -84,10 +86,14 @@ export default function TeacherPage() {
         <GradeBoard />
 
         {/* Ders programı (canlı) */}
-        <ScheduleBoard />
+        <div id="program" className="scroll-mt-20">
+          <ScheduleBoard />
+        </div>
 
-        {/* Yoklama (canlı) */}
-        <AttendanceBoard />
+        {/* Yoklama (canlı — öğretmen yoklama girer) */}
+        <div id="yoklama" className="scroll-mt-20">
+          <AttendanceBoard />
+        </div>
 
         {/* Yakında gelecek öğretmen özellikleri — dürüst placeholder (sahte veri yok). */}
         <section>

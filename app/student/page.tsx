@@ -67,20 +67,20 @@ export default function StudentPage() {
         {/* Canlı öğrenci bilgisi (gerçek Firestore — yalnızca giriş yapmış öğrencide) */}
         <StudentProfileCard />
 
-        {/* Okul duyuruları (canlı) */}
-        <AnnouncementBoard />
+        {/* Okul duyuruları (canlı — öğrenci yalnızca görüntüler) */}
+        <AnnouncementBoard readOnly />
 
-        {/* Ödevler (canlı) */}
-        <AssignmentBoard />
+        {/* Ödevler (canlı — öğrenci yalnızca görüntüler) */}
+        <AssignmentBoard readOnly />
 
-        {/* Mesajlaşma (canlı) */}
+        {/* Mesajlaşma (canlı — öğrenci öğretmenine mesaj gönderebilir) */}
         <MessagingPanel />
 
         {/* Notlar (canlı) */}
         <GradeBoard />
 
-        {/* Ders programı (canlı) */}
-        <ScheduleBoard />
+        {/* Ders programı (canlı — öğrenci yalnızca görüntüler) */}
+        <ScheduleBoard readOnly />
 
         {/* Yoklama (canlı) */}
         <AttendanceBoard />

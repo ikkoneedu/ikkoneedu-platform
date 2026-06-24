@@ -29,12 +29,14 @@ const STAFF_ROLES = [
  * Ödev panosu — personel ödev verir; öğrenci/veli kendi sınıfının ödevlerini görür.
  * Yalnızca giriş yapmış kullanıcı + Firebase aktifken görünür.
  */
-export function AssignmentBoard() {
+export function AssignmentBoard({ readOnly = false }: { readOnly?: boolean }) {
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const isStaff =
     profile != null && (STAFF_ROLES as readonly string[]).includes(profile.role);
   const isTeacher = profile?.role === ROLES.TEACHER;
+  // Veli/öğrenci paneli (readOnly): ödev verme formu hiç gösterilmez.
+  const canCompose = !readOnly && isStaff;
 
   const [items, setItems] = useState<Assignment[] | null>(null);
   const [classes, setClasses] = useState<ClassRecord[]>([]);
@@ -104,7 +106,7 @@ export function AssignmentBoard() {
 
   return (
     <div className="flex flex-col gap-6">
-      {isStaff && (
+      {canCompose && (
         <GlassCard tone="navy">
           <div className="mb-4 flex items-center gap-2">
             <ClipboardList size={18} className="text-accent" aria-hidden="true" />
