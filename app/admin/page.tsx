@@ -9,8 +9,6 @@ import {
   Moon,
   CircleUser,
   Download,
-  Star,
-  StarHalf,
 } from "lucide-react";
 import Link from "next/link";
 import { Sidebar } from "@/components/layout/Sidebar";
@@ -19,26 +17,17 @@ import { AccountSummaryCard } from "@/components/shared/AccountSummaryCard";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
-import { MetricCard } from "@/components/dashboard/MetricCard";
 import { TenantOverview } from "@/components/dashboard/TenantOverview";
 import { LiveExecutiveMetrics } from "@/components/executive/LiveExecutiveMetrics";
 import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
 import { MeetingRequests } from "@/components/meetings/MeetingRequests";
 import { AiInsightCard } from "@/components/dashboard/AiInsightCard";
-import { PerformanceChart } from "@/components/dashboard/PerformanceChart";
-import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import {
   productName,
   adminNavigationItems,
   adminMobileNavItems,
   adminTopbarLinks,
 } from "@/lib/constants";
-import {
-  adminMetrics,
-  campusPerformance,
-  adminActivities,
-  type AdminMetric,
-} from "@/lib/mock-data";
 
 /* Kenar çubuğu alt alanı: birincil eylem + yardımcı bağlantılar */
 function SidebarFooter() {
@@ -110,76 +99,6 @@ function TopbarActions() {
   );
 }
 
-/* Metrik kartı alt görseli (sparkline / kapasite / puan) */
-function MetricVisual({ metric }: { metric: AdminMetric }) {
-  switch (metric.visual) {
-    case "sparkline":
-      return (
-        <div className="relative h-10 w-full overflow-hidden rounded border-b-2 border-accent/50 bg-gradient-to-r from-accent/5 to-accent/20">
-          <div
-            className="absolute bottom-0 left-0 h-full w-full bg-accent/10"
-            style={{
-              clipPath:
-                "polygon(0 100%, 10% 80%, 30% 90%, 50% 60%, 70% 70%, 90% 30%, 100% 40%, 100% 100%)",
-            }}
-          />
-        </div>
-      );
-    case "sparkline-positive":
-      return (
-        <div className="relative h-10 w-full overflow-hidden rounded border-b-2 border-emerald-400/50 bg-gradient-to-r from-emerald-400/5 to-emerald-400/20">
-          <div
-            className="absolute bottom-0 left-0 h-full w-full bg-emerald-400/10"
-            style={{
-              clipPath:
-                "polygon(0 100%, 20% 70%, 40% 80%, 60% 40%, 80% 50%, 100% 20%, 100% 100%)",
-            }}
-          />
-        </div>
-      );
-    case "capacity":
-      return (
-        <div>
-          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/10">
-            <div
-              className="h-full rounded-full bg-accent/70"
-              style={{ width: `${metric.capacity ?? 0}%` }}
-            />
-          </div>
-          <p className="mt-2 text-right text-xs text-muted">
-            Kapasite: %{metric.capacity}
-          </p>
-        </div>
-      );
-    case "rating":
-      return <StarRating value={metric.rating ?? 0} />;
-    default:
-      return null;
-  }
-}
-
-/* Puan görseli: dolu / yarım / boş yıldızlar */
-function StarRating({ value }: { value: number }) {
-  return (
-    <div className="mt-2 flex gap-1" aria-label={`${value} / 5 puan`}>
-      {Array.from({ length: 5 }).map((_, index) => {
-        const position = index + 1;
-        if (position <= Math.floor(value)) {
-          return (
-            <Star key={index} size={20} className="fill-accent text-accent" aria-hidden="true" />
-          );
-        }
-        if (position - 0.5 <= value) {
-          return (
-            <StarHalf key={index} size={20} className="fill-accent text-accent" aria-hidden="true" />
-          );
-        }
-        return <Star key={index} size={20} className="text-white/20" aria-hidden="true" />;
-      })}
-    </div>
-  );
-}
-
 export default function AdminPage() {
   return (
     <div className="mesh-bg min-h-screen w-full lg:pl-64">
@@ -238,42 +157,15 @@ export default function AdminPage() {
               <MeetingRequests />
             </div>
 
-            {/* Metrik kartları */}
-            <section className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-              {adminMetrics.map((metric) => (
-                <MetricCard
-                  key={metric.id}
-                  label={metric.label}
-                  value={metric.value}
-                  delta={metric.delta}
-                  trend={metric.trend}
-                  icon={metric.icon}
-                >
-                  <MetricVisual metric={metric} />
-                </MetricCard>
-              ))}
-            </section>
-
-            {/* Ana düzen: sol (AI öngörü + grafik), sağ (aktiviteler) */}
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-              <div className="space-y-6 lg:col-span-2">
-                <AiInsightCard eyebrow="AI Zekası Öngörüsü">
-                  &ldquo;Yapay zeka analizlerine göre, uygulanan yeni müfredat
-                  destek programı sayesinde bu hafta okul genel performansında{" "}
-                  <span className="text-glow font-bold text-accent">
-                    %5 artış
-                  </span>{" "}
-                  öngörülüyor.&rdquo;
-                </AiInsightCard>
-
-                <PerformanceChart
-                  title="Kampüs Performans Analizi"
-                  data={campusPerformance}
-                />
-              </div>
-
-              <ActivityFeed title="Son Aktiviteler" items={adminActivities} />
-            </div>
+            {/* AI öngörüleri — dürüst "Yakında" (sahte metrik/grafik yok;
+                gerçek veriler yukarıda TenantOverview + LiveExecutiveMetrics). */}
+            <AiInsightCard eyebrow="AI Zekası · Yakında">
+              Yapay zeka destekli okul performans öngörüleri ve erken uyarı
+              analizleri{" "}
+              <span className="text-glow font-bold text-accent">yakında</span>{" "}
+              bu alanda. Devamsızlık, akademik gidişat ve tahsilat verilerini
+              birleştirip eyleme dönük öneriler sunacak.
+            </AiInsightCard>
           </div>
         </main>
       </div>
