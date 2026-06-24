@@ -7,6 +7,7 @@ import {
   Bus,
   UtensilsCrossed,
   ChevronRight,
+  ArrowRight,
   type LucideIcon,
 } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
@@ -30,29 +31,31 @@ export const metadata: Metadata = {
     "Çocuğunuzun okul yaşamını, duyurularını ve gelişimini tek ekrandan takip edin.",
 };
 
-/** Dürüst "Yakında" kartı — sahte veri yerine net placeholder (premium görünüm). */
-function ComingSoonCard({
+/** Okul yaşamı modülüne yönlendiren kart (gerçek sayfa). */
+function FeatureLinkCard({
+  href,
   icon: Icon,
   title,
   description,
 }: {
+  href: string;
   icon: LucideIcon;
   title: string;
   description: string;
 }) {
   return (
-    <GlassCard tone="navy" className="flex h-full flex-col">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent/20 bg-navy/50 text-accent">
-          <Icon size={20} aria-hidden="true" />
-        </span>
-        <span className="rounded-full border border-accent/20 bg-accent/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
-          Yakında
-        </span>
-      </div>
-      <h2 className="text-base font-semibold text-content">{title}</h2>
-      <p className="mt-1 text-sm leading-relaxed text-muted">{description}</p>
-    </GlassCard>
+    <Link href={href}>
+      <GlassCard tone="navy" interactive className="flex h-full flex-col">
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent/20 bg-navy/50 text-accent">
+            <Icon size={20} aria-hidden="true" />
+          </span>
+          <ArrowRight size={16} className="text-muted" aria-hidden="true" />
+        </div>
+        <h2 className="text-base font-semibold text-content">{title}</h2>
+        <p className="mt-1 text-sm leading-relaxed text-muted">{description}</p>
+      </GlassCard>
+    </Link>
   );
 }
 
@@ -100,24 +103,27 @@ export default function ParentPage() {
         {/* Ödeme durumu (canlı — bağlı öğrenci) */}
         <ParentFinanceCard />
 
-        {/* Yakında gelecek veli özellikleri — dürüst placeholder (sahte veri yok). */}
+        {/* Okul yaşamı — gerçek modüller (etkinlik, yemek, servis). */}
         <section>
-          <h2 className="mb-4 text-lg font-semibold text-content">Yakında</h2>
+          <h2 className="mb-4 text-lg font-semibold text-content">Okul Yaşamı</h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-            <ComingSoonCard
+            <FeatureLinkCard
+              href="/events"
               icon={CalendarDays}
               title="Etkinlik Takvimi"
-              description="Okul etkinlikleri ve veli toplantıları burada listelenecek."
+              description="Okul etkinliklerini ve veli toplantılarını görüntüleyin."
             />
-            <ComingSoonCard
+            <FeatureLinkCard
+              href="/lunch-menu"
               icon={UtensilsCrossed}
               title="Yemek Listesi"
-              description="Haftalık yemek menüsü burada yayınlanacak."
+              description="Günlük yemek menüsünü görüntüleyin."
             />
-            <ComingSoonCard
+            <FeatureLinkCard
+              href="/bus-routes"
               icon={Bus}
               title="Servis Takibi"
-              description="Servis konumu ve tahmini varış süresi burada görünecek."
+              description="Servis rotalarını, durakları ve saatleri görüntüleyin."
             />
           </div>
         </section>

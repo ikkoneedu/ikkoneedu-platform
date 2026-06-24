@@ -683,13 +683,11 @@ export interface QuickAction {
 }
 
 export const parentQuickActions: QuickAction[] = [
-  // Çalışan aksiyonlar: mesajlaşma (/messages) ve not panosuna (#notlar) kaydırma.
   { id: "mesaj", label: "Öğretmene Mesaj Gönder", icon: MessageSquare, href: "/messages" },
   { id: "rapor", label: "Notları/Raporları İncele", icon: FileText, href: "#notlar" },
-  // Henüz modülü kurulmamış özellikler → /coming-soon (dürüst "Yakında").
-  { id: "etkinlik", label: "Etkinliğe Katıl", icon: CalendarCheck },
-  { id: "yemek", label: "Yemek Listesini Gör", icon: UtensilsCrossed },
-  { id: "servis", label: "Servisi Takip Et", icon: Bus },
+  { id: "etkinlik", label: "Etkinlikleri Gör", icon: CalendarCheck, href: "/events" },
+  { id: "yemek", label: "Yemek Listesini Gör", icon: UtensilsCrossed, href: "/lunch-menu" },
+  { id: "servis", label: "Servisi Takip Et", icon: Bus, href: "/bus-routes" },
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -799,7 +797,7 @@ export const teacherQuickActions: QuickAction[] = [
   // mesaj merkezine gider. Yoklama/ödev/mesaj öğretmen panosunda gerçek çalışır.
   { id: "yoklama", label: "Yoklama Al", icon: ClipboardCheck, href: "#yoklama" },
   { id: "odev", label: "Ödev Ver", icon: FilePlus, href: "#odev" },
-  { id: "ders-plani", label: "Ders Programı", icon: CalendarDays, href: "#program" },
+  { id: "ders-plani", label: "Ders Planı Hazırla", icon: CalendarDays, href: "/lesson-plans" },
   { id: "veli-mesaj", label: "Veliye Mesaj Gönder", icon: MessageSquare, href: "/messages" },
   // AI gerektiren özellikler → /coming-soon (şimdilik pasif, son fazda aktif).
   { id: "sinav", label: "Sınav Oluştur (AI)", icon: FileText },

@@ -56,6 +56,10 @@ export const COLLECTIONS = {
   SCHOLARSHIP_APPLICATIONS: "scholarshipApplications",
   CLASSES: "classes",
   ACCESS_CODES: "accessCodes",
+  EVENTS: "events",
+  LUNCH_MENU: "lunchMenu",
+  BUS_ROUTES: "busRoutes",
+  LESSON_PLANS: "lessonPlans",
 } as const;
 
 export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];
@@ -160,6 +164,22 @@ export const tenantNotifications = (tenantId: string): string =>
 /** tenants/{tenantId}/leads */
 export const tenantLeads = (tenantId: string): string =>
   tenantPath(tenantId, COLLECTIONS.LEADS);
+
+/** tenants/{tenantId}/events */
+export const tenantEvents = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.EVENTS);
+
+/** tenants/{tenantId}/lunchMenu */
+export const tenantLunchMenu = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.LUNCH_MENU);
+
+/** tenants/{tenantId}/busRoutes */
+export const tenantBusRoutes = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.BUS_ROUTES);
+
+/** tenants/{tenantId}/lessonPlans */
+export const tenantLessonPlans = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.LESSON_PLANS);
 
 /** tenants/{tenantId}/demoRequests */
 export const tenantDemoRequests = (tenantId: string): string =>

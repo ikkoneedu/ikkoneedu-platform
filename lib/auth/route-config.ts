@@ -61,6 +61,17 @@ export const PROTECTED_PREFIXES: string[] = [
   "/scheduler-ai",
   "/exam-ai",
   "/admissions-ai",
+  "/events",
+  "/lunch-menu",
+  "/bus-routes",
+  "/lesson-plans",
+];
+
+/** Okul yaşamı modülleri — tüm okul üyeleri erişir (personel oluşturur, herkes görür). */
+const SCHOOL_LIFE_ROLES: Role[] = [
+  ROLES.PARENT, ROLES.STUDENT, ROLES.TEACHER, ROLES.COORDINATOR,
+  ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL, ROLES.SCHOOL_ADMIN, ROLES.FOUNDER,
+  ROLES.PR, ROLES.SALES, ROLES.SUPPORT, ROLES.SUPER_ADMIN,
 ];
 
 /** Korumalı route → bu route'a erişebilecek roller. */
@@ -84,6 +95,11 @@ export const ROUTE_ROLES: Record<string, Role[]> = {
   ],
   "/parent": [ROLES.PARENT, ROLES.SUPER_ADMIN],
   "/student": [ROLES.STUDENT, ROLES.SUPER_ADMIN],
+  // Okul yaşamı modülleri — tüm okul üyeleri erişir.
+  "/events": SCHOOL_LIFE_ROLES,
+  "/lunch-menu": SCHOOL_LIFE_ROLES,
+  "/bus-routes": SCHOOL_LIFE_ROLES,
+  "/lesson-plans": SCHOOL_LIFE_ROLES,
   "/super-admin": [ROLES.SUPER_ADMIN],
   "/saas-admin": [ROLES.SUPER_ADMIN],
   "/settings": [ROLES.SUPER_ADMIN, ROLES.FOUNDER, ROLES.SCHOOL_ADMIN],
