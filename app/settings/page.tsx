@@ -2,48 +2,20 @@ import type { Metadata } from "next";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { LiveSettings } from "@/components/settings/LiveSettings";
-import { PlatformSettings } from "@/components/settings/PlatformSettings";
-import { TenantSettings } from "@/components/settings/TenantSettings";
-import { RoleManagement } from "@/components/settings/RoleManagement";
-import { SecuritySettings } from "@/components/settings/SecuritySettings";
-import { AiModelSettings } from "@/components/settings/AiModelSettings";
-import { NotificationSettings } from "@/components/settings/NotificationSettings";
-import { IntegrationSettings } from "@/components/settings/IntegrationSettings";
 import { FirebaseStatusCard } from "@/components/settings/FirebaseStatusCard";
 import { DataBackupSettings } from "@/components/settings/DataBackupSettings";
-import { SystemHealth } from "@/components/settings/SystemHealth";
-import { AuditLog } from "@/components/settings/AuditLog";
 import { productName } from "@/lib/constants";
-import {
-  settingsTenants,
-  settingsRoles,
-  securityOptions,
-  aiProviders,
-  aiConfig,
-  notificationChannels,
-  integrations,
-  settingsSystemHealth,
-  auditLogs,
-} from "@/lib/settings-mock-data";
 
 export const metadata: Metadata = {
   title: `Sistem Ayarları — ${productName}`,
   description:
-    "Okul, kullanıcı, güvenlik, yapay zeka ve platform yapılandırmalarını tek merkezden yönetin.",
+    "Okul yapılandırması, bağlantı durumu ve veri yedekleme tek merkezden.",
 };
 
 const categories = [
   { id: "okul-ayarlari", label: "Okul Ayarları" },
-  { id: "platform", label: "Platform" },
-  { id: "okullar", label: "Okullar" },
-  { id: "roller", label: "Roller" },
-  { id: "guvenlik", label: "Güvenlik" },
-  { id: "yapay-zeka", label: "Yapay Zeka" },
-  { id: "bildirimler", label: "Bildirimler" },
-  { id: "entegrasyonlar", label: "Entegrasyonlar" },
+  { id: "baglanti", label: "Bağlantı" },
   { id: "veri", label: "Veri" },
-  { id: "sistem", label: "Sistem" },
-  { id: "audit", label: "İşlem Geçmişi" },
 ];
 
 export default function SettingsPage() {
@@ -51,12 +23,12 @@ export default function SettingsPage() {
     <PageShell title="Sistem Ayarları">
       <div className="flex flex-col gap-8">
         <SectionHeader
-          eyebrow="Süper Admin"
+          eyebrow="Yönetim"
           title="Sistem Ayarları"
-          description="Okul, kullanıcı, güvenlik, yapay zeka ve platform yapılandırmalarını tek merkezden yönetin."
+          description="Okul yapılandırmasını, Firebase bağlantı durumunu ve veri yedeklemeyi yönetin. (Rol/güvenlik/AI ayar panelleri ilgili fazlarda eklenecek.)"
         />
 
-        {/* Kategori hızlı navigasyonu — mobilde yatay kaydırmalı */}
+        {/* Kategori hızlı navigasyonu */}
         <nav className="sticky top-16 z-20 -mx-4 overflow-x-auto border-y border-white/10 bg-background/70 px-4 py-3 backdrop-blur-xl sm:-mx-6 sm:px-6">
           <div className="flex gap-2">
             {categories.map((category) => (
@@ -76,36 +48,14 @@ export default function SettingsPage() {
           <LiveSettings />
         </section>
 
-        <section id="platform" className="scroll-mt-32">
-          <PlatformSettings />
-        </section>
-        <section id="okullar" className="scroll-mt-32">
-          <TenantSettings tenants={settingsTenants} />
-        </section>
-        <section id="roller" className="scroll-mt-32">
-          <RoleManagement roles={settingsRoles} />
-        </section>
-        <section id="guvenlik" className="scroll-mt-32">
-          <SecuritySettings options={securityOptions} />
-        </section>
-        <section id="yapay-zeka" className="scroll-mt-32">
-          <AiModelSettings providers={aiProviders} config={aiConfig} />
-        </section>
-        <section id="bildirimler" className="scroll-mt-32">
-          <NotificationSettings channels={notificationChannels} />
-        </section>
-        <section id="entegrasyonlar" className="scroll-mt-32 space-y-6">
+        {/* Firebase bağlantı durumu */}
+        <section id="baglanti" className="scroll-mt-32">
           <FirebaseStatusCard />
-          <IntegrationSettings integrations={integrations} />
         </section>
+
+        {/* Veri yedekleme / dışa aktarma (canlı) */}
         <section id="veri" className="scroll-mt-32">
           <DataBackupSettings />
-        </section>
-        <section id="sistem" className="scroll-mt-32">
-          <SystemHealth rows={settingsSystemHealth} />
-        </section>
-        <section id="audit" className="scroll-mt-32">
-          <AuditLog entries={auditLogs} />
         </section>
       </div>
     </PageShell>
