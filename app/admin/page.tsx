@@ -23,6 +23,7 @@ import { MetricCard } from "@/components/dashboard/MetricCard";
 import { TenantOverview } from "@/components/dashboard/TenantOverview";
 import { LiveExecutiveMetrics } from "@/components/executive/LiveExecutiveMetrics";
 import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
+import { MeetingRequests } from "@/components/meetings/MeetingRequests";
 import { AiInsightCard } from "@/components/dashboard/AiInsightCard";
 import { PerformanceChart } from "@/components/dashboard/PerformanceChart";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
@@ -230,6 +231,11 @@ export default function AdminPage() {
             {/* Duyuru panosu (canlı) */}
             <div className="mb-10">
               <AnnouncementBoard />
+            </div>
+
+            {/* Veli görüşme talepleri (canlı — yönetim onaylar/reddeder) */}
+            <div className="mb-10">
+              <MeetingRequests />
             </div>
 
             {/* Metrik kartları */}
