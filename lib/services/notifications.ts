@@ -20,6 +20,7 @@ import { db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { tenantNotifications } from "@/lib/firebase/collections";
 import { listStudents } from "@/lib/services/students";
 import { listParents } from "@/lib/services/parents";
+import { listTenantUsers } from "@/lib/services/users";
 
 export interface NotificationInput {
   title: string;
@@ -214,6 +215,48 @@ export async function notifyStudentParents(
     ),
   );
   return recipients.size;
+}
+
+/**
+ * ACİL DUYURU — tenant'taki TÜM kullanıcılara kişiye özel bildirim düşürür
+ * (zil rozetinde herkese görünür) + tenant akışına bir kayıt bırakır.
+ * Yalnızca okul yönetimi tarafından çağrılmalı (UI rol kapısı). Best-effort.
+ * Döner: bildirilen kişi sayısı.
+ */
+export async function notifyAllTenantMembers(
+  tenantId: string,
+  input: { title: string; body: string; createdBy: string; createdByName?: string },
+): Promise<number> {
+  if (!isFirebaseConfigured() || !db || !tenantId) return 0;
+  const users = await listTenantUsers(tenantId);
+  const recipients = users.map((u) => u.uid).filter(Boolean);
+
+  // Tenant akışına da bir "ACİL" kaydı (NotificationFeed'de görünür).
+  try {
+    await createNotification(tenantId, {
+      title: input.title,
+      body: input.body,
+      audience: "ACİL · Tüm okul",
+      channel: "in_app",
+      createdBy: input.createdBy,
+      createdByName: input.createdByName ?? "Yönetim",
+    });
+  } catch {
+    /* best-effort */
+  }
+
+  await Promise.all(
+    recipients.map((userId) =>
+      createUserNotification(tenantId, {
+        userId,
+        title: `🚨 ${input.title}`,
+        body: input.body,
+        type: "system",
+        link: "/notifications",
+      }),
+    ),
+  );
+  return recipients.length;
 }
 
 /** Geçerli kullanıcının kişisel bildirimleri (userId == uid), en yeni önce. */

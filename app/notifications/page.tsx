@@ -3,6 +3,7 @@ import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { NotificationCenter } from "@/components/notifications/NotificationCenter";
 import { NotificationFeed } from "@/components/notifications/NotificationFeed";
+import { EmergencyBroadcast } from "@/components/notifications/EmergencyBroadcast";
 import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
 import { productName } from "@/lib/constants";
 
@@ -21,6 +22,9 @@ export default function NotificationsPage() {
           title="Bildirim Merkezi"
           description="Kişisel bildirimlerinizi ve okul duyurularını tek merkezden takip edin. (Push/FCM entegrasyonu sonraki fazda.)"
         />
+
+        {/* Acil duyuru — yalnızca okul yönetiminde görünür (tüm okula anında) */}
+        <EmergencyBroadcast />
 
         {/* Kişisel bildirimler (canlı — userId == uid) */}
         <NotificationCenter />
