@@ -1,6 +1,16 @@
 import type { Metadata } from "next";
 import type { LucideIcon } from "lucide-react";
-import { Sparkles, Trophy, Target } from "lucide-react";
+import Link from "next/link";
+import {
+  Sparkles,
+  Trophy,
+  Target,
+  ArrowRight,
+  NotebookPen,
+  CalendarCheck,
+  UtensilsCrossed,
+  Bus,
+} from "lucide-react";
 import { AccountSummaryCard } from "@/components/shared/AccountSummaryCard";
 import { MyRecord } from "@/components/student/MyRecord";
 import { PageShell } from "@/components/layout/PageShell";
@@ -47,6 +57,34 @@ function ComingSoonCard({
   );
 }
 
+/** Okul yaşamı modülüne yönlendiren kart (gerçek sayfa). */
+function FeatureLinkCard({
+  href,
+  icon: Icon,
+  title,
+  description,
+}: {
+  href: string;
+  icon: LucideIcon;
+  title: string;
+  description: string;
+}) {
+  return (
+    <Link href={href}>
+      <GlassCard tone="navy" interactive className="flex h-full flex-col">
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent/20 bg-navy/50 text-accent">
+            <Icon size={20} aria-hidden="true" />
+          </span>
+          <ArrowRight size={16} className="text-muted" aria-hidden="true" />
+        </div>
+        <h2 className="text-base font-semibold text-content">{title}</h2>
+        <p className="mt-1 text-sm leading-relaxed text-muted">{description}</p>
+      </GlassCard>
+    </Link>
+  );
+}
+
 export default function StudentPage() {
   return (
     <PageShell title="Öğrenci Merkezi">
@@ -84,6 +122,37 @@ export default function StudentPage() {
 
         {/* Yoklama (canlı) */}
         <AttendanceBoard />
+
+        {/* Okul yaşamı — gerçek modüller (ders planı, etkinlik, yemek, servis). */}
+        <section>
+          <h2 className="mb-4 text-lg font-semibold text-content">Okul Yaşamı</h2>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <FeatureLinkCard
+              href="/lesson-plans"
+              icon={NotebookPen}
+              title="Ders Planları"
+              description="Sınıfının ders planlarını görüntüle."
+            />
+            <FeatureLinkCard
+              href="/events"
+              icon={CalendarCheck}
+              title="Etkinlikler"
+              description="Okul etkinliklerini takip et."
+            />
+            <FeatureLinkCard
+              href="/lunch-menu"
+              icon={UtensilsCrossed}
+              title="Yemek Listesi"
+              description="Günlük yemek menüsünü gör."
+            />
+            <FeatureLinkCard
+              href="/bus-routes"
+              icon={Bus}
+              title="Servis Takibi"
+              description="Servis rotalarını ve saatlerini gör."
+            />
+          </div>
+        </section>
 
         {/* Yakında gelecek öğrenci özellikleri — dürüst placeholder (sahte veri yok). */}
         <section>
