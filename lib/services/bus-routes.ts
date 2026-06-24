@@ -17,6 +17,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { tenantBusRoutes } from "@/lib/firebase/collections";
@@ -53,6 +54,19 @@ export async function createBusRoute(input: BusRouteInput): Promise<string | nul
     updatedAt: serverTimestamp(),
   });
   return ref.id;
+}
+
+/** Rotayı günceller (personel). */
+export async function updateBusRoute(
+  tenantId: string,
+  id: string,
+  fields: { routeName: string; driver: string; phone: string; stops: string[] },
+): Promise<void> {
+  if (!isFirebaseConfigured() || !db) return;
+  await updateDoc(doc(db, `${tenantBusRoutes(tenantId)}/${id}`), {
+    ...fields,
+    updatedAt: serverTimestamp(),
+  });
 }
 
 /** Rotayı siler (personel — kurallar zorlar). */

@@ -16,6 +16,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { tenantLunchMenu } from "@/lib/firebase/collections";
@@ -47,6 +48,19 @@ export async function createLunchMenu(input: LunchMenuInput): Promise<string | n
     updatedAt: serverTimestamp(),
   });
   return ref.id;
+}
+
+/** Menü kaydını günceller (personel). */
+export async function updateLunchMenu(
+  tenantId: string,
+  id: string,
+  fields: { date: string; items: string[] },
+): Promise<void> {
+  if (!isFirebaseConfigured() || !db) return;
+  await updateDoc(doc(db, `${tenantLunchMenu(tenantId)}/${id}`), {
+    ...fields,
+    updatedAt: serverTimestamp(),
+  });
 }
 
 /** Menü kaydını siler (personel — kurallar zorlar). */

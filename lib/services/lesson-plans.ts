@@ -16,6 +16,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { tenantLessonPlans } from "@/lib/firebase/collections";
@@ -63,6 +64,31 @@ export async function createLessonPlan(input: LessonPlanInput): Promise<string |
     updatedAt: serverTimestamp(),
   });
   return ref.id;
+}
+
+/** Ders planını günceller (personel). Sınıf hedefi de güncellenebilir. */
+export async function updateLessonPlan(
+  tenantId: string,
+  id: string,
+  fields: {
+    title: string;
+    subject: string;
+    week: string;
+    content: string;
+    classId?: string;
+    className?: string;
+  },
+): Promise<void> {
+  if (!isFirebaseConfigured() || !db) return;
+  await updateDoc(doc(db, `${tenantLessonPlans(tenantId)}/${id}`), {
+    title: fields.title,
+    subject: fields.subject,
+    week: fields.week,
+    content: fields.content,
+    classId: fields.classId ?? "",
+    className: fields.className ?? "",
+    updatedAt: serverTimestamp(),
+  });
 }
 
 /** Ders planını siler (personel — kurallar zorlar). */

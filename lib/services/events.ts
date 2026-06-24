@@ -16,6 +16,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { tenantEvents } from "@/lib/firebase/collections";
@@ -56,6 +57,19 @@ export async function createEvent(input: EventInput): Promise<string | null> {
     updatedAt: serverTimestamp(),
   });
   return ref.id;
+}
+
+/** Etkinliği günceller (personel). */
+export async function updateEvent(
+  tenantId: string,
+  id: string,
+  fields: { title: string; description: string; date: string; location: string },
+): Promise<void> {
+  if (!isFirebaseConfigured() || !db) return;
+  await updateDoc(doc(db, `${tenantEvents(tenantId)}/${id}`), {
+    ...fields,
+    updatedAt: serverTimestamp(),
+  });
 }
 
 /** Etkinliği siler (personel — kurallar zorlar). */

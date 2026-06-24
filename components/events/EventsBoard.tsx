@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { CalendarDays, MapPin, Send, AlertCircle, CheckCircle2, Trash2 } from "lucide-react";
+import { CalendarDays, MapPin, Send, AlertCircle, CheckCircle2, Trash2, Pencil, X } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
-import { createEvent, deleteEvent, listEvents, type EventRecord } from "@/lib/services/events";
+import { createEvent, updateEvent, deleteEvent, listEvents, type EventRecord } from "@/lib/services/events";
 import { createNotification } from "@/lib/services/notifications";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
@@ -24,8 +24,8 @@ function fmtDate(iso: string): string {
 }
 
 /**
- * Etkinlik takvimi — GERÇEK Firestore. Personel etkinlik ekler; tüm tenant
- * üyeleri görür. Tenant izole. `readOnly` ile oluşturma formu gizlenir.
+ * Etkinlik takvimi — GERÇEK Firestore. Personel etkinlik ekler/düzenler/siler;
+ * tüm tenant üyeleri görür. Tenant izole. `readOnly` ile form gizlenir.
  */
 export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
   const { user, profile, firebaseReady } = useAuth();
@@ -36,6 +36,7 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     if (!tenantId) return;
@@ -50,8 +51,18 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
     if (firebaseReady && tenantId) void refresh();
   }, [firebaseReady, tenantId, refresh]);
 
+  const editing = editId ? items?.find((x) => x.id === editId) ?? null : null;
+
+  const startEdit = (ev: EventRecord) => {
+    setEditId(ev.id);
+    setError(null);
+    setSaved(false);
+  };
+  const cancelEdit = () => setEditId(null);
+
   const handleDelete = async (id: string) => {
     if (!tenantId) return;
+    if (editId === id) setEditId(null);
     try {
       await deleteEvent(tenantId, id);
       setItems((prev) => prev?.filter((x) => x.id !== id) ?? prev);
@@ -74,22 +85,27 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
     setError(null);
     setSaved(false);
     try {
-      await createEvent({
-        tenantId, authorUid: user.uid, authorName: profile?.displayName ?? "Yetkili",
-        title, date, location, description,
-      });
-      try {
-        await createNotification(tenantId, {
-          title: `Yeni etkinlik: ${title}`,
-          body: location ? `${date} · ${location}` : date,
-          audience: "Tüm okul",
-          createdBy: user.uid,
-          createdByName: profile?.displayName ?? "Yetkili",
+      if (editId) {
+        await updateEvent(tenantId, editId, { title, date, location, description });
+        setEditId(null);
+      } else {
+        await createEvent({
+          tenantId, authorUid: user.uid, authorName: profile?.displayName ?? "Yetkili",
+          title, date, location, description,
         });
-      } catch {
-        /* bildirim best-effort */
+        try {
+          await createNotification(tenantId, {
+            title: `Yeni etkinlik: ${title}`,
+            body: location ? `${date} · ${location}` : date,
+            audience: "Tüm okul",
+            createdBy: user.uid,
+            createdByName: profile?.displayName ?? "Yetkili",
+          });
+        } catch {
+          /* bildirim best-effort */
+        }
+        form.reset();
       }
-      form.reset();
       setSaved(true);
       await refresh();
     } catch (err) {
@@ -111,20 +127,34 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
     <div className="flex flex-col gap-6">
       {canCreate && (
         <GlassCard tone="navy">
-          <div className="mb-4 flex items-center gap-2">
-            <CalendarDays size={18} className="text-accent" aria-hidden="true" />
-            <h2 className="text-lg font-semibold text-content">Etkinlik Ekle</h2>
-          </div>
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <TextField label="Başlık" name="title" placeholder="Bahar Şenliği" required />
-              <TextField label="Tarih" name="date" type="date" required />
+          <div className="mb-4 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <CalendarDays size={18} className="text-accent" aria-hidden="true" />
+              <h2 className="text-lg font-semibold text-content">
+                {editId ? "Etkinlik Düzenle" : "Etkinlik Ekle"}
+              </h2>
             </div>
-            <TextField label="Yer" name="location" placeholder="Ana Kampüs / Konferans Salonu" />
+            {editId && (
+              <button
+                type="button"
+                onClick={cancelEdit}
+                className="flex items-center gap-1 text-xs font-medium text-muted transition-colors hover:text-content"
+              >
+                <X size={14} aria-hidden="true" />Vazgeç
+              </button>
+            )}
+          </div>
+          <form key={editId ?? "new"} onSubmit={handleSubmit} className="space-y-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <TextField label="Başlık" name="title" placeholder="Bahar Şenliği" defaultValue={editing?.title} required />
+              <TextField label="Tarih" name="date" type="date" defaultValue={editing?.date} required />
+            </div>
+            <TextField label="Yer" name="location" placeholder="Ana Kampüs / Konferans Salonu" defaultValue={editing?.location} />
             <div className="flex flex-col gap-1.5">
               <label htmlFor="ev-desc" className="text-sm font-medium text-muted">Açıklama</label>
               <textarea
                 id="ev-desc" name="description" rows={3} placeholder="Etkinlik detayları…"
+                defaultValue={editing?.description}
                 className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
@@ -135,11 +165,12 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
             )}
             {saved && (
               <p className="flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-400">
-                <CheckCircle2 size={16} aria-hidden="true" />Etkinlik eklendi.
+                <CheckCircle2 size={16} aria-hidden="true" />{editId ? "Etkinlik güncellendi." : "Etkinlik eklendi."}
               </p>
             )}
             <PrimaryButton type="submit" size="md" disabled={busy}>
-              <Send size={16} aria-hidden="true" />{busy ? "Ekleniyor…" : "Ekle"}
+              <Send size={16} aria-hidden="true" />
+              {busy ? "Kaydediliyor…" : editId ? "Güncelle" : "Ekle"}
             </PrimaryButton>
           </form>
         </GlassCard>
@@ -163,14 +194,24 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
                       {fmtDate(ev.date)}
                     </span>
                     {canCreate && (
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(ev.id)}
-                        aria-label="Etkinliği sil"
-                        className="text-muted transition-colors hover:text-brand"
-                      >
-                        <Trash2 size={15} aria-hidden="true" />
-                      </button>
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => startEdit(ev)}
+                          aria-label="Etkinliği düzenle"
+                          className="text-muted transition-colors hover:text-accent"
+                        >
+                          <Pencil size={14} aria-hidden="true" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(ev.id)}
+                          aria-label="Etkinliği sil"
+                          className="text-muted transition-colors hover:text-brand"
+                        >
+                          <Trash2 size={15} aria-hidden="true" />
+                        </button>
+                      </>
                     )}
                   </div>
                 </div>

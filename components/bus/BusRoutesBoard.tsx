@@ -1,13 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
-import { Bus, Phone, User, Send, AlertCircle, CheckCircle2, Navigation, Trash2 } from "lucide-react";
+import { Bus, Phone, User, Send, AlertCircle, CheckCircle2, Navigation, Trash2, Pencil, X } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
-import { createBusRoute, deleteBusRoute, listBusRoutes, type BusRouteRecord } from "@/lib/services/bus-routes";
+import { createBusRoute, updateBusRoute, deleteBusRoute, listBusRoutes, type BusRouteRecord } from "@/lib/services/bus-routes";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const STAFF_ROLES: string[] = [
@@ -28,6 +28,7 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
     if (!tenantId) return;
@@ -42,8 +43,17 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
     if (firebaseReady && tenantId) void refresh();
   }, [firebaseReady, tenantId, refresh]);
 
+  const editing = editId ? items?.find((x) => x.id === editId) ?? null : null;
+  const startEdit = (r: BusRouteRecord) => {
+    setEditId(r.id);
+    setError(null);
+    setSaved(false);
+  };
+  const cancelEdit = () => setEditId(null);
+
   const handleDelete = async (id: string) => {
     if (!tenantId) return;
+    if (editId === id) setEditId(null);
     try {
       await deleteBusRoute(tenantId, id);
       setItems((prev) => prev?.filter((x) => x.id !== id) ?? prev);
@@ -67,8 +77,13 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
     setError(null);
     setSaved(false);
     try {
-      await createBusRoute({ tenantId, authorUid: user.uid, routeName, driver, phone, stops });
-      form.reset();
+      if (editId) {
+        await updateBusRoute(tenantId, editId, { routeName, driver, phone, stops });
+        setEditId(null);
+      } else {
+        await createBusRoute({ tenantId, authorUid: user.uid, routeName, driver, phone, stops });
+        form.reset();
+      }
       setSaved(true);
       await refresh();
     } catch (err) {
@@ -90,15 +105,28 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
     <div className="flex flex-col gap-6">
       {canCreate && (
         <GlassCard tone="navy">
-          <div className="mb-4 flex items-center gap-2">
-            <Bus size={18} className="text-accent" aria-hidden="true" />
-            <h2 className="text-lg font-semibold text-content">Servis Rotası Ekle</h2>
+          <div className="mb-4 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Bus size={18} className="text-accent" aria-hidden="true" />
+              <h2 className="text-lg font-semibold text-content">
+                {editId ? "Rotayı Düzenle" : "Servis Rotası Ekle"}
+              </h2>
+            </div>
+            {editId && (
+              <button
+                type="button"
+                onClick={cancelEdit}
+                className="flex items-center gap-1 text-xs font-medium text-muted transition-colors hover:text-content"
+              >
+                <X size={14} aria-hidden="true" />Vazgeç
+              </button>
+            )}
           </div>
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form key={editId ?? "new"} onSubmit={handleSubmit} className="space-y-3">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <TextField label="Rota Adı" name="routeName" placeholder="1 Numaralı Hat" required />
-              <TextField label="Şoför" name="driver" placeholder="Ad Soyad" />
-              <TextField label="Telefon" name="phone" placeholder="05xx…" />
+              <TextField label="Rota Adı" name="routeName" placeholder="1 Numaralı Hat" defaultValue={editing?.routeName} required />
+              <TextField label="Şoför" name="driver" placeholder="Ad Soyad" defaultValue={editing?.driver} />
+              <TextField label="Telefon" name="phone" placeholder="05xx…" defaultValue={editing?.phone} />
             </div>
             <div className="flex flex-col gap-1.5">
               <label htmlFor="bus-stops" className="text-sm font-medium text-muted">
@@ -106,6 +134,7 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
               </label>
               <textarea
                 id="bus-stops" name="stops" rows={4}
+                defaultValue={editing?.stops.join("\n")}
                 placeholder={"Merkez Meydan - 07:30\nGül Sokak - 07:40\nOkul - 08:00"}
                 className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
@@ -117,11 +146,12 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
             )}
             {saved && (
               <p className="flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-400">
-                <CheckCircle2 size={16} aria-hidden="true" />Rota eklendi.
+                <CheckCircle2 size={16} aria-hidden="true" />{editId ? "Rota güncellendi." : "Rota eklendi."}
               </p>
             )}
             <PrimaryButton type="submit" size="md" disabled={busy}>
-              <Send size={16} aria-hidden="true" />{busy ? "Ekleniyor…" : "Ekle"}
+              <Send size={16} aria-hidden="true" />
+              {busy ? "Kaydediliyor…" : editId ? "Güncelle" : "Ekle"}
             </PrimaryButton>
           </form>
         </GlassCard>
@@ -141,14 +171,24 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="font-semibold text-content">{r.routeName}</h3>
                   {canCreate && (
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(r.id)}
-                      aria-label="Rotayı sil"
-                      className="shrink-0 text-muted transition-colors hover:text-brand"
-                    >
-                      <Trash2 size={15} aria-hidden="true" />
-                    </button>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => startEdit(r)}
+                        aria-label="Rotayı düzenle"
+                        className="text-muted transition-colors hover:text-accent"
+                      >
+                        <Pencil size={14} aria-hidden="true" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(r.id)}
+                        aria-label="Rotayı sil"
+                        className="text-muted transition-colors hover:text-brand"
+                      >
+                        <Trash2 size={15} aria-hidden="true" />
+                      </button>
+                    </div>
                   )}
                 </div>
                 <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
