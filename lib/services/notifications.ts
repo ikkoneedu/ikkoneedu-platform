@@ -88,6 +88,7 @@ export async function listNotifications(
 export const NOTIFICATION_TYPES = [
   "message",
   "announcement",
+  "attendance",
   "system",
   "scholarship",
   "crm",
@@ -164,6 +165,43 @@ export async function notifyClassMembers(
   for (const s of classStudents) if (s.userId) recipients.add(s.userId);
   for (const p of classParents) if (p.userId) recipients.add(p.userId);
 
+  await Promise.all(
+    [...recipients].map((userId) =>
+      createUserNotification(tenantId, {
+        userId,
+        title: input.title,
+        body: input.body,
+        type: input.type,
+        link: input.link,
+      }),
+    ),
+  );
+  return recipients.size;
+}
+
+/**
+ * Bir öğrencinin bağlı veli(ler)ine kişiye özel bildirim düşürür (yoklama/uyarı).
+ * `studentUid` öğrencinin giriş hesabıdır; öğrenci kaydı (record) bulunur, o kayda
+ * bağlı veliler `linkedStudentIds` üzerinden hesabı olanlara bildirilir. Best-effort.
+ */
+export async function notifyStudentParents(
+  tenantId: string,
+  studentUid: string,
+  input: { title: string; body: string; type: NotificationType; link?: string },
+): Promise<number> {
+  if (!isFirebaseConfigured() || !db || !tenantId || !studentUid) return 0;
+  const [students, parents] = await Promise.all([
+    listStudents(tenantId),
+    listParents(tenantId),
+  ]);
+  const student = students.find((s) => s.userId === studentUid);
+  if (!student) return 0;
+  const recipients = new Set<string>();
+  for (const p of parents) {
+    if ((p.linkedStudentIds ?? []).includes(student.id) && p.userId) {
+      recipients.add(p.userId);
+    }
+  }
   await Promise.all(
     [...recipients].map((userId) =>
       createUserNotification(tenantId, {

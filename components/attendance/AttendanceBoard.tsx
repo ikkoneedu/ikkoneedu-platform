@@ -15,6 +15,7 @@ import {
   type AttendanceStatus,
 } from "@/lib/services/attendance";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { notifyStudentParents } from "@/lib/services/notifications";
 
 interface Student {
   uid: string;
@@ -101,6 +102,20 @@ export function AttendanceBoard() {
         status,
         byName: profile?.displayName ?? "Öğretmen",
       });
+      // Devamsızlık/geç/izin → bağlı veliye ANINDA bildirim (best-effort).
+      if (status !== "present") {
+        const name = students.find((s) => s.uid === selected)?.name ?? "Öğrenciniz";
+        try {
+          await notifyStudentParents(tenantId, selected, {
+            title: `Yoklama: ${ATTENDANCE_LABELS[status]}`,
+            body: `${name} — ${date} tarihinde "${ATTENDANCE_LABELS[status]}" olarak işaretlendi.`,
+            type: "attendance",
+            link: "/notifications",
+          });
+        } catch {
+          /* bildirim best-effort */
+        }
+      }
       await load();
     } catch (err) {
       setError(getAuthErrorMessage(err));
