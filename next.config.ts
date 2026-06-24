@@ -1,6 +1,12 @@
 import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV === "development";
+/**
+ * Vercel preview deployment'larında Vercel Live geri-bildirim araç çubuğu
+ * (vercel.live) yüklenir. Yalnızca PREVIEW ortamında CSP'ye eklenir; production
+ * (gerçek alan adı) CSP'si sıkı kalır — bu script production'da gerekmez.
+ */
+const vercelLive = process.env.VERCEL_ENV === "preview" ? " https://vercel.live" : "";
 
 /**
  * Content-Security-Policy.
@@ -14,12 +20,12 @@ const isDev = process.env.NODE_ENV === "development";
  */
 const csp = [
   "default-src 'self'",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}${vercelLive}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https:",
   "font-src 'self' data:",
   `connect-src 'self' https: wss:${isDev ? " ws:" : ""}`,
-  "frame-src 'self'",
+  `frame-src 'self'${vercelLive}`,
   "frame-ancestors 'none'",
   "base-uri 'self'",
   "form-action 'self'",
