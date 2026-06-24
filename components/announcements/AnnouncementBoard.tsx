@@ -13,6 +13,7 @@ import {
   type Announcement,
 } from "@/lib/services/announcements";
 import { listMyClasses, type ClassRecord } from "@/lib/services/access-codes";
+import { createNotification } from "@/lib/services/notifications";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const STAFF_ROLES = [
@@ -96,6 +97,19 @@ export function AnnouncementBoard({ readOnly = false }: { readOnly?: boolean }) 
         // Sınıf seçildiyse yalnızca o sınıfa hedeflenir; boşsa tüm okul.
         targetClassIds: classId ? [classId] : [],
       });
+      // Bildirim merkezine düşür (best-effort — başarısız olsa da duyuru kaydedildi).
+      const className = classes.find((c) => c.id === classId)?.name;
+      try {
+        await createNotification(tenantId, {
+          title: `Yeni duyuru: ${title}`,
+          body,
+          audience: className ? `${className} (sınıf + velileri)` : "Tüm okul",
+          createdBy: user.uid,
+          createdByName: profile?.displayName ?? "Yetkili",
+        });
+      } catch {
+        /* bildirim best-effort */
+      }
       form.reset();
       setPosted(true);
       await refresh();

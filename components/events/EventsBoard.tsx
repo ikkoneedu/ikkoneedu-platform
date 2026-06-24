@@ -8,6 +8,7 @@ import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { createEvent, listEvents, type EventRecord } from "@/lib/services/events";
+import { createNotification } from "@/lib/services/notifications";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const STAFF_ROLES: string[] = [
@@ -67,6 +68,17 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
         tenantId, authorUid: user.uid, authorName: profile?.displayName ?? "Yetkili",
         title, date, location, description,
       });
+      try {
+        await createNotification(tenantId, {
+          title: `Yeni etkinlik: ${title}`,
+          body: location ? `${date} · ${location}` : date,
+          audience: "Tüm okul",
+          createdBy: user.uid,
+          createdByName: profile?.displayName ?? "Yetkili",
+        });
+      } catch {
+        /* bildirim best-effort */
+      }
       form.reset();
       setSaved(true);
       await refresh();

@@ -13,6 +13,7 @@ import {
   type Assignment,
 } from "@/lib/services/assignments";
 import { listMyClasses, type ClassRecord } from "@/lib/services/access-codes";
+import { createNotification } from "@/lib/services/notifications";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const STAFF_ROLES = [
@@ -86,6 +87,18 @@ export function AssignmentBoard({ readOnly = false }: { readOnly?: boolean }) {
         classId,
         className,
       });
+      // Bildirim merkezine düşür (best-effort).
+      try {
+        await createNotification(tenantId, {
+          title: `Yeni ödev: ${title}`,
+          body: dueDate ? `${description}\nSon tarih: ${dueDate}` : description,
+          audience: className ? `${className}` : "Tüm okul",
+          createdBy: user.uid,
+          createdByName: profile?.displayName ?? "Öğretmen",
+        });
+      } catch {
+        /* bildirim best-effort */
+      }
       form.reset();
       setPosted(true);
       await refresh();
