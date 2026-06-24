@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import { Logo } from "@/components/shared/LogoMark";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { TenantSwitcher } from "@/components/layout/TenantSwitcher";
 
 interface TopbarLink {
   id: string;
@@ -34,6 +35,7 @@ function DefaultActions() {
       >
         <Search size={18} aria-hidden="true" />
       </Link>
+      <TenantSwitcher />
       <NotificationBell />
       <UserMenu />
     </>

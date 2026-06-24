@@ -64,6 +64,14 @@ interface AuthContextValue {
   ) => Promise<User>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
+  /**
+   * Süper admin için seçili (impersonate edilen) tenant kimliği; yoksa null.
+   * Seçiliyken `profile.tenantId` bu değere geçer ve paneller o okulun verisini
+   * gösterir (kurallar süper admini her tenant'ta üye sayar).
+   */
+  activeTenantId: string | null;
+  /** Süper admin bir okulu görüntülemek için seçer (null = kendi/sistem). */
+  setActiveTenant: (tenantId: string | null) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -85,6 +93,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [claims, setClaims] = useState<AuthClaims | null>(null);
   const [loading, setLoading] = useState(true);
   const [tenantSuspended, setTenantSuspended] = useState(false);
+  const [activeTenantId, setActiveTenantIdState] = useState<string | null>(null);
+
+  // Seçili tenant'ı oturumlar arası koru (yalnız tarayıcı).
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("ikk_active_tenant");
+      if (saved) setActiveTenantIdState(saved);
+    } catch {
+      /* localStorage erişilemezse yok say */
+    }
+  }, []);
+
+  const setActiveTenant = useCallback((tenantId: string | null) => {
+    setActiveTenantIdState(tenantId);
+    try {
+      if (tenantId) window.localStorage.setItem("ikk_active_tenant", tenantId);
+      else window.localStorage.removeItem("ikk_active_tenant");
+    } catch {
+      /* yok say */
+    }
+  }, []);
 
   // Kullanıcının okulunun (tenant) askıda olup olmadığını belirler.
   // Süper admin, public/platform tenant'ları ve gerçek okul belgesi olmayan
@@ -199,9 +228,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  // Süper admin bir okul seçtiyse, panellere o tenant'ı görmesi için profilin
+  // tenantId/schoolId'sini geçici olarak değiştir (yalnız bellekte; Firestore'da
+  // değişmez). Diğer roller etkilenmez.
+  const isSuper = profile?.role === ROLES.SUPER_ADMIN;
+  const effectiveActiveTenant = isSuper ? activeTenantId : null;
+  const effectiveProfile: UserProfile | null =
+    profile && effectiveActiveTenant
+      ? { ...profile, tenantId: effectiveActiveTenant, schoolId: effectiveActiveTenant }
+      : profile;
+
   const value: AuthContextValue = {
     user,
-    profile,
+    profile: effectiveProfile,
     claims,
     loading,
     isAuthenticated: Boolean(user),
@@ -211,6 +250,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signUpPublic,
     signOut,
     refreshProfile,
+    activeTenantId: effectiveActiveTenant,
+    setActiveTenant,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
