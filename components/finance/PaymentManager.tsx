@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
-import { Wallet, Plus, Save, AlertCircle, RefreshCw } from "lucide-react";
+import { Wallet, Plus, Save, AlertCircle, RefreshCw, BellRing, CheckCircle2 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
@@ -17,6 +17,7 @@ import {
   type PaymentRecord,
 } from "@/lib/services/payments";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { notifyStudentParents } from "@/lib/services/notifications";
 
 const MANAGER_ROLES: string[] = [
   ROLES.SCHOOL_ADMIN,
@@ -51,6 +52,36 @@ export function PaymentManager() {
   const [paid, setPaid] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [remindingId, setRemindingId] = useState<string | null>(null);
+  const [remindedId, setRemindedId] = useState<string | null>(null);
+
+  const remind = useCallback(
+    async (r: PaymentRecord) => {
+      if (!tenantId || !r.studentUid || remindingId) return;
+      setRemindingId(r.id);
+      setError(null);
+      try {
+        const bal = r.amount - r.paidAmount;
+        const count = await notifyStudentParents(tenantId, r.studentUid, {
+          title: "Ödeme hatırlatması",
+          body: `${r.studentName} için ${bal.toLocaleString("tr-TR")} ₺ ödeme bekleniyor${r.dueDate ? ` (son tarih: ${r.dueDate})` : ""}.`,
+          type: "system",
+          link: "/notifications",
+        });
+        if (count === 0) {
+          setError("Bu öğrencinin bağlı veli hesabı bulunamadı.");
+        } else {
+          setRemindedId(r.id);
+          setTimeout(() => setRemindedId(null), 2500);
+        }
+      } catch (err) {
+        setError(getAuthErrorMessage(err));
+      } finally {
+        setRemindingId(null);
+      }
+    },
+    [tenantId, remindingId],
+  );
 
   const load = useCallback(async () => {
     if (!tenantId) return;
@@ -243,6 +274,22 @@ export function PaymentManager() {
                           <Save size={13} aria-hidden="true" />
                           {savingId === r.id ? "…" : "Tahsil"}
                         </PrimaryButton>
+                        {r.status !== "PAID" && r.studentUid && (
+                          <button
+                            type="button"
+                            onClick={() => remind(r)}
+                            disabled={remindingId === r.id}
+                            title="Veliye ödeme hatırlatması gönder"
+                            className="flex items-center gap-1 rounded-lg border border-amber-400/30 bg-amber-400/10 px-2.5 py-1 text-xs font-medium text-amber-300 transition-colors hover:bg-amber-400/20 disabled:opacity-50"
+                          >
+                            {remindedId === r.id ? (
+                              <CheckCircle2 size={13} aria-hidden="true" />
+                            ) : (
+                              <BellRing size={13} aria-hidden="true" />
+                            )}
+                            {remindingId === r.id ? "…" : remindedId === r.id ? "Gönderildi" : "Hatırlat"}
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
