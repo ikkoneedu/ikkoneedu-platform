@@ -8,12 +8,15 @@ import { LiveExecutiveMetrics } from "@/components/executive/LiveExecutiveMetric
 import { StrategicActions } from "@/components/executive/StrategicActions";
 import { productName } from "@/lib/constants";
 import { strategicActions } from "@/lib/executive-mock-data";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: `Executive Dashboard — ${productName}`,
-  description:
-    "Okulun öğrenci, kayıt, randevu, bursluluk ve tahsilat metriklerini tek ekrandan izleyin.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("dashExec.meta.title", { product: productName }),
+    description: t("dashExec.meta.description"),
+  };
+}
 
 /** Yönetici hızlı erişim kartı: sahte metrik yok, ilgili modüle yönlendirir. */
 function QuickLink({
@@ -45,9 +48,14 @@ function QuickLink({
   );
 }
 
-export default function ExecutivePage() {
+export default async function ExecutivePage() {
+  const t = await getServerT();
+  const localizedActions = strategicActions.map((action) => ({
+    ...action,
+    label: t(`dashExec.action.${action.id}`),
+  }));
   return (
-    <PageShell title="Executive Dashboard">
+    <PageShell title={t("dashExec.pageTitle")}>
       <div className="flex flex-col gap-10">
         {/* Başlık */}
         <ExecutiveHero />
@@ -62,20 +70,20 @@ export default function ExecutivePage() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           <QuickLink
             href="/crm"
-            title="CRM & Lead Yönetimi"
-            description="Aday velileri, lead'leri ve randevuları yönetin."
+            title={t("dashExec.quick.crm.title")}
+            description={t("dashExec.quick.crm.description")}
             icon={Contact}
           />
           <QuickLink
             href="/finance"
-            title="Finans Merkezi"
-            description="Tahsilat, bakiye ve ödeme durumlarını izleyin."
+            title={t("dashExec.quick.finance.title")}
+            description={t("dashExec.quick.finance.description")}
             icon={Wallet}
           />
         </div>
 
         {/* Stratejik aksiyonlar — gerçek bağlantılar (rapor kısayolları) */}
-        <StrategicActions actions={strategicActions} />
+        <StrategicActions actions={localizedActions} />
       </div>
     </PageShell>
   );

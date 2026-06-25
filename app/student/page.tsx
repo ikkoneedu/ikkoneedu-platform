@@ -25,21 +25,27 @@ import { AttendanceBoard } from "@/components/attendance/AttendanceBoard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Reveal } from "@/components/landing/Reveal";
 import { productName } from "@/lib/constants";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: `Öğrenci Merkezi — ${productName}`,
-  description: "Programın, ödevlerin, notların ve duyuruların tek yerde.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("dashStudent.metaTitle", { product: productName }),
+    description: t("dashStudent.metaDesc"),
+  };
+}
 
 /** Dürüst "Yakında" kartı — sahte veri yerine net placeholder (premium görünüm). */
 function ComingSoonCard({
   icon: Icon,
   title,
   description,
+  badge,
 }: {
   icon: LucideIcon;
   title: string;
   description: string;
+  badge: string;
 }) {
   return (
     <GlassCard tone="navy" className="flex h-full flex-col">
@@ -48,7 +54,7 @@ function ComingSoonCard({
           <Icon size={20} aria-hidden="true" />
         </span>
         <span className="rounded-full border border-accent/20 bg-accent/10 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-accent">
-          Yakında
+          {badge}
         </span>
       </div>
       <h2 className="text-base font-semibold text-content">{title}</h2>
@@ -85,9 +91,10 @@ function FeatureLinkCard({
   );
 }
 
-export default function StudentPage() {
+export default async function StudentPage() {
+  const t = await getServerT();
   return (
-    <PageShell title="Öğrenci Merkezi">
+    <PageShell title={t("dashStudent.title")}>
       <div className="flex flex-col gap-10">
         <AccountSummaryCard />
 
@@ -96,9 +103,9 @@ export default function StudentPage() {
 
         <Reveal>
           <SectionHeader
-            eyebrow="Öğrenci Merkezi"
-            title="Öğrenci Merkezi"
-            description="Programın, ödevlerin, notların ve duyuruların burada."
+            eyebrow={t("dashStudent.eyebrow")}
+            title={t("dashStudent.title")}
+            description={t("dashStudent.desc")}
           />
         </Reveal>
 
@@ -125,53 +132,56 @@ export default function StudentPage() {
 
         {/* Okul yaşamı — gerçek modüller (ders planı, etkinlik, yemek, servis). */}
         <section>
-          <h2 className="mb-4 text-lg font-semibold text-content">Okul Yaşamı</h2>
+          <h2 className="mb-4 text-lg font-semibold text-content">{t("dash.section.schoolLife")}</h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <FeatureLinkCard
               href="/lesson-plans"
               icon={NotebookPen}
-              title="Ders Planları"
-              description="Sınıfının ders planlarını görüntüle."
+              title={t("dashStudent.feat.lessonPlans.title")}
+              description={t("dashStudent.feat.lessonPlans.desc")}
             />
             <FeatureLinkCard
               href="/events"
               icon={CalendarCheck}
-              title="Etkinlikler"
-              description="Okul etkinliklerini takip et."
+              title={t("dashStudent.feat.events.title")}
+              description={t("dashStudent.feat.events.desc")}
             />
             <FeatureLinkCard
               href="/lunch-menu"
               icon={UtensilsCrossed}
-              title="Yemek Listesi"
-              description="Günlük yemek menüsünü gör."
+              title={t("dashStudent.feat.lunch.title")}
+              description={t("dashStudent.feat.lunch.desc")}
             />
             <FeatureLinkCard
               href="/bus-routes"
               icon={Bus}
-              title="Servis Takibi"
-              description="Servis rotalarını ve saatlerini gör."
+              title={t("dashStudent.feat.bus.title")}
+              description={t("dashStudent.feat.bus.desc")}
             />
           </div>
         </section>
 
         {/* Yakında gelecek öğrenci özellikleri — dürüst placeholder (sahte veri yok). */}
         <section>
-          <h2 className="mb-4 text-lg font-semibold text-content">Yakında</h2>
+          <h2 className="mb-4 text-lg font-semibold text-content">{t("dash.section.comingSoon")}</h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
             <ComingSoonCard
               icon={Sparkles}
-              title="AI Çalışma Koçu"
-              description="Kişisel çalışma önerileri ve soru-cevap desteği burada olacak."
+              badge={t("dashStudent.soonBadge")}
+              title={t("dashStudent.soon.coach.title")}
+              description={t("dashStudent.soon.coach.desc")}
             />
             <ComingSoonCard
               icon={Trophy}
-              title="Başarı Rozetleri"
-              description="Çalışma serisi ve başarılarına göre kazandığın rozetler burada görünecek."
+              badge={t("dashStudent.soonBadge")}
+              title={t("dashStudent.soon.badges.title")}
+              description={t("dashStudent.soon.badges.desc")}
             />
             <ComingSoonCard
               icon={Target}
-              title="Hedef Takibi"
-              description="Akademik hedeflerini belirleyip ilerlemeni buradan izleyeceksin."
+              badge={t("dashStudent.soonBadge")}
+              title={t("dashStudent.soon.goals.title")}
+              description={t("dashStudent.soon.goals.desc")}
             />
           </div>
         </section>

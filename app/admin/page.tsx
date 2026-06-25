@@ -11,6 +11,7 @@ import {
   Download,
 } from "lucide-react";
 import Link from "next/link";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
 import { AccountSummaryCard } from "@/components/shared/AccountSummaryCard";
@@ -31,6 +32,7 @@ import {
 
 /* Kenar çubuğu alt alanı: birincil eylem + yardımcı bağlantılar */
 function SidebarFooter() {
+  const t = useT();
   return (
     <div className="space-y-4">
       <PrimaryButton
@@ -39,7 +41,7 @@ function SidebarFooter() {
         className="w-full border-accent/20 bg-accent/10 text-accent hover:bg-accent/20"
       >
         <Plus size={18} aria-hidden="true" />
-        Yeni Sınav Oluştur
+        {t("dashAdmin.sidebar.createExam")}
       </PrimaryButton>
 
       <div className="space-y-1 border-t border-overlay/5 pt-4">
@@ -48,14 +50,14 @@ function SidebarFooter() {
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-overlay/[0.04] hover:text-content"
         >
           <Bell size={20} aria-hidden="true" />
-          Bildirimler
+          {t("dashAdmin.sidebar.notifications")}
         </Link>
         <Link
           href="/coming-soon"
           className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-overlay/[0.04] hover:text-content"
         >
           <HelpCircle size={20} aria-hidden="true" />
-          Yardım
+          {t("dashAdmin.sidebar.help")}
         </Link>
       </div>
     </div>
@@ -64,6 +66,7 @@ function SidebarFooter() {
 
 /* Üst çubuk sağ eylemleri */
 function TopbarActions() {
+  const t = useT();
   return (
     <>
       <Link href="/ai-brain">
@@ -74,23 +77,23 @@ function TopbarActions() {
       </Link>
       <Link
         href="/coming-soon"
-        aria-label="Dil (yakında)"
-        title="Dil seçimi yakında"
+        aria-label={t("dashAdmin.topbar.langAria")}
+        title={t("dashAdmin.topbar.langTitle")}
         className="flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-overlay/[0.06] hover:text-content"
       >
         <Languages size={18} aria-hidden="true" />
       </Link>
       <Link
         href="/coming-soon"
-        aria-label="Karanlık mod (yakında)"
-        title="Tema seçimi yakında"
+        aria-label={t("dashAdmin.topbar.themeAria")}
+        title={t("dashAdmin.topbar.themeTitle")}
         className="flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-overlay/[0.06] hover:text-content"
       >
         <Moon size={18} aria-hidden="true" />
       </Link>
       <Link
         href="/profile"
-        aria-label="Profil"
+        aria-label={t("dashAdmin.topbar.profileAria")}
         className="flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-overlay/[0.06] hover:text-content"
       >
         <CircleUser size={20} aria-hidden="true" />
@@ -100,12 +103,13 @@ function TopbarActions() {
 }
 
 export default function AdminPage() {
+  const t = useT();
   return (
     <div className="mesh-bg min-h-screen w-full lg:pl-64">
       <Sidebar
         items={adminNavigationItems}
         activeId="panel"
-        subtitle="Eğitim İşletim Sistemi"
+        subtitle={t("dashAdmin.sidebar.subtitle")}
         footer={<SidebarFooter />}
       />
 
@@ -121,13 +125,13 @@ export default function AdminPage() {
             {/* Ana başlık */}
             <SectionHeader
               className="mb-6"
-              title="Yönetim Paneli"
-              description="Sistem genel görünümü ve stratejik performans metrikleri."
+              title={t("dashAdmin.header.title")}
+              description={t("dashAdmin.header.description")}
               action={
                 <Link href="/executive">
                   <PrimaryButton variant="secondary" size="md">
                     <Download size={18} aria-hidden="true" />
-                    Raporlar
+                    {t("dashAdmin.header.reports")}
                   </PrimaryButton>
                 </Link>
               }
@@ -159,12 +163,12 @@ export default function AdminPage() {
 
             {/* AI öngörüleri — dürüst "Yakında" (sahte metrik/grafik yok;
                 gerçek veriler yukarıda TenantOverview + LiveExecutiveMetrics). */}
-            <AiInsightCard eyebrow="AI Zekası · Yakında">
-              Yapay zeka destekli okul performans öngörüleri ve erken uyarı
-              analizleri{" "}
-              <span className="text-glow font-bold text-accent">yakında</span>{" "}
-              bu alanda. Devamsızlık, akademik gidişat ve tahsilat verilerini
-              birleştirip eyleme dönük öneriler sunacak.
+            <AiInsightCard eyebrow={t("dashAdmin.ai.eyebrow")}>
+              {t("dashAdmin.ai.body")}{" "}
+              <span className="text-glow font-bold text-accent">
+                {t("dashAdmin.ai.soon")}
+              </span>{" "}
+              {t("dashAdmin.ai.bodyEnd")}
             </AiInsightCard>
           </div>
         </main>
