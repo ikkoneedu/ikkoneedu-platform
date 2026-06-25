@@ -544,6 +544,17 @@ service cloud.firestore {
         || (isSchoolManager() && myTenant() == tenantId && tenantNotSuspended(tenantId));
     }
 
+    // ---- Rehberlik (PDR) oturum notları — HASSAS veri -----------------------
+    // Öğrenci psikolojik danışma/rehberlik kayıtları. Genel `{document=**}`
+    // OKUMA/YAZMA kuralından HARİÇ tutulur (dışlama listeleri). Yalnızca
+    // yönetim + koordinatör (rehberlik) erişir; ÖĞRETMEN/VELİ/ÖĞRENCİ ERİŞEMEZ.
+    match /tenants/{tenantId}/counselingSessions/{sessionId} {
+      allow read: if isSuperAdmin()
+        || (canManageRecords() && myTenant() == tenantId);
+      allow write: if isSuperAdmin()
+        || (canManageRecords() && myTenant() == tenantId && tenantNotSuspended(tenantId));
+    }
+
     // ---- Ödev teslimleri — öğrenci kendi teslimini işaretler ----------------
     // Gizli: öğrenci YALNIZCA kendi teslimini okur; personel hepsini okur (sayım).
     // Genel `{document=**}` OKUMA/YAZMA kuralından HARİÇ (dışlama listeleri).
@@ -620,7 +631,8 @@ service cloud.firestore {
       allow read: if isTenantMember(tenantId)
         && !(document[0] in ['messages', 'notifications', 'students', 'parents',
              'teachers', 'admissions', 'admissionMeetings', 'leads', 'appointments',
-             'payments', 'auditLogs', 'meetingRequests', 'assignmentSubmissions']);
+             'payments', 'auditLogs', 'meetingRequests', 'assignmentSubmissions',
+             'counselingSessions']);
       // Askıdaki okulun personeli veri yazamaz (süper admin ayrı kurallarla erişir).
       // Özel-kurallı koleksiyonlar bu yazımdan HARİÇ.
       // (Sınıflar/duyuru/program/not/yoklama bu kuralda kalır: personel yazar.)
@@ -629,7 +641,7 @@ service cloud.firestore {
         && !(document[0] in ['messages', 'students', 'parents', 'teachers',
              'admissions', 'admissionMeetings', 'leads', 'appointments',
              'payments', 'settings', 'auditLogs', 'meetingRequests',
-             'assignmentSubmissions']);
+             'assignmentSubmissions', 'counselingSessions']);
     }
 
     // ---- Global CRM (collection group) — yalnızca SUPER_ADMIN -------------

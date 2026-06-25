@@ -17,8 +17,10 @@ import {
 } from "@/lib/services/counseling";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
+// Rehberlik (PDR) HASSAS veri — yalnızca yönetim + koordinatör (rehberlik).
+// ÖĞRETMEN hariç (tüm öğrencilerin psikolojik danışma notlarını göremez).
+// Gerçek güvenlik Firestore kurallarında (counselingSessions) zorlanır.
 const STAFF_ROLES: string[] = [
-  ROLES.TEACHER,
   ROLES.COORDINATOR,
   ROLES.VICE_PRINCIPAL,
   ROLES.PRINCIPAL,

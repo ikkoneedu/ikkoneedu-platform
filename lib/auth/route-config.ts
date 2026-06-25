@@ -113,9 +113,11 @@ export const ROUTE_ROLES: Record<string, Role[]> = {
     ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL,
     ROLES.PR, ROLES.SALES, ROLES.SUPER_ADMIN,
   ],
+  // Rehberlik (PDR) — HASSAS. Yalnızca yönetim + koordinatör (rehberlik).
+  // Sıradan ÖĞRETMEN tüm öğrencilerin psikolojik danışma notlarını göremez.
   "/counseling": [
     ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL,
-    ROLES.VICE_PRINCIPAL, ROLES.COORDINATOR, ROLES.TEACHER, ROLES.SUPER_ADMIN,
+    ROLES.VICE_PRINCIPAL, ROLES.COORDINATOR, ROLES.SUPER_ADMIN,
   ],
   "/messages": [
     ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
