@@ -51,6 +51,12 @@ const tr: Dict = {
   // Açılış (landing) — hero/header
   "landing.login": "Giriş Yap",
   "landing.requestDemo": "Demo Talep Et",
+
+  // Yakında sayfası
+  "comingSoon.heading": "Bu özellik yakında",
+  "comingSoon.body":
+    "Üzerinde çalışıyoruz. Bu bölüm çok yakında kullanıma açılacak. O zamana kadar mevcut panelinizden devam edebilirsiniz.",
+  "comingSoon.backHome": "Ana Sayfaya Dön",
 };
 
 const en: Dict = {
@@ -90,6 +96,12 @@ const en: Dict = {
   // Landing — hero/header
   "landing.login": "Sign in",
   "landing.requestDemo": "Request a Demo",
+
+  // Coming soon page
+  "comingSoon.heading": "This feature is coming soon",
+  "comingSoon.body":
+    "We're working on it. This section will be available very soon. Until then, you can continue from your current dashboard.",
+  "comingSoon.backHome": "Back to Home",
 };
 
 export const dictionaries: Record<Locale, Dict> = { tr, en };
