@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { HeroOverlay } from "@/components/landing/HeroOverlay";
 import type { MousePos } from "@/components/landing/EducationNetworkScene";
 
@@ -31,6 +32,7 @@ function SceneFallback() {
  * ref'ler üzerinden sahneye iletir; prefers-reduced-motion'a saygı gösterir.
  */
 export function CinematicHero() {
+  const t = useT();
   const mouseRef = useRef<MousePos>({ x: 0, y: 0 });
   const pulseRef = useRef<number>(0);
   const [ready, setReady] = useState(false);
@@ -114,7 +116,7 @@ export function CinematicHero() {
               transition={{ duration: 1.1, ease: "easeOut" }}
               className="font-mono text-[11px] uppercase text-accent/85 sm:text-xs"
             >
-              Eğitim Ağı Başlatılıyor
+              {t("hero.initializing")}
               <BlinkingDots />
             </motion.span>
             <div className="mt-4 h-px w-44 overflow-hidden rounded-full bg-overlay/10">

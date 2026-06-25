@@ -1,48 +1,52 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowUpRight, Mail, MapPin } from "lucide-react";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { productName, tagline } from "@/lib/constants";
 
 interface FooterLink {
-  label: string;
+  labelKey: string;
   href: string;
 }
 
-const COLUMNS: { title: string; links: FooterLink[] }[] = [
+const COLUMNS: { titleKey: string; links: FooterLink[] }[] = [
   {
-    title: "Platform",
+    titleKey: "footer.col.platform",
     links: [
-      { label: "Özellikler", href: "/features" },
-      { label: "Fiyatlandırma", href: "/pricing" },
-      { label: "Mobil Uygulama", href: "/mobile-app" },
-      { label: "Demo Talep Et", href: "/demo" },
+      { labelKey: "footer.link.features", href: "/features" },
+      { labelKey: "footer.link.pricing", href: "/pricing" },
+      { labelKey: "footer.link.mobile", href: "/mobile-app" },
+      { labelKey: "footer.link.demo", href: "/demo" },
     ],
   },
   {
-    title: "Kurumsal",
+    titleKey: "footer.col.corporate",
     links: [
-      { label: "Kurucu Okul", href: "/founder-school" },
-      { label: "Bursluluk Sınavı", href: "/scholarship-exam/apply" },
-      { label: "Okul Portalı", href: "/school-select" },
+      { labelKey: "footer.link.founder", href: "/founder-school" },
+      { labelKey: "footer.link.scholarship", href: "/scholarship-exam/apply" },
+      { labelKey: "footer.link.portal", href: "/school-select" },
     ],
   },
   {
-    title: "Hesap",
+    titleKey: "footer.col.account",
     links: [
-      { label: "Giriş Yap", href: "/login" },
-      { label: "Kayıt Ol", href: "/register" },
-      { label: "Kod ile Giriş", href: "/code-login" },
-      { label: "Profil", href: "/profile" },
+      { labelKey: "footer.link.login", href: "/login" },
+      { labelKey: "footer.link.register", href: "/register" },
+      { labelKey: "footer.link.codeLogin", href: "/code-login" },
+      { labelKey: "footer.link.profile", href: "/profile" },
     ],
   },
 ];
 
 /**
- * Global site altbilgisi — gerçek bağlantılı, premium koyu tema, kırmızı vurgu.
- * Tüm halka açık/pazarlama sayfalarında kullanılır.
+ * Global site altbilgisi — gerçek bağlantılı, premium tema, kırmızı vurgu.
+ * Tüm halka açık/pazarlama sayfalarında kullanılır. TR/EN.
  */
 export function SiteFooter() {
+  const t = useT();
   const year = new Date().getFullYear();
   return (
     <footer className="relative border-t border-overlay/10 bg-background">
@@ -63,12 +67,11 @@ export function SiteFooter() {
               {tagline}
             </p>
             <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted/80">
-              Okulun tüm süreçlerini tek bağlı işletim sisteminde birleştiren
-              çok kiracılı eğitim SaaS platformu.
+              {t("footer.tagline")}
             </p>
             <Link href="/demo" className="mt-6 inline-block">
               <PrimaryButton size="md">
-                Demo Talep Et
+                {t("nav.requestDemo")}
                 <ArrowUpRight size={16} aria-hidden="true" />
               </PrimaryButton>
             </Link>
@@ -87,9 +90,9 @@ export function SiteFooter() {
           {/* Bağlantı sütunları */}
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:col-span-7">
             {COLUMNS.map((col) => (
-              <div key={col.title}>
+              <div key={col.titleKey}>
                 <h3 className="text-xs font-semibold uppercase tracking-[0.18em] text-content/80">
-                  {col.title}
+                  {t(col.titleKey)}
                 </h3>
                 <ul className="mt-4 flex flex-col gap-2.5">
                   {col.links.map((link) => (
@@ -98,7 +101,7 @@ export function SiteFooter() {
                         href={link.href}
                         className="text-sm text-muted transition-colors hover:text-brand"
                       >
-                        {link.label}
+                        {t(link.labelKey)}
                       </Link>
                     </li>
                   ))}
@@ -111,11 +114,11 @@ export function SiteFooter() {
         {/* Alt bar */}
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-overlay/10 pt-6 text-xs text-muted/70 sm:flex-row">
           <p>
-            © {year} {productName}. Tüm hakları saklıdır.
+            © {year} {productName}. {t("footer.rights")}
           </p>
           <p className="flex items-center gap-2 font-mono uppercase tracking-wider">
             <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-            Çok Kiracılı Eğitim SaaS
+            {t("footer.badge")}
           </p>
         </div>
       </div>

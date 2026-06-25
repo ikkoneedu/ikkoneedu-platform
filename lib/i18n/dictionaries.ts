@@ -57,6 +57,124 @@ const tr: Dict = {
   "comingSoon.body":
     "Üzerinde çalışıyoruz. Bu bölüm çok yakında kullanıma açılacak. O zamana kadar mevcut panelinizden devam edebilirsiniz.",
   "comingSoon.backHome": "Ana Sayfaya Dön",
+
+  // Sinematik hero
+  "hero.initializing": "Eğitim Ağı Başlatılıyor",
+  "hero.statusActive": "Sistem Aktif",
+  "hero.modulesOnline": "12 modül çevrimiçi",
+  "hero.tagline1": "Tek Ağ. Tek Platform. ",
+  "hero.tagline2": "Tek Gelecek.",
+  "hero.subtitle": "Modern Eğitimin İşletim Sistemi",
+  "hero.description":
+    "Kayıt kabul, CRM, bursluluk sınavları, öğretmenler, öğrenciler, veliler, finans, raporlar ve yönetim kararlarını tek bağlı SaaS platformundan yönetin.",
+  "hero.explore": "Platformu Keşfet",
+  "hero.trust1": "Çok Kiracılı SaaS",
+  "hero.trust2": "Özel Okullar İçin",
+  "hero.trust3": "Kurucu Okul: İngiliz Kültür Kolejleri",
+
+  // Açılış — bölümler
+  "landing.portalEyebrow": "Mevcut Kullanıcılar",
+  "landing.portalTitle": "Okul Portalınıza Giriş Yapın",
+  "landing.portalDesc":
+    "Okul yöneticisi, öğretmen, veli ve öğrenciler tek giriş ekranından kendi panellerine yönlendirilir.",
+  "landing.portal.admin": "Okul Yönetimi",
+  "landing.portal.teacher": "Öğretmen Girişi",
+  "landing.portal.parent": "Veli Girişi",
+  "landing.portal.student": "Öğrenci Girişi",
+
+  "landing.founderEyebrow": "Kurucu Okul",
+  "landing.founderTitle": "İngiliz Kültür Kolejleri — Kurucu Okul",
+  "landing.founderDesc":
+    "İngiliz Kültür Kolejleri, ikkoneedu platformunun ilk uygulama ve geliştirme ortağı olarak dijital okul dönüşümüne öncülük eder.",
+  "landing.card.avantaj.title": "Kurucu Okul Avantajı",
+  "landing.card.avantaj.desc":
+    "Platformun ilk geliştirme ortağı olarak özelliklere öncelikli erişim ve söz hakkı.",
+  "landing.card.donusum.title": "Dijital Kampüs Dönüşümü",
+  "landing.card.donusum.desc":
+    "Tüm okul süreçlerinin uçtan uca dijitalleşmesiyle modern bir kampüs deneyimi.",
+  "landing.card.ai-yonetim.title": "Yapay Zeka Destekli Okul Yönetimi",
+  "landing.card.ai-yonetim.desc":
+    "Karar süreçlerini hızlandıran, veri odaklı yapay zeka asistanlığı.",
+  "landing.card.vizyon.title": "Gelecekte Gelir Üreten Platform Vizyonu",
+  "landing.card.vizyon.desc":
+    "Kurum içi verimliliğin ötesinde, ölçeklenebilir bir gelir modeline dönüşüm.",
+
+  "landing.platformEyebrow": "Tek Platform",
+  "landing.platformTitle": "Tek Platform, Dört Deneyim",
+  "landing.platformDesc":
+    "Veli, öğrenci, öğretmen ve yönetim için kusursuzca birbirine bağlı tek bir ekosistem.",
+  "landing.card.veli.title": "Veli Portalı",
+  "landing.card.veli.desc":
+    "Öğrenci gelişimi, iletişim ve ödemeler için tek dokunuşluk veli deneyimi.",
+  "landing.card.ogrenci.title": "Öğrenci Portalı",
+  "landing.card.ogrenci.desc":
+    "Dersler, ödevler ve yapay zeka asistanıyla kişiselleştirilmiş öğrenme.",
+  "landing.card.ogretmen.title": "Öğretmen Portalı",
+  "landing.card.ogretmen.desc":
+    "Sınıf, içerik ve değerlendirme süreçlerini kolaylaştıran akıllı araçlar.",
+  "landing.card.yonetim.title": "Yönetim Paneli",
+  "landing.card.yonetim.desc":
+    "Tüm kampüsü tek ekrandan yöneten stratejik gösterge paneli.",
+
+  "landing.aiEyebrow": "Yapay Zeka",
+  "landing.aiTitle": "AI Modülleri",
+  "landing.aiDesc":
+    "Eğitimin her aşamasını güçlendiren, birbirine bağlı yapay zeka modülleri.",
+  "landing.card.brain.title": "AI Brain",
+  "landing.card.brain.desc": "Tüm modülleri besleyen merkezi yapay zeka zekası.",
+  "landing.card.ders-programi.title": "AI Ders Programı",
+  "landing.card.ders-programi.desc":
+    "Optimum ders ve öğretmen dağılımını saniyeler içinde oluşturur.",
+  "landing.card.sinav.title": "AI Sınav Oluşturucu",
+  "landing.card.sinav.desc": "Kazanımlara uygun sınavları otomatik hazırlar.",
+  "landing.card.karne.title": "AI Karne Yorumu",
+  "landing.card.karne.desc":
+    "Öğrenciye özel, anlamlı karne değerlendirmeleri üretir.",
+  "landing.card.kayit.title": "AI Kayıt Danışmanı",
+  "landing.card.kayit.desc": "Yeni kayıt sürecini akıllı önerilerle yönlendirir.",
+  "landing.card.rehberlik.title": "AI Rehberlik Asistanı",
+  "landing.card.rehberlik.desc": "Öğrenci rehberliğinde 7/24 yapay zeka desteği.",
+
+  "landing.revenueEyebrow": "SaaS Gelir Modeli",
+  "landing.revenueTitle": "Bir Okuldan Türkiye Geneline",
+  "landing.revenueDesc":
+    "İngiliz Kültür Kolejleri'nde başlayan bu teknoloji, ilerleyen dönemde farklı okullara abonelik modeliyle sunulabilecek ölçeklenebilir bir EdTech platformuna dönüşür.",
+  "landing.tier.schools": "{count} Okul",
+  "landing.tier.revenue": "{amount}M TL / yıl",
+
+  "landing.mobileBadge": "Mobil Uygulama",
+  "landing.mobileTitle": "Okulunuz Cebinizde",
+  "landing.mobileDesc":
+    "Veli, öğrenci, öğretmen ve yöneticiler için tasarlanmış mobil deneyim ile okulunuzla ilgili tüm süreçlere her yerden erişin.",
+  "landing.mobileButton": "Mobil Uygulamayı İncele",
+
+  "landing.scholarBadge": "Bursluluk Sınavı",
+  "landing.scholarTitle": "Bursluluk Sınavı Başvurusu Açık",
+  "landing.scholarDesc":
+    "Çocuğunuz için bursluluk ve kabul sınavı başvurusunu birkaç dakika içinde tamamlayın, burs fırsatını yakalayın.",
+  "landing.scholarButton": "Bursluluk Sınavı Başvurusu",
+
+  "landing.finalTitle": "Geleceğin Okul İşletim Sistemini Bugün Başlatalım",
+
+  // Altbilgi (footer)
+  "footer.tagline":
+    "Okulun tüm süreçlerini tek bağlı işletim sisteminde birleştiren çok kiracılı eğitim SaaS platformu.",
+  "footer.col.platform": "Platform",
+  "footer.col.corporate": "Kurumsal",
+  "footer.col.account": "Hesap",
+  "footer.link.features": "Özellikler",
+  "footer.link.pricing": "Fiyatlandırma",
+  "footer.link.mobile": "Mobil Uygulama",
+  "footer.link.demo": "Demo Talep Et",
+  "footer.link.founder": "Kurucu Okul",
+  "footer.link.scholarship": "Bursluluk Sınavı",
+  "footer.link.portal": "Okul Portalı",
+  "footer.link.login": "Giriş Yap",
+  "footer.link.register": "Kayıt Ol",
+  "footer.link.codeLogin": "Kod ile Giriş",
+  "footer.link.profile": "Profil",
+  "footer.rights": "Tüm hakları saklıdır.",
+  "footer.badge": "Çok Kiracılı Eğitim SaaS",
 };
 
 const en: Dict = {
@@ -102,6 +220,124 @@ const en: Dict = {
   "comingSoon.body":
     "We're working on it. This section will be available very soon. Until then, you can continue from your current dashboard.",
   "comingSoon.backHome": "Back to Home",
+
+  // Cinematic hero
+  "hero.initializing": "Initializing Education Network",
+  "hero.statusActive": "System Active",
+  "hero.modulesOnline": "12 modules online",
+  "hero.tagline1": "One Network. One Platform. ",
+  "hero.tagline2": "One Future.",
+  "hero.subtitle": "The Operating System for Modern Education",
+  "hero.description":
+    "Manage admissions, CRM, scholarship exams, teachers, students, parents, finance, reports and management decisions from a single connected SaaS platform.",
+  "hero.explore": "Explore the Platform",
+  "hero.trust1": "Multi-Tenant SaaS",
+  "hero.trust2": "For Private Schools",
+  "hero.trust3": "Founding School: İngiliz Kültür Kolejleri",
+
+  // Landing — sections
+  "landing.portalEyebrow": "Existing Users",
+  "landing.portalTitle": "Sign In to Your School Portal",
+  "landing.portalDesc":
+    "School administrators, teachers, parents and students are routed to their own dashboards from a single sign-in screen.",
+  "landing.portal.admin": "School Management",
+  "landing.portal.teacher": "Teacher Sign-in",
+  "landing.portal.parent": "Parent Sign-in",
+  "landing.portal.student": "Student Sign-in",
+
+  "landing.founderEyebrow": "Founding School",
+  "landing.founderTitle": "İngiliz Kültür Kolejleri — Founding School",
+  "landing.founderDesc":
+    "As the first implementation and development partner of the ikkoneedu platform, İngiliz Kültür Kolejleri leads the way in digital school transformation.",
+  "landing.card.avantaj.title": "Founding School Advantage",
+  "landing.card.avantaj.desc":
+    "As the platform's first development partner, priority access to features and a say in the roadmap.",
+  "landing.card.donusum.title": "Digital Campus Transformation",
+  "landing.card.donusum.desc":
+    "A modern campus experience through end-to-end digitalization of all school processes.",
+  "landing.card.ai-yonetim.title": "AI-Powered School Management",
+  "landing.card.ai-yonetim.desc":
+    "Data-driven AI assistance that accelerates decision-making.",
+  "landing.card.vizyon.title": "A Platform Vision That Generates Revenue",
+  "landing.card.vizyon.desc":
+    "Beyond internal efficiency, evolving into a scalable revenue model.",
+
+  "landing.platformEyebrow": "One Platform",
+  "landing.platformTitle": "One Platform, Four Experiences",
+  "landing.platformDesc":
+    "A single ecosystem seamlessly connected for parents, students, teachers and management.",
+  "landing.card.veli.title": "Parent Portal",
+  "landing.card.veli.desc":
+    "A one-touch parent experience for student progress, communication and payments.",
+  "landing.card.ogrenci.title": "Student Portal",
+  "landing.card.ogrenci.desc":
+    "Personalized learning with lessons, assignments and an AI assistant.",
+  "landing.card.ogretmen.title": "Teacher Portal",
+  "landing.card.ogretmen.desc":
+    "Smart tools that streamline class, content and assessment workflows.",
+  "landing.card.yonetim.title": "Management Dashboard",
+  "landing.card.yonetim.desc":
+    "A strategic dashboard that runs the entire campus from one screen.",
+
+  "landing.aiEyebrow": "Artificial Intelligence",
+  "landing.aiTitle": "AI Modules",
+  "landing.aiDesc":
+    "Connected AI modules that strengthen every stage of education.",
+  "landing.card.brain.title": "AI Brain",
+  "landing.card.brain.desc": "The central AI intelligence powering all modules.",
+  "landing.card.ders-programi.title": "AI Timetable",
+  "landing.card.ders-programi.desc":
+    "Builds the optimal lesson and teacher distribution in seconds.",
+  "landing.card.sinav.title": "AI Exam Builder",
+  "landing.card.sinav.desc": "Automatically prepares exams aligned to objectives.",
+  "landing.card.karne.title": "AI Report Card Comments",
+  "landing.card.karne.desc":
+    "Generates meaningful, student-specific report card assessments.",
+  "landing.card.kayit.title": "AI Enrollment Advisor",
+  "landing.card.kayit.desc": "Guides the new enrollment process with smart suggestions.",
+  "landing.card.rehberlik.title": "AI Counseling Assistant",
+  "landing.card.rehberlik.desc": "24/7 AI support for student counseling.",
+
+  "landing.revenueEyebrow": "SaaS Revenue Model",
+  "landing.revenueTitle": "From One School to All of Türkiye",
+  "landing.revenueDesc":
+    "Starting at İngiliz Kültür Kolejleri, this technology evolves into a scalable EdTech platform that can later be offered to other schools via a subscription model.",
+  "landing.tier.schools": "{count} Schools",
+  "landing.tier.revenue": "₺{amount}M / year",
+
+  "landing.mobileBadge": "Mobile App",
+  "landing.mobileTitle": "Your School in Your Pocket",
+  "landing.mobileDesc":
+    "Access every process related to your school from anywhere with a mobile experience designed for parents, students, teachers and administrators.",
+  "landing.mobileButton": "Explore the Mobile App",
+
+  "landing.scholarBadge": "Scholarship Exam",
+  "landing.scholarTitle": "Scholarship Exam Applications Are Open",
+  "landing.scholarDesc":
+    "Complete the scholarship and admission exam application for your child in just a few minutes and seize the scholarship opportunity.",
+  "landing.scholarButton": "Apply for the Scholarship Exam",
+
+  "landing.finalTitle": "Let's Launch the School Operating System of the Future Today",
+
+  // Footer
+  "footer.tagline":
+    "A multi-tenant education SaaS platform that unifies all school processes in a single connected operating system.",
+  "footer.col.platform": "Platform",
+  "footer.col.corporate": "Corporate",
+  "footer.col.account": "Account",
+  "footer.link.features": "Features",
+  "footer.link.pricing": "Pricing",
+  "footer.link.mobile": "Mobile App",
+  "footer.link.demo": "Request a Demo",
+  "footer.link.founder": "Founding School",
+  "footer.link.scholarship": "Scholarship Exam",
+  "footer.link.portal": "School Portal",
+  "footer.link.login": "Sign in",
+  "footer.link.register": "Sign up",
+  "footer.link.codeLogin": "Sign in with Code",
+  "footer.link.profile": "Profile",
+  "footer.rights": "All rights reserved.",
+  "footer.badge": "Multi-Tenant Education SaaS",
 };
 
 export const dictionaries: Record<Locale, Dict> = { tr, en };

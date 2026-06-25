@@ -24,14 +24,22 @@ import {
   organizationSchema,
   softwareApplicationSchema,
 } from "@/lib/seo/structured-data";
+import { getServerT } from "@/lib/i18n/server";
 import { productName, description } from "@/lib/constants";
 import {
   founderHighlights,
   platformExperiences,
   aiModules,
-  revenueTiers,
   type LandingCard,
 } from "@/lib/mock-data";
+
+/** SaaS gelir kademeleri (sayı/tutar; etiketler çeviriden gelir). */
+const REVENUE_TIERS = [
+  { id: "t10", count: 10, amount: "1.2" },
+  { id: "t25", count: 25, amount: "3" },
+  { id: "t50", count: 50, amount: "6", highlight: true },
+  { id: "t100", count: 100, amount: "12" },
+];
 
 export const metadata = buildMetadata({
   path: "/",
@@ -70,7 +78,8 @@ const portalLoginCards = [
   { id: "student", title: "Öğrenci Girişi", href: "/login?role=student", icon: GraduationCap },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const t = await getServerT();
   return (
     <div className="mesh-bg min-h-screen w-full overflow-x-hidden">
       <JsonLd data={[organizationSchema(), softwareApplicationSchema()]} />
@@ -86,28 +95,28 @@ export default function HomePage() {
           <div className="flex items-center gap-2">
             <Link href="/features" className="hidden lg:block">
               <PrimaryButton variant="ghost" size="sm">
-                Özellikler
+                {t("nav.features")}
               </PrimaryButton>
             </Link>
             <Link href="/pricing" className="hidden lg:block">
               <PrimaryButton variant="ghost" size="sm">
-                Fiyatlandırma
+                {t("nav.pricing")}
               </PrimaryButton>
             </Link>
             <Link href="/founder-school" className="hidden lg:block">
               <PrimaryButton variant="ghost" size="sm">
-                Kurucu Okul
+                {t("nav.founderSchool")}
               </PrimaryButton>
             </Link>
             <Link href="/login">
               <PrimaryButton variant="ghost" size="sm">
-                Giriş Yap
+                {t("common.login")}
               </PrimaryButton>
             </Link>
             <LanguageToggle />
             <ThemeToggle />
             <Link href="/demo">
-              <PrimaryButton size="sm">Demo Talep Et</PrimaryButton>
+              <PrimaryButton size="sm">{t("nav.requestDemo")}</PrimaryButton>
             </Link>
           </div>
         </div>
@@ -122,9 +131,9 @@ export default function HomePage() {
           <Reveal>
             <SectionHeader
               align="center"
-              eyebrow="Mevcut Kullanıcılar"
-              title="Okul Portalınıza Giriş Yapın"
-              description="Okul yöneticisi, öğretmen, veli ve öğrenciler tek giriş ekranından kendi panellerine yönlendirilir."
+              eyebrow={t("landing.portalEyebrow")}
+              title={t("landing.portalTitle")}
+              description={t("landing.portalDesc")}
             />
           </Reveal>
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -138,10 +147,10 @@ export default function HomePage() {
                         <Icon size={24} aria-hidden="true" />
                       </span>
                       <h3 className="mt-4 text-base font-semibold text-content">
-                        {card.title}
+                        {t(`landing.portal.${card.id}`)}
                       </h3>
                       <span className="mt-auto flex items-center gap-1 pt-4 text-sm font-medium text-accent">
-                        Giriş Yap
+                        {t("common.login")}
                         <ArrowRight size={15} aria-hidden="true" />
                       </span>
                     </GlassCard>
@@ -157,15 +166,21 @@ export default function HomePage() {
           <Reveal>
             <SectionHeader
               align="center"
-              eyebrow="Kurucu Okul"
-              title="İngiliz Kültür Kolejleri — Kurucu Okul"
-              description="İngiliz Kültür Kolejleri, ikkoneedu platformunun ilk uygulama ve geliştirme ortağı olarak dijital okul dönüşümüne öncülük eder."
+              eyebrow={t("landing.founderEyebrow")}
+              title={t("landing.founderTitle")}
+              description={t("landing.founderDesc")}
             />
           </Reveal>
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {founderHighlights.map((card, index) => (
               <Reveal key={card.id} delay={index * 0.08}>
-                <InfoCard card={card} />
+                <InfoCard
+                  card={{
+                    ...card,
+                    title: t(`landing.card.${card.id}.title`),
+                    description: t(`landing.card.${card.id}.desc`),
+                  }}
+                />
               </Reveal>
             ))}
           </div>
@@ -176,15 +191,21 @@ export default function HomePage() {
           <Reveal>
             <SectionHeader
               align="center"
-              eyebrow="Tek Platform"
-              title="Tek Platform, Dört Deneyim"
-              description="Veli, öğrenci, öğretmen ve yönetim için kusursuzca birbirine bağlı tek bir ekosistem."
+              eyebrow={t("landing.platformEyebrow")}
+              title={t("landing.platformTitle")}
+              description={t("landing.platformDesc")}
             />
           </Reveal>
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {platformExperiences.map((card, index) => (
               <Reveal key={card.id} delay={index * 0.08}>
-                <InfoCard card={card} />
+                <InfoCard
+                  card={{
+                    ...card,
+                    title: t(`landing.card.${card.id}.title`),
+                    description: t(`landing.card.${card.id}.desc`),
+                  }}
+                />
               </Reveal>
             ))}
           </div>
@@ -195,15 +216,21 @@ export default function HomePage() {
           <Reveal>
             <SectionHeader
               align="center"
-              eyebrow="Yapay Zeka"
-              title="AI Modülleri"
-              description="Eğitimin her aşamasını güçlendiren, birbirine bağlı yapay zeka modülleri."
+              eyebrow={t("landing.aiEyebrow")}
+              title={t("landing.aiTitle")}
+              description={t("landing.aiDesc")}
             />
           </Reveal>
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {aiModules.map((card, index) => (
               <Reveal key={card.id} delay={index * 0.06}>
-                <InfoCard card={card} />
+                <InfoCard
+                  card={{
+                    ...card,
+                    title: t(`landing.card.${card.id}.title`),
+                    description: t(`landing.card.${card.id}.desc`),
+                  }}
+                />
               </Reveal>
             ))}
           </div>
@@ -214,13 +241,13 @@ export default function HomePage() {
           <Reveal>
             <SectionHeader
               align="center"
-              eyebrow="SaaS Gelir Modeli"
-              title="Bir Okuldan Türkiye Geneline"
-              description="İngiliz Kültür Kolejleri'nde başlayan bu teknoloji, ilerleyen dönemde farklı okullara abonelik modeliyle sunulabilecek ölçeklenebilir bir EdTech platformuna dönüşür."
+              eyebrow={t("landing.revenueEyebrow")}
+              title={t("landing.revenueTitle")}
+              description={t("landing.revenueDesc")}
             />
           </Reveal>
           <div className="mt-10 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
-            {revenueTiers.map((tier, index) => (
+            {REVENUE_TIERS.map((tier, index) => (
               <Reveal key={tier.id} delay={index * 0.08}>
                 <GlassCard
                   tone="navy"
@@ -230,9 +257,11 @@ export default function HomePage() {
                     tier.highlight ? "border-accent/40 ring-accent/20" : "",
                   ].join(" ")}
                 >
-                  <p className="text-sm font-medium text-accent">{tier.schools}</p>
+                  <p className="text-sm font-medium text-accent">
+                    {t("landing.tier.schools", { count: tier.count })}
+                  </p>
                   <p className="mt-3 text-2xl font-bold tracking-tight text-content sm:text-3xl">
-                    {tier.revenue}
+                    {t("landing.tier.revenue", { amount: tier.amount })}
                   </p>
                 </GlassCard>
               </Reveal>
@@ -250,19 +279,18 @@ export default function HomePage() {
               <div className="max-w-xl">
                 <span className="inline-flex items-center gap-2 rounded-full border border-overlay/10 bg-overlay/[0.04] px-3 py-1 text-xs font-medium text-accent">
                   <Smartphone size={14} aria-hidden="true" />
-                  Mobil Uygulama
+                  {t("landing.mobileBadge")}
                 </span>
                 <h2 className="mt-4 text-2xl font-bold tracking-tight text-content sm:text-3xl">
-                  Okulunuz Cebinizde
+                  {t("landing.mobileTitle")}
                 </h2>
                 <p className="mt-3 text-sm leading-relaxed text-muted sm:text-base">
-                  Veli, öğrenci, öğretmen ve yöneticiler için tasarlanmış mobil
-                  deneyim ile okulunuzla ilgili tüm süreçlere her yerden erişin.
+                  {t("landing.mobileDesc")}
                 </p>
               </div>
               <Link href="/mobile-app" className="shrink-0">
                 <PrimaryButton size="lg">
-                  Mobil Uygulamayı İncele
+                  {t("landing.mobileButton")}
                   <ArrowRight size={18} aria-hidden="true" />
                 </PrimaryButton>
               </Link>
@@ -280,19 +308,18 @@ export default function HomePage() {
               <div className="max-w-xl">
                 <span className="inline-flex items-center gap-2 rounded-full border border-overlay/10 bg-overlay/[0.04] px-3 py-1 text-xs font-medium text-accent">
                   <Award size={14} aria-hidden="true" />
-                  Bursluluk Sınavı
+                  {t("landing.scholarBadge")}
                 </span>
                 <h2 className="mt-4 text-2xl font-bold tracking-tight text-content sm:text-3xl">
-                  Bursluluk Sınavı Başvurusu Açık
+                  {t("landing.scholarTitle")}
                 </h2>
                 <p className="mt-3 text-sm leading-relaxed text-muted sm:text-base">
-                  Çocuğunuz için bursluluk ve kabul sınavı başvurusunu birkaç
-                  dakika içinde tamamlayın, burs fırsatını yakalayın.
+                  {t("landing.scholarDesc")}
                 </p>
               </div>
               <Link href="/scholarship-exam/apply" className="shrink-0">
                 <PrimaryButton size="lg">
-                  Bursluluk Sınavı Başvurusu
+                  {t("landing.scholarButton")}
                   <ArrowRight size={18} aria-hidden="true" />
                 </PrimaryButton>
               </Link>
@@ -308,19 +335,19 @@ export default function HomePage() {
               className="ai-gradient flex flex-col items-center gap-6 border-accent/20 px-6 py-14 text-center sm:px-10"
             >
               <h2 className="max-w-2xl text-3xl font-bold tracking-tight text-content sm:text-4xl">
-                Geleceğin Okul İşletim Sistemini Bugün Başlatalım
+                {t("landing.finalTitle")}
               </h2>
               <div className="flex flex-col gap-3 sm:flex-row">
                 <Link href="/demo">
                   <PrimaryButton size="lg" className="w-full sm:w-auto">
-                    Demo Talep Et
+                    {t("nav.requestDemo")}
                     <ArrowRight size={18} aria-hidden="true" />
                   </PrimaryButton>
                 </Link>
                 <Link href="/login">
                   <PrimaryButton variant="secondary" size="lg" className="w-full sm:w-auto">
                     <LogIn size={18} aria-hidden="true" />
-                    Giriş Yap
+                    {t("common.login")}
                   </PrimaryButton>
                 </Link>
               </div>

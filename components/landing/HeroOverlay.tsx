@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 interface HeroOverlayProps {
   visible: boolean;
@@ -28,17 +29,13 @@ const item = {
   },
 };
 
-const TRUST = [
-  "Çok Kiracılı SaaS",
-  "Özel Okullar İçin",
-  "Kurucu Okul: İngiliz Kültür Kolejleri",
-];
-
 /**
  * Sinematik hero ön katmanı — açılış tamamlanınca yumuşakça belirir.
  * Split kompozisyon: metin solda; ağ sahnesi sağda (arka planda).
  */
 export function HeroOverlay({ visible, onCorePulse }: HeroOverlayProps) {
+  const t = useT();
+  const TRUST = [t("hero.trust1"), t("hero.trust2"), t("hero.trust3")];
   return (
     <motion.div
       variants={container}
@@ -56,8 +53,8 @@ export function HeroOverlay({ visible, onCorePulse }: HeroOverlayProps) {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent/70" />
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-accent" />
           </span>
-          Sistem Aktif
-          <span className="text-muted/70">{"//"} 12 modül çevrimiçi</span>
+          {t("hero.statusActive")}
+          <span className="text-muted/70">{"//"} {t("hero.modulesOnline")}</span>
         </motion.div>
 
         {/* Aksan çizgisi */}
@@ -83,24 +80,22 @@ export function HeroOverlay({ visible, onCorePulse }: HeroOverlayProps) {
           variants={item}
           className="mt-6 text-xl font-semibold tracking-tight text-content sm:text-2xl"
         >
-          Tek Ağ. Tek Platform.{" "}
-          <span className="text-brand">Tek Gelecek.</span>
+          {t("hero.tagline1")}
+          <span className="text-brand">{t("hero.tagline2")}</span>
         </motion.p>
 
         <motion.p
           variants={item}
           className="mt-2 font-mono text-sm uppercase tracking-[0.18em] text-muted sm:text-base"
         >
-          Modern Eğitimin İşletim Sistemi
+          {t("hero.subtitle")}
         </motion.p>
 
         <motion.p
           variants={item}
           className="mt-6 max-w-xl text-sm leading-relaxed text-muted/90 sm:text-base"
         >
-          Kayıt kabul, CRM, bursluluk sınavları, öğretmenler, öğrenciler,
-          veliler, finans, raporlar ve yönetim kararlarını tek bağlı SaaS
-          platformundan yönetin.
+          {t("hero.description")}
         </motion.p>
 
         <motion.div
@@ -111,13 +106,13 @@ export function HeroOverlay({ visible, onCorePulse }: HeroOverlayProps) {
         >
           <Link href="/demo" onMouseEnter={onCorePulse}>
             <PrimaryButton size="lg" className="w-full sm:w-auto">
-              Demo Talep Et
+              {t("nav.requestDemo")}
               <ArrowRight size={18} aria-hidden="true" />
             </PrimaryButton>
           </Link>
           <Link href="/features" onMouseEnter={onCorePulse}>
             <PrimaryButton variant="secondary" size="lg" className="w-full sm:w-auto">
-              Platformu Keşfet
+              {t("hero.explore")}
             </PrimaryButton>
           </Link>
         </motion.div>
