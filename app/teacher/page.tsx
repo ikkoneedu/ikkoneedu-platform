@@ -16,14 +16,17 @@ import { MyClasses } from "@/components/teacher/MyClasses";
 import { AttendanceBoard } from "@/components/attendance/AttendanceBoard";
 import { MeetingRequests } from "@/components/meetings/MeetingRequests";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { getServerT } from "@/lib/i18n/server";
 import { productName } from "@/lib/constants";
 import { teacherQuickActions } from "@/lib/mock-data";
 
-export const metadata: Metadata = {
-  title: `Öğretmen Portalı — ${productName}`,
-  description:
-    "Sınıflarınızı yönetin, ödev ve notları takip edin, veli ve öğrencilerle iletişim kurun.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: `${t("dash.teacher.metaTitle")} — ${productName}`,
+    description: t("dash.teacher.metaDesc"),
+  };
+}
 
 /** Dürüst "Yakında" kartı — sahte veri yerine net placeholder (premium görünüm). */
 function ComingSoonCard({
@@ -51,16 +54,17 @@ function ComingSoonCard({
   );
 }
 
-export default function TeacherPage() {
+export default async function TeacherPage() {
+  const t = await getServerT();
   return (
-    <PageShell title="Öğretmen Portalı">
+    <PageShell title={t("dash.teacher.title")}>
       <div className="flex flex-col gap-10">
         <AccountSummaryCard />
 
         <SectionHeader
-          eyebrow="Öğretmen Portalı"
-          title="Öğretmen Portalı"
-          description="Sınıflarınızı, ödevlerinizi, notlarınızı ve iletişiminizi tek ekrandan yönetin."
+          eyebrow={t("dash.teacher.title")}
+          title={t("dash.teacher.title")}
+          description={t("dash.teacher.desc")}
         />
 
         {/* Kendi ders programım (canlı) + sıradaki ders hatırlatması */}
@@ -101,29 +105,29 @@ export default function TeacherPage() {
 
         {/* Yakında gelecek öğretmen özellikleri — dürüst placeholder (sahte veri yok). */}
         <section>
-          <h2 className="mb-4 text-lg font-semibold text-content">Yakında</h2>
+          <h2 className="mb-4 text-lg font-semibold text-content">{t("dash.section.comingSoon")}</h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
             <ComingSoonCard
               icon={Sparkles}
-              title="AI Öğretmen Asistanı"
-              description="Ders planı, etkinlik ve içerik üretiminde yapay zeka desteği."
+              title={t("dash.teacher.soon.assistant.title")}
+              description={t("dash.teacher.soon.assistant.desc")}
             />
             <ComingSoonCard
               icon={FileText}
-              title="Sınav Oluşturucu"
-              description="Soru bankasından hızlıca sınav ve quiz hazırlama."
+              title={t("dash.teacher.soon.exam.title")}
+              description={t("dash.teacher.soon.exam.desc")}
             />
             <ComingSoonCard
               icon={PenLine}
-              title="AI Karne Yorumu"
-              description="Öğrenci performansına göre gelişim odaklı karne yorumları."
+              title={t("dash.teacher.soon.report.title")}
+              description={t("dash.teacher.soon.report.desc")}
             />
           </div>
         </section>
 
         {/* Hızlı İşlemler — gerçek bağlantılar */}
         <section>
-          <h2 className="mb-4 text-lg font-semibold text-content">Hızlı İşlemler</h2>
+          <h2 className="mb-4 text-lg font-semibold text-content">{t("dash.section.quickActions")}</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {teacherQuickActions.map((action) => {
               const Icon = action.icon;
@@ -137,7 +141,7 @@ export default function TeacherPage() {
                     <Icon size={20} aria-hidden="true" />
                   </span>
                   <span className="flex items-center gap-1 text-sm font-medium text-content">
-                    {action.label}
+                    {t(action.labelKey)}
                     <ChevronRight
                       size={14}
                       className="text-muted transition-transform group-hover:translate-x-0.5"

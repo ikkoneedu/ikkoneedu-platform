@@ -544,18 +544,19 @@ export const parentAiSuggestions: string[] = [
 
 export interface QuickAction {
   id: string;
-  label: string;
+  /** Çeviri anahtarı (dash.qa.*) — sayfa t() ile çözer. */
+  labelKey: string;
   icon: LucideIcon;
   /** Varsa gerçek hedef route; yoksa render tarafı /coming-soon kullanır. */
   href?: string;
 }
 
 export const parentQuickActions: QuickAction[] = [
-  { id: "mesaj", label: "Öğretmene Mesaj Gönder", icon: MessageSquare, href: "/messages" },
-  { id: "rapor", label: "Notları/Raporları İncele", icon: FileText, href: "#notlar" },
-  { id: "etkinlik", label: "Etkinlikleri Gör", icon: CalendarCheck, href: "/events" },
-  { id: "yemek", label: "Yemek Listesini Gör", icon: UtensilsCrossed, href: "/lunch-menu" },
-  { id: "servis", label: "Servisi Takip Et", icon: Bus, href: "/bus-routes" },
+  { id: "mesaj", labelKey: "dash.qa.parentMessage", icon: MessageSquare, href: "/messages" },
+  { id: "rapor", labelKey: "dash.qa.reports", icon: FileText, href: "#notlar" },
+  { id: "etkinlik", labelKey: "dash.qa.events", icon: CalendarCheck, href: "/events" },
+  { id: "yemek", labelKey: "dash.qa.lunch", icon: UtensilsCrossed, href: "/lunch-menu" },
+  { id: "servis", labelKey: "dash.qa.bus", icon: Bus, href: "/bus-routes" },
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -565,13 +566,13 @@ export const parentQuickActions: QuickAction[] = [
 export const teacherQuickActions: QuickAction[] = [
   // Çalışan aksiyonlar: ilgili canlı panoya kaydırır (#yoklama/#odev) veya
   // mesaj merkezine gider. Yoklama/ödev/mesaj öğretmen panosunda gerçek çalışır.
-  { id: "yoklama", label: "Yoklama Al", icon: ClipboardCheck, href: "#yoklama" },
-  { id: "odev", label: "Ödev Ver", icon: FilePlus, href: "#odev" },
-  { id: "ders-plani", label: "Ders Planı Hazırla", icon: CalendarDays, href: "/lesson-plans" },
-  { id: "veli-mesaj", label: "Veliye Mesaj Gönder", icon: MessageSquare, href: "/messages" },
+  { id: "yoklama", labelKey: "dash.qa.attendance", icon: ClipboardCheck, href: "#yoklama" },
+  { id: "odev", labelKey: "dash.qa.assign", icon: FilePlus, href: "#odev" },
+  { id: "ders-plani", labelKey: "dash.qa.lessonPlan", icon: CalendarDays, href: "/lesson-plans" },
+  { id: "veli-mesaj", labelKey: "dash.qa.parentMsg", icon: MessageSquare, href: "/messages" },
   // AI gerektiren özellikler → /coming-soon (şimdilik pasif, son fazda aktif).
-  { id: "sinav", label: "Sınav Oluştur (AI)", icon: FileText },
-  { id: "karne", label: "Karne Yorumu (AI)", icon: PenLine },
+  { id: "sinav", labelKey: "dash.qa.examAi", icon: FileText },
+  { id: "karne", labelKey: "dash.qa.reportAi", icon: PenLine },
 ];
 
 /* -------------------------------------------------------------------------- */

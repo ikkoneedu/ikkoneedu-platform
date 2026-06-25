@@ -6,6 +6,7 @@ import { Settings2, School } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { ROLE_LABELS } from "@/lib/auth/role-constants";
 import { getSchool } from "@/lib/services/schools";
 import { getSettings } from "@/lib/services/settings";
@@ -24,6 +25,7 @@ function initials(name: string): string {
  */
 export function AccountSummaryCard() {
   const { profile, firebaseReady } = useAuth();
+  const t = useT();
   const [schoolName, setSchoolName] = useState<string | null>(null);
   const [academicYear, setAcademicYear] = useState<string>("");
 
@@ -55,9 +57,9 @@ export function AccountSummaryCard() {
   const school =
     schoolName ??
     (profile.tenantId === "platform"
-      ? "Platform"
+      ? t("dash.tenant.platform")
       : profile.tenantId === "public"
-        ? "Genel"
+        ? t("dash.tenant.public")
         : profile.tenantId);
 
   return (
@@ -67,7 +69,7 @@ export function AccountSummaryCard() {
       </div>
       <div className="min-w-0">
         <p className="text-base font-semibold text-content">
-          Hoş geldiniz, {profile.displayName || "Kullanıcı"}
+          {t("dash.welcome", { name: profile.displayName || t("userMenu.user") })}
         </p>
         <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm text-muted">
           <span>{ROLE_LABELS[profile.role] ?? profile.role}</span>
@@ -91,7 +93,7 @@ export function AccountSummaryCard() {
       <Link href="/profile" className="sm:ml-auto">
         <PrimaryButton variant="secondary" size="sm">
           <Settings2 size={15} aria-hidden="true" />
-          Profili Düzenle
+          {t("dash.editProfile")}
         </PrimaryButton>
       </Link>
     </GlassCard>

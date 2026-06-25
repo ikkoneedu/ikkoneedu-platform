@@ -24,14 +24,17 @@ import { ScheduleBoard } from "@/components/schedule/ScheduleBoard";
 import { AttendanceBoard } from "@/components/attendance/AttendanceBoard";
 import { ParentFinanceCard } from "@/components/parent/ParentFinanceCard";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { getServerT } from "@/lib/i18n/server";
 import { productName } from "@/lib/constants";
 import { parentQuickActions } from "@/lib/mock-data";
 
-export const metadata: Metadata = {
-  title: `Veli Portalı — ${productName}`,
-  description:
-    "Çocuğunuzun okul yaşamını, duyurularını ve gelişimini tek ekrandan takip edin.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: `${t("dash.parent.metaTitle")} — ${productName}`,
+    description: t("dash.parent.metaDesc"),
+  };
+}
 
 /** Okul yaşamı modülüne yönlendiren kart (gerçek sayfa). */
 function FeatureLinkCard({
@@ -61,16 +64,17 @@ function FeatureLinkCard({
   );
 }
 
-export default function ParentPage() {
+export default async function ParentPage() {
+  const t = await getServerT();
   return (
-    <PageShell title="Veli Portalı">
+    <PageShell title={t("dash.parent.title")}>
       <div className="flex flex-col gap-10">
         <AccountSummaryCard />
 
         <SectionHeader
-          eyebrow="Veli Portalı"
-          title="Veli Portalı"
-          description="Çocuğunuzun okul yaşamını, duyurularını ve gelişimini tek ekrandan takip edin."
+          eyebrow={t("dash.parent.title")}
+          title={t("dash.parent.title")}
+          description={t("dash.parent.desc")}
         />
 
         {/* Bağlı öğrenciler (gerçek Firestore — profile.linkedStudentIds kapsamı) */}
@@ -110,38 +114,38 @@ export default function ParentPage() {
 
         {/* Okul yaşamı — gerçek modüller (etkinlik, yemek, servis). */}
         <section>
-          <h2 className="mb-4 text-lg font-semibold text-content">Okul Yaşamı</h2>
+          <h2 className="mb-4 text-lg font-semibold text-content">{t("dash.section.schoolLife")}</h2>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             <FeatureLinkCard
               href="/lesson-plans"
               icon={NotebookPen}
-              title="Ders Planları"
-              description="Çocuğunuzun sınıfının ders planlarını görüntüleyin."
+              title={t("dash.parent.feat.lessonPlans.title")}
+              description={t("dash.parent.feat.lessonPlans.desc")}
             />
             <FeatureLinkCard
               href="/events"
               icon={CalendarDays}
-              title="Etkinlik Takvimi"
-              description="Okul etkinliklerini ve veli toplantılarını görüntüleyin."
+              title={t("dash.parent.feat.events.title")}
+              description={t("dash.parent.feat.events.desc")}
             />
             <FeatureLinkCard
               href="/lunch-menu"
               icon={UtensilsCrossed}
-              title="Yemek Listesi"
-              description="Günlük yemek menüsünü görüntüleyin."
+              title={t("dash.parent.feat.lunch.title")}
+              description={t("dash.parent.feat.lunch.desc")}
             />
             <FeatureLinkCard
               href="/bus-routes"
               icon={Bus}
-              title="Servis Takibi"
-              description="Servis rotalarını, durakları ve saatleri görüntüleyin."
+              title={t("dash.parent.feat.bus.title")}
+              description={t("dash.parent.feat.bus.desc")}
             />
           </div>
         </section>
 
         {/* Hızlı İşlemler — gerçek bağlantılar */}
         <section>
-          <h2 className="mb-4 text-lg font-semibold text-content">Hızlı İşlemler</h2>
+          <h2 className="mb-4 text-lg font-semibold text-content">{t("dash.section.quickActions")}</h2>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             {parentQuickActions.map((action) => {
               const Icon = action.icon;
@@ -155,7 +159,7 @@ export default function ParentPage() {
                     <Icon size={20} aria-hidden="true" />
                   </span>
                   <span className="flex items-center gap-1 text-sm font-medium text-content">
-                    {action.label}
+                    {t(action.labelKey)}
                     <ChevronRight
                       size={14}
                       className="text-muted transition-transform group-hover:translate-x-0.5"
