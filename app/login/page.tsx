@@ -23,6 +23,7 @@ import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { getUserProfile } from "@/lib/services/user-profile";
 import { getHomeRouteForRole } from "@/lib/auth/role-routing";
 import { canRoleAccess } from "@/lib/auth/route-config";
@@ -31,13 +32,9 @@ import { sendPasswordReset } from "@/lib/services/auth-actions";
 import { productName, productFullName, tagline } from "@/lib/constants";
 
 const benefits = [
-  { id: "okul", icon: School, text: "Tek platformda okul yönetimi" },
-  { id: "ai", icon: Sparkles, text: "Yapay zeka destekli eğitim süreçleri" },
-  {
-    id: "deneyim",
-    icon: Users,
-    text: "Veli, öğrenci, öğretmen ve yönetim için tek deneyim",
-  },
+  { id: "okul", icon: School, textKey: "login.benefit1" },
+  { id: "ai", icon: Sparkles, textKey: "login.benefit2" },
+  { id: "deneyim", icon: Users, textKey: "login.benefit3" },
 ];
 
 const fadeUp = {
@@ -58,21 +55,21 @@ function sanitizeRedirect(raw: string): string | null {
   return raw;
 }
 
-/** role parametresine göre alt başlık ve giriş hedefi. */
-const ROLE_CONFIG: Record<string, { subtitle: string; target: string }> = {
-  admin: { subtitle: "Okul yönetim panelinize giriş yapın.", target: "/admin" },
-  teacher: { subtitle: "Öğretmen portalınıza giriş yapın.", target: "/teacher" },
-  parent: { subtitle: "Veli portalınıza giriş yapın.", target: "/parent" },
-  student: { subtitle: "Öğrenci portalınıza giriş yapın.", target: "/student" },
+/** role parametresine göre alt başlık anahtarı ve giriş hedefi. */
+const ROLE_CONFIG: Record<string, { subtitleKey: string; target: string }> = {
+  admin: { subtitleKey: "login.subtitleAdmin", target: "/admin" },
+  teacher: { subtitleKey: "login.subtitleTeacher", target: "/teacher" },
+  parent: { subtitleKey: "login.subtitleParent", target: "/parent" },
+  student: { subtitleKey: "login.subtitleStudent", target: "/student" },
 };
 
 /** Mock demo giriş butonları. */
 const DEMO_BUTTONS = [
-  { id: "super", label: "Super Admin Demo", href: "/super-admin", icon: ShieldCheck },
-  { id: "admin", label: "Okul Yönetimi Demo", href: "/admin", icon: School },
-  { id: "teacher", label: "Öğretmen Demo", href: "/teacher", icon: BookOpen },
-  { id: "parent", label: "Veli Demo", href: "/parent", icon: Users },
-  { id: "student", label: "Öğrenci Demo", href: "/student", icon: GraduationCap },
+  { id: "super", labelKey: "login.demoSuper", href: "/super-admin", icon: ShieldCheck },
+  { id: "admin", labelKey: "login.demoAdmin", href: "/admin", icon: School },
+  { id: "teacher", labelKey: "login.demoTeacher", href: "/teacher", icon: BookOpen },
+  { id: "parent", labelKey: "login.demoParent", href: "/parent", icon: Users },
+  { id: "student", labelKey: "login.demoStudent", href: "/student", icon: GraduationCap },
 ];
 
 function LoginContent() {
@@ -83,6 +80,7 @@ function LoginContent() {
   const redirectParam = searchParams.get("redirect") ?? "";
 
   const { signIn, signOut, firebaseReady } = useAuth();
+  const t = useT();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resetMsg, setResetMsg] = useState<string | null>(null);
@@ -114,20 +112,20 @@ function LoginContent() {
     setResetMsg(null);
     const email = (formRef.current?.elements.namedItem("identifier") as HTMLInputElement | null)?.value?.trim() ?? "";
     if (!email || !email.includes("@")) {
-      setError("Şifre sıfırlama için önce e-posta adresinizi girin.");
+      setError(t("login.errForgotEmail"));
       return;
     }
     setError(null);
     const result = await sendPasswordReset(email);
     if (result.ok) {
-      setResetMsg("Şifre sıfırlama bağlantısı e-postanıza gönderildi (varsa).");
+      setResetMsg(t("login.msgResetSent"));
     } else {
-      setError(result.error ?? "Sıfırlama e-postası gönderilemedi.");
+      setError(result.error ?? t("login.errResetFailed"));
     }
   };
 
   const config = ROLE_CONFIG[role];
-  const subtitle = config?.subtitle ?? "Hesabınıza giriş yapın.";
+  const subtitle = config ? t(config.subtitleKey) : t("login.subtitleDefault");
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -141,17 +139,13 @@ function LoginContent() {
     // Firebase bağlı değilse SAHTE giriş yapma; net uyarı ver.
     // (Önceden mock modda /school-select'e yönlendiriliyordu — kafa karıştırıcıydı.)
     if (!firebaseReady) {
-      setError(
-        "Giriş sistemi şu anda bağlı değil (Firebase yapılandırması bulunamadı). " +
-          "Geliştirme yapıyorsanız .env.local içindeki NEXT_PUBLIC_FIREBASE_* değerlerini " +
-          "kontrol edip sunucuyu yeniden başlatın.",
-      );
+      setError(t("login.errFirebase"));
       return;
     }
 
     // Yalnızca e-posta/şifre girişi desteklenir.
     if (!identifier.includes("@")) {
-      setError("Lütfen e-posta adresinizle giriş yapın (örn. ad@okul.com).");
+      setError(t("login.errEmailOnly"));
       return;
     }
 
@@ -165,9 +159,7 @@ function LoginContent() {
       // Profil yoksa: girişi sonlandır ve yetki mesajı göster.
       if (!profile) {
         await signOut();
-        setError(
-          "Yetki profiliniz bulunamadı. Lütfen sistem yöneticisiyle iletişime geçin.",
-        );
+        setError(t("login.errNoProfile"));
         setSubmitting(false);
         return;
       }
@@ -209,7 +201,7 @@ function LoginContent() {
 
           <div className="space-y-2">
             <p className="text-lg font-medium text-accent">
-              Türkiye&apos;nin Yapay Zeka Destekli Eğitim İşletim Sistemi
+              {t("login.heroLine")}
             </p>
             <p className="max-w-md text-2xl font-bold leading-snug tracking-tight text-content sm:text-3xl">
               {tagline}
@@ -225,7 +217,7 @@ function LoginContent() {
                     <Icon size={18} aria-hidden="true" />
                   </span>
                   <span className="text-sm text-muted sm:text-base">
-                    {benefit.text}
+                    {t(benefit.textKey)}
                   </span>
                 </li>
               );
@@ -237,7 +229,7 @@ function LoginContent() {
         <motion.section {...fadeUp} transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}>
           <GlassCard tone="navy" className="sm:p-8">
             <h2 className="text-xl font-bold tracking-tight text-content sm:text-2xl">
-              {productName} Giriş
+              {t("login.cardTitle", { product: productName })}
             </h2>
             <p className="mt-1 text-sm text-muted">{subtitle}</p>
             {school && schoolBrand ? (
@@ -265,21 +257,21 @@ function LoginContent() {
               </div>
             ) : school ? (
               <p className="mt-2 inline-block rounded-full border border-accent/20 bg-accent/10 px-3 py-0.5 text-xs font-medium text-accent">
-                Okul: {school}
+                {t("login.schoolPrefix", { school })}
               </p>
             ) : null}
 
             <form ref={formRef} onSubmit={handleSubmit} className="mt-6 space-y-4">
               <TextField
-                label="E-posta veya Telefon"
+                label={t("login.identifierLabel")}
                 name="identifier"
                 icon={Mail}
-                placeholder="ornek@okul.com veya 05xx..."
+                placeholder={t("login.identifierPlaceholder")}
                 autoComplete="username"
                 required
               />
               <TextField
-                label="Şifre"
+                label={t("login.passwordLabel")}
                 name="password"
                 type="password"
                 icon={Lock}
@@ -295,14 +287,14 @@ function LoginContent() {
                     name="remember"
                     className="h-4 w-4 rounded border-overlay/20 bg-overlay/[0.04] text-accent accent-accent focus:ring-accent"
                   />
-                  Beni hatırla
+                  {t("login.rememberMe")}
                 </label>
                 <button
                   type="button"
                   onClick={handleForgotPassword}
                   className="font-medium text-accent transition-colors hover:text-content"
                 >
-                  Şifremi unuttum
+                  {t("login.forgotPassword")}
                 </button>
               </div>
 
@@ -326,7 +318,7 @@ function LoginContent() {
                 className="w-full"
                 disabled={submitting}
               >
-                {submitting ? "Giriş yapılıyor..." : "Giriş Yap"}
+                {submitting ? t("login.submitting") : t("login.submit")}
                 <ArrowRight size={18} aria-hidden="true" />
               </PrimaryButton>
             </form>
@@ -337,7 +329,7 @@ function LoginContent() {
             {!firebaseReady && (
               <div className="mt-6 border-t border-overlay/10 pt-5">
                 <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted">
-                  Demo Girişleri (Firebase bağlı değil)
+                  {t("login.demoTitle")}
                 </p>
                 <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {DEMO_BUTTONS.map((btn) => {
@@ -350,7 +342,7 @@ function LoginContent() {
                         className="flex items-center gap-2 rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-left text-sm font-medium text-content transition-colors hover:border-accent/30 hover:bg-overlay/[0.06]"
                       >
                         <Icon size={16} className="shrink-0 text-accent" aria-hidden="true" />
-                        {btn.label}
+                        {t(btn.labelKey)}
                       </button>
                     );
                   })}
@@ -359,27 +351,27 @@ function LoginContent() {
             )}
 
             <p className="mt-6 text-center text-sm text-muted">
-              Öğrenci veya veli misiniz?{" "}
+              {t("login.codeQuestion")}{" "}
               <Link href="/code-login" className="font-semibold text-accent transition-colors hover:text-content">
-                Kod ile giriş yapın
+                {t("login.codeLink")}
               </Link>
             </p>
             <p className="mt-2 text-center text-sm text-muted">
-              Aday veli misiniz?{" "}
+              {t("login.registerQuestion")}{" "}
               <Link href="/register" className="font-semibold text-accent transition-colors hover:text-content">
-                Hesap oluşturun
+                {t("login.registerLink")}
               </Link>
             </p>
             <p className="mt-2 text-center text-sm text-muted">
-              Okulunuzu sisteme taşımak için{" "}
+              {t("login.demoQuestion")}{" "}
               <Link href="/demo" className="font-semibold text-accent transition-colors hover:text-content">
-                demo talep edin
+                {t("login.demoLink")}
               </Link>
             </p>
             <p className="mt-4 border-t border-overlay/10 pt-4 text-center text-sm text-muted">
-              Üye olmadan{" "}
+              {t("login.browseQuestion")}{" "}
               <Link href="/" className="font-semibold text-accent transition-colors hover:text-content">
-                okulları ve bursluluğu inceleyin
+                {t("login.browseLink")}
               </Link>
             </p>
           </GlassCard>
