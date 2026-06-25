@@ -297,7 +297,7 @@ export function MeetingRequests() {
                   ) : (
                     <XCircle size={11} aria-hidden="true" />
                   )}
-                  {MEETING_STATUS_LABELS[row.status]}
+                  {t(`boardC.status.${row.status}`)}
                 </span>
               </div>
               {row.preferredDate && (
