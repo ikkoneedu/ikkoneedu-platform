@@ -7,8 +7,10 @@ import { SectionHeader } from "@/components/shared/SectionHeader";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { SchoolPublicShell } from "@/components/school/SchoolPublicShell";
 import { RealSchoolPublic } from "@/components/school/RealSchoolPublic";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { educationalOrganizationSchema, breadcrumbSchema } from "@/lib/seo/structured-data";
+import { buildMetadata } from "@/lib/seo/seo";
 import { PUBLIC_SCHOOLS, getPublicSchoolBySlug } from "@/lib/tenant/tenant-config";
-import { productName } from "@/lib/constants";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -21,10 +23,15 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const school = getPublicSchoolBySlug(slug);
-  return {
-    title: school ? `${school.schoolName} — ${productName}` : `Okul — ${productName}`,
-    description: school?.intro,
-  };
+  if (!school) {
+    return buildMetadata({ title: "Okul", path: `/school/${slug}` });
+  }
+  return buildMetadata({
+    title: school.schoolName,
+    description: school.intro,
+    path: `/school/${school.slug}`,
+    keywords: [school.schoolName, "bursluluk sınavı", "kayıt", school.campus],
+  });
 }
 
 const announcements = [
@@ -42,6 +49,20 @@ export default async function SchoolPublicPage({ params }: PageProps) {
 
   return (
     <SchoolPublicShell school={school}>
+      <JsonLd
+        data={[
+          educationalOrganizationSchema({
+            name: school.schoolName,
+            slug: school.slug,
+            description: school.intro,
+            city: school.campus,
+          }),
+          breadcrumbSchema([
+            { name: "Ana Sayfa", path: "/" },
+            { name: school.schoolName, path: `/school/${school.slug}` },
+          ]),
+        ]}
+      />
       {/* Hero */}
       <section className="flex flex-col items-center gap-5 py-8 text-center">
         <span

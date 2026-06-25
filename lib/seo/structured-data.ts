@@ -48,6 +48,45 @@ export function softwareApplicationSchema() {
   };
 }
 
+/**
+ * schema.org EducationalOrganization şeması — bir okulun public sayfası için.
+ * White-label okul kimliğini arama motorlarına yapılandırılmış veri olarak sunar.
+ */
+export function educationalOrganizationSchema(input: {
+  name: string;
+  slug: string;
+  description?: string;
+  city?: string;
+  logo?: string;
+}) {
+  const url = `${siteUrl}/school/${input.slug}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    name: input.name,
+    url,
+    ...(input.logo ? { logo: input.logo } : {}),
+    ...(input.description ? { description: input.description } : {}),
+    ...(input.city
+      ? { address: { "@type": "PostalAddress", addressLocality: input.city, addressCountry: "TR" } }
+      : {}),
+  };
+}
+
+/** schema.org BreadcrumbList şeması (kırılım navigasyonu). */
+export function breadcrumbSchema(items: { name: string; path: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: `${siteUrl}${item.path === "/" ? "" : item.path}`,
+    })),
+  };
+}
+
 interface FaqItem {
   question: string;
   answer: string;

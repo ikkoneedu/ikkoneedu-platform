@@ -7,6 +7,8 @@ import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { RealSchoolShell } from "@/components/school/RealSchoolShell";
 import { SchoolLogo } from "@/components/school/SchoolLogo";
 import { SchoolInquiryForm } from "@/components/portal/SchoolInquiryForm";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { educationalOrganizationSchema } from "@/lib/seo/structured-data";
 
 /**
  * Süper adminin oluşturduğu GERÇEK okul için halka açık sayfa.
@@ -17,6 +19,15 @@ export function RealSchoolPublic({ slug }: { slug: string }) {
     <RealSchoolShell slug={slug}>
       {(school) => (
         <>
+          <JsonLd
+            data={educationalOrganizationSchema({
+              name: school.name,
+              slug: school.slug,
+              description: school.about || undefined,
+              city: school.city || undefined,
+              logo: school.logo || undefined,
+            })}
+          />
           {/* Hero — okula özgü logo/slogan/renk */}
           <section className="flex flex-col items-center gap-5 py-8 text-center">
             <SchoolLogo
