@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { ROLE_LABELS } from "@/lib/auth/role-constants";
 
 function initials(name: string): string {
@@ -21,6 +22,7 @@ function initials(name: string): string {
 export function UserMenu() {
   const router = useRouter();
   const { profile, firebaseReady, signOut } = useAuth();
+  const t = useT();
 
   if (!firebaseReady || !profile) {
     return (
@@ -40,10 +42,10 @@ export function UserMenu() {
 
   return (
     <div className="flex items-center gap-2">
-      <Link href="/profile" className="flex items-center gap-2" aria-label="Profilim">
+      <Link href="/profile" className="flex items-center gap-2" aria-label={t("userMenu.profile")}>
         <div className="hidden text-right sm:block">
           <p className="text-sm font-medium leading-tight text-content">
-            {profile.displayName || "Kullanıcı"}
+            {profile.displayName || t("userMenu.user")}
           </p>
           <p className="text-[11px] leading-tight text-muted">
             {ROLE_LABELS[profile.role] ?? profile.role}
@@ -59,7 +61,7 @@ export function UserMenu() {
       <button
         type="button"
         onClick={handleSignOut}
-        aria-label="Çıkış yap"
+        aria-label={t("userMenu.logout")}
         className="flex h-9 w-9 items-center justify-center rounded-lg border border-overlay/10 bg-overlay/[0.04] text-muted transition-colors hover:border-brand/40 hover:text-brand"
       >
         <LogOut size={18} aria-hidden="true" />

@@ -66,40 +66,41 @@ export const colors = {
 
 export interface NavigationItem {
   id: string;
-  label: string;
+  /** Çeviri anahtarı (nav.*) — Sidebar/MobileBottomNav t() ile çözer. */
+  labelKey: string;
   href: string;
   icon: LucideIcon;
 }
 
 /** Ana navigasyon öğeleri — sidebar, topbar ve mobil menüde ortak kullanılır. */
 export const navigationItems: NavigationItem[] = [
-  { id: "genel-bakis", label: "Genel Bakış", href: "/", icon: LayoutDashboard },
-  { id: "admin", label: "Yönetim Paneli", href: "/admin", icon: LayoutDashboard },
-  { id: "personel", label: "Personel ve Kullanıcılar", href: "/admin/users", icon: UserPlus },
-  { id: "okul-kayitlari", label: "Öğrenci · Veli · Öğretmen", href: "/admin/records", icon: GraduationCap },
-  { id: "ders-programi", label: "Ders Programı ve Sınıflar", href: "/admin/timetable", icon: CalendarDays },
-  { id: "executive", label: "Executive", href: "/executive", icon: BarChart3 },
-  { id: "okullar", label: "Okullar", href: "/school-select", icon: School },
-  { id: "ogrenciler", label: "Öğrenciler", href: "/student", icon: GraduationCap },
-  { id: "veliler", label: "Veliler", href: "/parent", icon: Users },
-  { id: "ogretmenler", label: "Öğretmenler", href: "/teacher", icon: BookOpen },
-  { id: "siniflarim", label: "Sınıflarım ve Kodlar", href: "/teacher/classes", icon: School },
-  { id: "yapay-zeka", label: "AI Brain", href: "/ai-brain", icon: Sparkles },
-  { id: "kayit-danismani", label: "AI Kayıt Danışmanı", href: "/admissions-ai", icon: UserPlus },
-  { id: "bursluluk", label: "Bursluluk Sınavı", href: "/scholarship-exam", icon: Award },
-  { id: "karne-asistani", label: "AI Karne Asistanı", href: "/report-card-ai", icon: ClipboardPen },
-  { id: "rehberlik", label: "Rehberlik Merkezi", href: "/counseling", icon: HeartHandshake },
-  { id: "ders-planlari", label: "Ders Planları", href: "/lesson-plans", icon: NotebookPen },
-  { id: "etkinlikler", label: "Etkinlikler", href: "/events", icon: CalendarCheck },
-  { id: "yemek", label: "Yemek Listesi", href: "/lunch-menu", icon: UtensilsCrossed },
-  { id: "servis", label: "Servis Takibi", href: "/bus-routes", icon: Bus },
-  { id: "finans", label: "Finans Merkezi", href: "/finance", icon: Wallet },
-  { id: "crm", label: "CRM", href: "/crm", icon: Contact },
-  { id: "messages", label: "Mesajlar", href: "/messages", icon: MessageSquare },
-  { id: "bildirimler", label: "Bildirim Merkezi", href: "/notifications", icon: Bell },
-  { id: "demo", label: "Demo Talep", href: "/demo", icon: Rocket },
-  { id: "settings", label: "Ayarlar", href: "/settings", icon: Settings },
-  { id: "super-admin", label: "Super Admin", href: "/super-admin", icon: ShieldCheck },
+  { id: "genel-bakis", labelKey: "nav.overview", href: "/", icon: LayoutDashboard },
+  { id: "admin", labelKey: "nav.adminPanel", href: "/admin", icon: LayoutDashboard },
+  { id: "personel", labelKey: "nav.staff", href: "/admin/users", icon: UserPlus },
+  { id: "okul-kayitlari", labelKey: "nav.records", href: "/admin/records", icon: GraduationCap },
+  { id: "ders-programi", labelKey: "nav.timetable", href: "/admin/timetable", icon: CalendarDays },
+  { id: "executive", labelKey: "nav.executive", href: "/executive", icon: BarChart3 },
+  { id: "okullar", labelKey: "nav.schools", href: "/school-select", icon: School },
+  { id: "ogrenciler", labelKey: "nav.students", href: "/student", icon: GraduationCap },
+  { id: "veliler", labelKey: "nav.parents", href: "/parent", icon: Users },
+  { id: "ogretmenler", labelKey: "nav.teachers", href: "/teacher", icon: BookOpen },
+  { id: "siniflarim", labelKey: "nav.myClasses", href: "/teacher/classes", icon: School },
+  { id: "yapay-zeka", labelKey: "nav.aiBrain", href: "/ai-brain", icon: Sparkles },
+  { id: "kayit-danismani", labelKey: "nav.aiAdmissions", href: "/admissions-ai", icon: UserPlus },
+  { id: "bursluluk", labelKey: "nav.scholarship", href: "/scholarship-exam", icon: Award },
+  { id: "karne-asistani", labelKey: "nav.aiReportCard", href: "/report-card-ai", icon: ClipboardPen },
+  { id: "rehberlik", labelKey: "nav.counseling", href: "/counseling", icon: HeartHandshake },
+  { id: "ders-planlari", labelKey: "nav.lessonPlans", href: "/lesson-plans", icon: NotebookPen },
+  { id: "etkinlikler", labelKey: "nav.events", href: "/events", icon: CalendarCheck },
+  { id: "yemek", labelKey: "nav.lunch", href: "/lunch-menu", icon: UtensilsCrossed },
+  { id: "servis", labelKey: "nav.bus", href: "/bus-routes", icon: Bus },
+  { id: "finans", labelKey: "nav.finance", href: "/finance", icon: Wallet },
+  { id: "crm", labelKey: "nav.crm", href: "/crm", icon: Contact },
+  { id: "messages", labelKey: "nav.messages", href: "/messages", icon: MessageSquare },
+  { id: "bildirimler", labelKey: "nav.notifications", href: "/notifications", icon: Bell },
+  { id: "demo", labelKey: "nav.demo", href: "/demo", icon: Rocket },
+  { id: "settings", labelKey: "nav.settings", href: "/settings", icon: Settings },
+  { id: "super-admin", labelKey: "nav.superAdmin", href: "/super-admin", icon: ShieldCheck },
 ];
 
 /** Mobil alt navigasyonda gösterilecek öncelikli öğeler. */
@@ -110,29 +111,29 @@ export const mobileNavigationItems: NavigationItem[] = navigationItems.filter(
 
 /** Yönetim paneli (/admin) kenar çubuğu menüsü. */
 export const adminNavigationItems: NavigationItem[] = [
-  { id: "panel", label: "Panel", href: "/admin", icon: LayoutDashboard },
-  { id: "akademik", label: "Akademik", href: "/teacher", icon: BookOpen },
-  { id: "okul-kayitlari", label: "Kayıtlar", href: "/admin/records", icon: GraduationCap },
-  { id: "ders-programi", label: "Ders Programı", href: "/admin/timetable", icon: CalendarDays },
-  { id: "ai-zekasi", label: "AI Zekası", href: "/ai-brain", icon: Brain },
-  { id: "takvim", label: "Takvim", href: "/scheduler-ai", icon: CalendarDays },
-  { id: "analizler", label: "Analizler", href: "/executive", icon: BarChart3 },
-  { id: "yonetim", label: "Yönetim", href: "/settings", icon: Settings },
+  { id: "panel", labelKey: "nav.panel", href: "/admin", icon: LayoutDashboard },
+  { id: "akademik", labelKey: "nav.academic", href: "/teacher", icon: BookOpen },
+  { id: "okul-kayitlari", labelKey: "nav.recordsShort", href: "/admin/records", icon: GraduationCap },
+  { id: "ders-programi", labelKey: "nav.timetableShort", href: "/admin/timetable", icon: CalendarDays },
+  { id: "ai-zekasi", labelKey: "nav.aiIntel", href: "/ai-brain", icon: Brain },
+  { id: "takvim", labelKey: "nav.calendar", href: "/scheduler-ai", icon: CalendarDays },
+  { id: "analizler", labelKey: "nav.analytics", href: "/executive", icon: BarChart3 },
+  { id: "yonetim", labelKey: "nav.management", href: "/settings", icon: Settings },
 ];
 
 /** Yönetim paneli mobil alt navigasyonu. */
 export const adminMobileNavItems: NavigationItem[] = [
-  { id: "ana-sayfa", label: "Ana Sayfa", href: "/admin", icon: Home },
-  { id: "ai-brain", label: "AI Brain", href: "/ai-brain", icon: Bot },
-  { id: "takvim", label: "Takvim", href: "/scheduler-ai", icon: CalendarDays },
-  { id: "mesajlar", label: "Mesajlar", href: "/messages", icon: MessageSquare },
-  { id: "profil", label: "Profil", href: "/settings", icon: User },
+  { id: "ana-sayfa", labelKey: "nav.home", href: "/admin", icon: Home },
+  { id: "ai-brain", labelKey: "nav.aiBrain", href: "/ai-brain", icon: Bot },
+  { id: "takvim", labelKey: "nav.calendar", href: "/scheduler-ai", icon: CalendarDays },
+  { id: "mesajlar", labelKey: "nav.messages", href: "/messages", icon: MessageSquare },
+  { id: "profil", labelKey: "nav.profile", href: "/settings", icon: User },
 ];
 
 /** Yönetim paneli üst çubuk orta bağlantıları. */
 export const adminTopbarLinks = [
-  { id: "kampus", label: "Kampüs Seçimi", href: "/school-select" },
-  { id: "duyurular", label: "Duyurular", href: "/notifications" },
+  { id: "kampus", labelKey: "nav.campusSelect", href: "/school-select" },
+  { id: "duyurular", labelKey: "nav.announcements", href: "/notifications" },
 ] as const;
 
 /** Geriye dönük uyumluluk için site bilgisi. */

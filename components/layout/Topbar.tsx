@@ -9,10 +9,11 @@ import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { TenantSwitcher } from "@/components/layout/TenantSwitcher";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { LanguageToggle } from "@/components/i18n/LanguageToggle";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 interface TopbarLink {
   id: string;
-  label: string;
+  labelKey: string;
   href: string;
 }
 
@@ -27,12 +28,13 @@ interface TopbarProps {
 }
 
 function DefaultActions() {
+  const t = useT();
   return (
     <>
       <Link
         href="/coming-soon"
-        aria-label="Ara (yakında)"
-        title="Arama yakında"
+        aria-label={t("nav.searchSoon")}
+        title={t("nav.searchSoon")}
         className="flex h-9 w-9 items-center justify-center rounded-lg border border-overlay/10 bg-overlay/[0.04] text-muted transition-colors hover:bg-overlay/[0.08] hover:text-content"
       >
         <Search size={18} aria-hidden="true" />
@@ -52,6 +54,7 @@ function DefaultActions() {
  * Sağ tarafta yapılandırılabilir eylem alanı bulunur.
  */
 export function Topbar({ title, centerLinks, actions, className = "" }: TopbarProps) {
+  const t = useT();
   return (
     <header
       className={[
@@ -79,7 +82,7 @@ export function Topbar({ title, centerLinks, actions, className = "" }: TopbarPr
                 href={link.href}
                 className="text-sm font-medium text-muted transition-colors hover:text-accent"
               >
-                {link.label}
+                {t(link.labelKey)}
               </Link>
             ))}
           </nav>

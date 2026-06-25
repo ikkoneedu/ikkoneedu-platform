@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Logo } from "@/components/shared/LogoMark";
 import { navigationItems, type NavigationItem } from "@/lib/constants";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { canRoleAccess } from "@/lib/auth/route-config";
 
 interface SidebarProps {
@@ -34,6 +35,7 @@ export function Sidebar({
 }: SidebarProps) {
   const pathname = usePathname();
   const { profile, firebaseReady } = useAuth();
+  const t = useT();
 
   // Rol-duyarlı menü: oturum açıkken kullanıcının erişemediği öğeler gizlenir.
   // Mock Mod'da (Firebase yok) veya profil yokken tüm öğeler gösterilir.
@@ -85,7 +87,7 @@ export function Sidebar({
               ].join(" ")}
             >
               <Icon size={18} aria-hidden="true" />
-              {item.label}
+              {t(item.labelKey)}
             </Link>
           );
         })}

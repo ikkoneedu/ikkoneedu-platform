@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { mobileNavigationItems, type NavigationItem } from "@/lib/constants";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 interface MobileBottomNavProps {
   /** Gösterilecek öğeler (varsayılan: genel mobil navigasyon). */
@@ -23,6 +24,7 @@ export function MobileBottomNav({
   className = "",
 }: MobileBottomNavProps) {
   const pathname = usePathname();
+  const t = useT();
 
   const isItemActive = (item: NavigationItem) => {
     if (activeId) return item.id === activeId;
@@ -53,7 +55,7 @@ export function MobileBottomNav({
             ].join(" ")}
           >
             <Icon size={20} aria-hidden="true" />
-            {item.label}
+            {t(item.labelKey)}
           </Link>
         );
       })}
