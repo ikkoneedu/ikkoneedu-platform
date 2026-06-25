@@ -285,7 +285,16 @@ service cloud.firestore {
     // Oluşturma/güncelleme/silme: yalnızca SUPER_ADMIN.
     match /tenants/{tenantId} {
       allow read: if true;
-      allow create, update, delete: if isSuperAdmin();
+      allow create, delete: if isSuperAdmin();
+      // Güncelleme: SUPER_ADMIN her alanı; okul yönetimi YALNIZCA kendi okulunun
+      // marka kimliği alanlarını (white-label) değiştirebilir. affectedKeys ile
+      // ad/slug/status/createdBy gibi kritik alanlara dokunulamaz (yetki yükseltme yok).
+      allow update: if isSuperAdmin()
+        || (
+          isSchoolManager() && myTenant() == tenantId
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['logo', 'slogan', 'brandColor', 'about', 'city', 'updatedAt'])
+        );
     }
 
     // ---- Okul profilleri (kök `schools`) ----------------------------------

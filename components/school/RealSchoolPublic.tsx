@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { MapPin, Award, ArrowRight } from "lucide-react";
-import { LogoMark } from "@/components/shared/LogoMark";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { RealSchoolShell } from "@/components/school/RealSchoolShell";
+import { SchoolLogo } from "@/components/school/SchoolLogo";
 import { SchoolInquiryForm } from "@/components/portal/SchoolInquiryForm";
 
 /**
@@ -17,14 +17,26 @@ export function RealSchoolPublic({ slug }: { slug: string }) {
     <RealSchoolShell slug={slug}>
       {(school) => (
         <>
-          {/* Hero */}
+          {/* Hero — okula özgü logo/slogan/renk */}
           <section className="flex flex-col items-center gap-5 py-8 text-center">
-            <span className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10 bg-navy/40">
-              <LogoMark size={40} />
-            </span>
+            <SchoolLogo
+              logo={school.logo}
+              brand={school.brandColor}
+              size={72}
+              name={school.name}
+              rounded="rounded-2xl"
+            />
             <h1 className="text-3xl font-bold tracking-tight text-content sm:text-4xl">
               {school.name}
             </h1>
+            {school.slogan && (
+              <p
+                className="text-base font-medium italic"
+                style={{ color: school.brandColor }}
+              >
+                “{school.slogan}”
+              </p>
+            )}
             {school.city && (
               <p className="flex items-center gap-1.5 text-sm text-accent">
                 <MapPin size={15} aria-hidden="true" />
@@ -32,9 +44,9 @@ export function RealSchoolPublic({ slug }: { slug: string }) {
               </p>
             )}
             <p className="max-w-2xl text-base leading-relaxed text-muted">
-              {school.name} hakkında bilgi almak, kayıt ve tanıtım süreçleri için
-              aşağıdaki formu doldurun; ekibimiz en kısa sürede sizinle iletişime
-              geçecek.
+              {school.about
+                ? school.about
+                : `${school.name} hakkında bilgi almak, kayıt ve tanıtım süreçleri için aşağıdaki formu doldurun; ekibimiz en kısa sürede sizinle iletişime geçecek.`}
             </p>
           </section>
 

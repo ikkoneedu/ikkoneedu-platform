@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { LiveSettings } from "@/components/settings/LiveSettings";
+import { SchoolBrandingEditor } from "@/components/school/SchoolBrandingEditor";
 import { FirebaseStatusCard } from "@/components/settings/FirebaseStatusCard";
 import { DataBackupSettings } from "@/components/settings/DataBackupSettings";
 import { productName } from "@/lib/constants";
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 
 const categories = [
   { id: "okul-ayarlari", label: "Okul Ayarları" },
+  { id: "marka", label: "Marka Kimliği" },
   { id: "baglanti", label: "Bağlantı" },
   { id: "veri", label: "Veri" },
 ];
@@ -46,6 +48,11 @@ export default function SettingsPage() {
         {/* Canlı okul ayarları — Firestore (tüm modüllerin tek kaynağı) */}
         <section id="okul-ayarlari" className="scroll-mt-32">
           <LiveSettings />
+        </section>
+
+        {/* Okul marka kimliği (white-label) — public okul sayfasını kişiselleştirir */}
+        <section id="marka" className="scroll-mt-32">
+          <SchoolBrandingEditor />
         </section>
 
         {/* Firebase bağlantı durumu */}

@@ -29,7 +29,20 @@ export interface SchoolRecord {
   slug: string;
   city: string;
   status: string;
+  /** Marka kimliği (white-label) — public okul sayfasında kullanılır. */
+  logo: string;
+  slogan: string;
+  brandColor: string;
+  about: string;
   createdAt: number | null;
+}
+
+/** Varsayılan marka rengi (accent). */
+export const DEFAULT_BRAND_COLOR = "#B2C7EF";
+
+/** Geçerli #RRGGBB hex mi? (CSS değişkenine güvenle yazmak için). */
+export function isHexColor(value: string): boolean {
+  return /^#[0-9a-fA-F]{6}$/.test(value.trim());
 }
 
 export interface CreateSchoolInput {
@@ -37,6 +50,10 @@ export interface CreateSchoolInput {
   slug: string;
   city: string;
   createdBy: string;
+  logo?: string;
+  slogan?: string;
+  brandColor?: string;
+  about?: string;
 }
 
 /** Serbest metni güvenli bir slug'a dönüştürür (tenantId olarak kullanılır). */
@@ -73,26 +90,46 @@ export async function createSchool(input: CreateSchoolInput): Promise<SchoolReco
     throw new Error(`"${slug}" kısa adı zaten kullanılıyor. Farklı bir ad seçin.`);
   }
 
+  const brandColor =
+    input.brandColor && isHexColor(input.brandColor)
+      ? input.brandColor.trim()
+      : DEFAULT_BRAND_COLOR;
+
   await setDoc(ref, {
     name,
     slug,
     city,
     status: "ACTIVE",
+    logo: (input.logo ?? "").trim(),
+    slogan: (input.slogan ?? "").trim(),
+    brandColor,
+    about: (input.about ?? "").trim(),
     createdBy: input.createdBy,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
 
-  return { id: slug, name, slug, city, status: "ACTIVE", createdAt: Date.now() };
+  return {
+    id: slug, name, slug, city, status: "ACTIVE",
+    logo: (input.logo ?? "").trim(),
+    slogan: (input.slogan ?? "").trim(),
+    brandColor,
+    about: (input.about ?? "").trim(),
+    createdAt: Date.now(),
+  };
 }
 
 export interface UpdateSchoolInput {
   name?: string;
   city?: string;
   status?: string;
+  logo?: string;
+  slogan?: string;
+  brandColor?: string;
+  about?: string;
 }
 
-/** Okul bilgilerini günceller (ad, şehir, durum). */
+/** Okul bilgilerini günceller (ad, şehir, durum, marka kimliği). */
 export async function updateSchool(
   id: string,
   patch: UpdateSchoolInput,
@@ -104,6 +141,14 @@ export async function updateSchool(
   if (patch.name !== undefined) data.name = patch.name.trim();
   if (patch.city !== undefined) data.city = patch.city.trim();
   if (patch.status !== undefined) data.status = patch.status;
+  if (patch.logo !== undefined) data.logo = patch.logo.trim();
+  if (patch.slogan !== undefined) data.slogan = patch.slogan.trim();
+  if (patch.about !== undefined) data.about = patch.about.trim();
+  if (patch.brandColor !== undefined) {
+    data.brandColor = isHexColor(patch.brandColor)
+      ? patch.brandColor.trim()
+      : DEFAULT_BRAND_COLOR;
+  }
   await updateDoc(doc(db, tenantDoc(id)), data);
 }
 
@@ -123,6 +168,12 @@ function toSchoolRecord(id: string, data: Record<string, unknown>): SchoolRecord
     slug: String(data.slug ?? id),
     city: String(data.city ?? ""),
     status: String(data.status ?? "ACTIVE"),
+    logo: String(data.logo ?? ""),
+    slogan: String(data.slogan ?? ""),
+    brandColor: isHexColor(String(data.brandColor ?? ""))
+      ? String(data.brandColor)
+      : DEFAULT_BRAND_COLOR,
+    about: String(data.about ?? ""),
     createdAt: ts && typeof ts.toMillis === "function" ? ts.toMillis() : null,
   };
 }

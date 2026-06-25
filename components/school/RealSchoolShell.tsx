@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { ShieldQuestion, ArrowLeft } from "lucide-react";
 import { LogoMark } from "@/components/shared/LogoMark";
+import { SchoolLogo } from "@/components/school/SchoolLogo";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { getSchool, type SchoolRecord } from "@/lib/services/schools";
 import { productName } from "@/lib/constants";
@@ -68,18 +69,31 @@ export function RealSchoolShell({
     );
   }
 
+  const brand = school.brandColor;
+
   return (
-    <div className="mesh-bg min-h-screen w-full overflow-x-hidden">
+    <div
+      className="mesh-bg min-h-screen w-full overflow-x-hidden"
+      style={{ ["--brand" as string]: brand }}
+    >
+      {/* Marka şeridi — okula özgü renk */}
+      <div className="h-1 w-full" style={{ backgroundColor: brand }} />
       <header className="sticky top-0 z-30 border-b border-white/10 bg-background/70 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <Link href={`/school/${school.slug}`} className="flex items-center gap-2.5">
-            <LogoMark size={30} />
+            <SchoolLogo logo={school.logo} brand={brand} size={30} name={school.name} />
             <span className="truncate text-sm font-semibold tracking-tight text-content sm:text-base">
               {school.name}
             </span>
           </Link>
           <Link href={`/login?school=${school.slug}`}>
-            <PrimaryButton size="sm">Okul Portalına Giriş</PrimaryButton>
+            <button
+              type="button"
+              className="rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-sm transition-opacity hover:opacity-90"
+              style={{ backgroundColor: brand }}
+            >
+              Okul Portalına Giriş
+            </button>
           </Link>
         </div>
       </header>
