@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useRef, useState, type FormEvent } from "react";
+import { Suspense, useEffect, useRef, useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
 import {
   Mail,
@@ -17,6 +17,8 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { LogoMark } from "@/components/shared/LogoMark";
+import { SchoolLogo } from "@/components/school/SchoolLogo";
+import { getSchool, type SchoolRecord } from "@/lib/services/schools";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
@@ -84,7 +86,28 @@ function LoginContent() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resetMsg, setResetMsg] = useState<string | null>(null);
+  const [schoolBrand, setSchoolBrand] = useState<SchoolRecord | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+
+  // Okuldan gelindiyse (?school=slug) o okulun marka kimliğini yükle (logo/renk).
+  useEffect(() => {
+    if (!school) {
+      setSchoolBrand(null);
+      return;
+    }
+    let active = true;
+    void (async () => {
+      try {
+        const s = await getSchool(school);
+        if (active) setSchoolBrand(s);
+      } catch {
+        if (active) setSchoolBrand(null);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [school]);
 
   // Şifremi unuttum — girilen e-postaya Firebase sıfırlama bağlantısı gönderir.
   const handleForgotPassword = async () => {
@@ -217,11 +240,34 @@ function LoginContent() {
               {productName} Giriş
             </h2>
             <p className="mt-1 text-sm text-muted">{subtitle}</p>
-            {school && (
+            {school && schoolBrand ? (
+              <div
+                className="mt-3 flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.03] p-2.5"
+                style={{ borderColor: `${schoolBrand.brandColor}44` }}
+              >
+                <SchoolLogo
+                  logo={schoolBrand.logo}
+                  brand={schoolBrand.brandColor}
+                  size={36}
+                  name={schoolBrand.name}
+                />
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-content">{schoolBrand.name}</p>
+                  {schoolBrand.slogan && (
+                    <p
+                      className="truncate text-xs font-medium italic"
+                      style={{ color: schoolBrand.brandColor }}
+                    >
+                      “{schoolBrand.slogan}”
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : school ? (
               <p className="mt-2 inline-block rounded-full border border-accent/20 bg-accent/10 px-3 py-0.5 text-xs font-medium text-accent">
                 Okul: {school}
               </p>
-            )}
+            ) : null}
 
             <form ref={formRef} onSubmit={handleSubmit} className="mt-6 space-y-4">
               <TextField
