@@ -114,7 +114,7 @@ export function ScheduleBoard({ readOnly = false }: { readOnly?: boolean }) {
               <label className="text-xs font-medium text-muted">{t("boardB.schedule.dayLabel")}</label>
               <select name="day" defaultValue="0" className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent">
                 {WEEKDAYS.map((d, i) => (
-                  <option key={d} value={i} className="bg-surface">{d}</option>
+                  <option key={d} value={i} className="bg-surface">{t(`boardB.day.${i}`)}</option>
                 ))}
               </select>
             </div>
@@ -161,7 +161,7 @@ export function ScheduleBoard({ readOnly = false }: { readOnly?: boolean }) {
               if (dayEntries.length === 0) return null;
               return (
                 <div key={dayName}>
-                  <h3 className="mb-2 text-sm font-semibold text-accent">{dayName}</h3>
+                  <h3 className="mb-2 text-sm font-semibold text-accent">{t(`boardB.day.${dayIdx}`)}</h3>
                   <ul className="flex flex-col gap-1.5">
                     {dayEntries.map((e) => (
                       <li

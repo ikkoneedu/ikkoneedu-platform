@@ -1,5 +1,16 @@
 /** boardB board bileşenleri çeviri anahtarları. tr kaynak; en eşleşir. */
 export const tr: Record<string, string> = {
+  // Yoklama durumları (servis ATTENDANCE_LABELS yerine UI'da çevrilir)
+  "boardB.attStatus.present": "Geldi",
+  "boardB.attStatus.absent": "Gelmedi",
+  "boardB.attStatus.late": "Geç Kaldı",
+  "boardB.attStatus.excused": "İzinli",
+  // Hafta günleri (servis WEEKDAYS yerine UI'da çevrilir)
+  "boardB.day.0": "Pazartesi",
+  "boardB.day.1": "Salı",
+  "boardB.day.2": "Çarşamba",
+  "boardB.day.3": "Perşembe",
+  "boardB.day.4": "Cuma",
   // GradeBoard
   "boardB.grade.enterHeading": "Not Gir",
   "boardB.grade.needStudentCode": "Önce öğrenci kodu üretin.",
@@ -47,6 +58,17 @@ export const tr: Record<string, string> = {
 };
 
 export const en: Record<string, string> = {
+  // Attendance statuses
+  "boardB.attStatus.present": "Present",
+  "boardB.attStatus.absent": "Absent",
+  "boardB.attStatus.late": "Late",
+  "boardB.attStatus.excused": "Excused",
+  // Weekdays
+  "boardB.day.0": "Monday",
+  "boardB.day.1": "Tuesday",
+  "boardB.day.2": "Wednesday",
+  "boardB.day.3": "Thursday",
+  "boardB.day.4": "Friday",
   // GradeBoard
   "boardB.grade.enterHeading": "Enter Grade",
   "boardB.grade.needStudentCode": "Generate a student code first.",

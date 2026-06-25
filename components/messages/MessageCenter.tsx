@@ -29,6 +29,7 @@ import {
   type MessageRecord,
 } from "@/lib/services/messages";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const STAFF_ROLES: string[] = [
   ROLES.SCHOOL_ADMIN,
@@ -62,6 +63,7 @@ interface Candidate {
  * Alıcı seçimi role göre kısıtlanır (personel tüm tenant; veli/öğrenci öğretmeni).
  */
 export function MessageCenter() {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const uid = user?.uid ?? "";
   const tenantId = profile?.tenantId;
@@ -121,7 +123,7 @@ export function MessageCenter() {
           if (profile.createdBy) {
             list.push({
               uid: profile.createdBy,
-              name: profile.createdByName || "Öğretmenim",
+              name: profile.createdByName || t("boardC.center.myTeacher"),
               role: ROLES.TEACHER,
             });
           }
@@ -134,7 +136,7 @@ export function MessageCenter() {
             ) {
               list.push({
                 uid: sp.primaryAdminUid,
-                name: sp.primaryAdminName || "Okul Yönetimi",
+                name: sp.primaryAdminName || t("boardC.center.schoolAdmin"),
                 role: ROLES.SCHOOL_ADMIN,
               });
             }
@@ -150,7 +152,7 @@ export function MessageCenter() {
     return () => {
       active = false;
     };
-  }, [usable, tenantId, profile, isStaff, uid]);
+  }, [usable, tenantId, profile, isStaff, uid, t]);
 
   // Yanıt hedefi adaylarda yoksa (ör. veli, kendisine yazan başka bir admine
   // yanıt veriyor) listeye ekle ki seçili görünsün.
@@ -172,7 +174,7 @@ export function MessageCenter() {
   const startReply = (m: MessageRecord) => {
     const cand: Candidate = {
       uid: m.senderId,
-      name: m.senderName || "Gönderen",
+      name: m.senderName || t("boardC.center.defaultSender"),
       role: m.senderRole || "",
     };
     setReplyTo(cand);
@@ -198,11 +200,11 @@ export function MessageCenter() {
     const body = String(fd.get("body") ?? "").trim();
     const recipientIds = Array.from(selected);
     if (!subjectValue || !body) {
-      setError("Konu ve mesaj zorunludur.");
+      setError(t("boardC.center.errSubjectBody"));
       return;
     }
     if (recipientIds.length === 0) {
-      setError("En az bir alıcı seçin.");
+      setError(t("boardC.center.errRecipient"));
       return;
     }
     setBusy(true);
@@ -303,13 +305,13 @@ export function MessageCenter() {
       <GlassCard tone="navy">
         <div className="mb-4 flex items-center gap-2">
           <Send size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Mesaj Gönder</h2>
+          <h2 className="text-lg font-semibold text-content">{t("boardC.center.composeTitle")}</h2>
         </div>
         <form onSubmit={handleSend} className="flex flex-col gap-4">
           {replyTo && (
             <p className="flex items-center justify-between gap-2 rounded-lg border border-accent/30 bg-accent/5 px-3 py-2 text-xs text-accent">
               <span className="inline-flex items-center gap-1.5">
-                <Reply size={13} aria-hidden="true" /> Yanıt: {replyTo.name}
+                <Reply size={13} aria-hidden="true" /> {t("boardC.center.replyTo", { name: replyTo.name })}
               </span>
               <button
                 type="button"
@@ -320,25 +322,25 @@ export function MessageCenter() {
                 }}
                 className="text-muted hover:text-content"
               >
-                Vazgeç
+                {t("boardC.center.cancel")}
               </button>
             </p>
           )}
           <TextField
-            label="Konu"
+            label={t("boardC.center.subjectLabel")}
             name="subject"
-            placeholder="Konu"
+            placeholder={t("boardC.center.subjectPlaceholder")}
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             required
           />
           <label className="flex flex-col gap-1.5 text-sm font-medium text-muted">
-            Mesaj
+            {t("boardC.center.bodyLabel")}
             <textarea
               name="body"
               rows={3}
               required
-              placeholder="Mesajınızı yazın…"
+              placeholder={t("boardC.center.bodyPlaceholder")}
               className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content outline-none focus:border-accent"
             />
           </label>
@@ -346,21 +348,20 @@ export function MessageCenter() {
           <div>
             <div className="mb-2 flex items-center gap-2">
               <span className="text-sm font-medium text-muted">
-                Alıcılar ({selected.size})
+                {t("boardC.center.recipients", { count: selected.size })}
               </span>
               {candidates.length > 6 && (
                 <input
                   value={filter}
                   onChange={(e) => setFilter(e.target.value)}
-                  placeholder="Ara…"
+                  placeholder={t("boardC.center.searchPlaceholder")}
                   className="ml-auto rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-1 text-xs text-content outline-none focus:border-accent"
                 />
               )}
             </div>
             {candidates.length === 0 ? (
               <p className="rounded-lg border border-overlay/10 bg-overlay/[0.02] px-3 py-2 text-xs text-muted">
-                Mesaj gönderebileceğiniz kişi bulunamadı. Gelen mesajlara yanıt
-                verebilirsiniz.
+                {t("boardC.center.noCandidates")}
               </p>
             ) : (
               <div className="flex max-h-40 flex-col gap-1 overflow-y-auto rounded-lg border border-overlay/10 bg-overlay/[0.02] p-2">
@@ -393,7 +394,7 @@ export function MessageCenter() {
 
           <PrimaryButton type="submit" size="md" disabled={busy} className="self-start">
             <Send size={16} aria-hidden="true" />
-            {busy ? "Gönderiliyor…" : "Gönder"}
+            {busy ? t("boardC.center.sendBusy") : t("boardC.center.send")}
           </PrimaryButton>
         </form>
       </GlassCard>
@@ -402,7 +403,7 @@ export function MessageCenter() {
       <GlassCard tone="navy">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <Inbox size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Mesajlar</h2>
+          <h2 className="text-lg font-semibold text-content">{t("boardC.center.messagesTitle")}</h2>
           <div className="flex items-center gap-1">
             <button
               type="button"
@@ -413,7 +414,7 @@ export function MessageCenter() {
                   : "text-muted hover:text-content"
               }`}
             >
-              Gelen ({data?.inbox.length ?? 0})
+              {t("boardC.center.tabInbox", { count: data?.inbox.length ?? 0 })}
             </button>
             <button
               type="button"
@@ -424,7 +425,7 @@ export function MessageCenter() {
                   : "text-muted hover:text-content"
               }`}
             >
-              Giden ({data?.sent.length ?? 0})
+              {t("boardC.center.tabSent", { count: data?.sent.length ?? 0 })}
             </button>
           </div>
           <button
@@ -432,18 +433,18 @@ export function MessageCenter() {
             onClick={() => void load()}
             disabled={refreshing}
             className="ml-auto text-muted transition hover:text-content disabled:opacity-50"
-            aria-label="Yenile"
+            aria-label={t("boardC.center.refresh")}
           >
             <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} />
           </button>
         </div>
 
         {data === null ? (
-          <p className="text-sm text-muted">Yükleniyor…</p>
+          <p className="text-sm text-muted">{t("boardC.center.loading")}</p>
         ) : list.length === 0 ? (
           <p className="flex items-center gap-2 text-sm text-muted">
             <Inbox size={15} aria-hidden="true" />
-            {tab === "inbox" ? "Gelen mesaj yok." : "Gönderilmiş mesaj yok."}
+            {tab === "inbox" ? t("boardC.center.emptyInbox") : t("boardC.center.emptySent")}
           </p>
         ) : (
           <ul className="flex flex-col gap-2">
@@ -476,18 +477,18 @@ export function MessageCenter() {
                       <span
                         className={`block truncate ${unread ? "font-semibold text-content" : "text-content"}`}
                       >
-                        {m.subject || "(konusuz)"}
+                        {m.subject || t("boardC.center.noSubject")}
                       </span>
                       <span className="block truncate text-xs text-muted">
                         {tab === "inbox"
-                          ? `Gönderen: ${m.senderName}`
-                          : `Alıcı: ${m.recipientIds.length} kişi`}
-                        {archived ? " · arşivlendi" : ""}
+                          ? t("boardC.center.from", { name: m.senderName })
+                          : t("boardC.center.toCount", { count: m.recipientIds.length })}
+                        {archived ? t("boardC.center.archivedSuffix") : ""}
                       </span>
                     </span>
                     {unread && (
                       <span className="shrink-0 rounded-full bg-accent/20 px-2 py-0.5 text-[10px] font-semibold text-accent">
-                        Yeni
+                        {t("boardC.center.new")}
                       </span>
                     )}
                     <span className="shrink-0 text-xs text-muted">
@@ -504,7 +505,7 @@ export function MessageCenter() {
                             onClick={() => startReply(m)}
                             className="inline-flex items-center gap-1 rounded-lg border border-accent/30 bg-accent/10 px-2.5 py-1 text-xs text-accent transition hover:bg-accent/20"
                           >
-                            <Reply size={13} aria-hidden="true" /> Yanıtla
+                            <Reply size={13} aria-hidden="true" /> {t("boardC.center.reply")}
                           </button>
                         </div>
                       )}
@@ -516,7 +517,7 @@ export function MessageCenter() {
                             disabled={busy || archived}
                             className="inline-flex items-center gap-1 rounded-lg border border-overlay/10 px-2 py-1 text-xs text-muted transition hover:text-content disabled:opacity-50"
                           >
-                            <Archive size={13} aria-hidden="true" /> Arşivle
+                            <Archive size={13} aria-hidden="true" /> {t("boardC.center.archive")}
                           </button>
                           <button
                             type="button"
@@ -524,7 +525,7 @@ export function MessageCenter() {
                             disabled={busy}
                             className="inline-flex items-center gap-1 rounded-lg border border-brand/30 bg-brand/10 px-2 py-1 text-xs text-brand transition hover:bg-brand/20 disabled:opacity-50"
                           >
-                            <Trash2 size={13} aria-hidden="true" /> Sil
+                            <Trash2 size={13} aria-hidden="true" /> {t("boardC.center.delete")}
                           </button>
                         </div>
                       )}

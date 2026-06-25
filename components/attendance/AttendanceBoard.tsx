@@ -159,7 +159,7 @@ export function AttendanceBoard() {
                 <label className="text-xs font-medium text-muted">{t("boardB.attendance.statusLabel")}</label>
                 <select name="status" defaultValue="present" className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent">
                   {(Object.keys(ATTENDANCE_LABELS) as AttendanceStatus[]).map((s) => (
-                    <option key={s} value={s} className="bg-surface">{ATTENDANCE_LABELS[s]}</option>
+                    <option key={s} value={s} className="bg-surface">{t(`boardB.attStatus.${s}`)}</option>
                   ))}
                 </select>
               </div>
@@ -198,7 +198,7 @@ export function AttendanceBoard() {
                 <span
                   className={["ml-auto rounded-full border px-2.5 py-0.5 text-xs", STATUS_STYLE[r.status]].join(" ")}
                 >
-                  {ATTENDANCE_LABELS[r.status]}
+                  {t(`boardB.attStatus.${r.status}`)}
                 </span>
               </li>
             ))}
