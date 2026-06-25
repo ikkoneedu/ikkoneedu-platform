@@ -10,6 +10,7 @@ import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 import { productName, productFullName } from "@/lib/constants";
 
@@ -20,6 +21,7 @@ import { productName, productFullName } from "@/lib/constants";
 export default function RegisterPage() {
   const router = useRouter();
   const { signUpPublic, firebaseReady } = useAuth();
+  const t = useT();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [accepted, setAccepted] = useState(false);
@@ -34,21 +36,19 @@ export default function RegisterPage() {
     const password = String(data.get("password") ?? "");
 
     if (!firebaseReady) {
-      setError(
-        "Kayıt sistemi şu anda yapılandırılmamış. Lütfen daha sonra tekrar deneyin.",
-      );
+      setError(t("register.errFirebase"));
       return;
     }
     if (displayName.length < 3) {
-      setError("Lütfen ad soyadınızı girin.");
+      setError(t("register.errName"));
       return;
     }
     if (!email.includes("@")) {
-      setError("Geçerli bir e-posta adresi girin.");
+      setError(t("register.errEmail"));
       return;
     }
     if (password.length < 6) {
-      setError("Şifre en az 6 karakter olmalıdır.");
+      setError(t("register.errPassword"));
       return;
     }
 
@@ -87,39 +87,39 @@ export default function RegisterPage() {
         <GlassCard tone="navy" className="sm:p-8">
           <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
             <Award size={14} aria-hidden="true" />
-            Aday Veli / Genel Kayıt
+            {t("register.badge")}
           </span>
           <h2 className="mt-4 text-xl font-bold tracking-tight text-content sm:text-2xl">
-            Hesap Oluşturun
+            {t("register.title")}
           </h2>
           <p className="mt-1 text-sm text-muted">
-            Bursluluk başvurusu yapın ve okul bilgilerine erişin.
+            {t("register.subtitle")}
           </p>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <TextField
-              label="Ad Soyad"
+              label={t("register.nameLabel")}
               name="displayName"
               icon={User}
-              placeholder="Ad Soyad"
+              placeholder={t("register.namePlaceholder")}
               autoComplete="name"
               required
             />
             <TextField
-              label="E-posta"
+              label={t("register.emailLabel")}
               name="email"
               type="email"
               icon={Mail}
-              placeholder="ornek@eposta.com"
+              placeholder={t("register.emailPlaceholder")}
               autoComplete="email"
               required
             />
             <TextField
-              label="Şifre"
+              label={t("register.passwordLabel")}
               name="password"
               type="password"
               icon={Lock}
-              placeholder="En az 6 karakter"
+              placeholder={t("register.passwordPlaceholder")}
               autoComplete="new-password"
               required
             />
@@ -132,7 +132,7 @@ export default function RegisterPage() {
                 required
                 className="mt-0.5 h-4 w-4 rounded border-overlay/20 bg-overlay/[0.04] accent-accent"
               />
-              <span>KVKK metnini okudum ve kabul ediyorum.</span>
+              <span>{t("register.kvkk")}</span>
             </label>
 
             {error && (
@@ -148,18 +148,18 @@ export default function RegisterPage() {
               className="w-full"
               disabled={submitting || !accepted}
             >
-              {submitting ? "Hesap oluşturuluyor..." : "Hesap Oluştur"}
+              {submitting ? t("register.submitting") : t("register.submit")}
               <ArrowRight size={18} aria-hidden="true" />
             </PrimaryButton>
           </form>
 
           <p className="mt-6 text-center text-sm text-muted">
-            Zaten hesabınız var mı?{" "}
+            {t("register.loginQuestion")}{" "}
             <Link
               href="/login"
               className="font-semibold text-accent transition-colors hover:text-content"
             >
-              Giriş yapın
+              {t("register.loginLink")}
             </Link>
           </p>
         </GlassCard>

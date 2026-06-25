@@ -11,8 +11,27 @@
  */
 
 import type { Locale } from "@/lib/i18n/config";
+import * as pricing from "@/lib/i18n/dict/pricing";
+import * as demo from "@/lib/i18n/dict/demo";
+import * as features from "@/lib/i18n/dict/features";
+import * as register from "@/lib/i18n/dict/register";
+import * as codeLogin from "@/lib/i18n/dict/codeLogin";
+import * as mobileApp from "@/lib/i18n/dict/mobileApp";
+import * as founderSchool from "@/lib/i18n/dict/founderSchool";
+import * as portal from "@/lib/i18n/dict/portal";
+import * as schoolSelect from "@/lib/i18n/dict/schoolSelect";
 
 type Dict = Record<string, string>;
+
+/** Sayfa-bazlı (namespace) sözlük parçaları — paralel geliştirme için ayrı dosyalar. */
+const ZONE_TR: Dict[] = [
+  pricing.tr, demo.tr, features.tr, register.tr, codeLogin.tr,
+  mobileApp.tr, founderSchool.tr, portal.tr, schoolSelect.tr,
+];
+const ZONE_EN: Dict[] = [
+  pricing.en, demo.en, features.en, register.en, codeLogin.en,
+  mobileApp.en, founderSchool.en, portal.en, schoolSelect.en,
+];
 
 const tr: Dict = {
   // Genel
@@ -424,7 +443,10 @@ const en: Dict = {
     "Your authorization profile was not found. Please contact your system administrator.",
 };
 
-export const dictionaries: Record<Locale, Dict> = { tr, en };
+export const dictionaries: Record<Locale, Dict> = {
+  tr: Object.assign({}, ...ZONE_TR, tr),
+  en: Object.assign({}, ...ZONE_EN, en),
+};
 
 /** Basit {değişken} enterpolasyonu uygular. */
 function interpolate(text: string, vars?: Record<string, string | number>): string {

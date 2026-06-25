@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { useRouter } from "next/navigation";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { Award, Globe, LogOut, GraduationCap, MapPin, ArrowRight } from "lucide-react";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { GlassCard } from "@/components/shared/GlassCard";
@@ -20,6 +21,7 @@ import { productName } from "@/lib/constants";
  * yapar ve okulların halka açık sayfalarına erişir.
  */
 export default function PortalPage() {
+  const t = useT();
   const router = useRouter();
   const { profile, signOut } = useAuth();
   const { loading } = useRequireAuth();
@@ -33,7 +35,7 @@ export default function PortalPage() {
     return (
       <div className="mesh-bg flex min-h-screen w-full items-center justify-center">
         <span className="h-1.5 w-24 animate-pulse rounded-full bg-accent/60" />
-        <span className="sr-only">Yükleniyor…</span>
+        <span className="sr-only">{t("portal.loading")}</span>
       </div>
     );
   }
@@ -55,7 +57,7 @@ export default function PortalPage() {
             className="flex items-center gap-2 rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm font-medium text-content transition-colors hover:border-accent/30 hover:bg-overlay/[0.06]"
           >
             <LogOut size={16} className="text-accent" aria-hidden="true" />
-            Çıkış
+            {t("portal.signOut")}
           </button>
         </div>
       </header>
@@ -65,11 +67,11 @@ export default function PortalPage() {
           align="left"
           eyebrow={
             profile?.displayName
-              ? `Hoş geldiniz, ${profile.displayName}`
-              : "Hoş geldiniz"
+              ? t("portal.welcomeNamed", { name: profile.displayName })
+              : t("portal.welcome")
           }
-          title="Okul Portalı"
-          description="Platformdaki okulları keşfedin, bilgi talebi gönderin ve bursluluk başvurusu yapın."
+          title={t("portal.title")}
+          description={t("portal.description")}
           className="mb-10"
         />
 
@@ -78,7 +80,7 @@ export default function PortalPage() {
 
         {/* Öne çıkan okullar — tanıtım sayfaları ve bursluluk başvurusu. */}
         <h2 className="mb-6 mt-14 text-sm font-semibold uppercase tracking-[0.18em] text-muted">
-          Öne Çıkan Okullar
+          {t("portal.featuredSchools")}
         </h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {PUBLIC_SCHOOLS.map((school) => (
@@ -104,7 +106,7 @@ export default function PortalPage() {
                 <Link href={`/school/${school.slug}/scholarship/apply`}>
                   <PrimaryButton size="sm" className="w-full">
                     <Award size={16} aria-hidden="true" />
-                    Bursluluk Başvurusu
+                    {t("portal.scholarshipApply")}
                   </PrimaryButton>
                 </Link>
                 <Link
@@ -112,7 +114,7 @@ export default function PortalPage() {
                   className="flex items-center justify-center gap-1.5 rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm font-medium text-content transition-colors hover:border-accent/30 hover:bg-overlay/[0.06]"
                 >
                   <Globe size={15} className="text-accent" aria-hidden="true" />
-                  Okul Sayfası
+                  {t("portal.schoolPage")}
                   <ArrowRight size={14} aria-hidden="true" />
                 </Link>
               </div>

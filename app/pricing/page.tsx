@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { getServerT } from "@/lib/i18n/server";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -22,15 +24,18 @@ import {
   pricingFaq,
 } from "@/lib/pricing-data";
 
-export const metadata = buildMetadata({
-  title: "Fiyatlandırma",
-  path: "/pricing",
-  description:
-    "Okulunuzun ölçeğine uygun Starter, Professional ve Enterprise paketleri ve SaaS gelir potansiyeli. Kolej yazılımı ve okul yönetim sistemi fiyatlandırması.",
-  keywords: ["kolej yazılımı fiyat", "okul yönetim sistemi fiyatlandırma", "SaaS okul yazılımı"],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return buildMetadata({
+    title: t("pricing.meta.title"),
+    path: "/pricing",
+    description: t("pricing.meta.description"),
+    keywords: ["kolej yazılımı fiyat", "okul yönetim sistemi fiyatlandırma", "SaaS okul yazılımı"],
+  });
+}
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const t = await getServerT();
   return (
     <div className="mesh-bg min-h-screen w-full overflow-x-hidden">
       <JsonLd data={faqSchema(pricingFaq)} />
@@ -46,11 +51,11 @@ export default function PricingPage() {
           <div className="flex items-center gap-2">
             <Link href="/features">
               <PrimaryButton variant="ghost" size="sm">
-                Özellikler
+                {t("pricing.nav.features")}
               </PrimaryButton>
             </Link>
             <Link href="/demo">
-              <PrimaryButton size="sm">Demo Talep Et</PrimaryButton>
+              <PrimaryButton size="sm">{t("pricing.nav.requestDemo")}</PrimaryButton>
             </Link>
           </div>
         </div>
@@ -62,9 +67,9 @@ export default function PricingPage() {
           <div className="py-16 text-center lg:py-20">
             <SectionHeader
               align="center"
-              eyebrow="Fiyatlandırma"
-              title="Okulunuza Uygun Paketi Seçin"
-              description="Anaokulundan zincir okullara kadar her ölçeğe uygun, yapay zeka destekli eğitim işletim sistemi."
+              eyebrow={t("pricing.header.eyebrow")}
+              title={t("pricing.header.title")}
+              description={t("pricing.header.description")}
             />
           </div>
         </Reveal>
@@ -104,14 +109,13 @@ export default function PricingPage() {
           <Reveal>
             <div className="rounded-2xl border border-accent/20 bg-navy/30 px-6 py-12 text-center">
               <h2 className="text-2xl font-bold tracking-tight text-content sm:text-3xl">
-                Hangi paketin size uygun olduğundan emin değil misiniz?
+                {t("pricing.cta.title")}
               </h2>
               <p className="mx-auto mt-2 max-w-xl text-sm text-muted">
-                Satış ekibimiz okulunuzun ihtiyaçlarına en uygun çözümü birlikte
-                belirlesin.
+                {t("pricing.cta.description")}
               </p>
               <Link href="/demo" className="mt-6 inline-block">
-                <PrimaryButton size="lg">Demo Talep Et</PrimaryButton>
+                <PrimaryButton size="lg">{t("pricing.cta.requestDemo")}</PrimaryButton>
               </Link>
             </div>
           </Reveal>

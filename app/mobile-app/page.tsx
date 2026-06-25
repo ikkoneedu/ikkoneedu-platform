@@ -14,6 +14,7 @@ import { SecuritySection } from "@/components/mobile/SecuritySection";
 import { AppMetrics } from "@/components/mobile/AppMetrics";
 import { AppStoreCTA } from "@/components/mobile/AppStoreCTA";
 import { productName } from "@/lib/constants";
+import { getServerT } from "@/lib/i18n/server";
 import {
   mobileScreens,
   mobileNotifications,
@@ -21,20 +22,23 @@ import {
   mobileMetrics,
 } from "@/lib/mobile-mock-data";
 
-export const metadata: Metadata = {
-  title: `Mobil Uygulama — ${productName}`,
-  description:
-    "Veli, öğrenci, öğretmen ve yöneticiler için tasarlanmış yeni nesil mobil deneyim. Okulunuz cebinizde.",
-  openGraph: {
-    title: `Okulunuz Cebinizde — ${productName}`,
-    description: "ikkoneedu mobil uygulamasıyla okulunuza her yerden erişin.",
-    siteName: productName,
-    locale: "tr_TR",
-    type: "website",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("mobileApp.meta.title", { product: productName }),
+    description: t("mobileApp.meta.description"),
+    openGraph: {
+      title: t("mobileApp.meta.ogTitle", { product: productName }),
+      description: t("mobileApp.meta.ogDescription"),
+      siteName: productName,
+      locale: "tr_TR",
+      type: "website",
+    },
+  };
+}
 
-export default function MobileAppPage() {
+export default async function MobileAppPage() {
+  const t = await getServerT();
   return (
     <div className="mesh-bg min-h-screen w-full overflow-x-hidden">
       {/* Üst bar */}
@@ -49,11 +53,11 @@ export default function MobileAppPage() {
           <div className="flex items-center gap-2">
             <Link href="/features">
               <PrimaryButton variant="ghost" size="sm">
-                Özellikler
+                {t("mobileApp.nav.features")}
               </PrimaryButton>
             </Link>
             <Link href="/demo">
-              <PrimaryButton size="sm">Demo Talep Et</PrimaryButton>
+              <PrimaryButton size="sm">{t("mobileApp.nav.requestDemo")}</PrimaryButton>
             </Link>
           </div>
         </div>

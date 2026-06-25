@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { getServerT } from "@/lib/i18n/server";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -21,15 +23,22 @@ import {
   founderVisionMetrics,
 } from "@/lib/founder-mock-data";
 
-export const metadata = buildMetadata({
-  title: "Kurucu Okul ve Stratejik Ortak",
-  path: "/founder-school",
-  description:
-    "İngiliz Kültür Kolejleri, ikkoneedu okul işletim sisteminin ilk uygulama, geliştirme ve büyüme ortağıdır.",
-  keywords: ["kolej yazılımı", "stratejik ortaklık", "okul dijital dönüşümü"],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return buildMetadata({
+    title: t("founderSchool.meta.title"),
+    path: "/founder-school",
+    description: t("founderSchool.meta.description"),
+    keywords: [
+      t("founderSchool.meta.keyword1"),
+      t("founderSchool.meta.keyword2"),
+      t("founderSchool.meta.keyword3"),
+    ],
+  });
+}
 
-export default function FounderSchoolPage() {
+export default async function FounderSchoolPage() {
+  const t = await getServerT();
   return (
     <div className="mesh-bg min-h-screen w-full overflow-x-hidden">
       {/* Üst bar */}
@@ -44,11 +53,11 @@ export default function FounderSchoolPage() {
           <div className="flex items-center gap-2">
             <Link href="/features">
               <PrimaryButton variant="ghost" size="sm">
-                Özellikler
+                {t("founderSchool.nav.features")}
               </PrimaryButton>
             </Link>
             <Link href="/demo">
-              <PrimaryButton size="sm">Demo Talep Et</PrimaryButton>
+              <PrimaryButton size="sm">{t("founderSchool.nav.requestDemo")}</PrimaryButton>
             </Link>
           </div>
         </div>

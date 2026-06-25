@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { getServerT } from "@/lib/i18n/server";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { Sparkles, ArrowRight } from "lucide-react";
 import { LogoMark } from "@/components/shared/LogoMark";
@@ -23,15 +25,22 @@ import {
   demoFaq,
 } from "@/lib/demo-mock-data";
 
-export const metadata = buildMetadata({
-  title: "Demo Talep",
-  path: "/demo",
-  description:
-    "Okulunuza özel bir demo planlayalım; ikkoneedu okul yönetim sistemi ve özel okul CRM çözümünün süreçlerinizi nasıl dönüştürdüğünü birlikte keşfedelim.",
-  keywords: ["özel okul CRM", "okul yönetim sistemi demo", "okul yazılımı demo"],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return buildMetadata({
+    title: t("demo.meta.title"),
+    path: "/demo",
+    description: t("demo.meta.description"),
+    keywords: [
+      "özel okul CRM",
+      "okul yönetim sistemi demo",
+      "okul yazılımı demo",
+    ],
+  });
+}
 
-export default function DemoPage() {
+export default async function DemoPage() {
+  const t = await getServerT();
   return (
     <div className="mesh-bg min-h-screen w-full overflow-x-hidden">
       <JsonLd data={faqSchema(demoFaq)} />
@@ -47,12 +56,12 @@ export default function DemoPage() {
           <div className="flex items-center gap-2">
             <Link href="/features">
               <PrimaryButton variant="ghost" size="sm">
-                Özellikler
+                {t("demo.nav.features")}
               </PrimaryButton>
             </Link>
             <Link href="/pricing">
               <PrimaryButton variant="ghost" size="sm">
-                Fiyatlandırma
+                {t("demo.nav.pricing")}
               </PrimaryButton>
             </Link>
           </div>
@@ -73,11 +82,10 @@ export default function DemoPage() {
           </span>
           <span className="flex-1">
             <span className="block text-base font-semibold text-content">
-              AI Kayıt Danışmanı&apos;nı deneyin
+              {t("demo.aiLink.title")}
             </span>
             <span className="block text-sm text-muted">
-              Sorularınızı yanıtlayan ve sizi randevuya yönlendiren yapay zeka
-              danışmanıyla hemen tanışın.
+              {t("demo.aiLink.description")}
             </span>
           </span>
           <ArrowRight
@@ -92,9 +100,9 @@ export default function DemoPage() {
           <Reveal>
             <SectionHeader
               align="center"
-              eyebrow="Demo Talep Edin"
-              title="Okulunuza Özel Bir Demo Planlayalım"
-              description="ikkoneedu'nun eğitim süreçlerinizi nasıl dönüştürebileceğini birlikte keşfedelim."
+              eyebrow={t("demo.form.eyebrow")}
+              title={t("demo.form.title")}
+              description={t("demo.form.description")}
               className="mb-10"
             />
             <div className="mx-auto max-w-3xl">

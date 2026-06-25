@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { LogoMark } from "@/components/shared/LogoMark";
@@ -9,6 +10,7 @@ import { SecuritySection } from "@/components/features/SecuritySection";
 import { CallToAction } from "@/components/features/CallToAction";
 import { buildMetadata } from "@/lib/seo/seo";
 import { productName } from "@/lib/constants";
+import { getServerT } from "@/lib/i18n/server";
 import {
   managementFeatures,
   studentFeatures,
@@ -17,17 +19,40 @@ import {
   aiFeatures,
   saasFeatures,
   securityFeatures,
+  type FeatureItem,
 } from "@/lib/features-data";
+import type { TranslateFn } from "@/lib/i18n/dictionaries";
 
-export const metadata = buildMetadata({
-  title: "Platform Özellikleri",
-  path: "/features",
-  description:
-    "Okul yönetimini, veli iletişimini ve yapay zekayı tek platformda birleştiren yeni nesil eğitim kurumu yazılımı ve okul yönetim sistemi.",
-  keywords: ["eğitim kurumu yazılımı", "okul otomasyon sistemi", "veli iletişim uygulaması"],
-});
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return buildMetadata({
+    title: t("features.meta.title"),
+    path: "/features",
+    description: t("features.meta.description"),
+    keywords: ["eğitim kurumu yazılımı", "okul otomasyon sistemi", "veli iletişim uygulaması"],
+  });
+}
 
-export default function FeaturesPage() {
+/**
+ * Modül-seviyesi TR özellik dizilerini, çeviri anahtarları üzerinden
+ * yerelleştirilmiş başlık/açıklamalara dönüştürür. Anahtar deseni:
+ * `features.<namespace>.<id>.title` / `.description`.
+ */
+function localizeFeatures(
+  t: TranslateFn,
+  namespace: string,
+  items: FeatureItem[],
+): FeatureItem[] {
+  return items.map((item) => ({
+    ...item,
+    title: t(`features.${namespace}.${item.id}.title`),
+    description: t(`features.${namespace}.${item.id}.description`),
+  }));
+}
+
+export default async function FeaturesPage() {
+  const t = await getServerT();
+
   return (
     <div className="mesh-bg min-h-screen w-full overflow-x-hidden">
       {/* Üst bar */}
@@ -42,11 +67,11 @@ export default function FeaturesPage() {
           <div className="flex items-center gap-2">
             <Link href="/login">
               <PrimaryButton variant="ghost" size="sm">
-                Giriş Yap
+                {t("features.nav.login")}
               </PrimaryButton>
             </Link>
             <Link href="/demo">
-              <PrimaryButton size="sm">Demo Talep Et</PrimaryButton>
+              <PrimaryButton size="sm">{t("features.nav.requestDemo")}</PrimaryButton>
             </Link>
           </div>
         </div>
@@ -58,44 +83,44 @@ export default function FeaturesPage() {
 
         {/* 2. Yönetim modülleri */}
         <FeatureGrid
-          eyebrow="Yönetim"
-          title="Yönetim Modülleri"
-          items={managementFeatures}
+          eyebrow={t("features.section.management.eyebrow")}
+          title={t("features.section.management.title")}
+          items={localizeFeatures(t, "management", managementFeatures)}
         />
 
         {/* 3. Öğrenci deneyimi */}
         <FeatureGrid
-          eyebrow="Öğrenci"
-          title="Öğrenci Deneyimi"
-          items={studentFeatures}
+          eyebrow={t("features.section.student.eyebrow")}
+          title={t("features.section.student.title")}
+          items={localizeFeatures(t, "student", studentFeatures)}
         />
 
         {/* 4. Veli deneyimi */}
         <FeatureGrid
-          eyebrow="Veli"
-          title="Veli Deneyimi"
-          items={parentFeatures}
+          eyebrow={t("features.section.parent.eyebrow")}
+          title={t("features.section.parent.title")}
+          items={localizeFeatures(t, "parent", parentFeatures)}
         />
 
         {/* 5. Öğretmen deneyimi */}
         <FeatureGrid
-          eyebrow="Öğretmen"
-          title="Öğretmen Deneyimi"
-          items={teacherFeatures}
+          eyebrow={t("features.section.teacher.eyebrow")}
+          title={t("features.section.teacher.title")}
+          items={localizeFeatures(t, "teacher", teacherFeatures)}
         />
 
         {/* 6. Yapay zeka modülleri */}
-        <AiFeatures items={aiFeatures} />
+        <AiFeatures items={localizeFeatures(t, "ai", aiFeatures)} />
 
         {/* 7. SaaS özellikleri */}
         <FeatureGrid
-          eyebrow="SaaS"
-          title="SaaS Özellikleri"
-          items={saasFeatures}
+          eyebrow={t("features.section.saas.eyebrow")}
+          title={t("features.section.saas.title")}
+          items={localizeFeatures(t, "saas", saasFeatures)}
         />
 
         {/* 8. Güvenlik */}
-        <SecuritySection items={securityFeatures} />
+        <SecuritySection items={localizeFeatures(t, "security", securityFeatures)} />
 
         {/* 9. Son CTA */}
         <CallToAction />

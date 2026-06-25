@@ -1,0 +1,43 @@
+/** register sayfası çeviri anahtarları. tr kaynak; en eşleşir. */
+export const tr: Record<string, string> = {
+  "register.badge": "Aday Veli / Genel Kayıt",
+  "register.title": "Hesap Oluşturun",
+  "register.subtitle": "Bursluluk başvurusu yapın ve okul bilgilerine erişin.",
+  "register.nameLabel": "Ad Soyad",
+  "register.namePlaceholder": "Ad Soyad",
+  "register.emailLabel": "E-posta",
+  "register.emailPlaceholder": "ornek@eposta.com",
+  "register.passwordLabel": "Şifre",
+  "register.passwordPlaceholder": "En az 6 karakter",
+  "register.kvkk": "KVKK metnini okudum ve kabul ediyorum.",
+  "register.submit": "Hesap Oluştur",
+  "register.submitting": "Hesap oluşturuluyor...",
+  "register.loginQuestion": "Zaten hesabınız var mı?",
+  "register.loginLink": "Giriş yapın",
+  "register.errFirebase":
+    "Kayıt sistemi şu anda yapılandırılmamış. Lütfen daha sonra tekrar deneyin.",
+  "register.errName": "Lütfen ad soyadınızı girin.",
+  "register.errEmail": "Geçerli bir e-posta adresi girin.",
+  "register.errPassword": "Şifre en az 6 karakter olmalıdır.",
+};
+export const en: Record<string, string> = {
+  "register.badge": "Prospective Parent / General Sign-up",
+  "register.title": "Create an Account",
+  "register.subtitle": "Apply for a scholarship and access school information.",
+  "register.nameLabel": "Full Name",
+  "register.namePlaceholder": "Full Name",
+  "register.emailLabel": "Email",
+  "register.emailPlaceholder": "example@email.com",
+  "register.passwordLabel": "Password",
+  "register.passwordPlaceholder": "At least 6 characters",
+  "register.kvkk": "I have read and accept the data protection (KVKK) notice.",
+  "register.submit": "Create Account",
+  "register.submitting": "Creating account...",
+  "register.loginQuestion": "Already have an account?",
+  "register.loginLink": "Sign in",
+  "register.errFirebase":
+    "The registration system is currently not configured. Please try again later.",
+  "register.errName": "Please enter your full name.",
+  "register.errEmail": "Please enter a valid email address.",
+  "register.errPassword": "Password must be at least 6 characters.",
+};

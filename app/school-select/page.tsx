@@ -21,6 +21,7 @@ import { SectionHeader } from "@/components/shared/SectionHeader";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { productName } from "@/lib/constants";
 import { tenantFeatures } from "@/lib/mock-data";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -29,14 +30,15 @@ const fadeUp = {
 
 /** Okul seçim kartları (mock — tenant slug ile halka açık sayfalara bağlı). */
 const selectCards = [
-  { id: "ikk", name: "İngiliz Kültür Kolejleri", slug: "ingiliz-kultur", role: "Yönetici", users: "1.248", href: "/admin", icon: GraduationCap, isSuper: false },
-  { id: "atael", name: "Atael Koleji", slug: "atael", role: "Yönetici", users: "842", href: "/admin", icon: Building2, isSuper: false },
-  { id: "demo", name: "Demo Okul", slug: "demo-okul", role: "Yönetici", users: "120", href: "/admin", icon: FlaskConical, isSuper: false },
-  { id: "super", name: "Super Admin", slug: null, role: "Platform Sahibi", users: "—", href: "/super-admin", icon: ShieldCheck, isSuper: true },
+  { id: "ikk", name: "İngiliz Kültür Kolejleri", slug: "ingiliz-kultur", roleKey: "schoolSelect.card.role.admin", users: "1.248", href: "/admin", icon: GraduationCap, isSuper: false },
+  { id: "atael", name: "Atael Koleji", slug: "atael", roleKey: "schoolSelect.card.role.admin", users: "842", href: "/admin", icon: Building2, isSuper: false },
+  { id: "demo", name: "Demo Okul", slug: "demo-okul", roleKey: "schoolSelect.card.role.admin", users: "120", href: "/admin", icon: FlaskConical, isSuper: false },
+  { id: "super", name: "Super Admin", slug: null, roleKey: "schoolSelect.card.role.platformOwner", users: "—", href: "/super-admin", icon: ShieldCheck, isSuper: true },
 ] as const;
 
 export default function SchoolSelectPage() {
   const router = useRouter();
+  const t = useT();
 
   return (
     <div className="mesh-bg min-h-screen w-full">
@@ -57,7 +59,7 @@ export default function SchoolSelectPage() {
               </span>
               <div className="hidden text-left sm:block">
                 <p className="text-sm font-medium leading-tight text-content">
-                  Yönetici
+                  {t("schoolSelect.role")}
                 </p>
                 <p className="text-xs leading-tight text-muted">
                   ikkdijital@gmail.com
@@ -71,7 +73,7 @@ export default function SchoolSelectPage() {
               className="flex items-center gap-2 rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-overlay/[0.08] hover:text-content"
             >
               <LogOut size={16} aria-hidden="true" />
-              <span className="hidden sm:inline">Çıkış Yap</span>
+              <span className="hidden sm:inline">{t("schoolSelect.logout")}</span>
             </button>
           </div>
         </header>
@@ -84,8 +86,8 @@ export default function SchoolSelectPage() {
         >
           <SectionHeader
             align="center"
-            title="Okulunuzu Seçin"
-            description="Bağlı olduğunuz kampüs veya kurumu seçerek devam edin."
+            title={t("schoolSelect.title")}
+            description={t("schoolSelect.description")}
           />
         </motion.div>
 
@@ -114,7 +116,7 @@ export default function SchoolSelectPage() {
                   {card.name}
                 </h3>
                 <div className="mt-1 flex items-center gap-2 text-sm text-accent">
-                  <span>{card.role}</span>
+                  <span>{t(card.roleKey)}</span>
                   {card.slug && (
                     <span className="font-mono text-xs text-muted">
                       {card.slug}.ikkoneedu.com
@@ -123,7 +125,7 @@ export default function SchoolSelectPage() {
                 </div>
                 <div className="mt-3 flex items-center gap-2 text-sm text-muted">
                   <Users size={16} aria-hidden="true" />
-                  <span>Kullanıcı: {card.users}</span>
+                  <span>{t("schoolSelect.card.users", { count: card.users })}</span>
                 </div>
 
                 <PrimaryButton
@@ -133,7 +135,7 @@ export default function SchoolSelectPage() {
                   className="mt-6 w-full"
                   onClick={() => router.push(card.href)}
                 >
-                  Devam Et
+                  {t("schoolSelect.card.continue")}
                   <ArrowRight size={15} aria-hidden="true" />
                 </PrimaryButton>
 
@@ -144,14 +146,14 @@ export default function SchoolSelectPage() {
                       className="flex items-center gap-1.5 text-xs font-medium text-muted transition-colors hover:text-accent"
                     >
                       <Globe size={13} aria-hidden="true" />
-                      Halka Açık Okul Sayfası
+                      {t("schoolSelect.card.publicPage")}
                     </Link>
                     <Link
                       href={`/school/${card.slug}/scholarship/apply`}
                       className="flex items-center gap-1.5 text-xs font-medium text-muted transition-colors hover:text-accent"
                     >
                       <Award size={13} aria-hidden="true" />
-                      Bursluluk Başvurusu
+                      {t("schoolSelect.card.scholarship")}
                     </Link>
                   </div>
                 )}
@@ -167,7 +169,7 @@ export default function SchoolSelectPage() {
           className="mt-16"
         >
           <h2 className="mb-6 text-center text-sm font-semibold uppercase tracking-[0.18em] text-muted">
-            ikkoneedu Çoklu Okul Altyapısı
+            {t("schoolSelect.infra.heading")}
           </h2>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {tenantFeatures.map((feature) => {
@@ -178,10 +180,10 @@ export default function SchoolSelectPage() {
                     <Icon size={20} aria-hidden="true" />
                   </span>
                   <h3 className="mt-4 text-sm font-semibold text-content">
-                    {feature.title}
+                    {t(`schoolSelect.feature.${feature.id}.title`)}
                   </h3>
                   <p className="mt-1 text-sm leading-relaxed text-muted">
-                    {feature.description}
+                    {t(`schoolSelect.feature.${feature.id}.description`)}
                   </p>
                 </GlassCard>
               );

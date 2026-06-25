@@ -15,12 +15,14 @@ import { getUserProfile } from "@/lib/services/user-profile";
 import { getHomeRouteForRole } from "@/lib/auth/role-routing";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 import { productName, productFullName } from "@/lib/constants";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 /**
  * Öğrenci / veli kod ile giriş ekranı.
  * Öğretmenin verdiği kod (OGR-XXXXXX / VEL-XXXXXX) ile gerçek oturum açılır.
  */
 export default function CodeLoginPage() {
+  const t = useT();
   const router = useRouter();
   const { firebaseReady } = useAuth();
   const [submitting, setSubmitting] = useState(false);
@@ -34,11 +36,11 @@ export default function CodeLoginPage() {
     const code = String(data.get("code") ?? "").trim();
 
     if (!firebaseReady) {
-      setError("Giriş sistemi şu anda yapılandırılmamış. Lütfen daha sonra deneyin.");
+      setError(t("codeLogin.error.notConfigured"));
       return;
     }
     if (!code) {
-      setError("Lütfen size verilen kodu girin.");
+      setError(t("codeLogin.error.emptyCode"));
       return;
     }
 
@@ -51,7 +53,7 @@ export default function CodeLoginPage() {
       const uid = auth?.currentUser?.uid;
       const profile = uid ? await getUserProfile(uid) : null;
       if (!profile) {
-        setError("Bu koda ait profil bulunamadı. Öğretmeninizle iletişime geçin.");
+        setError(t("codeLogin.error.noProfile"));
         setSubmitting(false);
         return;
       }
@@ -60,7 +62,7 @@ export default function CodeLoginPage() {
       const code2 = (err as { code?: string })?.code;
       setError(
         code2 === "auth/invalid-credential" || code2 === "auth/user-not-found"
-          ? "Kod geçersiz. Lütfen öğretmeninizden aldığınız kodu kontrol edin."
+          ? t("codeLogin.error.invalidCode")
           : getAuthErrorMessage(err),
       );
       setSubmitting(false);
@@ -91,32 +93,32 @@ export default function CodeLoginPage() {
         <GlassCard tone="navy" className="sm:p-8">
           <span className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
             <KeyRound size={14} aria-hidden="true" />
-            Öğrenci / Veli Girişi
+            {t("codeLogin.badge")}
           </span>
           <h2 className="mt-4 text-xl font-bold tracking-tight text-content sm:text-2xl">
-            Kod ile Giriş
+            {t("codeLogin.title")}
           </h2>
           <p className="mt-1 text-sm text-muted">
-            Öğretmeninizin verdiği kod ile giriş yapın.
+            {t("codeLogin.subtitle")}
           </p>
 
           <div className="mt-5 flex gap-3 text-xs text-muted">
             <span className="flex items-center gap-1.5">
               <GraduationCap size={14} className="text-accent" aria-hidden="true" />
-              Öğrenci: OGR-XXXXXX
+              {t("codeLogin.hint.student")}
             </span>
             <span className="flex items-center gap-1.5">
               <Users size={14} className="text-accent" aria-hidden="true" />
-              Veli: VEL-XXXXXX
+              {t("codeLogin.hint.parent")}
             </span>
           </div>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <TextField
-              label="Giriş Kodu"
+              label={t("codeLogin.field.code.label")}
               name="code"
               icon={KeyRound}
-              placeholder="OGR-XXXXXX"
+              placeholder={t("codeLogin.field.code.placeholder")}
               autoComplete="off"
               required
             />
@@ -134,18 +136,18 @@ export default function CodeLoginPage() {
               className="w-full"
               disabled={submitting}
             >
-              {submitting ? "Giriş yapılıyor..." : "Giriş Yap"}
+              {submitting ? t("codeLogin.button.submitting") : t("codeLogin.button.submit")}
               <ArrowRight size={18} aria-hidden="true" />
             </PrimaryButton>
           </form>
 
           <p className="mt-6 text-center text-sm text-muted">
-            Yönetici / öğretmen misiniz?{" "}
+            {t("codeLogin.footer.prompt")}{" "}
             <Link
               href="/login"
               className="font-semibold text-accent transition-colors hover:text-content"
             >
-              E-posta ile giriş
+              {t("codeLogin.footer.link")}
             </Link>
           </p>
         </GlassCard>
