@@ -5,12 +5,14 @@ import Link from "next/link";
 import { Bell } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { listNotificationsForCurrentUser } from "@/lib/services/notifications";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 /**
  * Üst çubuk bildirim zili — gerçek okunmamış sayacı (userId == uid).
  * Sayaç yalnızca giriş yapmış kullanıcıda ve okunmamış varsa gösterilir.
  */
 export function NotificationBell() {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const [unread, setUnread] = useState(0);
@@ -48,7 +50,7 @@ export function NotificationBell() {
   return (
     <Link
       href="/notifications"
-      aria-label={unread > 0 ? `Bildirimler (${unread} okunmamış)` : "Bildirimler"}
+      aria-label={unread > 0 ? t("boardD.bell.labelUnread", { count: unread }) : t("boardD.bell.label")}
       className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-overlay/10 bg-overlay/[0.04] text-muted transition-colors hover:bg-overlay/[0.08] hover:text-content"
     >
       <Bell size={18} aria-hidden="true" />

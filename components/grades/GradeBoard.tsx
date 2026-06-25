@@ -11,6 +11,7 @@ import { listMyCodes } from "@/lib/services/access-codes";
 import { addGrade, getStudentGrades, type GradeEntry } from "@/lib/services/grades";
 import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 interface Student {
   uid: string;
@@ -23,6 +24,7 @@ interface Student {
  * notlarını görür. Yalnızca giriş yapmış kullanıcı + Firebase aktifken görünür.
  */
 export function GradeBoard() {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const myUid = user?.uid;
   const tenantId = profile?.tenantId;
@@ -113,14 +115,14 @@ export function GradeBoard() {
         <GlassCard tone="navy">
           <div className="mb-4 flex items-center gap-2">
             <Star size={18} className="text-accent" aria-hidden="true" />
-            <h2 className="text-lg font-semibold text-content">Not Gir</h2>
+            <h2 className="text-lg font-semibold text-content">{t("boardB.grade.enterHeading")}</h2>
           </div>
           {students.length === 0 ? (
-            <p className="text-sm text-muted">Önce öğrenci kodu üretin.</p>
+            <p className="text-sm text-muted">{t("boardB.grade.needStudentCode")}</p>
           ) : (
             <form onSubmit={handleAdd} className="space-y-3">
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-muted">Öğrenci</label>
+                <label className="text-xs font-medium text-muted">{t("boardB.grade.studentLabel")}</label>
                 <select
                   value={selected}
                   onChange={(e) => setSelected(e.target.value)}
@@ -132,10 +134,10 @@ export function GradeBoard() {
                 </select>
               </div>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <TextField label="Ders" name="subject" placeholder="Matematik" required />
-                <TextField label="Not" name="score" placeholder="85 / AA" required />
+                <TextField label={t("boardB.grade.subjectLabel")} name="subject" placeholder={t("boardB.grade.subjectPlaceholder")} required />
+                <TextField label={t("boardB.grade.scoreLabel")} name="score" placeholder={t("boardB.grade.scorePlaceholder")} required />
               </div>
-              <TextField label="Açıklama (opsiyonel)" name="note" placeholder="Yorum" />
+              <TextField label={t("boardB.grade.noteLabel")} name="note" placeholder={t("boardB.grade.notePlaceholder")} />
               {error && (
                 <p className="flex items-center gap-2 rounded-xl border border-brand/30 bg-brand/10 px-4 py-3 text-sm text-brand">
                   <AlertCircle size={16} aria-hidden="true" />
@@ -144,7 +146,7 @@ export function GradeBoard() {
               )}
               <PrimaryButton type="submit" size="md" disabled={busy}>
                 <Send size={16} aria-hidden="true" />
-                {busy ? "Kaydediliyor…" : "Notu Kaydet"}
+                {busy ? t("boardB.grade.saving") : t("boardB.grade.save")}
               </PrimaryButton>
             </form>
           )}
@@ -155,35 +157,35 @@ export function GradeBoard() {
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <Star size={18} className="text-accent" aria-hidden="true" />
           <h2 className="text-lg font-semibold text-content">
-            {isTeacher ? "Öğrenci Notları" : "Notlarım"}
+            {isTeacher ? t("boardB.grade.studentGrades") : t("boardB.grade.myGrades")}
           </h2>
           {grades.length > 0 && (
             <DataExportButtons
               className="ml-auto"
-              filename="not-karnesi"
-              title="Not Karnesi"
+              filename={t("boardB.grade.exportFilename")}
+              title={t("boardB.grade.exportTitle")}
               formats={["pdf", "csv"]}
               columns={[
-                { key: "subject", label: "Ders" },
-                { key: "score", label: "Not" },
-                { key: "note", label: "Açıklama" },
-                { key: "date", label: "Tarih" },
+                { key: "subject", label: t("boardB.grade.colSubject") },
+                { key: "score", label: t("boardB.grade.colScore") },
+                { key: "note", label: t("boardB.grade.colNote") },
+                { key: "date", label: t("boardB.grade.colDate") },
               ]}
               rows={grades as unknown as Record<string, unknown>[]}
             />
           )}
         </div>
         {grades.length === 0 ? (
-          <p className="text-sm text-muted">Henüz not yok.</p>
+          <p className="text-sm text-muted">{t("boardB.grade.empty")}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="text-xs uppercase tracking-wide text-muted">
-                  <th className="pb-2 pr-4 font-medium">Ders</th>
-                  <th className="pb-2 pr-4 font-medium">Not</th>
-                  <th className="pb-2 pr-4 font-medium">Açıklama</th>
-                  <th className="pb-2 font-medium">Tarih</th>
+                  <th className="pb-2 pr-4 font-medium">{t("boardB.grade.colSubject")}</th>
+                  <th className="pb-2 pr-4 font-medium">{t("boardB.grade.colScore")}</th>
+                  <th className="pb-2 pr-4 font-medium">{t("boardB.grade.colNote")}</th>
+                  <th className="pb-2 font-medium">{t("boardB.grade.colDate")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-overlay/5">

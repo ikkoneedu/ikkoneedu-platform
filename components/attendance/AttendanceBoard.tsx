@@ -16,6 +16,7 @@ import {
 } from "@/lib/services/attendance";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 import { notifyStudentParents } from "@/lib/services/notifications";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 interface Student {
   uid: string;
@@ -34,6 +35,7 @@ const STATUS_STYLE: Record<AttendanceStatus, string> = {
  * yoklamasını görür. Yalnızca giriş yapmış kullanıcı + Firebase aktifken görünür.
  */
 export function AttendanceBoard() {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const myUid = user?.uid;
   const tenantId = profile?.tenantId;
@@ -135,14 +137,14 @@ export function AttendanceBoard() {
         <GlassCard tone="navy">
           <div className="mb-4 flex items-center gap-2">
             <CalendarCheck size={18} className="text-accent" aria-hidden="true" />
-            <h2 className="text-lg font-semibold text-content">Yoklama Gir</h2>
+            <h2 className="text-lg font-semibold text-content">{t("boardB.attendance.enterHeading")}</h2>
           </div>
           {students.length === 0 ? (
-            <p className="text-sm text-muted">Önce öğrenci kodu üretin.</p>
+            <p className="text-sm text-muted">{t("boardB.attendance.needStudentCode")}</p>
           ) : (
             <form onSubmit={handleMark} className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:items-end">
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-muted">Öğrenci</label>
+                <label className="text-xs font-medium text-muted">{t("boardB.attendance.studentLabel")}</label>
                 <select value={selected} onChange={(e) => setSelected(e.target.value)} className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent">
                   {students.map((s) => (
                     <option key={s.uid} value={s.uid} className="bg-surface">{s.name}</option>
@@ -150,11 +152,11 @@ export function AttendanceBoard() {
                 </select>
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-muted">Tarih</label>
+                <label className="text-xs font-medium text-muted">{t("boardB.attendance.dateLabel")}</label>
                 <input type="date" name="date" defaultValue={today} className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent" />
               </div>
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-muted">Durum</label>
+                <label className="text-xs font-medium text-muted">{t("boardB.attendance.statusLabel")}</label>
                 <select name="status" defaultValue="present" className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent">
                   {(Object.keys(ATTENDANCE_LABELS) as AttendanceStatus[]).map((s) => (
                     <option key={s} value={s} className="bg-surface">{ATTENDANCE_LABELS[s]}</option>
@@ -163,7 +165,7 @@ export function AttendanceBoard() {
               </div>
               <PrimaryButton type="submit" size="md" disabled={busy}>
                 <Send size={16} aria-hidden="true" />
-                Kaydet
+                {t("boardB.attendance.save")}
               </PrimaryButton>
             </form>
           )}
@@ -180,11 +182,11 @@ export function AttendanceBoard() {
         <div className="mb-4 flex items-center gap-2">
           <CalendarCheck size={18} className="text-accent" aria-hidden="true" />
           <h2 className="text-lg font-semibold text-content">
-            {isTeacher ? "Öğrenci Yoklaması" : "Yoklama Geçmişim"}
+            {isTeacher ? t("boardB.attendance.studentAttendance") : t("boardB.attendance.myHistory")}
           </h2>
         </div>
         {records.length === 0 ? (
-          <p className="text-sm text-muted">Henüz yoklama kaydı yok.</p>
+          <p className="text-sm text-muted">{t("boardB.attendance.empty")}</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {records.map((r, i) => (

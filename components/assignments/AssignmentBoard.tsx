@@ -21,6 +21,7 @@ import {
   listAllSubmissions,
 } from "@/lib/services/submissions";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const STAFF_ROLES = [
   ROLES.TEACHER,
@@ -37,6 +38,7 @@ const STAFF_ROLES = [
  * Yalnızca giriş yapmış kullanıcı + Firebase aktifken görünür.
  */
 export function AssignmentBoard({ readOnly = false }: { readOnly?: boolean }) {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const isStaff =
@@ -179,35 +181,35 @@ export function AssignmentBoard({ readOnly = false }: { readOnly?: boolean }) {
         <GlassCard tone="navy">
           <div className="mb-4 flex items-center gap-2">
             <ClipboardList size={18} className="text-accent" aria-hidden="true" />
-            <h2 className="text-lg font-semibold text-content">Ödev Ver</h2>
+            <h2 className="text-lg font-semibold text-content">{t("boardA.asg.compose.heading")}</h2>
           </div>
           <form onSubmit={handlePost} className="space-y-3">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <TextField label="Başlık" name="title" placeholder="Ödev başlığı" required />
-              <TextField label="Son Tarih" name="dueDate" type="date" />
+              <TextField label={t("boardA.asg.title.label")} name="title" placeholder={t("boardA.asg.title.placeholder")} required />
+              <TextField label={t("boardA.asg.dueDate.label")} name="dueDate" type="date" />
             </div>
             <div className="flex flex-col gap-1.5">
               <label htmlFor="asg-desc" className="text-sm font-medium text-muted">
-                Açıklama
+                {t("boardA.asg.description.label")}
               </label>
               <textarea
                 id="asg-desc"
                 name="description"
                 rows={3}
                 required
-                placeholder="Ödev detayları…"
+                placeholder={t("boardA.asg.description.placeholder")}
                 className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
             {isTeacher && classes.length > 0 && (
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-muted">Sınıf (opsiyonel)</label>
+                <label className="text-xs font-medium text-muted">{t("boardA.asg.class.label")}</label>
                 <select
                   name="classId"
                   defaultValue=""
                   className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
                 >
-                  <option value="" className="bg-surface">Tüm okul</option>
+                  <option value="" className="bg-surface">{t("boardA.asg.class.allSchool")}</option>
                   {classes.map((c) => (
                     <option key={c.id} value={c.id} className="bg-surface">{c.name}</option>
                   ))}
@@ -223,12 +225,12 @@ export function AssignmentBoard({ readOnly = false }: { readOnly?: boolean }) {
             {posted && (
               <p className="flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-400">
                 <CheckCircle2 size={16} aria-hidden="true" />
-                Ödev yayınlandı.
+                {t("boardA.asg.posted")}
               </p>
             )}
             <PrimaryButton type="submit" size="md" disabled={busy}>
               <Send size={16} aria-hidden="true" />
-              {busy ? "Yayınlanıyor…" : "Ödev Ver"}
+              {busy ? t("boardA.asg.submit.busy") : t("boardA.asg.submit.idle")}
             </PrimaryButton>
           </form>
         </GlassCard>
@@ -237,10 +239,10 @@ export function AssignmentBoard({ readOnly = false }: { readOnly?: boolean }) {
       <GlassCard tone="navy">
         <div className="mb-4 flex items-center gap-2">
           <ClipboardList size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Ödevler</h2>
+          <h2 className="text-lg font-semibold text-content">{t("boardA.asg.list.heading")}</h2>
         </div>
         {visible.length === 0 ? (
-          <p className="text-sm text-muted">Henüz ödev yok.</p>
+          <p className="text-sm text-muted">{t("boardA.asg.empty")}</p>
         ) : (
           <ul className="flex flex-col gap-3">
             {visible.map((a) => (
@@ -257,20 +259,20 @@ export function AssignmentBoard({ readOnly = false }: { readOnly?: boolean }) {
                 <p className="mt-1 text-sm leading-relaxed text-muted">{a.description}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   <p className="text-xs text-muted/70">
-                    {a.className ? `${a.className} · ` : "Tüm okul · "}
+                    {a.className ? `${a.className} · ` : `${t("boardA.asg.scope.allSchool")} · `}
                     {a.authorName}
                   </p>
                   {/* Personel: kaç öğrenci teslim etti */}
                   {isStaff && (
                     <span className="ml-auto inline-flex items-center gap-1 rounded-full border border-overlay/10 bg-overlay/5 px-2 py-0.5 text-[11px] font-medium text-muted">
                       <Users size={12} aria-hidden="true" />
-                      {counts[a.id] ?? 0} teslim
+                      {t("boardA.asg.submissions.count", { count: counts[a.id] ?? 0 })}
                     </span>
                   )}
                   {/* Öğrenci: teslim et / geri al */}
                   {isStudent && submittedIds.has(a.id) && (
                     <span className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-0.5 text-[11px] font-medium text-emerald-300">
-                      <Check size={13} aria-hidden="true" /> Teslim Edildi
+                      <Check size={13} aria-hidden="true" /> {t("boardA.asg.submitted")}
                     </span>
                   )}
                   {isStudent && submittedIds.has(a.id) && (
@@ -279,9 +281,9 @@ export function AssignmentBoard({ readOnly = false }: { readOnly?: boolean }) {
                       onClick={() => void toggleSubmission(a.id)}
                       disabled={togglingId === a.id}
                       className="inline-flex items-center gap-1 text-[11px] text-muted transition hover:text-content disabled:opacity-50"
-                      aria-label="Teslimi geri al"
+                      aria-label={t("boardA.asg.withdraw.aria")}
                     >
-                      <Undo2 size={12} aria-hidden="true" /> geri al
+                      <Undo2 size={12} aria-hidden="true" /> {t("boardA.asg.withdraw")}
                     </button>
                   )}
                   {isStudent && !submittedIds.has(a.id) && (
@@ -291,7 +293,7 @@ export function AssignmentBoard({ readOnly = false }: { readOnly?: boolean }) {
                       disabled={togglingId === a.id}
                       className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-medium text-accent transition hover:bg-accent/20 disabled:opacity-50"
                     >
-                      <Send size={14} aria-hidden="true" /> Teslim Et
+                      <Send size={14} aria-hidden="true" /> {t("boardA.asg.submit")}
                     </button>
                   )}
                 </div>

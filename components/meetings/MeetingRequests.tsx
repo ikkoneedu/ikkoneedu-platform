@@ -16,6 +16,7 @@ import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { getStudent, type StudentRecord } from "@/lib/services/students";
 import { createUserNotification } from "@/lib/services/notifications";
@@ -24,7 +25,6 @@ import {
   listMeetingRequests,
   listMyMeetingRequests,
   respondMeetingRequest,
-  MEETING_STATUS_LABELS,
   type MeetingRequestRecord,
   type MeetingStatus,
 } from "@/lib/services/meeting-requests";
@@ -52,6 +52,7 @@ function statusBadge(status: MeetingStatus): string {
  * Tenant izole. Yetki Firestore kurallarıyla zorlanır.
  */
 export function MeetingRequests() {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const isParent = profile?.role === ROLES.PARENT;
@@ -119,7 +120,7 @@ export function MeetingRequests() {
       await createMeetingRequest({
         tenantId,
         parentUid: user.uid,
-        parentName: profile?.displayName ?? "Veli",
+        parentName: profile?.displayName ?? t("boardC.meeting.defaultParent"),
         studentName,
         preferredDate,
         note,
@@ -149,7 +150,7 @@ export function MeetingRequests() {
         row.id,
         status,
         note,
-        profile?.displayName ?? "Okul",
+        profile?.displayName ?? t("boardC.meeting.school"),
       );
       // Veliye bildirim düşür (best-effort).
       try {
@@ -157,12 +158,12 @@ export function MeetingRequests() {
           userId: row.parentUid,
           title:
             status === "approved"
-              ? "Görüşme talebiniz onaylandı"
-              : "Görüşme talebiniz yanıtlandı",
-          body:
-            `${row.studentName} için görüşme talebiniz ` +
-            `${MEETING_STATUS_LABELS[status].toLowerCase()}.` +
-            (note ? ` Not: ${note}` : ""),
+              ? t("boardC.meeting.notifApprovedTitle")
+              : t("boardC.meeting.notifRespondedTitle"),
+          body: t("boardC.meeting.notifBody", {
+            student: row.studentName,
+            status: t(`boardC.status.${status}`).toLowerCase(),
+          }) + (note ? t("boardC.meeting.notifNoteSuffix", { note }) : ""),
           type: "system",
           link: "/parent",
         });
@@ -187,19 +188,19 @@ export function MeetingRequests() {
         </span>
         <div>
           <h2 className="text-lg font-semibold text-content">
-            {isParent ? "Öğretmen Görüşmesi" : "Görüşme Talepleri"}
+            {isParent ? t("boardC.meeting.titleParent") : t("boardC.meeting.titleStaff")}
           </h2>
           <p className="text-xs text-muted">
             {isParent
-              ? "Öğretmen/yönetimle görüşme talebi oluşturun ve durumunu takip edin."
-              : "Velilerden gelen görüşme taleplerini yanıtlayın."}
+              ? t("boardC.meeting.descParent")
+              : t("boardC.meeting.descStaff")}
           </p>
         </div>
         <button
           type="button"
           onClick={() => void refresh()}
           className="ml-auto text-muted transition hover:text-content"
-          aria-label="Yenile"
+          aria-label={t("boardC.meeting.refresh")}
         >
           <RefreshCw size={15} />
         </button>
@@ -216,7 +217,7 @@ export function MeetingRequests() {
         <form onSubmit={handleCreate} className="mb-5 space-y-3">
           <div className="flex flex-col gap-1.5">
             <label htmlFor="mr-student" className="text-sm font-medium text-muted">
-              Öğrenci
+              {t("boardC.meeting.studentLabel")}
             </label>
             {children.length > 0 ? (
               <select
@@ -232,7 +233,7 @@ export function MeetingRequests() {
                 ))}
               </select>
             ) : (
-              <TextField label="" name="studentName" placeholder="Öğrenci adı" required />
+              <TextField label="" name="studentName" placeholder={t("boardC.meeting.studentPlaceholder")} required />
             )}
           </div>
           <TextField

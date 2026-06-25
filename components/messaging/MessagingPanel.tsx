@@ -5,6 +5,7 @@ import { MessageSquare, Send, RefreshCw } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { listMyCodes } from "@/lib/services/access-codes";
 import {
@@ -34,6 +35,7 @@ function formatTime(date: Date | null): string {
  * Yalnızca giriş yapmış kullanıcı + Firebase aktifken görünür.
  */
 export function MessagingPanel() {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const myUid = user?.uid;
   const tenantId = profile?.tenantId;
@@ -53,7 +55,7 @@ export function MessagingPanel() {
         const codes = await listMyCodes(tenantId, myUid);
         const list = codes.map((c) => ({
           uid: c.uid,
-          name: `${c.displayName} (${c.role === ROLES.STUDENT ? "Öğrenci" : "Veli"})`,
+          name: `${c.displayName} (${c.role === ROLES.STUDENT ? t("boardC.messaging.roleStudent") : t("boardC.messaging.roleParent")})`,
         }));
         if (active) {
           setContacts(list);
@@ -62,7 +64,7 @@ export function MessagingPanel() {
       } else {
         // Öğrenci/veli → öğretmeni.
         const teacher = profile.createdBy
-          ? [{ uid: profile.createdBy, name: profile.createdByName ?? "Öğretmenim" }]
+          ? [{ uid: profile.createdBy, name: profile.createdByName ?? t("boardC.messaging.myTeacher") }]
           : [];
         if (active) {
           setContacts(teacher);
@@ -73,7 +75,7 @@ export function MessagingPanel() {
     return () => {
       active = false;
     };
-  }, [firebaseReady, profile, myUid, tenantId, isTeacher]);
+  }, [firebaseReady, profile, myUid, tenantId, isTeacher, t]);
 
   const loadConversation = useCallback(async () => {
     if (!myUid || !selected) {
@@ -100,7 +102,7 @@ export function MessagingPanel() {
       await sendMessage({
         tenantId,
         senderUid: myUid,
-        senderName: profile?.displayName ?? "Kullanıcı",
+        senderName: profile?.displayName ?? t("boardC.messaging.defaultUser"),
         recipientUid: selected.uid,
         text,
       });
@@ -117,12 +119,12 @@ export function MessagingPanel() {
     <GlassCard tone="navy">
       <div className="mb-4 flex items-center gap-2">
         <MessageSquare size={18} className="text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Mesajlar</h2>
+        <h2 className="text-lg font-semibold text-content">{t("boardC.messaging.title")}</h2>
         <button
           type="button"
           onClick={() => void loadConversation()}
           className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg border border-overlay/10 bg-overlay/[0.04] text-muted transition-colors hover:border-accent/30 hover:text-content"
-          aria-label="Yenile"
+          aria-label={t("boardC.messaging.refresh")}
         >
           <RefreshCw size={15} aria-hidden="true" />
         </button>
@@ -131,8 +133,8 @@ export function MessagingPanel() {
       {contacts.length === 0 ? (
         <p className="text-sm text-muted">
           {isTeacher
-            ? "Henüz öğrenci/veliniz yok. Kod üretince burada görünürler."
-            : "Öğretmeniniz tanımlı değil. Okulunuzla iletişime geçin."}
+            ? t("boardC.messaging.emptyTeacher")
+            : t("boardC.messaging.emptyOther")}
         </p>
       ) : (
         <div className="flex flex-col gap-4">
@@ -154,14 +156,14 @@ export function MessagingPanel() {
           )}
           {selected && (
             <p className="text-xs text-muted">
-              Görüşülen: <span className="text-content">{selected.name}</span>
+              {t("boardC.messaging.talkingTo")} <span className="text-content">{selected.name}</span>
             </p>
           )}
 
           {/* Mesaj akışı */}
           <div className="flex max-h-80 flex-col gap-2 overflow-y-auto rounded-xl border border-overlay/10 bg-overlay/[0.02] p-3">
             {messages.length === 0 ? (
-              <p className="py-6 text-center text-sm text-muted">Henüz mesaj yok.</p>
+              <p className="py-6 text-center text-sm text-muted">{t("boardC.messaging.noMessages")}</p>
             ) : (
               messages.map((m) => {
                 const mine = m.senderUid === myUid;
@@ -181,7 +183,7 @@ export function MessagingPanel() {
                       {m.text}
                     </div>
                     <span className="mt-0.5 text-[10px] text-muted/70">
-                      {mine ? "Siz" : m.senderName} · {formatTime(m.createdAt)}
+                      {mine ? t("boardC.messaging.you") : m.senderName} · {formatTime(m.createdAt)}
                     </span>
                   </div>
                 );
@@ -193,7 +195,7 @@ export function MessagingPanel() {
           <form onSubmit={handleSend} className="flex items-center gap-2">
             <input
               name="text"
-              placeholder="Mesaj yazın…"
+              placeholder={t("boardC.messaging.placeholder")}
               autoComplete="off"
               className="flex-1 rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-2.5 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
             />

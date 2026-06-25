@@ -20,6 +20,10 @@ import * as mobileApp from "@/lib/i18n/dict/mobileApp";
 import * as founderSchool from "@/lib/i18n/dict/founderSchool";
 import * as portal from "@/lib/i18n/dict/portal";
 import * as schoolSelect from "@/lib/i18n/dict/schoolSelect";
+import * as boardA from "@/lib/i18n/dict/boardA";
+import * as boardB from "@/lib/i18n/dict/boardB";
+import * as boardC from "@/lib/i18n/dict/boardC";
+import * as boardD from "@/lib/i18n/dict/boardD";
 
 type Dict = Record<string, string>;
 
@@ -27,10 +31,12 @@ type Dict = Record<string, string>;
 const ZONE_TR: Dict[] = [
   pricing.tr, demo.tr, features.tr, register.tr, codeLogin.tr,
   mobileApp.tr, founderSchool.tr, portal.tr, schoolSelect.tr,
+  boardA.tr, boardB.tr, boardC.tr, boardD.tr,
 ];
 const ZONE_EN: Dict[] = [
   pricing.en, demo.en, features.en, register.en, codeLogin.en,
   mobileApp.en, founderSchool.en, portal.en, schoolSelect.en,
+  boardA.en, boardB.en, boardC.en, boardD.en,
 ];
 
 const tr: Dict = {

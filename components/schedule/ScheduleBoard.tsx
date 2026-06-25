@@ -15,6 +15,7 @@ import {
   type ScheduleEntry,
 } from "@/lib/services/schedule";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const STAFF_ROLES = [
   ROLES.TEACHER,
@@ -31,6 +32,7 @@ const STAFF_ROLES = [
  * programını görür. Yalnızca giriş yapmış kullanıcı + Firebase aktifken görünür.
  */
 export function ScheduleBoard({ readOnly = false }: { readOnly?: boolean }) {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const isStaff =
@@ -105,24 +107,24 @@ export function ScheduleBoard({ readOnly = false }: { readOnly?: boolean }) {
         <GlassCard tone="navy">
           <div className="mb-4 flex items-center gap-2">
             <CalendarDays size={18} className="text-accent" aria-hidden="true" />
-            <h2 className="text-lg font-semibold text-content">Ders Programına Ekle</h2>
+            <h2 className="text-lg font-semibold text-content">{t("boardB.schedule.addHeading")}</h2>
           </div>
           <form onSubmit={handleAdd} className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5 lg:items-end">
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-muted">Gün</label>
+              <label className="text-xs font-medium text-muted">{t("boardB.schedule.dayLabel")}</label>
               <select name="day" defaultValue="0" className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent">
                 {WEEKDAYS.map((d, i) => (
                   <option key={d} value={i} className="bg-surface">{d}</option>
                 ))}
               </select>
             </div>
-            <TextField label="Saat" name="startTime" type="time" required />
-            <TextField label="Ders" name="subject" placeholder="Matematik" required />
+            <TextField label={t("boardB.schedule.timeLabel")} name="startTime" type="time" required />
+            <TextField label={t("boardB.schedule.subjectLabel")} name="subject" placeholder={t("boardB.schedule.subjectPlaceholder")} required />
             {isTeacher && classes.length > 0 ? (
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-muted">Sınıf</label>
+                <label className="text-xs font-medium text-muted">{t("boardB.schedule.classLabel")}</label>
                 <select name="classId" defaultValue="" className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent">
-                  <option value="" className="bg-surface">Tüm okul</option>
+                  <option value="" className="bg-surface">{t("boardB.schedule.wholeSchool")}</option>
                   {classes.map((c) => (
                     <option key={c.id} value={c.id} className="bg-surface">{c.name}</option>
                   ))}
@@ -133,7 +135,7 @@ export function ScheduleBoard({ readOnly = false }: { readOnly?: boolean }) {
             )}
             <PrimaryButton type="submit" size="md" disabled={busy}>
               <Plus size={16} aria-hidden="true" />
-              Ekle
+              {t("boardB.schedule.add")}
             </PrimaryButton>
           </form>
           {error && (
@@ -148,10 +150,10 @@ export function ScheduleBoard({ readOnly = false }: { readOnly?: boolean }) {
       <GlassCard tone="navy">
         <div className="mb-4 flex items-center gap-2">
           <CalendarDays size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Ders Programı</h2>
+          <h2 className="text-lg font-semibold text-content">{t("boardB.schedule.heading")}</h2>
         </div>
         {visible.length === 0 ? (
-          <p className="text-sm text-muted">Henüz program kaydı yok.</p>
+          <p className="text-sm text-muted">{t("boardB.schedule.empty")}</p>
         ) : (
           <div className="flex flex-col gap-4">
             {WEEKDAYS.map((dayName, dayIdx) => {
@@ -169,7 +171,7 @@ export function ScheduleBoard({ readOnly = false }: { readOnly?: boolean }) {
                         <span className="font-mono text-muted">{e.startTime}</span>
                         <span className="font-medium text-content">{e.subject}</span>
                         <span className="ml-auto text-xs text-muted">
-                          {e.className || "Tüm okul"}
+                          {e.className || t("boardB.schedule.wholeSchool")}
                         </span>
                       </li>
                     ))}

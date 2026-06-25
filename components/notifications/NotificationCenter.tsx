@@ -18,6 +18,7 @@ import {
   type UserNotificationRecord,
 } from "@/lib/services/notifications";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const TYPE_TONES: Record<string, string> = {
   message: "border-accent/20 bg-accent/10 text-accent",
@@ -27,12 +28,12 @@ const TYPE_TONES: Record<string, string> = {
   system: "border-overlay/15 bg-overlay/5 text-muted",
 };
 
-const TYPE_LABELS: Record<string, string> = {
-  message: "Mesaj",
-  announcement: "Duyuru",
-  scholarship: "Bursluluk",
-  crm: "CRM",
-  system: "Sistem",
+const TYPE_LABEL_KEYS: Record<string, string> = {
+  message: "boardD.type.message",
+  announcement: "boardD.type.announcement",
+  scholarship: "boardD.type.scholarship",
+  crm: "boardD.type.crm",
+  system: "boardD.type.system",
 };
 
 function formatDate(ms: number | null): string {
@@ -50,6 +51,7 @@ function formatDate(ms: number | null): string {
  * Yalnızca kullanıcının kendi bildirimleri; okundu/okunmadı işaretleme. FCM yok.
  */
 export function NotificationCenter() {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const uid = user?.uid ?? "";
   const tenantId = profile?.tenantId;
@@ -111,10 +113,10 @@ export function NotificationCenter() {
     <GlassCard tone="navy">
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <Bell size={18} className="text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Bildirimlerim</h2>
+        <h2 className="text-lg font-semibold text-content">{t("boardD.center.title")}</h2>
         {unreadCount > 0 && (
           <span className="rounded-full bg-accent/20 px-2 py-0.5 text-[10px] font-semibold text-accent">
-            {unreadCount} yeni
+            {t("boardD.center.unreadBadge", { count: unreadCount })}
           </span>
         )}
         <div className="ml-auto flex items-center gap-2">
@@ -125,7 +127,7 @@ export function NotificationCenter() {
               disabled={busy}
               className="inline-flex items-center gap-1 rounded-lg border border-overlay/10 px-2 py-1 text-xs text-muted transition hover:text-content disabled:opacity-50"
             >
-              <CheckCheck size={13} aria-hidden="true" /> Tümünü okundu yap
+              <CheckCheck size={13} aria-hidden="true" /> {t("boardD.center.markAll")}
             </button>
           )}
           <button
@@ -133,7 +135,7 @@ export function NotificationCenter() {
             onClick={() => void load()}
             disabled={refreshing}
             className="text-muted transition hover:text-content disabled:opacity-50"
-            aria-label="Yenile"
+            aria-label={t("boardD.center.refresh")}
           >
             <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} />
           </button>
@@ -147,10 +149,10 @@ export function NotificationCenter() {
       )}
 
       {items === null ? (
-        <p className="text-sm text-muted">Yükleniyor…</p>
+        <p className="text-sm text-muted">{t("boardD.center.loading")}</p>
       ) : items.length === 0 ? (
         <p className="flex items-center gap-2 text-sm text-muted">
-          <Inbox size={15} aria-hidden="true" /> Henüz bildiriminiz yok.
+          <Inbox size={15} aria-hidden="true" /> {t("boardD.center.empty")}
         </p>
       ) : (
         <ul className="flex flex-col gap-2">
@@ -167,11 +169,11 @@ export function NotificationCenter() {
                     TYPE_TONES[n.type] ?? TYPE_TONES.system
                   }`}
                 >
-                  {TYPE_LABELS[n.type] ?? n.type}
+                  {TYPE_LABEL_KEYS[n.type] ? t(TYPE_LABEL_KEYS[n.type]) : n.type}
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className={`text-sm ${n.read ? "text-content" : "font-semibold text-content"}`}>
-                    {n.title || "—"}
+                    {n.title || t("boardD.center.dash")}
                   </p>
                   {n.body && <p className="mt-0.5 text-sm text-muted">{n.body}</p>}
                   <div className="mt-1 flex items-center gap-3 text-xs text-muted">
@@ -181,7 +183,7 @@ export function NotificationCenter() {
                         href={n.link}
                         className="inline-flex items-center gap-0.5 text-accent hover:underline"
                       >
-                        Görüntüle <ArrowUpRight size={12} aria-hidden="true" />
+                        {t("boardD.center.view")} <ArrowUpRight size={12} aria-hidden="true" />
                       </Link>
                     )}
                     {!n.read && (
@@ -190,7 +192,7 @@ export function NotificationCenter() {
                         onClick={() => void markRead(n.id)}
                         className="text-accent hover:underline"
                       >
-                        Okundu yap
+                        {t("boardD.center.markRead")}
                       </button>
                     )}
                   </div>

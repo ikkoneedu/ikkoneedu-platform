@@ -9,6 +9,7 @@ import {
   listNotifications,
   type NotificationRecord,
 } from "@/lib/services/notifications";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 /** Yayın akışını yalnızca personel görür (kişisel bildirim gizliliği için). */
 const STAFF_ROLES: string[] = [
@@ -36,6 +37,7 @@ function formatDate(ms: number | null): string {
  * Tenant üyesi tüm bildirimleri görür. FCM/push yok; yalnızca panelde gösterim.
  */
 export function NotificationFeed() {
+  const t = useT();
   const { profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const isStaff = profile != null && STAFF_ROLES.includes(profile.role);
@@ -64,14 +66,14 @@ export function NotificationFeed() {
     <GlassCard tone="navy">
       <div className="mb-4 flex items-center gap-2">
         <BellRing size={18} className="text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Bildirim Akışı (canlı)</h2>
+        <h2 className="text-lg font-semibold text-content">{t("boardD.feed.title")}</h2>
         <span className="text-xs text-muted">{items.length}</span>
         <button
           type="button"
           onClick={() => void load()}
           disabled={refreshing}
           className="ml-auto text-muted transition hover:text-content disabled:opacity-50"
-          aria-label="Yenile"
+          aria-label={t("boardD.feed.refresh")}
         >
           <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} />
         </button>
@@ -79,14 +81,14 @@ export function NotificationFeed() {
 
       {items.length === 0 ? (
         <p className="flex items-center gap-2 text-sm text-muted">
-          <Inbox size={15} aria-hidden="true" /> Henüz bildirim yok. Yukarıdan oluşturun.
+          <Inbox size={15} aria-hidden="true" /> {t("boardD.feed.empty")}
         </p>
       ) : (
         <ul className="flex flex-col gap-2">
           {items.map((n) => (
             <li key={n.id} className="rounded-lg border border-overlay/10 bg-overlay/[0.03] p-3">
               <div className="flex items-center justify-between gap-2">
-                <span className="text-sm font-semibold text-content">{n.title || "—"}</span>
+                <span className="text-sm font-semibold text-content">{n.title || t("boardD.feed.dash")}</span>
                 <span className="shrink-0 text-xs text-muted">{formatDate(n.createdAt)}</span>
               </div>
               {n.body && <p className="mt-0.5 text-sm text-muted">{n.body}</p>}

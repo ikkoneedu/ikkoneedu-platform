@@ -9,6 +9,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { notifyAllTenantMembers } from "@/lib/services/notifications";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const MANAGER_ROLES: string[] = [
   ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL, ROLES.SUPER_ADMIN,
@@ -20,6 +21,7 @@ const MANAGER_ROLES: string[] = [
  * Yalnızca yönetim rollerinde render edilir.
  */
 export function EmergencyBroadcast() {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const canSend = profile != null && MANAGER_ROLES.includes(profile.role);
@@ -70,18 +72,18 @@ export function EmergencyBroadcast() {
           <Siren size={18} aria-hidden="true" />
         </span>
         <div>
-          <h2 className="text-lg font-semibold text-content">Acil Duyuru</h2>
-          <p className="text-xs text-muted">Tüm okula (veli, öğrenci, personel) anında bildirim gönderir.</p>
+          <h2 className="text-lg font-semibold text-content">{t("boardD.broadcast.title")}</h2>
+          <p className="text-xs text-muted">{t("boardD.broadcast.subtitle")}</p>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-3">
-        <TextField label="Başlık" name="title" placeholder="Kar Tatili / Erken Çıkış" required />
+        <TextField label={t("boardD.broadcast.titleLabel")} name="title" placeholder={t("boardD.broadcast.titlePlaceholder")} required />
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="eb-body" className="text-sm font-medium text-muted">Mesaj</label>
+          <label htmlFor="eb-body" className="text-sm font-medium text-muted">{t("boardD.broadcast.bodyLabel")}</label>
           <textarea
             id="eb-body" name="body" rows={3} required
-            placeholder="Yarın okul tatil edilmiştir…"
+            placeholder={t("boardD.broadcast.bodyPlaceholder")}
             className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           />
         </div>
@@ -93,30 +95,30 @@ export function EmergencyBroadcast() {
         )}
         {sent !== null && (
           <p className="flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-400">
-            <CheckCircle2 size={16} aria-hidden="true" />Acil duyuru {sent} kişiye gönderildi.
+            <CheckCircle2 size={16} aria-hidden="true" />{t("boardD.broadcast.success", { count: sent })}
           </p>
         )}
 
         {confirming ? (
           <div className="flex flex-wrap items-center gap-3 rounded-xl border border-brand/30 bg-brand/10 px-4 py-3">
-            <span className="text-sm text-brand">Tüm okula gönderilecek. Emin misiniz?</span>
+            <span className="text-sm text-brand">{t("boardD.broadcast.confirmPrompt")}</span>
             <div className="ml-auto flex gap-2">
               <button
                 type="button"
                 onClick={() => setConfirming(false)}
                 className="rounded-lg border border-overlay/15 bg-overlay/[0.04] px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:text-content"
               >
-                Vazgeç
+                {t("boardD.broadcast.cancel")}
               </button>
               <PrimaryButton type="submit" size="sm" disabled={busy} className="bg-brand text-white hover:bg-brand/90">
                 <Send size={14} aria-hidden="true" />
-                {busy ? "Gönderiliyor…" : "Evet, Gönder"}
+                {busy ? t("boardD.broadcast.sending") : t("boardD.broadcast.confirmSend")}
               </PrimaryButton>
             </div>
           </div>
         ) : (
           <PrimaryButton type="submit" size="md" className="bg-brand text-white hover:bg-brand/90">
-            <Siren size={16} aria-hidden="true" />Acil Duyuru Gönder
+            <Siren size={16} aria-hidden="true" />{t("boardD.broadcast.send")}
           </PrimaryButton>
         )}
       </form>

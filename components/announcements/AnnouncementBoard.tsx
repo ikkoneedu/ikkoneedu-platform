@@ -15,6 +15,7 @@ import {
 import { listMyClasses, type ClassRecord } from "@/lib/services/access-codes";
 import { createNotification, notifyClassMembers } from "@/lib/services/notifications";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const STAFF_ROLES = [
   ROLES.TEACHER,
@@ -43,6 +44,7 @@ function formatDate(date: Date | null): string {
  * kim bakarsa baksın salt-okunur kalır.
  */
 export function AnnouncementBoard({ readOnly = false }: { readOnly?: boolean }) {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const canPost =
@@ -137,35 +139,35 @@ export function AnnouncementBoard({ readOnly = false }: { readOnly?: boolean }) 
         <GlassCard tone="navy">
           <div className="mb-4 flex items-center gap-2">
             <Megaphone size={18} className="text-accent" aria-hidden="true" />
-            <h2 className="text-lg font-semibold text-content">Duyuru Yayınla</h2>
+            <h2 className="text-lg font-semibold text-content">{t("boardA.ann.compose.heading")}</h2>
           </div>
           <form onSubmit={handlePost} className="space-y-3">
-            <TextField label="Başlık" name="title" placeholder="Duyuru başlığı" required />
+            <TextField label={t("boardA.ann.title.label")} name="title" placeholder={t("boardA.ann.title.placeholder")} required />
             <div className="flex flex-col gap-1.5">
               <label htmlFor="ann-body" className="text-sm font-medium text-muted">
-                İçerik
+                {t("boardA.ann.body.label")}
               </label>
               <textarea
                 id="ann-body"
                 name="body"
                 rows={3}
                 required
-                placeholder="Duyuru metni…"
+                placeholder={t("boardA.ann.body.placeholder")}
                 className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
             {isTeacher && classes.length > 0 && (
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-muted">Hedef</label>
+                <label className="text-xs font-medium text-muted">{t("boardA.ann.target.label")}</label>
                 <select
                   name="classId"
                   defaultValue=""
                   className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
                 >
-                  <option value="" className="bg-surface">Tüm okul</option>
+                  <option value="" className="bg-surface">{t("boardA.ann.target.allSchool")}</option>
                   {classes.map((c) => (
                     <option key={c.id} value={c.id} className="bg-surface">
-                      {c.name} (sınıf + velileri)
+                      {t("boardA.ann.target.classOption", { name: c.name })}
                     </option>
                   ))}
                 </select>
@@ -180,12 +182,12 @@ export function AnnouncementBoard({ readOnly = false }: { readOnly?: boolean }) 
             {posted && (
               <p className="flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-400">
                 <CheckCircle2 size={16} aria-hidden="true" />
-                Duyuru yayınlandı.
+                {t("boardA.ann.posted")}
               </p>
             )}
             <PrimaryButton type="submit" size="md" disabled={busy}>
               <Send size={16} aria-hidden="true" />
-              {busy ? "Yayınlanıyor…" : "Yayınla"}
+              {busy ? t("boardA.ann.submit.busy") : t("boardA.ann.submit.idle")}
             </PrimaryButton>
           </form>
         </GlassCard>
@@ -194,10 +196,10 @@ export function AnnouncementBoard({ readOnly = false }: { readOnly?: boolean }) 
       <GlassCard tone="navy">
         <div className="mb-4 flex items-center gap-2">
           <Megaphone size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Duyurular</h2>
+          <h2 className="text-lg font-semibold text-content">{t("boardA.ann.list.heading")}</h2>
         </div>
         {items.length === 0 ? (
-          <p className="text-sm text-muted">Henüz duyuru yok.</p>
+          <p className="text-sm text-muted">{t("boardA.ann.empty")}</p>
         ) : (
           <ul className="flex flex-col gap-3">
             {items.map((a) => (
