@@ -3,6 +3,7 @@ import { Check, Star } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { Reveal } from "@/components/landing/Reveal";
+import { getServerT } from "@/lib/i18n/server";
 import type { PricingPlan } from "@/lib/pricing-data";
 
 interface PricingPlansProps {
@@ -13,7 +14,8 @@ interface PricingPlansProps {
  * Fiyatlandırma paketleri.
  * Professional paketi görsel olarak öne çıkarılır (badge + vurgu).
  */
-export function PricingPlans({ plans }: PricingPlansProps) {
+export async function PricingPlans({ plans }: PricingPlansProps) {
+  const t = await getServerT();
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
       {plans.map((plan, index) => (
@@ -31,14 +33,16 @@ export function PricingPlans({ plans }: PricingPlansProps) {
             {plan.badge && (
               <span className="mb-4 inline-flex w-fit items-center gap-1.5 rounded-full bg-accent/15 px-3 py-1 text-xs font-semibold text-accent">
                 <Star size={13} aria-hidden="true" />
-                {plan.badge}
+                {t(`pricing.plan.${plan.id}.badge`)}
               </span>
             )}
 
             <h3 className="text-xl font-bold tracking-tight text-content">
-              {plan.name}
+              {t(`pricing.plan.${plan.id}.name`)}
             </h3>
-            <p className="mt-1 text-sm text-muted">{plan.description}</p>
+            <p className="mt-1 text-sm text-muted">
+              {t(`pricing.plan.${plan.id}.description`)}
+            </p>
 
             <div className="mt-4 flex items-baseline gap-1">
               <span className="text-3xl font-bold tracking-tight text-content">
@@ -48,10 +52,10 @@ export function PricingPlans({ plans }: PricingPlansProps) {
             </div>
 
             <ul className="mt-6 flex-1 space-y-2.5">
-              {plan.features.map((feature) => (
+              {plan.features.map((feature, featureIndex) => (
                 <li key={feature} className="flex items-start gap-2 text-sm text-content">
                   <Check size={16} className="mt-0.5 shrink-0 text-emerald-400" aria-hidden="true" />
-                  {feature}
+                  {t(`pricing.plan.${plan.id}.feature.${featureIndex}`)}
                 </li>
               ))}
             </ul>
@@ -62,7 +66,7 @@ export function PricingPlans({ plans }: PricingPlansProps) {
                 size="lg"
                 className="w-full"
               >
-                {plan.cta}
+                {t(`pricing.plan.${plan.id}.cta`)}
               </PrimaryButton>
             </Link>
           </GlassCard>

@@ -1,6 +1,9 @@
+"use client";
+
 import { GlassCard } from "@/components/shared/GlassCard";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Reveal } from "@/components/landing/Reveal";
+import { useT } from "@/components/i18n/LocaleProvider";
 import type { FeatureItem } from "@/lib/features-data";
 
 interface SecuritySectionProps {
@@ -12,14 +15,15 @@ interface SecuritySectionProps {
  * KVKK, rol bazlı yetkilendirme, şifreleme gibi güvenlik özelliklerini sunar.
  */
 export function SecuritySection({ items }: SecuritySectionProps) {
+  const t = useT();
   return (
     <section className="py-12 lg:py-16">
       <Reveal>
         <SectionHeader
           align="center"
-          eyebrow="Güvenlik"
-          title="Kurumsal Düzeyde Güvenlik"
-          description="Verileriniz, en yüksek güvenlik ve uyum standartlarıyla korunur."
+          eyebrow={t("features.securitySection.eyebrow")}
+          title={t("features.securitySection.title")}
+          description={t("features.securitySection.description")}
         />
       </Reveal>
 

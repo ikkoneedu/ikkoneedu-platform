@@ -1,6 +1,9 @@
+"use client";
+
 import { GlassCard } from "@/components/shared/GlassCard";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Reveal } from "@/components/landing/Reveal";
+import { useT } from "@/components/i18n/LocaleProvider";
 import type { FeatureItem } from "@/lib/features-data";
 
 interface AiFeaturesProps {
@@ -12,14 +15,15 @@ interface AiFeaturesProps {
  * AI özelliklerini degrade vurgulu, geniş kartlarla sergiler.
  */
 export function AiFeatures({ items }: AiFeaturesProps) {
+  const t = useT();
   return (
     <section className="py-12 lg:py-16">
       <Reveal>
         <SectionHeader
           align="center"
-          eyebrow="Yapay Zeka"
-          title="Yapay Zeka Modülleri"
-          description="Eğitimin her aşamasını güçlendiren, birbirine bağlı yapay zeka modülleri."
+          eyebrow={t("features.aiSection.eyebrow")}
+          title={t("features.aiSection.title")}
+          description={t("features.aiSection.description")}
         />
       </Reveal>
 

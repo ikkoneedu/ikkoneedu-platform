@@ -1,5 +1,6 @@
 import { TrendingUp, PieChart, Handshake } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { getServerT } from "@/lib/i18n/server";
 import type {
   RevenuePotential as RevenueTier,
   RevenueShare,
@@ -16,7 +17,8 @@ interface RevenuePotentialProps {
  * Professional (₺14.900/ay) ortalaması üzerinden ölçek bazlı gelir
  * projeksiyonu ve gelir paylaşımı modeli.
  */
-export function RevenuePotential({ tiers, averageMonthly, share }: RevenuePotentialProps) {
+export async function RevenuePotential({ tiers, averageMonthly, share }: RevenuePotentialProps) {
+  const t = await getServerT();
   return (
     <GlassCard tone="navy">
       <div className="mb-1 flex items-center gap-2">

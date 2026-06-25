@@ -1,14 +1,18 @@
+"use client";
+
 import Link from "next/link";
 import { Crown, ArrowRight } from "lucide-react";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { Reveal } from "@/components/landing/Reveal";
 import { productName } from "@/lib/constants";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 /**
  * Kurucu Okul hero bölümü.
  * İngiliz Kültür Kolejleri'nin stratejik ortak rolünü prestijli biçimde sunar.
  */
 export function HeroSection() {
+  const t = useT();
   return (
     <Reveal>
       <section className="flex flex-col items-center gap-6 py-16 text-center lg:py-24">

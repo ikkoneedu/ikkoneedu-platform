@@ -126,6 +126,31 @@ export const tr: Record<string, string> = {
   "features.saas.ai-altyapi.description":
     "Tüm kurumlar için ortak, ölçeklenebilir yapay zeka altyapısı.",
 
+  // Hero section
+  "features.hero.badge": "Platform Özellikleri — {product}",
+  "features.hero.title": "Tüm Eğitim Süreçleri Tek Platformda",
+  "features.hero.subtitle":
+    "Öğrenci, veli, öğretmen ve yönetim deneyimini tek merkezden yönetin.",
+  "features.hero.cta": "Demo Talep Et",
+
+  // AI section header
+  "features.aiSection.eyebrow": "Yapay Zeka",
+  "features.aiSection.title": "Yapay Zeka Modülleri",
+  "features.aiSection.description":
+    "Eğitimin her aşamasını güçlendiren, birbirine bağlı yapay zeka modülleri.",
+
+  // Security section header
+  "features.securitySection.eyebrow": "Güvenlik",
+  "features.securitySection.title": "Kurumsal Düzeyde Güvenlik",
+  "features.securitySection.description":
+    "Verileriniz, en yüksek güvenlik ve uyum standartlarıyla korunur.",
+
+  // Call to action
+  "features.cta.title": "Geleceğin Eğitim İşletim Sistemini Bugün Keşfedin",
+  "features.cta.requestDemo": "Demo Talep Et",
+  "features.cta.contact": "İletişime Geç",
+  "features.cta.login": "Giriş Yap",
+
   // Security features
   "features.security.kvkk.title": "KVKK Uyumu",
   "features.security.kvkk.description":
@@ -270,6 +295,31 @@ export const en: Record<string, string> = {
   "features.saas.ai-altyapi.title": "Central AI Infrastructure",
   "features.saas.ai-altyapi.description":
     "Shared, scalable AI infrastructure for all institutions.",
+
+  // Hero section
+  "features.hero.badge": "Platform Features — {product}",
+  "features.hero.title": "Every Education Process on a Single Platform",
+  "features.hero.subtitle":
+    "Manage the student, parent, teacher, and administration experience from one hub.",
+  "features.hero.cta": "Request a Demo",
+
+  // AI section header
+  "features.aiSection.eyebrow": "Artificial Intelligence",
+  "features.aiSection.title": "AI Modules",
+  "features.aiSection.description":
+    "Interconnected AI modules that strengthen every stage of education.",
+
+  // Security section header
+  "features.securitySection.eyebrow": "Security",
+  "features.securitySection.title": "Enterprise-Grade Security",
+  "features.securitySection.description":
+    "Your data is protected with the highest security and compliance standards.",
+
+  // Call to action
+  "features.cta.title": "Discover the Education Operating System of the Future Today",
+  "features.cta.requestDemo": "Request a Demo",
+  "features.cta.contact": "Contact Us",
+  "features.cta.login": "Sign in",
 
   // Security features
   "features.security.kvkk.title": "KVKK Compliance",

@@ -10,6 +10,14 @@ export const tr: Record<string, string> = {
   "portal.featuredSchools": "Öne Çıkan Okullar",
   "portal.scholarshipApply": "Bursluluk Başvurusu",
   "portal.schoolPage": "Okul Sayfası",
+  "portal.schoolsLoading": "Okullar yükleniyor…",
+  "portal.searchPlaceholder": "Okul veya şehir ara…",
+  "portal.noSchoolsTitle": "Henüz okul yayımlanmadı",
+  "portal.noSchoolsBody":
+    "Platforma kayıtlı okullar burada listelenecek. Kısa süre sonra tekrar kontrol edin.",
+  "portal.noResults": "“{query}” için okul bulunamadı.",
+  "portal.locationUnknown": "Konum belirtilmedi",
+  "portal.requestInfo": "Bilgi İste",
 };
 
 export const en: Record<string, string> = {
@@ -23,4 +31,12 @@ export const en: Record<string, string> = {
   "portal.featuredSchools": "Featured Schools",
   "portal.scholarshipApply": "Scholarship Application",
   "portal.schoolPage": "School Page",
+  "portal.schoolsLoading": "Loading schools…",
+  "portal.searchPlaceholder": "Search by school or city…",
+  "portal.noSchoolsTitle": "No schools published yet",
+  "portal.noSchoolsBody":
+    "Schools registered on the platform will be listed here. Please check back soon.",
+  "portal.noResults": "No schools found for “{query}”.",
+  "portal.locationUnknown": "Location not specified",
+  "portal.requestInfo": "Request Info",
 };

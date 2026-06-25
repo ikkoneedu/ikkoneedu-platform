@@ -13,6 +13,7 @@ import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { listSchools, type SchoolRecord } from "@/lib/services/schools";
 import { SchoolInquiryForm } from "@/components/portal/SchoolInquiryForm";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 /**
  * Aday/misafir okul keşfi.
@@ -21,6 +22,7 @@ import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
  * gelen kutusuna düşer). Firebase yoksa veya okul yoksa bilgilendirme gösterir.
  */
 export function SchoolDiscovery() {
+  const t = useT();
   const [schools, setSchools] = useState<SchoolRecord[] | null>(null);
   const [search, setSearch] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
@@ -51,7 +53,7 @@ export function SchoolDiscovery() {
 
   if (schools === null) {
     return (
-      <GlassCard tone="navy" className="text-sm text-muted">Okullar yükleniyor…</GlassCard>
+      <GlassCard tone="navy" className="text-sm text-muted">{t("portal.schoolsLoading")}</GlassCard>
     );
   }
 
@@ -74,7 +76,7 @@ export function SchoolDiscovery() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Okul veya şehir ara…"
+            placeholder={t("portal.searchPlaceholder")}
             className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] py-2.5 pl-10 pr-4 text-sm text-content placeholder:text-muted/60 outline-none focus:border-accent focus:ring-1 focus:ring-accent"
           />
         </div>
@@ -84,15 +86,12 @@ export function SchoolDiscovery() {
         <GlassCard tone="navy" className="flex items-start gap-3">
           <AlertCircle size={18} className="mt-0.5 shrink-0 text-amber-400" aria-hidden="true" />
           <div className="text-sm text-muted">
-            <p className="font-semibold text-content">Henüz okul yayımlanmadı</p>
-            <p className="mt-1">
-              Platforma kayıtlı okullar burada listelenecek. Kısa süre sonra tekrar
-              kontrol edin.
-            </p>
+            <p className="font-semibold text-content">{t("portal.noSchoolsTitle")}</p>
+            <p className="mt-1">{t("portal.noSchoolsBody")}</p>
           </div>
         </GlassCard>
       ) : filtered.length === 0 ? (
-        <p className="text-sm text-muted">“{search}” için okul bulunamadı.</p>
+        <p className="text-sm text-muted">{t("portal.noResults", { query: search })}</p>
       ) : (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((school) => (
@@ -105,7 +104,7 @@ export function SchoolDiscovery() {
               </h3>
               <p className="mt-1 flex items-center gap-1.5 text-sm text-muted">
                 <MapPin size={14} aria-hidden="true" />
-                {school.city || "Konum belirtilmedi"}
+                {school.city || t("portal.locationUnknown")}
               </p>
 
               <div className="mt-5 flex-1">
@@ -128,7 +127,7 @@ export function SchoolDiscovery() {
                   }}
                 >
                   <MessageSquarePlus size={16} aria-hidden="true" />
-                  Bilgi İste
+                  {t("portal.requestInfo")}
                 </PrimaryButton>
               )}
             </GlassCard>

@@ -7,6 +7,7 @@ import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { SelectField } from "@/components/shared/SelectField";
 import { HoneypotField } from "@/components/shared/HoneypotField";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { createDemoRequest } from "@/lib/services/demo-requests";
 import { demoRequestSchema } from "@/lib/validation/demo-request";
 import {
@@ -27,6 +28,7 @@ interface DemoRequestFormProps {
  * modda çalışır (Firestore'a yazmaz) ve yine başarı mesajı gösterir.
  */
 export function DemoRequestForm({ institutionTypes }: DemoRequestFormProps) {
+  const t = useT();
   const [submitted, setSubmitted] = useState(false);
   const [accepted, setAccepted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
