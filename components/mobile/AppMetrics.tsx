@@ -1,6 +1,9 @@
+"use client";
+
 import { GlassCard } from "@/components/shared/GlassCard";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Reveal } from "@/components/landing/Reveal";
+import { useT } from "@/components/i18n/LocaleProvider";
 import type { MobileMetric } from "@/lib/mobile-mock-data";
 
 interface AppMetricsProps {
@@ -12,10 +15,15 @@ interface AppMetricsProps {
  * Mobil kullanıma dair premium metrik kartları (mock).
  */
 export function AppMetrics({ metrics }: AppMetricsProps) {
+  const t = useT();
   return (
     <section className="py-12 lg:py-16">
       <Reveal>
-        <SectionHeader align="center" eyebrow="İstatistikler" title="Platform İstatistikleri" />
+        <SectionHeader
+          align="center"
+          eyebrow={t("mobileApp.metrics.eyebrow")}
+          title={t("mobileApp.metrics.title")}
+        />
       </Reveal>
       <div className="mt-10 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {metrics.map((metric, index) => {
@@ -29,7 +37,9 @@ export function AppMetrics({ metrics }: AppMetricsProps) {
                 <p className="mt-4 text-3xl font-bold tracking-tight text-content">
                   {metric.value}
                 </p>
-                <p className="mt-1 text-xs text-muted">{metric.label}</p>
+                <p className="mt-1 text-xs text-muted">
+                  {t(`mobileApp.metric.${metric.id}`)}
+                </p>
               </GlassCard>
             </Reveal>
           );

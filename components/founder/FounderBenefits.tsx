@@ -1,6 +1,9 @@
+"use client";
+
 import { GlassCard } from "@/components/shared/GlassCard";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Reveal } from "@/components/landing/Reveal";
+import { useT } from "@/components/i18n/LocaleProvider";
 import type { FounderCard } from "@/lib/founder-mock-data";
 
 interface FounderBenefitsProps {
@@ -11,10 +14,15 @@ interface FounderBenefitsProps {
  * Kurucu Okul Nedir? — rol kartları.
  */
 export function FounderBenefits({ cards }: FounderBenefitsProps) {
+  const t = useT();
   return (
     <section className="py-12 lg:py-16">
       <Reveal>
-        <SectionHeader align="center" eyebrow="Kurucu Okul" title="Kurucu Okul Nedir?" />
+        <SectionHeader
+          align="center"
+          eyebrow={t("founderSchool.benefits.eyebrow")}
+          title={t("founderSchool.benefits.title")}
+        />
       </Reveal>
       <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((card, index) => {
@@ -26,10 +34,10 @@ export function FounderBenefits({ cards }: FounderBenefitsProps) {
                   <Icon size={24} aria-hidden="true" />
                 </span>
                 <h3 className="mt-4 text-base font-semibold text-content">
-                  {card.title}
+                  {t(`founderSchool.benefits.${card.id}.title`)}
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted">
-                  {card.description}
+                  {t(`founderSchool.benefits.${card.id}.description`)}
                 </p>
               </GlassCard>
             </Reveal>

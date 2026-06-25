@@ -1,6 +1,9 @@
+"use client";
+
 import { GlassCard } from "@/components/shared/GlassCard";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Reveal } from "@/components/landing/Reveal";
+import { useT } from "@/components/i18n/LocaleProvider";
 import type { Benefit } from "@/lib/demo-mock-data";
 
 interface BenefitsGridProps {
@@ -11,10 +14,15 @@ interface BenefitsGridProps {
  * Neden ikkoneedu? — fayda kartları.
  */
 export function BenefitsGrid({ benefits }: BenefitsGridProps) {
+  const t = useT();
   return (
     <section className="py-12 lg:py-16">
       <Reveal>
-        <SectionHeader align="center" eyebrow="Avantajlar" title="Neden ikkoneedu?" />
+        <SectionHeader
+          align="center"
+          eyebrow={t("demo.benefits.eyebrow")}
+          title={t("demo.benefits.title")}
+        />
       </Reveal>
       <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {benefits.map((benefit, index) => {
@@ -26,10 +34,10 @@ export function BenefitsGrid({ benefits }: BenefitsGridProps) {
                   <Icon size={24} aria-hidden="true" />
                 </span>
                 <h3 className="mt-4 text-base font-semibold text-content">
-                  {benefit.title}
+                  {t(`demo.benefit.${benefit.id}.title`)}
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted">
-                  {benefit.description}
+                  {t(`demo.benefit.${benefit.id}.description`)}
                 </p>
               </GlassCard>
             </Reveal>

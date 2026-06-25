@@ -1,6 +1,9 @@
+"use client";
+
 import { Rocket } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { Reveal } from "@/components/landing/Reveal";
+import { useT } from "@/components/i18n/LocaleProvider";
 import type { VisionMetric } from "@/lib/founder-mock-data";
 
 interface VisionSectionProps {
@@ -11,6 +14,7 @@ interface VisionSectionProps {
  * Gelecek Vizyonu — büyük hero kartı + ölçek bazlı gelir projeksiyonu.
  */
 export function VisionSection({ metrics }: VisionSectionProps) {
+  const t = useT();
   return (
     <section className="py-12 lg:py-16">
       <Reveal>
@@ -18,18 +22,15 @@ export function VisionSection({ metrics }: VisionSectionProps) {
           <div className="flex items-center gap-2 text-accent">
             <Rocket size={20} aria-hidden="true" />
             <span className="text-xs font-semibold uppercase tracking-[0.18em]">
-              Gelecek Vizyonu
+              {t("founderSchool.vision.eyebrow")}
             </span>
           </div>
 
           <h2 className="mt-3 max-w-3xl text-2xl font-bold tracking-tight text-content sm:text-3xl lg:text-4xl">
-            Türkiye&apos;nin Eğitim İşletim Sistemi
+            {t("founderSchool.vision.title")}
           </h2>
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted sm:text-base">
-            ikkoneedu&apos;nun hedefi yalnızca bir okul yönetim sistemi olmak
-            değil; Türkiye&apos;deki eğitim kurumlarını yapay zeka ile
-            güçlendiren merkezi bir eğitim teknolojileri platformu haline
-            gelmektir.
+            {t("founderSchool.vision.description")}
           </p>
 
           <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
@@ -43,9 +44,11 @@ export function VisionSection({ metrics }: VisionSectionProps) {
                     : "border-overlay/10",
                 ].join(" ")}
               >
-                <p className="text-sm font-semibold text-accent">{metric.schools}</p>
+                <p className="text-sm font-semibold text-accent">
+                  {t(`founderSchool.vision.${metric.id}.schools`)}
+                </p>
                 <p className="mt-2 text-lg font-bold tracking-tight text-content">
-                  {metric.yearly}
+                  {t(`founderSchool.vision.${metric.id}.yearly`)}
                 </p>
               </div>
             ))}

@@ -1,7 +1,10 @@
+"use client";
+
 import { ChevronDown } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Reveal } from "@/components/landing/Reveal";
+import { useT } from "@/components/i18n/LocaleProvider";
 import type { DemoFaqItem } from "@/lib/demo-mock-data";
 
 interface DemoFAQProps {
@@ -13,10 +16,15 @@ interface DemoFAQProps {
  * Native <details> ile erişilebilir, JS gerektirmeyen açılır panel.
  */
 export function DemoFAQ({ items }: DemoFAQProps) {
+  const t = useT();
   return (
     <section className="py-12 lg:py-16">
       <Reveal>
-        <SectionHeader align="center" eyebrow="SSS" title="Sık Sorulan Sorular" />
+        <SectionHeader
+          align="center"
+          eyebrow={t("demo.faq.eyebrow")}
+          title={t("demo.faq.title")}
+        />
       </Reveal>
       <div className="mx-auto mt-10 max-w-3xl space-y-3">
         {items.map((item) => (
@@ -25,14 +33,16 @@ export function DemoFAQ({ items }: DemoFAQProps) {
             className="group rounded-xl border border-overlay/10 bg-overlay/[0.03] p-4 [&_summary::-webkit-details-marker]:hidden"
           >
             <summary className="flex cursor-pointer items-center justify-between gap-4 text-sm font-semibold text-content">
-              {item.question}
+              {t(`demo.faq.${item.id}.question`)}
               <ChevronDown
                 size={18}
                 className="shrink-0 text-muted transition-transform group-open:rotate-180"
                 aria-hidden="true"
               />
             </summary>
-            <p className="mt-3 text-sm leading-relaxed text-muted">{item.answer}</p>
+            <p className="mt-3 text-sm leading-relaxed text-muted">
+              {t(`demo.faq.${item.id}.answer`)}
+            </p>
           </details>
         ))}
       </div>

@@ -1,6 +1,9 @@
+"use client";
+
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Reveal } from "@/components/landing/Reveal";
 import { LogoMark } from "@/components/shared/LogoMark";
+import { useT } from "@/components/i18n/LocaleProvider";
 import type { NotificationItem } from "@/lib/mobile-mock-data";
 
 interface NotificationCenterProps {
@@ -12,14 +15,15 @@ interface NotificationCenterProps {
  * iOS tarzı push bildirim mockup'larıyla bildirim kategorilerini gösterir (mock).
  */
 export function NotificationCenter({ notifications }: NotificationCenterProps) {
+  const t = useT();
   return (
     <section className="py-12 lg:py-16">
       <Reveal>
         <SectionHeader
           align="center"
-          eyebrow="Bildirimler"
-          title="Bildirim Merkezi"
-          description="Önemli her gelişmeden anında haberdar olun."
+          eyebrow={t("mobileApp.notifications.eyebrow")}
+          title={t("mobileApp.notifications.title")}
+          description={t("mobileApp.notifications.description")}
         />
       </Reveal>
 
@@ -50,15 +54,15 @@ export function NotificationCenter({ notifications }: NotificationCenterProps) {
                     <div className="flex items-center gap-1.5">
                       <LogoMark size={14} />
                       <span className="text-xs font-semibold text-content">
-                        {notification.title}
+                        {t(`mobileApp.notif.${notification.id}.title`)}
                       </span>
                     </div>
                     <span className="shrink-0 text-[10px] text-muted">
-                      {notification.time}
+                      {t(`mobileApp.notif.${notification.id}.time`)}
                     </span>
                   </div>
                   <p className="mt-1 text-sm leading-snug text-muted">
-                    {notification.message}
+                    {t(`mobileApp.notif.${notification.id}.message`)}
                   </p>
                 </div>
               </div>

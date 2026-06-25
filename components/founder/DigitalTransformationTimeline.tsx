@@ -1,6 +1,9 @@
+"use client";
+
 import { GlassCard } from "@/components/shared/GlassCard";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Reveal } from "@/components/landing/Reveal";
+import { useT } from "@/components/i18n/LocaleProvider";
 import type { TimelineItem } from "@/lib/founder-mock-data";
 
 interface DigitalTransformationTimelineProps {
@@ -12,10 +15,15 @@ interface DigitalTransformationTimelineProps {
  * Dikey çizgi üzerinde yıl ve kilometre taşları.
  */
 export function DigitalTransformationTimeline({ items }: DigitalTransformationTimelineProps) {
+  const t = useT();
   return (
     <section className="py-12 lg:py-16">
       <Reveal>
-        <SectionHeader align="center" eyebrow="Yol Haritası" title="Dijital Kampüs Dönüşümü" />
+        <SectionHeader
+          align="center"
+          eyebrow={t("founderSchool.timeline.eyebrow")}
+          title={t("founderSchool.timeline.title")}
+        />
       </Reveal>
 
       <div className="mx-auto mt-10 max-w-3xl">
@@ -33,7 +41,7 @@ export function DigitalTransformationTimeline({ items }: DigitalTransformationTi
                   </span>
                   <span className="h-8 w-px bg-overlay/10" />
                   <span className="text-sm font-medium text-content sm:text-base">
-                    {item.title}
+                    {t(`founderSchool.timeline.${item.id}.title`)}
                   </span>
                 </GlassCard>
               </li>

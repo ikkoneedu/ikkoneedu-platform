@@ -1,6 +1,9 @@
+"use client";
+
 import { GlassCard } from "@/components/shared/GlassCard";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Reveal } from "@/components/landing/Reveal";
+import { useT } from "@/components/i18n/LocaleProvider";
 import type { DemoStep } from "@/lib/demo-mock-data";
 
 interface DemoProcessProps {
@@ -11,10 +14,15 @@ interface DemoProcessProps {
  * Demo Süreci — adım kartları.
  */
 export function DemoProcess({ steps }: DemoProcessProps) {
+  const t = useT();
   return (
     <section className="py-12 lg:py-16">
       <Reveal>
-        <SectionHeader align="center" eyebrow="Süreç" title="Demo Süreci" />
+        <SectionHeader
+          align="center"
+          eyebrow={t("demo.process.eyebrow")}
+          title={t("demo.process.title")}
+        />
       </Reveal>
       <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {steps.map((step, index) => {
@@ -31,10 +39,10 @@ export function DemoProcess({ steps }: DemoProcessProps) {
                   </span>
                 </div>
                 <h3 className="mt-4 text-base font-semibold text-content">
-                  {step.title}
+                  {t(`demo.step.${step.id}.title`)}
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-muted">
-                  {step.description}
+                  {t(`demo.step.${step.id}.description`)}
                 </p>
               </GlassCard>
             </Reveal>

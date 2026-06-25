@@ -1,7 +1,10 @@
+"use client";
+
 import { Check, Handshake } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Reveal } from "@/components/landing/Reveal";
+import { useT } from "@/components/i18n/LocaleProvider";
 import type { PartnershipColumn } from "@/lib/founder-mock-data";
 
 interface PartnershipModelProps {
@@ -13,13 +16,14 @@ interface PartnershipModelProps {
  * İki kolonlu kart: eğitim ortağı ve teknoloji ortağı sorumlulukları.
  */
 export function PartnershipModel({ columns }: PartnershipModelProps) {
+  const t = useT();
   return (
     <section className="py-12 lg:py-16">
       <Reveal>
         <SectionHeader
           align="center"
-          eyebrow="Ortaklık"
-          title="Bir Yazılım Değil, Bir Eğitim Teknolojisi Girişimi"
+          eyebrow={t("founderSchool.partnership.eyebrow")}
+          title={t("founderSchool.partnership.title")}
         />
       </Reveal>
 
@@ -35,21 +39,21 @@ export function PartnershipModel({ columns }: PartnershipModelProps) {
                   </span>
                   <div>
                     <h3 className="text-lg font-bold tracking-tight text-content">
-                      {column.name}
+                      {t(`founderSchool.partnership.${column.id}.name`)}
                     </h3>
                     <p className="text-xs font-medium uppercase tracking-wide text-accent">
-                      {column.role}
+                      {t(`founderSchool.partnership.${column.id}.role`)}
                     </p>
                   </div>
                 </div>
 
                 <ul className="mt-6 space-y-3">
-                  {column.items.map((item) => (
+                  {column.items.map((item, itemIndex) => (
                     <li key={item} className="flex items-center gap-2.5 text-sm text-content">
                       <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-accent/30 bg-accent/15 text-accent">
                         <Check size={13} aria-hidden="true" />
                       </span>
-                      {item}
+                      {t(`founderSchool.partnership.${column.id}.item${itemIndex + 1}`)}
                     </li>
                   ))}
                 </ul>
@@ -62,7 +66,7 @@ export function PartnershipModel({ columns }: PartnershipModelProps) {
       <Reveal delay={0.2}>
         <div className="mx-auto mt-6 flex w-fit items-center gap-2 rounded-full border border-overlay/10 bg-overlay/[0.04] px-4 py-2 text-sm text-muted">
           <Handshake size={16} className="text-accent" aria-hidden="true" />
-          Eğitim uzmanlığı ve teknoloji gücü tek bir vizyonda birleşir.
+          {t("founderSchool.partnership.footnote")}
         </div>
       </Reveal>
     </section>

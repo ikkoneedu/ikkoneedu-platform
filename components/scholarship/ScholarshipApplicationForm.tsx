@@ -16,7 +16,6 @@ import {
   Copy,
   FileText,
   MessageCircle,
-  PhoneCall,
   CalendarCheck,
   AlertCircle,
 } from "lucide-react";
@@ -227,16 +226,6 @@ export function ScholarshipApplicationForm({
           >
             <MessageCircle size={18} aria-hidden="true" />
             WhatsApp Metnini Kopyala
-          </PrimaryButton>
-          <PrimaryButton
-            type="button"
-            variant="secondary"
-            size="md"
-            className="w-full"
-            onClick={() => {}}
-          >
-            <PhoneCall size={18} aria-hidden="true" />
-            Okulu Ara
           </PrimaryButton>
           <Link href="/demo" className="w-full">
             <PrimaryButton variant="ghost" size="md" className="w-full">
