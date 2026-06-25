@@ -31,7 +31,7 @@ const STATUS_TONES: Record<string, string> = {
   meeting_scheduled: "border-amber-400/20 bg-amber-400/10 text-amber-300",
   proposal_sent: "border-violet-400/20 bg-violet-400/10 text-violet-300",
   won: "border-emerald-400/20 bg-emerald-400/10 text-emerald-300",
-  lost: "border-white/15 bg-white/5 text-muted",
+  lost: "border-overlay/15 bg-overlay/5 text-muted",
 };
 
 /**
@@ -203,7 +203,7 @@ function LeadRow({
   const converted = Boolean(record.convertedToAdmissionId);
 
   return (
-    <div className="rounded-xl border border-white/10 bg-white/[0.02]">
+    <div className="rounded-xl border border-overlay/10 bg-overlay/[0.02]">
       <div className="flex flex-wrap items-center gap-3 px-4 py-3">
         <button
           type="button"
@@ -238,7 +238,7 @@ function LeadRow({
           value={record.status}
           disabled={busy}
           onChange={(e) => onStatus(e.target.value as LeadStatus)}
-          className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
+          className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
           aria-label="Lead durumu"
         >
           {LEAD_STATUSES.map((s) => (
@@ -250,7 +250,7 @@ function LeadRow({
       </div>
 
       {open && (
-        <div className="border-t border-white/10 px-4 py-4">
+        <div className="border-t border-overlay/10 px-4 py-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
               Not
@@ -258,7 +258,7 @@ function LeadRow({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
-                className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
+                className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
               />
             </label>
             <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
@@ -267,7 +267,7 @@ function LeadRow({
                 value={assignedTo}
                 onChange={(e) => setAssignedTo(e.target.value)}
                 placeholder="Ör. satış temsilcisi"
-                className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
+                className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
               />
             </label>
           </div>
@@ -296,7 +296,7 @@ function LeadRow({
                       value={targetTenant}
                       disabled={busy}
                       onChange={(e) => setTargetTenant(e.target.value)}
-                      className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent"
+                      className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent"
                     >
                       <option value="" className="bg-surface">Seçiniz…</option>
                       {schools.map((s) => (

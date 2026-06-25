@@ -24,7 +24,7 @@ const TYPE_TONES: Record<string, string> = {
   announcement: "border-sky-400/20 bg-sky-400/10 text-sky-300",
   scholarship: "border-emerald-400/20 bg-emerald-400/10 text-emerald-300",
   crm: "border-violet-400/20 bg-violet-400/10 text-violet-300",
-  system: "border-white/15 bg-white/5 text-muted",
+  system: "border-overlay/15 bg-overlay/5 text-muted",
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -123,7 +123,7 @@ export function NotificationCenter() {
               type="button"
               onClick={() => void markAll()}
               disabled={busy}
-              className="inline-flex items-center gap-1 rounded-lg border border-white/10 px-2 py-1 text-xs text-muted transition hover:text-content disabled:opacity-50"
+              className="inline-flex items-center gap-1 rounded-lg border border-overlay/10 px-2 py-1 text-xs text-muted transition hover:text-content disabled:opacity-50"
             >
               <CheckCheck size={13} aria-hidden="true" /> Tümünü okundu yap
             </button>
@@ -157,8 +157,8 @@ export function NotificationCenter() {
           {items.map((n) => (
             <li
               key={n.id}
-              className={`rounded-lg border bg-white/[0.02] px-3 py-2.5 ${
-                n.read ? "border-white/10" : "border-accent/30"
+              className={`rounded-lg border bg-overlay/[0.02] px-3 py-2.5 ${
+                n.read ? "border-overlay/10" : "border-accent/30"
               }`}
             >
               <div className="flex items-start gap-2">

@@ -42,7 +42,7 @@ export function DataExportButtons({
 }: DataExportButtonsProps) {
   const pad = size === "sm" ? "px-2.5 py-1.5 text-xs" : "px-3 py-2 text-sm";
   const base =
-    "inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] text-muted transition-colors hover:border-accent/30 hover:text-content";
+    "inline-flex items-center gap-1.5 rounded-lg border border-overlay/10 bg-overlay/[0.04] text-muted transition-colors hover:border-accent/30 hover:text-content";
 
   const pdf = () => {
     const table = htmlTable(

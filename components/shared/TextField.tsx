@@ -36,7 +36,7 @@ export function TextField({
         <input
           id={inputId}
           className={[
-            "w-full rounded-xl border border-white/10 bg-white/[0.04] py-3 text-sm text-content",
+            "w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] py-3 text-sm text-content",
             "placeholder:text-muted/60 transition-colors",
             "focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent",
             Icon ? "pl-11 pr-4" : "px-4",

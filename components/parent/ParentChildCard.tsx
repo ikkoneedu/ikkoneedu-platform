@@ -32,7 +32,7 @@ export function ParentChildCard() {
           {children.map((child) => (
             <div
               key={child.uid}
-              className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4"
+              className="flex items-center gap-3 rounded-xl border border-overlay/10 bg-overlay/[0.03] p-4"
             >
               <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-accent/20 bg-navy/50 text-accent">
                 <GraduationCap size={22} aria-hidden="true" />

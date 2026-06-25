@@ -18,9 +18,9 @@ export function ReportCardPreview() {
         <h2 className="text-lg font-semibold text-content">Karne Önizleme</h2>
       </div>
 
-      <div className="flex-1 rounded-xl border border-white/10 bg-white/[0.03] p-6">
+      <div className="flex-1 rounded-xl border border-overlay/10 bg-overlay/[0.03] p-6">
         {/* Okul başlığı */}
-        <div className="border-b border-white/10 pb-4 text-center">
+        <div className="border-b border-overlay/10 pb-4 text-center">
           <h3 className="text-base font-bold text-content">
             {reportPreviewInfo.schoolName}
           </h3>
@@ -52,7 +52,7 @@ export function ReportCardPreview() {
         </dl>
 
         {/* Yorum */}
-        <div className="mt-5 border-t border-white/10 pt-4">
+        <div className="mt-5 border-t border-overlay/10 pt-4">
           <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-accent">
             Öğretmen Yorumu
           </p>

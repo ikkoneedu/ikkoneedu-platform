@@ -149,7 +149,7 @@ export function GlobalCrmPanel() {
           type="button"
           onClick={() => exportCrmCsv(filtered, schoolName)}
           disabled={filtered.length === 0}
-          className="inline-flex items-center gap-1 rounded-lg border border-white/10 px-2 py-1 text-xs text-muted transition hover:text-content disabled:opacity-50"
+          className="inline-flex items-center gap-1 rounded-lg border border-overlay/10 px-2 py-1 text-xs text-muted transition hover:text-content disabled:opacity-50"
         >
           <Download size={13} aria-hidden="true" />
           CSV
@@ -176,7 +176,7 @@ export function GlobalCrmPanel() {
       </div>
 
       {/* Dönüşüm hunisi (filtreye duyarlı) */}
-      <div className="mb-4 rounded-xl border border-white/10 bg-white/[0.02] p-3">
+      <div className="mb-4 rounded-xl border border-overlay/10 bg-overlay/[0.02] p-3">
         <div className="mb-2 flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-wide text-muted">
             Pipeline
@@ -193,7 +193,7 @@ export function GlobalCrmPanel() {
             return (
               <div
                 key={s}
-                className="flex min-w-[96px] flex-1 flex-col gap-1 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1.5"
+                className="flex min-w-[96px] flex-1 flex-col gap-1 rounded-lg border border-overlay/10 bg-overlay/[0.03] px-2.5 py-1.5"
               >
                 <span className="text-xs text-muted">{crmStatusLabel(s)}</span>
                 <span className="text-sm font-semibold text-content">
@@ -218,13 +218,13 @@ export function GlobalCrmPanel() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Ad, telefon, e-posta ara…"
-            className="w-full rounded-lg border border-white/10 bg-white/[0.04] py-2 pl-9 pr-3 text-sm text-content placeholder:text-muted/60 outline-none focus:border-accent"
+            className="w-full rounded-lg border border-overlay/10 bg-overlay/[0.04] py-2 pl-9 pr-3 text-sm text-content placeholder:text-muted/60 outline-none focus:border-accent"
           />
         </div>
         <select
           value={tenantFilter}
           onChange={(e) => setTenantFilter(e.target.value)}
-          className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-2 text-xs text-content outline-none focus:border-accent"
+          className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-2 text-xs text-content outline-none focus:border-accent"
           aria-label="Okul filtrele"
         >
           <option value="ALL" className="bg-surface">Tüm okullar</option>
@@ -235,7 +235,7 @@ export function GlobalCrmPanel() {
         <select
           value={kindFilter}
           onChange={(e) => setKindFilter(e.target.value)}
-          className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-2 text-xs text-content outline-none focus:border-accent"
+          className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-2 text-xs text-content outline-none focus:border-accent"
           aria-label="Tür filtrele"
         >
           <option value="ALL" className="bg-surface">Tüm türler</option>
@@ -262,7 +262,7 @@ export function GlobalCrmPanel() {
                 <th className="pb-2 font-medium">Tarih</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-overlay/5">
               {filtered.slice(0, 500).map((e) => (
                 <tr key={`${e.kind}-${e.id}`} className="text-content">
                   <td className="py-2.5 pr-4">{schoolName(e.tenantId)}</td>

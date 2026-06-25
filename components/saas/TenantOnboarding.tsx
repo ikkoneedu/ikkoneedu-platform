@@ -162,7 +162,7 @@ export function TenantOnboarding({ onCreated }: { onCreated?: () => void }) {
             <select
               value={packageId}
               onChange={(e) => setPackageId(e.target.value as PackageId)}
-              className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-3 text-sm text-content outline-none focus:border-accent"
+              className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-3 text-sm text-content outline-none focus:border-accent"
             >
               {PACKAGES.map((p) => (
                 <option key={p.id} value={p.id} className="bg-surface">
@@ -234,7 +234,7 @@ export function TenantOnboarding({ onCreated }: { onCreated?: () => void }) {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as TenantStatus)}
-              className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-3 text-sm text-content outline-none focus:border-accent"
+              className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-3 text-sm text-content outline-none focus:border-accent"
             >
               <option value="trial" className="bg-surface">Deneme</option>
               <option value="active" className="bg-surface">Aktif</option>

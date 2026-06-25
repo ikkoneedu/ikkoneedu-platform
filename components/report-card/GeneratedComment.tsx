@@ -46,7 +46,7 @@ export function GeneratedComment({ defaultComment }: GeneratedCommentProps) {
         </h2>
       </div>
 
-      <div className="flex-1 rounded-xl border border-white/10 bg-navy/40 p-4">
+      <div className="flex-1 rounded-xl border border-overlay/10 bg-navy/40 p-4">
         {generating ? (
           <p className="animate-pulse text-sm text-muted">
             AI yorum oluşturuyor...

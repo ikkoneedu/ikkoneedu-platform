@@ -198,7 +198,7 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
                 id="bus-stops" name="stops" rows={4}
                 defaultValue={editing?.stops.join("\n")}
                 placeholder={"Merkez Meydan - 07:30\nGül Sokak - 07:40\nOkul - 08:00"}
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
             {error && (
@@ -234,7 +234,7 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
         ) : (
           <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {items.map((r) => (
-              <li key={r.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <li key={r.id} className="rounded-xl border border-overlay/10 bg-overlay/[0.03] p-4">
                 <div className="flex items-start justify-between gap-2">
                   <h3 className="font-semibold text-content">{r.routeName}</h3>
                   {canCreate && (
@@ -269,7 +269,7 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
                   )}
                 </div>
                 {r.stops.length > 0 && (
-                  <ul className="mt-3 space-y-1.5 border-t border-white/5 pt-3">
+                  <ul className="mt-3 space-y-1.5 border-t border-overlay/5 pt-3">
                     {r.stops.map((s, i) => (
                       <li key={i} className="flex items-center gap-2 text-sm text-muted">
                         <Navigation size={12} className="shrink-0 text-accent" aria-hidden="true" />{s}
@@ -279,7 +279,7 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
                 )}
 
                 {/* Canlı konum — şoför telefonundan paylaşılır, haritada görünür */}
-                <div className="mt-3 border-t border-white/5 pt-3">
+                <div className="mt-3 border-t border-overlay/5 pt-3">
                   {r.currentLat != null && r.currentLng != null ? (
                     <>
                       <div className="mb-2 flex items-center gap-1.5 text-xs">
@@ -293,7 +293,7 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
                       <iframe
                         title={`${r.routeName} canlı konum`}
                         src={`https://maps.google.com/maps?q=${r.currentLat},${r.currentLng}&z=15&output=embed`}
-                        className="h-44 w-full rounded-lg border border-white/10"
+                        className="h-44 w-full rounded-lg border border-overlay/10"
                         loading="lazy"
                         referrerPolicy="no-referrer-when-downgrade"
                       />

@@ -41,7 +41,7 @@ export function AiChatPanel({ initialMessages }: AiChatPanelProps) {
   return (
     <GlassCard tone="navy" className="flex h-full min-h-[28rem] flex-col">
       {/* Başlık */}
-      <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+      <div className="flex items-center gap-3 border-b border-overlay/10 pb-4">
         <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent/30 bg-accent/15 text-accent">
           <Bot size={20} aria-hidden="true" />
         </span>
@@ -74,13 +74,13 @@ export function AiChatPanel({ initialMessages }: AiChatPanelProps) {
                   "max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
                   isUser
                     ? "bg-accent text-navy"
-                    : "border border-white/10 bg-white/[0.04] text-content",
+                    : "border border-overlay/10 bg-overlay/[0.04] text-content",
                 ].join(" ")}
               >
                 {message.text}
               </span>
               {isUser && (
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-navy/50 text-muted">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-overlay/10 bg-navy/50 text-muted">
                   <User size={16} aria-hidden="true" />
                 </span>
               )}
@@ -92,7 +92,7 @@ export function AiChatPanel({ initialMessages }: AiChatPanelProps) {
       {/* Giriş */}
       <form
         onSubmit={handleSubmit}
-        className="mt-2 flex items-center gap-2 rounded-xl border border-white/10 bg-background/40 p-2 pl-4"
+        className="mt-2 flex items-center gap-2 rounded-xl border border-overlay/10 bg-background/40 p-2 pl-4"
       >
         <input
           type="text"

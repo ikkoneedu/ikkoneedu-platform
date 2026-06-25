@@ -64,7 +64,7 @@ export function CinematicHero() {
   return (
     <section
       onMouseMove={handleMouse}
-      className="relative w-full overflow-hidden border-b border-white/5 bg-background"
+      className="relative w-full overflow-hidden border-b border-overlay/5 bg-background"
       aria-label="IKK ONE EDU OS"
     >
       {/* 3B / canvas ağ sahnesi (yalnızca istemci) */}
@@ -117,7 +117,7 @@ export function CinematicHero() {
               Eğitim Ağı Başlatılıyor
               <BlinkingDots />
             </motion.span>
-            <div className="mt-4 h-px w-44 overflow-hidden rounded-full bg-white/10">
+            <div className="mt-4 h-px w-44 overflow-hidden rounded-full bg-overlay/10">
               <motion.div
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}

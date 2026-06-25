@@ -171,7 +171,7 @@ export function ScholarshipResultsManager() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Öğrenci, veli veya başvuru no ara…"
-          className="w-full rounded-lg border border-white/10 bg-white/[0.04] py-2 pl-9 pr-3 text-sm text-content placeholder:text-muted/60 outline-none focus:border-accent"
+          className="w-full rounded-lg border border-overlay/10 bg-overlay/[0.04] py-2 pl-9 pr-3 text-sm text-content placeholder:text-muted/60 outline-none focus:border-accent"
         />
       </div>
 
@@ -194,7 +194,7 @@ export function ScholarshipResultsManager() {
                 <th className="pb-2 font-medium">İşlem</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-overlay/5">
               {filtered.map((a) => {
                 const dr = getDraft(a);
                 return (
@@ -207,7 +207,7 @@ export function ScholarshipResultsManager() {
                         value={dr.examScore}
                         onChange={(e) => setDraftField(a.id, "examScore", e.target.value, a)}
                         placeholder="0-100"
-                        className="w-20 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent"
+                        className="w-20 rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent"
                       />
                     </td>
                     <td className="py-2.5 pr-4">
@@ -215,7 +215,7 @@ export function ScholarshipResultsManager() {
                         value={dr.scholarshipRate}
                         onChange={(e) => setDraftField(a.id, "scholarshipRate", e.target.value, a)}
                         placeholder="%"
-                        className="w-20 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent"
+                        className="w-20 rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent"
                       />
                     </td>
                     <td className="py-2.5">

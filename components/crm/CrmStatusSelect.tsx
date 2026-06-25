@@ -11,7 +11,7 @@ import type { CrmKind } from "@/lib/services/crm-global";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 const STATUS_STYLE: Record<string, string> = {
-  new: "border-white/15 text-muted",
+  new: "border-overlay/15 text-muted",
   contacted: "border-sky-400/30 text-sky-300",
   qualified: "border-amber-400/30 text-amber-300",
   converted: "border-emerald-400/30 text-emerald-300",
@@ -70,7 +70,7 @@ export function CrmStatusSelect({
       value={value}
       disabled={busy}
       onChange={(e) => void handle(e.target.value)}
-      className={`rounded-lg border bg-white/[0.04] px-2 py-1 text-xs outline-none focus:border-accent disabled:opacity-50 ${STATUS_STYLE[value] ?? "border-white/15 text-content"}`}
+      className={`rounded-lg border bg-overlay/[0.04] px-2 py-1 text-xs outline-none focus:border-accent disabled:opacity-50 ${STATUS_STYLE[value] ?? "border-overlay/15 text-content"}`}
       aria-label="Durum değiştir"
     >
       {options.map((s) => (

@@ -156,7 +156,7 @@ export function LessonPlansBoard({ readOnly = false }: { readOnly?: boolean }) {
                 <label className="text-xs font-medium text-muted">Hedef Sınıf</label>
                 <select
                   name="classId" defaultValue={editing?.classId ?? ""}
-                  className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                  className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
                 >
                   <option value="" className="bg-surface">Okul geneli</option>
                   {classes.map((c) => (
@@ -171,7 +171,7 @@ export function LessonPlansBoard({ readOnly = false }: { readOnly?: boolean }) {
                 id="lp-content" name="content" rows={4} required
                 defaultValue={editing?.content}
                 placeholder="Kazanımlar, etkinlikler, ödevler…"
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
             {error && (
@@ -202,7 +202,7 @@ export function LessonPlansBoard({ readOnly = false }: { readOnly?: boolean }) {
         ) : (
           <ul className="flex flex-col gap-3">
             {visible.map((p) => (
-              <li key={p.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <li key={p.id} className="rounded-xl border border-overlay/10 bg-overlay/[0.03] p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h3 className="font-semibold text-content">{p.title}</h3>
                   <div className="flex flex-wrap items-center gap-2 text-xs">

@@ -76,7 +76,7 @@ export function PlatformKpiStrip() {
         {items.map((it) => {
           const Icon = it.icon;
           return (
-            <div key={it.label} className="flex flex-col gap-1.5 rounded-xl border border-white/10 bg-white/[0.03] p-4">
+            <div key={it.label} className="flex flex-col gap-1.5 rounded-xl border border-overlay/10 bg-overlay/[0.03] p-4">
               <span className="flex items-center gap-1.5 text-xs text-muted">
                 <Icon size={14} className="text-accent" aria-hidden="true" />
                 {it.label}

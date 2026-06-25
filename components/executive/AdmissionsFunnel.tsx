@@ -36,7 +36,7 @@ export function AdmissionsFunnel({ funnel, breakdown }: AdmissionsFunnelProps) {
                     {index > 0 && <span className="ml-2 text-xs text-accent">%{rate}</span>}
                   </span>
                 </div>
-                <div className="h-7 overflow-hidden rounded-lg bg-white/[0.04]">
+                <div className="h-7 overflow-hidden rounded-lg bg-overlay/[0.04]">
                   <div
                     className="flex h-full items-center rounded-lg bg-gradient-to-r from-accent/40 to-accent"
                     style={{ width: `${width}%` }}
@@ -52,7 +52,7 @@ export function AdmissionsFunnel({ funnel, breakdown }: AdmissionsFunnelProps) {
           {breakdown.map((item) => (
             <div
               key={item.id}
-              className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.03] px-4 py-2.5"
+              className="flex items-center justify-between rounded-xl border border-overlay/5 bg-overlay/[0.03] px-4 py-2.5"
             >
               <span className="text-sm text-muted">{item.label}</span>
               <span className="text-sm font-bold text-content">{item.value}</span>

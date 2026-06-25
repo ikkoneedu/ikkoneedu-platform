@@ -43,7 +43,7 @@ export function AiAdvisorChat({ initialMessages, actions }: AiAdvisorChatProps) 
 
   return (
     <GlassCard tone="navy" className="flex flex-col">
-      <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+      <div className="flex items-center gap-3 border-b border-overlay/10 pb-4">
         <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent/30 bg-accent/15 text-accent">
           <Bot size={20} aria-hidden="true" />
         </span>
@@ -70,13 +70,13 @@ export function AiAdvisorChat({ initialMessages, actions }: AiAdvisorChatProps) 
               <span
                 className={[
                   "max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
-                  isCandidate ? "bg-accent text-navy" : "border border-white/10 bg-white/[0.04] text-content",
+                  isCandidate ? "bg-accent text-navy" : "border border-overlay/10 bg-overlay/[0.04] text-content",
                 ].join(" ")}
               >
                 {message.text}
               </span>
               {isCandidate && (
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-navy/50 text-muted">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-overlay/10 bg-navy/50 text-muted">
                   <User size={16} aria-hidden="true" />
                 </span>
               )}
@@ -86,7 +86,7 @@ export function AiAdvisorChat({ initialMessages, actions }: AiAdvisorChatProps) 
       </div>
 
       {/* Eylem butonları */}
-      <div className="flex flex-wrap gap-2 border-t border-white/10 pt-4">
+      <div className="flex flex-wrap gap-2 border-t border-overlay/10 pt-4">
         {actions.map((action, index) => {
           const Icon = ACTION_ICONS[index] ?? CalendarPlus;
           return (
@@ -102,7 +102,7 @@ export function AiAdvisorChat({ initialMessages, actions }: AiAdvisorChatProps) 
         })}
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-4 flex items-center gap-2 rounded-xl border border-white/10 bg-background/40 p-2 pl-4">
+      <form onSubmit={handleSubmit} className="mt-4 flex items-center gap-2 rounded-xl border border-overlay/10 bg-background/40 p-2 pl-4">
         <input
           type="text"
           value={input}

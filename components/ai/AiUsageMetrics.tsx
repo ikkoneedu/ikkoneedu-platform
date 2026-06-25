@@ -16,7 +16,7 @@ export function AiUsageMetrics({ metrics }: AiUsageMetricsProps) {
         const Icon = metric.icon;
         return (
           <GlassCard key={metric.id} tone="navy" interactive className="p-5">
-            <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-navy/40 text-accent">
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-overlay/10 bg-navy/40 text-accent">
               <Icon size={20} aria-hidden="true" />
             </span>
             <p className="mt-4 text-2xl font-bold tracking-tight text-content">

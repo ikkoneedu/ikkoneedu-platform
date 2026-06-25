@@ -23,7 +23,7 @@ export function AppMetrics({ metrics }: AppMetricsProps) {
           return (
             <Reveal key={metric.id} delay={index * 0.07}>
               <GlassCard tone="navy" interactive className="p-6 text-center">
-                <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-navy/40 text-accent">
+                <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-xl border border-overlay/10 bg-navy/40 text-accent">
                   <Icon size={22} aria-hidden="true" />
                 </span>
                 <p className="mt-4 text-3xl font-bold tracking-tight text-content">

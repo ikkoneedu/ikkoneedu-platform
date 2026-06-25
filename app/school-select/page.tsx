@@ -51,7 +51,7 @@ export default function SchoolSelectPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2.5 rounded-full border border-white/10 bg-white/[0.04] py-1.5 pl-1.5 pr-4">
+            <div className="flex items-center gap-2.5 rounded-full border border-overlay/10 bg-overlay/[0.04] py-1.5 pl-1.5 pr-4">
               <span className="flex h-8 w-8 items-center justify-center rounded-full bg-navy text-accent">
                 <CircleUser size={20} aria-hidden="true" />
               </span>
@@ -68,7 +68,7 @@ export default function SchoolSelectPage() {
             <button
               type="button"
               onClick={() => router.push("/login")}
-              className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-white/[0.08] hover:text-content"
+              className="flex items-center gap-2 rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-overlay/[0.08] hover:text-content"
             >
               <LogOut size={16} aria-hidden="true" />
               <span className="hidden sm:inline">Çıkış Yap</span>
@@ -138,7 +138,7 @@ export default function SchoolSelectPage() {
                 </PrimaryButton>
 
                 {card.slug && (
-                  <div className="mt-4 flex flex-col gap-2 border-t border-white/5 pt-4">
+                  <div className="mt-4 flex flex-col gap-2 border-t border-overlay/5 pt-4">
                     <Link
                       href={`/school/${card.slug}`}
                       className="flex items-center gap-1.5 text-xs font-medium text-muted transition-colors hover:text-accent"
@@ -174,7 +174,7 @@ export default function SchoolSelectPage() {
               const Icon = feature.icon;
               return (
                 <GlassCard key={feature.id} className="p-5">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-navy/40 text-accent">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-overlay/10 bg-navy/40 text-accent">
                     <Icon size={20} aria-hidden="true" />
                   </span>
                   <h3 className="mt-4 text-sm font-semibold text-content">

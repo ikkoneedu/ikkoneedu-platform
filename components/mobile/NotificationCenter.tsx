@@ -31,8 +31,8 @@ export function NotificationCenter({ notifications }: NotificationCenterProps) {
               {/* iOS bildirim balonu */}
               <div
                 className={[
-                  "flex items-start gap-3 rounded-2xl border bg-white/[0.06] p-4 backdrop-blur-xl",
-                  notification.urgent ? "border-brand/30" : "border-white/10",
+                  "flex items-start gap-3 rounded-2xl border bg-overlay/[0.06] p-4 backdrop-blur-xl",
+                  notification.urgent ? "border-brand/30" : "border-overlay/10",
                 ].join(" ")}
               >
                 <span

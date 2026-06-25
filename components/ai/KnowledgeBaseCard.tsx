@@ -28,7 +28,7 @@ export function KnowledgeBaseCard({ items }: KnowledgeBaseCardProps) {
         {items.map((item) => (
           <span
             key={item}
-            className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-content"
+            className="flex items-center gap-1.5 rounded-full border border-overlay/10 bg-overlay/[0.04] px-3 py-1.5 text-xs font-medium text-content"
           >
             <FileText size={13} className="text-accent" aria-hidden="true" />
             {item}

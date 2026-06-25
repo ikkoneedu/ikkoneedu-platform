@@ -49,7 +49,7 @@ export function NotificationBell() {
     <Link
       href="/notifications"
       aria-label={unread > 0 ? `Bildirimler (${unread} okunmamış)` : "Bildirimler"}
-      className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-muted transition-colors hover:bg-white/[0.08] hover:text-content"
+      className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-overlay/10 bg-overlay/[0.04] text-muted transition-colors hover:bg-overlay/[0.08] hover:text-content"
     >
       <Bell size={18} aria-hidden="true" />
       {unread > 0 && (

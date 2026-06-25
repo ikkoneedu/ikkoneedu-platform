@@ -32,7 +32,7 @@ export function ConflictAnalysis({ data }: ConflictAnalysisProps) {
           return (
             <li
               key={row.id}
-              className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.03] px-4 py-3"
+              className="flex items-center gap-3 rounded-xl border border-overlay/5 bg-overlay/[0.03] px-4 py-3"
             >
               <span
                 className={[

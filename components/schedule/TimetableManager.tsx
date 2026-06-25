@@ -196,7 +196,7 @@ export function TimetableManager() {
             <select
               value={selectedId}
               onChange={(e) => setSelectedId(e.target.value)}
-              className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+              className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
             >
               {(classes ?? []).map((c) => (
                 <option key={c.id} value={c.id} className="bg-surface">
@@ -225,13 +225,13 @@ export function TimetableManager() {
               <table className="w-full min-w-[720px] border-collapse text-sm">
                 <thead>
                   <tr>
-                    <th className="border border-white/10 bg-white/[0.03] px-2 py-2 text-left text-xs font-semibold text-muted">
+                    <th className="border border-overlay/10 bg-overlay/[0.03] px-2 py-2 text-left text-xs font-semibold text-muted">
                       Saat
                     </th>
                     {WEEKDAYS.map((d) => (
                       <th
                         key={d}
-                        className="border border-white/10 bg-white/[0.03] px-2 py-2 text-left text-xs font-semibold text-accent"
+                        className="border border-overlay/10 bg-overlay/[0.03] px-2 py-2 text-left text-xs font-semibold text-accent"
                       >
                         {d}
                       </th>
@@ -241,7 +241,7 @@ export function TimetableManager() {
                 <tbody>
                   {slots.map((slot) => (
                     <tr key={slot}>
-                      <td className="border border-white/10 px-2 py-2 align-top font-mono text-xs text-muted">
+                      <td className="border border-overlay/10 px-2 py-2 align-top font-mono text-xs text-muted">
                         {slot}
                       </td>
                       {WEEKDAYS.map((_, dayIdx) => {
@@ -252,7 +252,7 @@ export function TimetableManager() {
                         return (
                           <td
                             key={key}
-                            className="border border-white/10 p-1.5 align-top"
+                            className="border border-overlay/10 p-1.5 align-top"
                           >
                             <div className="flex flex-col gap-1">
                               <input
@@ -263,7 +263,7 @@ export function TimetableManager() {
                                   })
                                 }
                                 placeholder="Ders"
-                                className="w-full rounded-md border border-white/10 bg-white/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent"
+                                className="w-full rounded-md border border-overlay/10 bg-overlay/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent"
                               />
                               <input
                                 value={draft.teacherName}
@@ -273,7 +273,7 @@ export function TimetableManager() {
                                   })
                                 }
                                 placeholder="Öğretmen"
-                                className="w-full rounded-md border border-white/10 bg-white/[0.04] px-2 py-1 text-[11px] text-muted outline-none focus:border-accent"
+                                className="w-full rounded-md border border-overlay/10 bg-overlay/[0.04] px-2 py-1 text-[11px] text-muted outline-none focus:border-accent"
                               />
                               {dirty && (
                                 <button

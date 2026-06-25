@@ -54,7 +54,7 @@ export function Sidebar({
     <aside
       className={[
         "fixed left-0 top-0 z-40 hidden h-screen w-64 shrink-0 flex-col",
-        "border-r border-white/10 bg-white/[0.02] px-4 py-6 backdrop-blur-xl lg:flex",
+        "border-r border-overlay/10 bg-overlay/[0.02] px-4 py-6 backdrop-blur-xl lg:flex",
         className,
       ].join(" ")}
     >
@@ -81,7 +81,7 @@ export function Sidebar({
                 "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all",
                 isActive
                   ? "border-r-2 border-accent bg-accent/10 font-semibold text-accent"
-                  : "text-muted hover:bg-white/[0.04] hover:text-content",
+                  : "text-muted hover:bg-overlay/[0.04] hover:text-content",
               ].join(" ")}
             >
               <Icon size={18} aria-hidden="true" />
@@ -93,7 +93,7 @@ export function Sidebar({
 
       <div className="mt-auto pt-4">
         {footer ?? (
-          <div className="rounded-xl border border-white/10 bg-navy/30 p-4 text-xs text-muted">
+          <div className="rounded-xl border border-overlay/10 bg-navy/30 p-4 text-xs text-muted">
             Yapay zeka destekli eğitim işletim sistemi
           </div>
         )}

@@ -23,7 +23,7 @@ export function ScholarshipContentManager() {
           return (
             <div
               key={content.grade}
-              className="rounded-2xl border border-white/10 bg-white/[0.03] p-4"
+              className="rounded-2xl border border-overlay/10 bg-overlay/[0.03] p-4"
             >
               <div className="mb-3 flex items-center justify-between">
                 <span className="font-semibold text-content">{content.grade}</span>
@@ -37,7 +37,7 @@ export function ScholarshipContentManager() {
                 {content.subjects.map((subject) => (
                   <li
                     key={subject.subject}
-                    className="flex items-center justify-between rounded-lg bg-white/[0.03] px-3 py-2 text-sm"
+                    className="flex items-center justify-between rounded-lg bg-overlay/[0.03] px-3 py-2 text-sm"
                   >
                     <span className="text-content">{subject.subject}</span>
                     <span className="text-muted">{subject.questionCount} soru</span>
@@ -45,7 +45,7 @@ export function ScholarshipContentManager() {
                 ))}
               </ul>
 
-              <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-3 text-xs">
+              <div className="mt-3 flex items-center justify-between border-t border-overlay/10 pt-3 text-xs">
                 <span className="text-muted">Toplam {totalQuestions} soru</span>
                 <span className="font-medium text-accent">Puan ağırlığı: Eşit</span>
               </div>

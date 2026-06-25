@@ -31,7 +31,7 @@ export function ComparisonTable({ columns, rows }: ComparisonTableProps) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[640px] border-collapse">
           <thead>
-            <tr className="border-b border-white/10">
+            <tr className="border-b border-overlay/10">
               <th className="py-3 pr-4 text-left text-sm font-semibold text-muted">
                 Özellik
               </th>
@@ -50,7 +50,7 @@ export function ComparisonTable({ columns, rows }: ComparisonTableProps) {
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.label} className="border-b border-white/5">
+              <tr key={row.label} className="border-b border-overlay/5">
                 <td className="py-3 pr-4 text-left text-sm text-content">{row.label}</td>
                 {row.values.map((value, index) => (
                   <td

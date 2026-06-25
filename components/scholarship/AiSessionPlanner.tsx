@@ -29,7 +29,7 @@ export function AiSessionPlanner() {
             {sessionPlanningRules.map((rule) => (
               <span
                 key={rule}
-                className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs text-content"
+                className="rounded-full border border-overlay/10 bg-overlay/[0.04] px-3 py-1.5 text-xs text-content"
               >
                 {rule}
               </span>
@@ -45,7 +45,7 @@ export function AiSessionPlanner() {
             {aiSessionSuggestions.map((suggestion) => (
               <li
                 key={suggestion}
-                className="flex items-start gap-2 rounded-xl bg-white/[0.04] px-3 py-2 text-sm text-content"
+                className="flex items-start gap-2 rounded-xl bg-overlay/[0.04] px-3 py-2 text-sm text-content"
               >
                 <CheckCircle2
                   size={16}

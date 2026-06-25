@@ -143,7 +143,7 @@ export function AttendanceBoard() {
             <form onSubmit={handleMark} className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:items-end">
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-medium text-muted">Öğrenci</label>
-                <select value={selected} onChange={(e) => setSelected(e.target.value)} className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent">
+                <select value={selected} onChange={(e) => setSelected(e.target.value)} className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent">
                   {students.map((s) => (
                     <option key={s.uid} value={s.uid} className="bg-surface">{s.name}</option>
                   ))}
@@ -151,11 +151,11 @@ export function AttendanceBoard() {
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-medium text-muted">Tarih</label>
-                <input type="date" name="date" defaultValue={today} className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent" />
+                <input type="date" name="date" defaultValue={today} className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent" />
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-medium text-muted">Durum</label>
-                <select name="status" defaultValue="present" className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent">
+                <select name="status" defaultValue="present" className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent">
                   {(Object.keys(ATTENDANCE_LABELS) as AttendanceStatus[]).map((s) => (
                     <option key={s} value={s} className="bg-surface">{ATTENDANCE_LABELS[s]}</option>
                   ))}
@@ -190,7 +190,7 @@ export function AttendanceBoard() {
             {records.map((r, i) => (
               <li
                 key={`${r.date}-${i}`}
-                className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm"
+                className="flex items-center gap-3 rounded-lg border border-overlay/10 bg-overlay/[0.03] px-3 py-2 text-sm"
               >
                 <span className="font-mono text-muted">{r.date}</span>
                 <span

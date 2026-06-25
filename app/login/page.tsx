@@ -221,7 +221,7 @@ function LoginContent() {
               const Icon = benefit.icon;
               return (
                 <li key={benefit.id} className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-navy/40 text-accent">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-overlay/10 bg-navy/40 text-accent">
                     <Icon size={18} aria-hidden="true" />
                   </span>
                   <span className="text-sm text-muted sm:text-base">
@@ -242,7 +242,7 @@ function LoginContent() {
             <p className="mt-1 text-sm text-muted">{subtitle}</p>
             {school && schoolBrand ? (
               <div
-                className="mt-3 flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/[0.03] p-2.5"
+                className="mt-3 flex items-center gap-2.5 rounded-xl border border-overlay/10 bg-overlay/[0.03] p-2.5"
                 style={{ borderColor: `${schoolBrand.brandColor}44` }}
               >
                 <SchoolLogo
@@ -293,7 +293,7 @@ function LoginContent() {
                   <input
                     type="checkbox"
                     name="remember"
-                    className="h-4 w-4 rounded border-white/20 bg-white/[0.04] text-accent accent-accent focus:ring-accent"
+                    className="h-4 w-4 rounded border-overlay/20 bg-overlay/[0.04] text-accent accent-accent focus:ring-accent"
                   />
                   Beni hatırla
                 </label>
@@ -335,7 +335,7 @@ function LoginContent() {
                 Gerçek giriş aktifken gizlenir; aksi halde korumalı panellere
                 yönlendirip /login'e geri atılırdı. */}
             {!firebaseReady && (
-              <div className="mt-6 border-t border-white/10 pt-5">
+              <div className="mt-6 border-t border-overlay/10 pt-5">
                 <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted">
                   Demo Girişleri (Firebase bağlı değil)
                 </p>
@@ -347,7 +347,7 @@ function LoginContent() {
                         key={btn.id}
                         type="button"
                         onClick={() => router.push(btn.href)}
-                        className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-left text-sm font-medium text-content transition-colors hover:border-accent/30 hover:bg-white/[0.06]"
+                        className="flex items-center gap-2 rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-left text-sm font-medium text-content transition-colors hover:border-accent/30 hover:bg-overlay/[0.06]"
                       >
                         <Icon size={16} className="shrink-0 text-accent" aria-hidden="true" />
                         {btn.label}
@@ -376,7 +376,7 @@ function LoginContent() {
                 demo talep edin
               </Link>
             </p>
-            <p className="mt-4 border-t border-white/10 pt-4 text-center text-sm text-muted">
+            <p className="mt-4 border-t border-overlay/10 pt-4 text-center text-sm text-muted">
               Üye olmadan{" "}
               <Link href="/" className="font-semibold text-accent transition-colors hover:text-content">
                 okulları ve bursluluğu inceleyin

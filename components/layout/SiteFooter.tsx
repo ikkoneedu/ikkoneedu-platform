@@ -45,7 +45,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
 export function SiteFooter() {
   const year = new Date().getFullYear();
   return (
-    <footer className="relative border-t border-white/10 bg-background">
+    <footer className="relative border-t border-overlay/10 bg-background">
       {/* Üst kırmızı aksan çizgisi */}
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand/60 to-transparent" />
 
@@ -109,7 +109,7 @@ export function SiteFooter() {
         </div>
 
         {/* Alt bar */}
-        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-xs text-muted/70 sm:flex-row">
+        <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-overlay/10 pt-6 text-xs text-muted/70 sm:flex-row">
           <p>
             © {year} {productName}. Tüm hakları saklıdır.
           </p>

@@ -23,7 +23,7 @@ export function AdmissionsInsights({ insights }: AdmissionsInsightsProps) {
         {insights.map((insight) => (
           <li
             key={insight}
-            className="flex items-start gap-3 rounded-xl border border-white/10 bg-background/30 p-4"
+            className="flex items-start gap-3 rounded-xl border border-overlay/10 bg-background/30 p-4"
           >
             <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-accent/30 bg-accent/15 text-accent">
               <TrendingUp size={15} aria-hidden="true" />

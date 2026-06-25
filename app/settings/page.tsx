@@ -31,13 +31,13 @@ export default function SettingsPage() {
         />
 
         {/* Kategori hızlı navigasyonu */}
-        <nav className="sticky top-16 z-20 -mx-4 overflow-x-auto border-y border-white/10 bg-background/70 px-4 py-3 backdrop-blur-xl sm:-mx-6 sm:px-6">
+        <nav className="sticky top-16 z-20 -mx-4 overflow-x-auto border-y border-overlay/10 bg-background/70 px-4 py-3 backdrop-blur-xl sm:-mx-6 sm:px-6">
           <div className="flex gap-2">
             {categories.map((category) => (
               <a
                 key={category.id}
                 href={`#${category.id}`}
-                className="shrink-0 rounded-full border border-white/10 bg-white/[0.04] px-3.5 py-1.5 text-xs font-medium text-muted transition-colors hover:border-accent/40 hover:text-accent"
+                className="shrink-0 rounded-full border border-overlay/10 bg-overlay/[0.04] px-3.5 py-1.5 text-xs font-medium text-muted transition-colors hover:border-accent/40 hover:text-accent"
               >
                 {category.label}
               </a>

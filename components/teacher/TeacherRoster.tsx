@@ -80,7 +80,7 @@ export function TeacherRoster() {
                 <th className="pb-2 font-medium">Kod</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-overlay/5">
               {codes.map((c) => (
                 <tr key={c.code} className="text-content">
                   <td className="py-2.5 pr-4">

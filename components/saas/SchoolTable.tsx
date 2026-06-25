@@ -10,7 +10,7 @@ interface SchoolTableProps {
 }
 
 const PLAN_STYLES: Record<SaasSchool["plan"], string> = {
-  Starter: "border-white/10 bg-white/5 text-muted",
+  Starter: "border-overlay/10 bg-overlay/5 text-muted",
   Professional: "border-accent/20 bg-accent/10 text-accent",
   Enterprise: "border-fuchsia-400/20 bg-fuchsia-400/10 text-fuchsia-300",
 };
@@ -46,7 +46,7 @@ export function SchoolTable({ schools }: SchoolTableProps) {
       </div>
 
       {/* Masaüstü tablo başlığı */}
-      <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4 border-b border-white/10 px-2 pb-3 text-xs font-semibold uppercase tracking-wide text-muted lg:grid">
+      <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4 border-b border-overlay/10 px-2 pb-3 text-xs font-semibold uppercase tracking-wide text-muted lg:grid">
         <span>Okul</span>
         <span>Paket</span>
         <span>Durum</span>
@@ -54,7 +54,7 @@ export function SchoolTable({ schools }: SchoolTableProps) {
         <span className="text-right">İşlem</span>
       </div>
 
-      <ul className="divide-y divide-white/5">
+      <ul className="divide-y divide-overlay/5">
         {schools.map((school) => (
           <li
             key={school.id}

@@ -423,7 +423,7 @@ export function SuperAdminConsole() {
             {demoRequests.map((d) => (
               <li
                 key={d.id}
-                className="flex flex-col gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-2 rounded-lg border border-overlay/10 bg-overlay/[0.03] p-3 text-sm sm:flex-row sm:items-center sm:justify-between"
               >
                 <div>
                   <span className="font-medium text-content">{d.institution || "—"}</span>
@@ -478,7 +478,7 @@ export function SuperAdminConsole() {
                   <th className="pb-2 font-medium">İşlem</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-overlay/5">
                 {schools.map((s) => (
                   <SchoolRow
                     key={s.id}
@@ -529,7 +529,7 @@ export function SuperAdminConsole() {
                   <th className="pb-2 font-medium">Rol / İşlem</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-overlay/5">
                 {users.map((u) => (
                   <tr key={u.uid} className="text-content">
                     <td className="py-2.5 pr-4">{u.displayName || "—"}</td>
@@ -573,7 +573,7 @@ export function SuperAdminConsole() {
             <select
               value={auditFilter}
               onChange={(e) => setAuditFilter(e.target.value)}
-              className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent"
+              className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent"
               aria-label="İşlem türü filtrele"
             >
               <option value="ALL" className="bg-surface">Tümü</option>
@@ -587,7 +587,7 @@ export function SuperAdminConsole() {
               type="button"
               onClick={() => exportAuditCsv(filteredAuditLogs)}
               disabled={filteredAuditLogs.length === 0}
-              className="inline-flex items-center gap-1 rounded-lg border border-white/10 px-2 py-1 text-xs text-muted transition hover:text-content disabled:opacity-50"
+              className="inline-flex items-center gap-1 rounded-lg border border-overlay/10 px-2 py-1 text-xs text-muted transition hover:text-content disabled:opacity-50"
             >
               <Download size={13} aria-hidden="true" />
               CSV
@@ -603,7 +603,7 @@ export function SuperAdminConsole() {
             {filteredAuditLogs.map((log) => (
               <li
                 key={log.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm"
+                className="flex items-center justify-between gap-3 rounded-lg border border-overlay/10 bg-overlay/[0.03] px-3 py-2 text-sm"
               >
                 <div className="min-w-0">
                   <span className="font-medium text-content">{auditActionLabel(log.action)}</span>
@@ -750,7 +750,7 @@ function SchoolRow({
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-sm outline-none focus:border-accent"
+            className="w-full rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-1 text-sm outline-none focus:border-accent"
           />
         </td>
         <td className="py-2 pr-4 font-mono text-xs text-accent">{school.slug}</td>
@@ -758,14 +758,14 @@ function SchoolRow({
           <input
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-sm outline-none focus:border-accent"
+            className="w-full rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-1 text-sm outline-none focus:border-accent"
           />
         </td>
         <td className="py-2 pr-4">
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-xs outline-none focus:border-accent"
+            className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-1 text-xs outline-none focus:border-accent"
           >
             <option value="ACTIVE" className="bg-surface">Aktif</option>
             <option value="SUSPENDED" className="bg-surface">Askıda</option>
@@ -786,7 +786,7 @@ function SchoolRow({
               type="button"
               onClick={() => setEditing(false)}
               disabled={busy}
-              className="inline-flex items-center gap-1 rounded-lg border border-white/10 px-2 py-1 text-xs text-muted disabled:opacity-50"
+              className="inline-flex items-center gap-1 rounded-lg border border-overlay/10 px-2 py-1 text-xs text-muted disabled:opacity-50"
             >
               <X size={13} /> İptal
             </button>
@@ -810,7 +810,7 @@ function SchoolRow({
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="inline-flex items-center gap-1 rounded-lg border border-white/10 px-2 py-1 text-xs text-muted transition hover:text-content"
+            className="inline-flex items-center gap-1 rounded-lg border border-overlay/10 px-2 py-1 text-xs text-muted transition hover:text-content"
           >
             <Pencil size={13} /> Düzenle
           </button>

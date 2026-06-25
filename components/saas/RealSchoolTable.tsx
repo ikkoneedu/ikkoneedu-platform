@@ -51,7 +51,7 @@ export function RealSchoolTable() {
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <Building2 size={18} className="text-accent" aria-hidden="true" />
         <h2 className="text-lg font-semibold text-content">Okullar Listesi</h2>
-        <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] font-semibold text-muted">
+        <span className="rounded-full bg-overlay/[0.06] px-2 py-0.5 text-[10px] font-semibold text-muted">
           {schools.length}
         </span>
         <div className="ml-auto flex items-center gap-2">
@@ -71,7 +71,7 @@ export function RealSchoolTable() {
             onClick={load}
             disabled={refreshing}
             aria-label="Yenile"
-            className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-muted transition-colors hover:bg-white/[0.08] hover:text-content disabled:opacity-50"
+            className="flex h-8 w-8 items-center justify-center rounded-lg border border-overlay/10 bg-overlay/[0.04] text-muted transition-colors hover:bg-overlay/[0.08] hover:text-content disabled:opacity-50"
           >
             <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} aria-hidden="true" />
           </button>
@@ -87,7 +87,7 @@ export function RealSchoolTable() {
         </div>
       ) : (
         <>
-          <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4 border-b border-white/10 px-2 pb-3 text-xs font-semibold uppercase tracking-wide text-muted lg:grid">
+          <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4 border-b border-overlay/10 px-2 pb-3 text-xs font-semibold uppercase tracking-wide text-muted lg:grid">
             <span>Okul</span>
             <span>Şehir</span>
             <span>Durum</span>
@@ -95,7 +95,7 @@ export function RealSchoolTable() {
             <span className="text-right">İşlem</span>
           </div>
 
-          <ul className="divide-y divide-white/5">
+          <ul className="divide-y divide-overlay/5">
             {schools.map((school) => {
               const statusKey = (school.status || "active").toLowerCase();
               return (
@@ -108,7 +108,7 @@ export function RealSchoolTable() {
                   <span>
                     <span
                       className={`inline-block rounded-full border px-2.5 py-0.5 text-xs font-medium ${
-                        STATUS_STYLE[statusKey] ?? "border-white/10 bg-white/5 text-muted"
+                        STATUS_STYLE[statusKey] ?? "border-overlay/10 bg-overlay/5 text-muted"
                       }`}
                     >
                       {school.status || "active"}

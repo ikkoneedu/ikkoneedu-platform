@@ -27,7 +27,7 @@ export const ModuleNode = forwardRef<HTMLDivElement, ModuleNodeProps>(
         style={{ transform: "translate3d(-9999px,-9999px,0)" }}
       >
         <div
-          className={`group flex items-center gap-2 rounded-2xl border bg-white/[0.04] px-3 py-2 backdrop-blur-md ${accent}`}
+          className={`group flex items-center gap-2 rounded-2xl border bg-overlay/[0.04] px-3 py-2 backdrop-blur-md ${accent}`}
         >
           <span
             className={`flex h-7 w-7 items-center justify-center rounded-lg border ${

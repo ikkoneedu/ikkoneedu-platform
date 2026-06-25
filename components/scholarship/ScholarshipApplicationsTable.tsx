@@ -74,7 +74,7 @@ export function ScholarshipApplicationsTable() {
       <div className="-mx-6 overflow-x-auto px-6">
         <table className="w-full min-w-[960px] border-collapse text-left text-sm">
           <thead>
-            <tr className="border-b border-white/10 text-xs uppercase tracking-wide text-muted">
+            <tr className="border-b border-overlay/10 text-xs uppercase tracking-wide text-muted">
               {COLUMNS.map((col) => (
                 <th key={col} className="whitespace-nowrap px-3 py-3 font-medium">
                   {col}
@@ -86,7 +86,7 @@ export function ScholarshipApplicationsTable() {
             {applications.map((row) => (
               <tr
                 key={row.id}
-                className="border-b border-white/5 transition-colors hover:bg-white/[0.03]"
+                className="border-b border-overlay/5 transition-colors hover:bg-overlay/[0.03]"
               >
                 <td className="whitespace-nowrap px-3 py-3 font-mono text-xs text-muted">
                   {row.applicationNo}

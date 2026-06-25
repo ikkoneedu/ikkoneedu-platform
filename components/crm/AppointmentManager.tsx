@@ -168,7 +168,7 @@ export function AppointmentManager() {
       ) : (
         <ul className="flex flex-col gap-2">
           {rows.map((r) => (
-            <li key={r.id} className="flex flex-col gap-2 rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+            <li key={r.id} className="flex flex-col gap-2 rounded-lg border border-overlay/10 bg-overlay/[0.03] p-3 text-sm sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <span className="font-medium text-content">{r.parentName}</span>
                 {r.studentName && <span className="ml-2 text-xs text-muted">{r.studentName}</span>}
@@ -184,7 +184,7 @@ export function AppointmentManager() {
                   value={r.status}
                   disabled={savingId === r.id}
                   onChange={(e) => changeStatus(r.id, e.target.value as AppointmentStatus)}
-                  className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent disabled:opacity-50"
+                  className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent disabled:opacity-50"
                   aria-label="Durum değiştir"
                 >
                   {APPOINTMENT_STATUSES.map((s) => (

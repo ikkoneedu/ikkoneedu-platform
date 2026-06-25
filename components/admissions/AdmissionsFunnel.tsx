@@ -34,7 +34,7 @@ export function AdmissionsFunnel({ stages }: AdmissionsFunnelProps) {
                   {index > 0 && <span className="ml-2 text-xs font-semibold text-accent">%{rate}</span>}
                 </span>
               </div>
-              <div className="h-7 overflow-hidden rounded-lg bg-white/[0.04]">
+              <div className="h-7 overflow-hidden rounded-lg bg-overlay/[0.04]">
                 <div
                   className="h-full rounded-lg bg-gradient-to-r from-accent/40 to-accent"
                   style={{ width: `${width}%` }}

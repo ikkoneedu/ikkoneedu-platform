@@ -18,7 +18,7 @@ export function ScholarshipResultEngine() {
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         {/* Öğrenci sonucu */}
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <div className="rounded-2xl border border-overlay/10 bg-overlay/[0.03] p-5">
           <p className="text-sm font-semibold text-content">{sampleResult.studentName}</p>
           <p className="text-xs text-muted">{sampleResult.campus}</p>
 
@@ -29,7 +29,7 @@ export function ScholarshipResultEngine() {
                   <span className="text-content">{item.subject}</span>
                   <span className="text-muted">{item.net} net</span>
                 </div>
-                <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
+                <div className="h-2 overflow-hidden rounded-full bg-overlay/[0.06]">
                   <div
                     className="h-full rounded-full bg-gradient-to-r from-accent/40 to-accent"
                     style={{ width: `${(item.net / maxNet) * 100}%` }}
@@ -40,15 +40,15 @@ export function ScholarshipResultEngine() {
           </div>
 
           <div className="mt-5 grid grid-cols-2 gap-3 text-center">
-            <div className="rounded-xl bg-white/[0.04] px-3 py-2">
+            <div className="rounded-xl bg-overlay/[0.04] px-3 py-2">
               <p className="text-xs text-muted">Toplam Puan</p>
               <p className="text-lg font-bold text-content">{sampleResult.totalScore}</p>
             </div>
-            <div className="rounded-xl bg-white/[0.04] px-3 py-2">
+            <div className="rounded-xl bg-overlay/[0.04] px-3 py-2">
               <p className="text-xs text-muted">Sıralama</p>
               <p className="text-lg font-bold text-content">{sampleResult.rank}.</p>
             </div>
-            <div className="rounded-xl bg-white/[0.04] px-3 py-2">
+            <div className="rounded-xl bg-overlay/[0.04] px-3 py-2">
               <p className="text-xs text-muted">Yüzdelik</p>
               <p className="text-lg font-bold text-content">{sampleResult.percentile}</p>
             </div>
@@ -60,7 +60,7 @@ export function ScholarshipResultEngine() {
         </div>
 
         {/* Burs kuralları */}
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <div className="rounded-2xl border border-overlay/10 bg-overlay/[0.03] p-5">
           <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted">
             Burs Kuralları
           </p>
@@ -68,7 +68,7 @@ export function ScholarshipResultEngine() {
             {bursRules.map((rule) => (
               <li
                 key={rule.id}
-                className="flex items-center justify-between rounded-lg bg-white/[0.03] px-3 py-2 text-sm"
+                className="flex items-center justify-between rounded-lg bg-overlay/[0.03] px-3 py-2 text-sm"
               >
                 <span className="text-content">{rule.label}</span>
                 <span className="font-medium text-accent">{rule.award}</span>

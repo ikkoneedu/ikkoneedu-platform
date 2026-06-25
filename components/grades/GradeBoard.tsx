@@ -124,7 +124,7 @@ export function GradeBoard() {
                 <select
                   value={selected}
                   onChange={(e) => setSelected(e.target.value)}
-                  className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                  className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
                 >
                   {students.map((s) => (
                     <option key={s.uid} value={s.uid} className="bg-surface">{s.name}</option>
@@ -186,7 +186,7 @@ export function GradeBoard() {
                   <th className="pb-2 font-medium">Tarih</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-overlay/5">
                 {grades.map((g, i) => (
                   <tr key={`${g.subject}-${i}`} className="text-content">
                     <td className="py-2.5 pr-4">{g.subject}</td>

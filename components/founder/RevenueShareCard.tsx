@@ -28,7 +28,7 @@ export function RevenueShareCard({ share }: RevenueShareCardProps) {
               </p>
               <p className="mt-1 text-sm font-medium text-content">{share.ownerLabel}</p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-6 text-center">
+            <div className="rounded-2xl border border-overlay/10 bg-overlay/[0.04] p-6 text-center">
               <p className="text-4xl font-bold tracking-tight text-content">
                 %{share.partnerPercent}
               </p>
@@ -36,7 +36,7 @@ export function RevenueShareCard({ share }: RevenueShareCardProps) {
             </div>
           </div>
 
-          <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+          <div className="mt-6 rounded-2xl border border-overlay/10 bg-overlay/[0.03] p-6">
             <div className="mb-4 flex items-center gap-2">
               <PieChart size={18} className="text-accent" aria-hidden="true" />
               <span className="text-sm font-semibold text-content">
@@ -44,15 +44,15 @@ export function RevenueShareCard({ share }: RevenueShareCardProps) {
               </span>
             </div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <div className="rounded-xl bg-white/[0.03] p-4 text-center">
+              <div className="rounded-xl bg-overlay/[0.03] p-4 text-center">
                 <p className="text-xs text-muted">Yıllık Gelir</p>
                 <p className="mt-1 text-xl font-bold text-content">{share.totalYearly}</p>
               </div>
-              <div className="rounded-xl bg-white/[0.03] p-4 text-center">
+              <div className="rounded-xl bg-overlay/[0.03] p-4 text-center">
                 <p className="text-xs text-muted">{share.ownerLabel}</p>
                 <p className="mt-1 text-xl font-bold text-accent">{share.ownerShare}</p>
               </div>
-              <div className="rounded-xl bg-white/[0.03] p-4 text-center">
+              <div className="rounded-xl bg-overlay/[0.03] p-4 text-center">
                 <p className="text-xs text-muted">{share.partnerLabel}</p>
                 <p className="mt-1 text-xl font-bold text-content">{share.partnerShare}</p>
               </div>

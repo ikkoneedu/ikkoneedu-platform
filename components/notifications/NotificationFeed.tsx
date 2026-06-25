@@ -84,7 +84,7 @@ export function NotificationFeed() {
       ) : (
         <ul className="flex flex-col gap-2">
           {items.map((n) => (
-            <li key={n.id} className="rounded-lg border border-white/10 bg-white/[0.03] p-3">
+            <li key={n.id} className="rounded-lg border border-overlay/10 bg-overlay/[0.03] p-3">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-sm font-semibold text-content">{n.title || "—"}</span>
                 <span className="shrink-0 text-xs text-muted">{formatDate(n.createdAt)}</span>

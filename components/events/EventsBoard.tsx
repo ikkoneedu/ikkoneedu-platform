@@ -155,7 +155,7 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
               <textarea
                 id="ev-desc" name="description" rows={3} placeholder="Etkinlik detayları…"
                 defaultValue={editing?.description}
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
             {error && (
@@ -186,7 +186,7 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
         ) : (
           <ul className="flex flex-col gap-3">
             {items.map((ev) => (
-              <li key={ev.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <li key={ev.id} className="rounded-xl border border-overlay/10 bg-overlay/[0.03] p-4">
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="font-semibold text-content">{ev.title}</h3>
                   <div className="flex shrink-0 items-center gap-2">

@@ -24,7 +24,7 @@ export function RulePanel({ rules }: RulePanelProps) {
           return (
             <div
               key={rule.id}
-              className="flex items-start gap-3 rounded-xl border border-white/5 bg-white/[0.03] p-3"
+              className="flex items-start gap-3 rounded-xl border border-overlay/5 bg-overlay/[0.03] p-3"
             >
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-accent/20 bg-navy/50 text-accent">
                 <Icon size={18} aria-hidden="true" />
@@ -37,7 +37,7 @@ export function RulePanel({ rules }: RulePanelProps) {
                       "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold",
                       rule.active
                         ? "bg-emerald-400/10 text-emerald-400"
-                        : "bg-white/5 text-muted",
+                        : "bg-overlay/5 text-muted",
                     ].join(" ")}
                   >
                     {rule.active ? "Aktif" : "Pasif"}

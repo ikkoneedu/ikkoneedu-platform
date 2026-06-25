@@ -196,7 +196,7 @@ export function LiveSettings() {
                         value={data[field.key] || "#0A2342"}
                         disabled={!canEdit}
                         onChange={(e) => setField(section.id, field.key, e.target.value)}
-                        className="h-9 w-12 cursor-pointer rounded-lg border border-white/10 bg-transparent disabled:opacity-50"
+                        className="h-9 w-12 cursor-pointer rounded-lg border border-overlay/10 bg-transparent disabled:opacity-50"
                       />
                       <span className="font-mono text-xs text-muted">{data[field.key]}</span>
                     </div>
@@ -216,7 +216,7 @@ export function LiveSettings() {
                       value={data[field.key] ?? ""}
                       disabled={!canEdit}
                       onChange={(e) => setField(section.id, field.key, e.target.value)}
-                      className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent disabled:opacity-60"
+                      className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent disabled:opacity-60"
                     />
                   )}
                 </div>

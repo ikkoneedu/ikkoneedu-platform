@@ -2,7 +2,14 @@ import type { Metadata, Viewport } from "next";
 import { SEO, siteUrl, baseKeywords } from "@/lib/seo/seo";
 import { colors } from "@/lib/constants";
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import "./globals.css";
+
+/**
+ * Tema kayması (FOUC) önleyici — React hidrasyonundan ÖNCE çalışır; kayıtlı
+ * temayı okuyup <html> sınıfını ayarlar. Varsayılan koyu.
+ */
+const themeInitScript = `(function(){try{var t=localStorage.getItem('ikk_theme');var c=t==='light'?'light':'dark';document.documentElement.classList.add(c);document.documentElement.style.colorScheme=c;}catch(e){document.documentElement.classList.add('dark');}})();`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -55,9 +62,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="tr" className="dark">
+    <html lang="tr" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="font-sans antialiased">
-        <AuthProvider>{children}</AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

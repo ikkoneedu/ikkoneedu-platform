@@ -13,8 +13,8 @@ const VARIANT_STYLES: Record<ButtonVariant, string> = {
   primary:
     "bg-brand text-content shadow-lg shadow-brand/20 hover:bg-brand/90 hover:shadow-brand/30",
   secondary:
-    "border border-white/15 bg-white/[0.04] text-content hover:bg-white/[0.08] hover:border-white/25",
-  ghost: "text-muted hover:bg-white/[0.06] hover:text-content",
+    "border border-overlay/15 bg-overlay/[0.04] text-content hover:bg-overlay/[0.08] hover:border-overlay/25",
+  ghost: "text-muted hover:bg-overlay/[0.06] hover:text-content",
 };
 
 const SIZE_STYLES: Record<ButtonSize, string> = {

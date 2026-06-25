@@ -113,7 +113,7 @@ export function RealCrmMetrics() {
         const Icon = metric.icon;
         return (
           <GlassCard key={metric.id} tone="navy" interactive className="p-4">
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-navy/40 text-accent">
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-overlay/10 bg-navy/40 text-accent">
               <Icon size={18} aria-hidden="true" />
             </span>
             <p className="mt-3 text-2xl font-bold tracking-tight text-content">

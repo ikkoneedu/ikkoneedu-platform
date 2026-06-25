@@ -223,7 +223,7 @@ export function MeetingRequests() {
                 id="mr-student"
                 name="studentName"
                 required
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-content focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               >
                 {children.map((c) => (
                   <option key={c.id} value={c.fullName}>
@@ -249,7 +249,7 @@ export function MeetingRequests() {
               name="note"
               rows={2}
               placeholder="Görüşmek istediğiniz konu…"
-              className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
             />
           </div>
           {saved && (
@@ -277,7 +277,7 @@ export function MeetingRequests() {
           {items.map((row) => (
             <li
               key={row.id}
-              className="rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3"
+              className="rounded-xl border border-overlay/10 bg-overlay/[0.02] px-4 py-3"
             >
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-medium text-content">{row.studentName}</span>
@@ -304,7 +304,7 @@ export function MeetingRequests() {
               )}
               {row.note && <p className="mt-1 text-sm text-muted">{row.note}</p>}
               {row.responseNote && (
-                <p className="mt-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-content">
+                <p className="mt-2 rounded-lg border border-overlay/10 bg-overlay/[0.03] px-3 py-2 text-xs text-content">
                   <span className="text-muted">
                     {row.respondedByName || "Okul"} yanıtı:
                   </span>{" "}
@@ -320,7 +320,7 @@ export function MeetingRequests() {
                       value={responseNote}
                       onChange={(e) => setResponseNote(e.target.value)}
                       placeholder="Yanıt notu (opsiyonel) — örn. uygun saat"
-                      className="w-full rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                      className="w-full rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
                     />
                     <div className="flex gap-2">
                       <button

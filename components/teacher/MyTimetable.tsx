@@ -170,7 +170,7 @@ export function MyTimetable() {
               </p>
             )}
           </div>
-          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs text-muted">
+          <span className="ml-auto inline-flex items-center gap-1.5 rounded-full border border-overlay/10 bg-overlay/[0.03] px-3 py-1 text-xs text-muted">
             <Bell size={13} aria-hidden="true" />
             Ders öncesi {REMINDER_OFFSET_MIN} dk hatırlatma
           </span>
@@ -211,13 +211,13 @@ export function MyTimetable() {
             <table className="w-full min-w-[680px] border-collapse text-sm">
               <thead>
                 <tr>
-                  <th className="border border-white/10 bg-white/[0.03] px-2 py-2 text-left text-xs font-semibold text-muted">
+                  <th className="border border-overlay/10 bg-overlay/[0.03] px-2 py-2 text-left text-xs font-semibold text-muted">
                     Saat
                   </th>
                   {WEEKDAYS.map((d) => (
                     <th
                       key={d}
-                      className="border border-white/10 bg-white/[0.03] px-2 py-2 text-left text-xs font-semibold text-accent"
+                      className="border border-overlay/10 bg-overlay/[0.03] px-2 py-2 text-left text-xs font-semibold text-accent"
                     >
                       {d}
                     </th>
@@ -227,7 +227,7 @@ export function MyTimetable() {
               <tbody>
                 {slots.map((slot) => (
                   <tr key={slot}>
-                    <td className="border border-white/10 px-2 py-2 font-mono text-xs text-muted">
+                    <td className="border border-overlay/10 px-2 py-2 font-mono text-xs text-muted">
                       {slot}
                     </td>
                     {WEEKDAYS.map((_, day) => {
@@ -235,7 +235,7 @@ export function MyTimetable() {
                       return (
                         <td
                           key={day}
-                          className="border border-white/10 px-2 py-2 align-top"
+                          className="border border-overlay/10 px-2 py-2 align-top"
                         >
                           {e ? (
                             <div>

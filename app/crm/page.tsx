@@ -31,7 +31,7 @@ function CrmQuickActions() {
         {crmActions.map((action) => {
           const Icon = action.icon;
           const className =
-            "group flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-3.5 text-left transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:bg-white/[0.06]";
+            "group flex items-center gap-3 rounded-xl border border-overlay/10 bg-overlay/[0.04] p-3.5 text-left transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:bg-overlay/[0.06]";
           return (
             <Link
               key={action.id}

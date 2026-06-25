@@ -28,9 +28,9 @@ export default function CounselingPage() {
         <CounselingNotesManager />
 
         {/* Gizlilik ve yetki uyarısı (statik bilgilendirme) */}
-        <GlassCard tone="navy" className="border-white/10">
+        <GlassCard tone="navy" className="border-overlay/10">
           <div className="flex items-start gap-3">
-            <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-navy/40 text-muted">
+            <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-overlay/10 bg-navy/40 text-muted">
               <ShieldCheck size={18} aria-hidden="true" />
             </span>
             <div>

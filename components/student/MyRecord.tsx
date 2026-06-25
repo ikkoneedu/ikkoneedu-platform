@@ -87,7 +87,7 @@ export function MyRecord() {
 
 function Field({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-white/10 bg-white/[0.02] px-3 py-2.5">
+    <div className="rounded-xl border border-overlay/10 bg-overlay/[0.02] px-3 py-2.5">
       <span className="block text-xs text-muted">{label}</span>
       <span className="mt-0.5 block truncate font-medium text-content">{value}</span>
     </div>

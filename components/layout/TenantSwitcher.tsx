@@ -37,7 +37,7 @@ export function TenantSwitcher() {
 
   return (
     <label
-      className="relative flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs text-muted"
+      className="relative flex items-center gap-2 rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-1.5 text-xs text-muted"
       title="Görüntülenen okulu seçin (süper admin)"
     >
       <Building2 size={14} className="shrink-0 text-accent" aria-hidden="true" />

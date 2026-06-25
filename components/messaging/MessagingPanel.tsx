@@ -121,7 +121,7 @@ export function MessagingPanel() {
         <button
           type="button"
           onClick={() => void loadConversation()}
-          className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-muted transition-colors hover:border-accent/30 hover:text-content"
+          className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg border border-overlay/10 bg-overlay/[0.04] text-muted transition-colors hover:border-accent/30 hover:text-content"
           aria-label="Yenile"
         >
           <RefreshCw size={15} aria-hidden="true" />
@@ -143,7 +143,7 @@ export function MessagingPanel() {
               onChange={(e) =>
                 setSelected(contacts.find((c) => c.uid === e.target.value) ?? null)
               }
-              className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+              className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
             >
               {contacts.map((c) => (
                 <option key={c.uid} value={c.uid} className="bg-surface">
@@ -159,7 +159,7 @@ export function MessagingPanel() {
           )}
 
           {/* Mesaj akışı */}
-          <div className="flex max-h-80 flex-col gap-2 overflow-y-auto rounded-xl border border-white/10 bg-white/[0.02] p-3">
+          <div className="flex max-h-80 flex-col gap-2 overflow-y-auto rounded-xl border border-overlay/10 bg-overlay/[0.02] p-3">
             {messages.length === 0 ? (
               <p className="py-6 text-center text-sm text-muted">Henüz mesaj yok.</p>
             ) : (
@@ -175,7 +175,7 @@ export function MessagingPanel() {
                         "max-w-[80%] rounded-2xl px-3.5 py-2 text-sm",
                         mine
                           ? "bg-accent/20 text-content"
-                          : "border border-white/10 bg-white/[0.04] text-content",
+                          : "border border-overlay/10 bg-overlay/[0.04] text-content",
                       ].join(" ")}
                     >
                       {m.text}
@@ -195,7 +195,7 @@ export function MessagingPanel() {
               name="text"
               placeholder="Mesaj yazın…"
               autoComplete="off"
-              className="flex-1 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-2.5 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              className="flex-1 rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-2.5 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
             />
             <PrimaryButton type="submit" size="md" disabled={busy || !selected}>
               <Send size={16} aria-hidden="true" />

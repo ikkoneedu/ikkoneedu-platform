@@ -18,7 +18,7 @@ export function SaasOverview({ metrics }: SaasOverviewProps) {
           <GlassCard key={metric.id} tone="navy" interactive className="p-5">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-muted">{metric.label}</span>
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-navy/40 text-accent">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-overlay/10 bg-navy/40 text-accent">
                 <Icon size={18} aria-hidden="true" />
               </span>
             </div>

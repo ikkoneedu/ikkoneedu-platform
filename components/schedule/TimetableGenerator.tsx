@@ -274,7 +274,7 @@ export function TimetableGenerator() {
             <select
               value={selectedId}
               onChange={(e) => setSelectedId(e.target.value)}
-              className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
+              className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
             >
               {classes.map((c) => (
                 <option key={c.id} value={c.id} className="bg-surface">
@@ -302,7 +302,7 @@ export function TimetableGenerator() {
                 value={currentTeacher ?? ""}
                 onChange={(e) => void assignTeacher(e.target.value)}
                 disabled={busy || teachers.length === 0}
-                className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent disabled:opacity-60"
+                className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent disabled:opacity-60"
               >
                 <option value="" className="bg-surface">
                   {teachers.length === 0 ? "Önce öğretmen ekleyin" : "Seçiniz…"}
@@ -350,7 +350,7 @@ export function TimetableGenerator() {
                 name="subject"
                 placeholder="Matematik"
                 required
-                className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent"
+                className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent"
               />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -364,7 +364,7 @@ export function TimetableGenerator() {
                 max={capacity || 40}
                 placeholder="5"
                 required
-                className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent"
+                className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent"
               />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -372,7 +372,7 @@ export function TimetableGenerator() {
               <select
                 name="teacherUid"
                 defaultValue={currentTeacher ?? ""}
-                className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent"
+                className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent"
               >
                 <option value="" className="bg-surface">
                   (Öğretmensiz)
@@ -399,7 +399,7 @@ export function TimetableGenerator() {
                 {classLessons.map((l) => (
                   <li
                     key={l.id}
-                    className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm"
+                    className="flex items-center gap-3 rounded-lg border border-overlay/10 bg-overlay/[0.03] px-3 py-2 text-sm"
                   >
                     <span className="font-medium text-content">{l.subject}</span>
                     <span className="rounded-md bg-accent/10 px-2 py-0.5 text-xs text-accent">
@@ -506,13 +506,13 @@ export function TimetableGenerator() {
             <table className="w-full min-w-[680px] border-collapse text-sm">
               <thead>
                 <tr>
-                  <th className="border border-white/10 bg-white/[0.03] px-2 py-2 text-left text-xs font-semibold text-muted">
+                  <th className="border border-overlay/10 bg-overlay/[0.03] px-2 py-2 text-left text-xs font-semibold text-muted">
                     Saat
                   </th>
                   {WEEKDAYS.map((d) => (
                     <th
                       key={d}
-                      className="border border-white/10 bg-white/[0.03] px-2 py-2 text-left text-xs font-semibold text-accent"
+                      className="border border-overlay/10 bg-overlay/[0.03] px-2 py-2 text-left text-xs font-semibold text-accent"
                     >
                       {d}
                     </th>
@@ -522,7 +522,7 @@ export function TimetableGenerator() {
               <tbody>
                 {slots.map((slot) => (
                   <tr key={slot}>
-                    <td className="border border-white/10 px-2 py-2 font-mono text-xs text-muted">
+                    <td className="border border-overlay/10 px-2 py-2 font-mono text-xs text-muted">
                       {slot}
                     </td>
                     {WEEKDAYS.map((_, day) => {
@@ -530,7 +530,7 @@ export function TimetableGenerator() {
                       return (
                         <td
                           key={day}
-                          className="border border-white/10 px-2 py-2 align-top"
+                          className="border border-overlay/10 px-2 py-2 align-top"
                         >
                           {e ? (
                             <div>

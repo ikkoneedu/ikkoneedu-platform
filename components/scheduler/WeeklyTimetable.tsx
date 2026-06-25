@@ -19,7 +19,7 @@ const LESSON_STYLES: Record<string, string> = {
   "Beden Eğitimi": "border-orange-400/30 bg-orange-400/10 text-orange-300",
 };
 
-const DEFAULT_STYLE = "border-white/10 bg-white/[0.04] text-content";
+const DEFAULT_STYLE = "border-overlay/10 bg-overlay/[0.04] text-content";
 
 /**
  * Haftalık ders programı — timetable/grid görünümü.
@@ -41,7 +41,7 @@ export function WeeklyTimetable({ days, hours, timetable }: WeeklyTimetableProps
             {days.map((day) => (
               <div
                 key={day}
-                className="rounded-lg bg-white/[0.03] py-2 text-center text-sm font-semibold text-content"
+                className="rounded-lg bg-overlay/[0.03] py-2 text-center text-sm font-semibold text-content"
               >
                 {day}
               </div>
@@ -54,7 +54,7 @@ export function WeeklyTimetable({ days, hours, timetable }: WeeklyTimetableProps
               key={hour}
               className="mt-2 grid grid-cols-[80px_repeat(5,1fr)] gap-2"
             >
-              <div className="flex items-center justify-center rounded-lg bg-white/[0.03] text-xs font-medium text-muted">
+              <div className="flex items-center justify-center rounded-lg bg-overlay/[0.03] text-xs font-medium text-muted">
                 {hour}
               </div>
 
@@ -64,7 +64,7 @@ export function WeeklyTimetable({ days, hours, timetable }: WeeklyTimetableProps
                   return (
                     <div
                       key={day}
-                      className="min-h-[76px] rounded-lg border border-dashed border-white/5 bg-white/[0.01]"
+                      className="min-h-[76px] rounded-lg border border-dashed border-overlay/5 bg-overlay/[0.01]"
                     />
                   );
                 }

@@ -75,7 +75,7 @@ export function SchoolDiscovery() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Okul veya şehir ara…"
-            className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-10 pr-4 text-sm text-content placeholder:text-muted/60 outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+            className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] py-2.5 pl-10 pr-4 text-sm text-content placeholder:text-muted/60 outline-none focus:border-accent focus:ring-1 focus:ring-accent"
           />
         </div>
       )}
@@ -97,7 +97,7 @@ export function SchoolDiscovery() {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((school) => (
             <GlassCard key={school.id} tone="navy" className="flex flex-col">
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-navy/40 text-accent">
+              <span className="flex h-12 w-12 items-center justify-center rounded-xl border border-overlay/10 bg-navy/40 text-accent">
                 <GraduationCap size={24} aria-hidden="true" />
               </span>
               <h3 className="mt-4 text-lg font-semibold tracking-tight text-content">

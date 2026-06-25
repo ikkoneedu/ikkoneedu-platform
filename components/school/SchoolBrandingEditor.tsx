@@ -144,7 +144,7 @@ export function SchoolBrandingEditor() {
                   type="color"
                   value={brandColor}
                   onChange={(e) => setBrandColor(e.target.value)}
-                  className="h-11 w-20 cursor-pointer rounded-xl border border-white/10 bg-white/[0.04] px-2"
+                  className="h-11 w-20 cursor-pointer rounded-xl border border-overlay/10 bg-overlay/[0.04] px-2"
                 />
                 <span className="font-mono text-sm text-muted">{brandColor}</span>
               </div>
@@ -159,7 +159,7 @@ export function SchoolBrandingEditor() {
                 onChange={(e) => setAbout(e.target.value)}
                 rows={3}
                 placeholder="Okulunuzu kısaca tanıtın…"
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
 
@@ -182,7 +182,7 @@ export function SchoolBrandingEditor() {
 
           {/* Canlı önizleme */}
           <div
-            className="flex w-full min-w-0 flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.02] p-6 text-center lg:w-64"
+            className="flex w-full min-w-0 flex-col items-center gap-3 rounded-2xl border border-overlay/10 bg-overlay/[0.02] p-6 text-center lg:w-64"
             style={{ ["--brand" as string]: brandColor }}
           >
             <div className="h-1 w-full rounded-full" style={{ backgroundColor: brandColor }} />

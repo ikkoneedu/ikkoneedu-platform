@@ -35,7 +35,7 @@ export function VisionCard({ tiers }: VisionCardProps) {
             key={tier.id}
             className={[
               "rounded-2xl border bg-background/30 p-5 text-center",
-              tier.highlight ? "border-accent/40 ring-1 ring-inset ring-accent/20" : "border-white/10",
+              tier.highlight ? "border-accent/40 ring-1 ring-inset ring-accent/20" : "border-overlay/10",
             ].join(" ")}
           >
             <p className="text-sm font-semibold text-accent">{tier.schools}</p>

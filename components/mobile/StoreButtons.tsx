@@ -17,7 +17,7 @@ export function StoreButtons({ className = "" }: StoreButtonsProps) {
         disabled
         aria-label="App Store — yakında"
         title="Yakında App Store'da"
-        className="flex cursor-not-allowed items-center gap-3 rounded-xl border border-white/15 bg-white/[0.06] px-5 py-2.5 text-left opacity-60"
+        className="flex cursor-not-allowed items-center gap-3 rounded-xl border border-overlay/15 bg-overlay/[0.06] px-5 py-2.5 text-left opacity-60"
       >
         <Apple size={26} className="text-content" aria-hidden="true" />
         <span>
@@ -33,7 +33,7 @@ export function StoreButtons({ className = "" }: StoreButtonsProps) {
         disabled
         aria-label="Google Play — yakında"
         title="Yakında Google Play'de"
-        className="flex cursor-not-allowed items-center gap-3 rounded-xl border border-white/15 bg-white/[0.06] px-5 py-2.5 text-left opacity-60"
+        className="flex cursor-not-allowed items-center gap-3 rounded-xl border border-overlay/15 bg-overlay/[0.06] px-5 py-2.5 text-left opacity-60"
       >
         <Play size={24} className="fill-content text-content" aria-hidden="true" />
         <span>

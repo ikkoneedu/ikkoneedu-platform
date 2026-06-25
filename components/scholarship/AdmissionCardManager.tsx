@@ -26,7 +26,7 @@ export function AdmissionCardManager() {
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         {/* Örnek giriş belgesi */}
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <div className="rounded-2xl border border-overlay/10 bg-overlay/[0.03] p-5">
           <div className="mb-4 flex items-start justify-between gap-4">
             <div>
               <p className="text-xs uppercase tracking-wide text-muted">Giriş Belgesi</p>
@@ -80,7 +80,7 @@ export function AdmissionCardManager() {
         </div>
 
         {/* Sınav kuralları */}
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5">
+        <div className="rounded-2xl border border-overlay/10 bg-overlay/[0.03] p-5">
           <p className="mb-3 text-xs font-medium uppercase tracking-wide text-muted">
             Sınav Kuralları
           </p>

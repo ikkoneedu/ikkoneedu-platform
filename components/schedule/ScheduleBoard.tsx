@@ -110,7 +110,7 @@ export function ScheduleBoard({ readOnly = false }: { readOnly?: boolean }) {
           <form onSubmit={handleAdd} className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5 lg:items-end">
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium text-muted">Gün</label>
-              <select name="day" defaultValue="0" className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent">
+              <select name="day" defaultValue="0" className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent">
                 {WEEKDAYS.map((d, i) => (
                   <option key={d} value={i} className="bg-surface">{d}</option>
                 ))}
@@ -121,7 +121,7 @@ export function ScheduleBoard({ readOnly = false }: { readOnly?: boolean }) {
             {isTeacher && classes.length > 0 ? (
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-medium text-muted">Sınıf</label>
-                <select name="classId" defaultValue="" className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent">
+                <select name="classId" defaultValue="" className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent">
                   <option value="" className="bg-surface">Tüm okul</option>
                   {classes.map((c) => (
                     <option key={c.id} value={c.id} className="bg-surface">{c.name}</option>
@@ -164,7 +164,7 @@ export function ScheduleBoard({ readOnly = false }: { readOnly?: boolean }) {
                     {dayEntries.map((e) => (
                       <li
                         key={e.id}
-                        className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm"
+                        className="flex items-center gap-3 rounded-lg border border-overlay/10 bg-overlay/[0.03] px-3 py-2 text-sm"
                       >
                         <span className="font-mono text-muted">{e.startTime}</span>
                         <span className="font-medium text-content">{e.subject}</span>

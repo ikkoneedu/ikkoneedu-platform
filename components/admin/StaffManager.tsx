@@ -162,7 +162,7 @@ export function StaffManager() {
               <select
                 name="role"
                 defaultValue={ROLES.TEACHER}
-                className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
               >
                 <option value={ROLES.TEACHER} className="bg-surface">{ROLE_LABELS.TEACHER}</option>
                 <option value={ROLES.PRINCIPAL} className="bg-surface">{ROLE_LABELS.PRINCIPAL}</option>
@@ -255,7 +255,7 @@ export function StaffManager() {
                   <th className="pb-2 font-medium">{canCreate ? "Rol / İşlem" : "Rol"}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-overlay/5">
                 {users.map((u) => {
                   const isManagement =
                     u.role === ROLES.SUPER_ADMIN ||

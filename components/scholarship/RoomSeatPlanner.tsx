@@ -20,7 +20,7 @@ export function RoomSeatPlanner() {
           return (
             <div
               key={room.id}
-              className="rounded-2xl border border-white/10 bg-white/[0.03] p-4"
+              className="rounded-2xl border border-overlay/10 bg-overlay/[0.03] p-4"
             >
               <div className="mb-2 flex items-center justify-between">
                 <span className="font-semibold text-content">{room.name}</span>
@@ -29,7 +29,7 @@ export function RoomSeatPlanner() {
                 </span>
               </div>
 
-              <div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
+              <div className="h-2 overflow-hidden rounded-full bg-overlay/[0.06]">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-accent/40 to-accent"
                   style={{ width: `${ratio}%` }}
@@ -43,7 +43,7 @@ export function RoomSeatPlanner() {
                     key={i}
                     className={[
                       "aspect-square rounded-[4px]",
-                      i < room.occupancy ? "bg-accent/60" : "bg-white/[0.06]",
+                      i < room.occupancy ? "bg-accent/60" : "bg-overlay/[0.06]",
                     ].join(" ")}
                   />
                 ))}

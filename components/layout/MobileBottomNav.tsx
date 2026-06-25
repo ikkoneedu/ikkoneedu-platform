@@ -34,7 +34,7 @@ export function MobileBottomNav({
     <nav
       className={[
         "fixed inset-x-0 bottom-0 z-40 flex items-center justify-around",
-        "border-t border-white/10 bg-background/80 px-2 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur-xl lg:hidden",
+        "border-t border-overlay/10 bg-background/80 px-2 pb-[env(safe-area-inset-bottom)] pt-2 backdrop-blur-xl lg:hidden",
         className,
       ].join(" ")}
     >

@@ -12,7 +12,7 @@ export function HeroSection() {
   return (
     <Reveal>
       <section className="flex flex-col items-center gap-6 py-16 text-center lg:py-24">
-        <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-accent">
+        <span className="inline-flex items-center gap-2 rounded-full border border-overlay/10 bg-overlay/[0.04] px-3 py-1 text-xs font-medium text-accent">
           <Sparkles size={14} aria-hidden="true" />
           Platform Özellikleri — {productName}
         </span>

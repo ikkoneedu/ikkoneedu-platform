@@ -29,7 +29,7 @@ export function QuestionBankOverview({ metrics, filters }: QuestionBankOverviewP
         {metrics.map((metric) => (
           <div
             key={metric.id}
-            className="rounded-xl border border-white/5 bg-white/[0.03] p-4 text-center"
+            className="rounded-xl border border-overlay/5 bg-overlay/[0.03] p-4 text-center"
           >
             <p className="text-2xl font-bold tracking-tight text-content">
               {metric.value}

@@ -80,7 +80,7 @@ export function DataBackupSettings() {
           return (
             <div
               key={item.id}
-              className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.03] p-4"
+              className="flex items-center gap-3 rounded-xl border border-overlay/5 bg-overlay/[0.03] p-4"
             >
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-accent/20 bg-navy/50 text-accent">
                 <Icon size={18} aria-hidden="true" />

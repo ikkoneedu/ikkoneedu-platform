@@ -17,7 +17,7 @@ export function MobileHero() {
     <section className="grid grid-cols-1 items-center gap-12 py-16 lg:grid-cols-2 lg:py-20">
       <Reveal>
         <div className="flex flex-col gap-6 text-center lg:text-left">
-          <span className="mx-auto inline-flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-accent lg:mx-0">
+          <span className="mx-auto inline-flex w-fit items-center gap-2 rounded-full border border-overlay/10 bg-overlay/[0.04] px-3 py-1 text-xs font-medium text-accent lg:mx-0">
             <Smartphone size={14} aria-hidden="true" />
             Mobil Uygulama — {productName}
           </span>

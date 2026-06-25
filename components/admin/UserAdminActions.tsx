@@ -83,7 +83,7 @@ export function UserAdminActions({
         value={role}
         disabled={busy}
         onChange={(e) => handleRole(e.target.value as Role)}
-        className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent disabled:opacity-50"
+        className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent disabled:opacity-50"
         aria-label="Rol değiştir"
       >
         {roleOptions.map((r) => (

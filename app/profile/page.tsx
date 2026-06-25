@@ -200,9 +200,9 @@ export default function ProfilePage() {
               return (
                 <div
                   key={d.label}
-                  className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3"
+                  className="flex items-center gap-3 rounded-xl border border-overlay/10 bg-overlay/[0.03] px-4 py-3"
                 >
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-navy/40 text-accent">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-overlay/10 bg-navy/40 text-accent">
                     <Icon size={17} aria-hidden="true" />
                   </span>
                   <div className="min-w-0">

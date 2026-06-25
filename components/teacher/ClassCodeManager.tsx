@@ -208,7 +208,7 @@ export function ClassCodeManager() {
             {classes.map((c) => (
               <span
                 key={c.id}
-                className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs text-muted"
+                className="rounded-full border border-overlay/10 bg-overlay/[0.04] px-3 py-1 text-xs text-muted"
               >
                 {c.name}
                 {c.gradeLevel ? ` · ${c.gradeLevel}` : ""}
@@ -252,7 +252,7 @@ export function ClassCodeManager() {
                   name="studentUid"
                   defaultValue=""
                   required
-                  className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                  className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
                 >
                   <option value="" disabled className="bg-surface">Öğrenci seçin</option>
                   {students.map((s) => (
@@ -304,7 +304,7 @@ export function ClassCodeManager() {
                   <th className="pb-2 font-medium" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-overlay/5">
                 {codes.map((c) => (
                   <tr key={c.code} className="text-content">
                     <td className="py-2.5 pr-4">{c.displayName}</td>
@@ -316,7 +316,7 @@ export function ClassCodeManager() {
                       <button
                         type="button"
                         onClick={() => copy(c.code)}
-                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-muted transition-colors hover:border-accent/30 hover:text-content"
+                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-overlay/10 bg-overlay/[0.04] text-muted transition-colors hover:border-accent/30 hover:text-content"
                         aria-label="Kodu kopyala"
                       >
                         {copied === c.code ? <CheckCircle2 size={15} /> : <Copy size={15} />}
@@ -347,7 +347,7 @@ function ClassSelect({ classes }: { classes: ClassRecord[] }) {
       <select
         name="classId"
         defaultValue=""
-        className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+        className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
       >
         <option value="" className="bg-surface">Sınıf seçilmedi</option>
         {classes.map((c) => (

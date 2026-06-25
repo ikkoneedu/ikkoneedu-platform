@@ -66,7 +66,7 @@ export default async function SchoolPublicPage({ params }: PageProps) {
       {/* Hero */}
       <section className="flex flex-col items-center gap-5 py-8 text-center">
         <span
-          className="flex h-16 w-16 items-center justify-center rounded-2xl border border-white/10"
+          className="flex h-16 w-16 items-center justify-center rounded-2xl border border-overlay/10"
           style={{ backgroundColor: `${school.brandColor}22` }}
         >
           <LogoMark size={40} />
@@ -132,7 +132,7 @@ export default async function SchoolPublicPage({ params }: PageProps) {
           <h2 className="text-lg font-semibold">Duyurular</h2>
         </div>
         <GlassCard tone="navy">
-          <ul className="divide-y divide-white/5">
+          <ul className="divide-y divide-overlay/5">
             {announcements.map((item) => (
               <li key={item.id} className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0">
                 <span className="text-sm text-content">{item.title}</span>

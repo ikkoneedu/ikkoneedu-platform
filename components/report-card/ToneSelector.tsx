@@ -40,7 +40,7 @@ export function ToneSelector({ tones }: ToneSelectorProps) {
                 "inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm font-medium transition-all",
                 active
                   ? "border-accent/50 bg-accent/15 text-accent ring-1 ring-inset ring-accent/20"
-                  : "border-white/10 bg-navy/40 text-muted hover:border-accent/30 hover:text-content",
+                  : "border-overlay/10 bg-navy/40 text-muted hover:border-accent/30 hover:text-content",
               ].join(" ")}
             >
               {active && <Check size={15} aria-hidden="true" />}

@@ -70,11 +70,11 @@ export function HeroOverlay({ visible, onCorePulse }: HeroOverlayProps) {
           variants={item}
           className="mt-4 text-5xl font-bold leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl"
         >
-          <span className="bg-gradient-to-br from-white via-accent to-white/70 bg-clip-text text-transparent text-glow">
+          <span className="bg-gradient-to-br from-white via-accent to-overlay/70 bg-clip-text text-transparent text-glow">
             IKK ONE
           </span>
           <br />
-          <span className="bg-gradient-to-br from-white via-accent to-white/70 bg-clip-text text-transparent text-glow">
+          <span className="bg-gradient-to-br from-white via-accent to-overlay/70 bg-clip-text text-transparent text-glow">
             EDU OS
           </span>
         </motion.h1>

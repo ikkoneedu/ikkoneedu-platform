@@ -19,7 +19,7 @@ function SelectField({ label, items }: SelectFieldProps) {
       <select
         aria-label={label}
         defaultValue={items[0]}
-        className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+        className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
       >
         {items.map((item) => (
           <option key={item} className="bg-surface text-content">

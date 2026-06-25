@@ -78,15 +78,15 @@ export function ParentFinanceCard() {
       ) : (
         <>
           <div className="mb-4 grid grid-cols-3 gap-3">
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+            <div className="rounded-xl border border-overlay/10 bg-overlay/[0.03] p-3">
               <p className="text-xs text-muted">Toplam</p>
               <p className="text-base font-bold text-content">{fmt(summary.total)}</p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+            <div className="rounded-xl border border-overlay/10 bg-overlay/[0.03] p-3">
               <p className="text-xs text-muted">Ödenen</p>
               <p className="text-base font-bold text-emerald-300">{fmt(summary.collected)}</p>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
+            <div className="rounded-xl border border-overlay/10 bg-overlay/[0.03] p-3">
               <p className="text-xs text-muted">Bakiye</p>
               <p className="text-base font-bold text-brand">{fmt(summary.outstanding)}</p>
             </div>
@@ -96,7 +96,7 @@ export function ParentFinanceCard() {
             {mine.map((p) => (
               <li
                 key={p.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm"
+                className="flex items-center justify-between gap-3 rounded-lg border border-overlay/10 bg-overlay/[0.03] px-3 py-2.5 text-sm"
               >
                 <div>
                   <span className="font-medium text-content">{fmt(p.amount)}</span>

@@ -189,7 +189,7 @@ export function ScholarshipApplicationForm({
           </p>
         </div>
 
-        <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-white/[0.04] p-5">
+        <div className="w-full max-w-sm rounded-2xl border border-overlay/10 bg-overlay/[0.04] p-5">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
             Başvuru Numaranız
           </p>
@@ -201,7 +201,7 @@ export function ScholarshipApplicationForm({
               type="button"
               onClick={handleCopyApplicationNo}
               aria-label="Başvuru numarasını kopyala"
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-muted transition-colors hover:border-accent/30 hover:text-content"
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-overlay/10 bg-overlay/[0.04] text-muted transition-colors hover:border-accent/30 hover:text-content"
             >
               {copied ? <CheckCircle2 size={16} /> : <Copy size={16} />}
             </button>
@@ -367,7 +367,7 @@ export function ScholarshipApplicationForm({
                 type="checkbox"
                 checked={extras[index]}
                 onChange={() => toggleExtra(index)}
-                className="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/[0.04] accent-accent"
+                className="mt-0.5 h-4 w-4 rounded border-overlay/20 bg-overlay/[0.04] accent-accent"
               />
               <span>{extra}</span>
             </label>
@@ -393,7 +393,7 @@ export function ScholarshipApplicationForm({
                 type="checkbox"
                 checked={consents[index]}
                 onChange={() => toggleConsent(index)}
-                className="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/[0.04] accent-accent"
+                className="mt-0.5 h-4 w-4 rounded border-overlay/20 bg-overlay/[0.04] accent-accent"
               />
               <span>{consent}</span>
             </label>
@@ -406,7 +406,7 @@ export function ScholarshipApplicationForm({
         <h2 className="text-lg font-bold tracking-tight text-content">
           Güvenlik
         </h2>
-        <div className="mt-5 flex items-center gap-3 rounded-xl border border-dashed border-white/15 bg-white/[0.02] px-4 py-5 text-sm text-muted">
+        <div className="mt-5 flex items-center gap-3 rounded-xl border border-dashed border-overlay/15 bg-overlay/[0.02] px-4 py-5 text-sm text-muted">
           <ShieldCheck size={20} className="text-accent" aria-hidden="true" />
           <span>Captcha doğrulaması (yakında)</span>
         </div>

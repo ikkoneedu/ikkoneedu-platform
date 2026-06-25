@@ -39,7 +39,7 @@ export function PerformanceForm() {
             name="behaviorNote"
             rows={4}
             placeholder="Öğrencinin derse katılımı, sorumluluk bilinci ve sınıf içi davranışlarına dair gözlemlerinizi yazın..."
-            className="w-full resize-none rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+            className="w-full resize-none rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 outline-none focus:border-accent focus:ring-1 focus:ring-accent"
           />
         </div>
 
@@ -52,14 +52,14 @@ export function PerformanceForm() {
               <label
                 key={area.id}
                 htmlFor={area.id}
-                className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-navy/40 px-3 py-2.5 text-sm text-content transition-colors hover:border-accent/30"
+                className="flex items-center gap-2.5 rounded-xl border border-overlay/10 bg-navy/40 px-3 py-2.5 text-sm text-content transition-colors hover:border-accent/30"
               >
                 <input
                   id={area.id}
                   type="checkbox"
                   name="developmentAreas"
                   value={area.label}
-                  className="h-4 w-4 rounded border-white/20 bg-white/[0.04] accent-accent"
+                  className="h-4 w-4 rounded border-overlay/20 bg-overlay/[0.04] accent-accent"
                 />
                 {area.label}
               </label>

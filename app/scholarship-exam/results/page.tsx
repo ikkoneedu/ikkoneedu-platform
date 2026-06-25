@@ -17,7 +17,7 @@ export default function ScholarshipResultsPage() {
   return (
     <div className="mesh-bg min-h-screen w-full overflow-x-hidden">
       {/* Üst bar */}
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-background/70 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b border-overlay/10 bg-background/70 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2.5">
             <LogoMark size={32} />

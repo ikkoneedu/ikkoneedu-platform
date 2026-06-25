@@ -35,7 +35,7 @@ export function ScholarshipExamBuilder() {
           {examBuilderOptions.gradeLevels.map((grade) => (
             <label
               key={grade}
-              className="flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-content"
+              className="flex cursor-pointer items-center gap-2 rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm text-content"
             >
               <input
                 type="checkbox"

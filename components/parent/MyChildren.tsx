@@ -90,7 +90,7 @@ export function MyChildren() {
           {students.map((s) => (
             <li
               key={s.id}
-              className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3"
+              className="flex items-center gap-3 rounded-xl border border-overlay/10 bg-overlay/[0.02] px-4 py-3"
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-accent/10 text-accent">
                 <GraduationCap size={20} aria-hidden="true" />
@@ -107,7 +107,7 @@ export function MyChildren() {
                 className={`ml-auto shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
                   s.status === "active"
                     ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
-                    : "border-white/15 bg-white/5 text-muted"
+                    : "border-overlay/15 bg-overlay/5 text-muted"
                 }`}
               >
                 {s.status === "active" ? "Aktif" : "Pasif"}

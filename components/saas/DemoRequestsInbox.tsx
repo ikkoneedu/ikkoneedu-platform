@@ -196,7 +196,7 @@ const STATUS_TONES: Record<string, string> = {
   contacted: "border-sky-400/20 bg-sky-400/10 text-sky-300",
   demo_booked: "border-amber-400/20 bg-amber-400/10 text-amber-300",
   converted: "border-emerald-400/20 bg-emerald-400/10 text-emerald-300",
-  lost: "border-white/15 bg-white/5 text-muted",
+  lost: "border-overlay/15 bg-overlay/5 text-muted",
 };
 
 function DemoRow({
@@ -225,7 +225,7 @@ function DemoRow({
     record.status === "converted" || Boolean(record.convertedToLeadId);
 
   return (
-    <div className="rounded-xl border border-white/10 bg-white/[0.02]">
+    <div className="rounded-xl border border-overlay/10 bg-overlay/[0.02]">
       <div className="flex flex-wrap items-center gap-3 px-4 py-3">
         <button
           type="button"
@@ -260,7 +260,7 @@ function DemoRow({
           value={record.status}
           disabled={busy}
           onChange={(e) => onStatus(e.target.value as DemoStatus)}
-          className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
+          className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
           aria-label="Durum"
         >
           {DEMO_STATUSES.map((s) => (
@@ -272,9 +272,9 @@ function DemoRow({
       </div>
 
       {open && (
-        <div className="border-t border-white/10 px-4 py-4">
+        <div className="border-t border-overlay/10 px-4 py-4">
           {record.message && (
-            <p className="mb-3 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-sm text-muted">
+            <p className="mb-3 rounded-lg border border-overlay/10 bg-overlay/[0.02] px-3 py-2 text-sm text-muted">
               {record.message}
             </p>
           )}
@@ -285,7 +285,7 @@ function DemoRow({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={2}
-                className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
+                className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
               />
             </label>
             <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
@@ -294,7 +294,7 @@ function DemoRow({
                 value={assignedTo}
                 onChange={(e) => setAssignedTo(e.target.value)}
                 placeholder="Ör. satış temsilcisi"
-                className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
+                className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
               />
             </label>
           </div>
@@ -317,7 +317,7 @@ function DemoRow({
                   value={tenantId}
                   disabled={busy || converted}
                   onChange={(e) => setTenantId(e.target.value)}
-                  className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
+                  className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
                 >
                   <option value="" className="bg-surface">
                     Platform (okul yok)

@@ -102,7 +102,7 @@ export function ScholarshipResultsLookup() {
       {/* Sonuç kartı */}
       {shown && (
         <GlassCard tone="navy">
-          <div className="flex flex-col gap-1 border-b border-white/10 pb-5">
+          <div className="flex flex-col gap-1 border-b border-overlay/10 pb-5">
             <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent">
               <Award size={14} aria-hidden="true" />
               Sınav Sonucu
@@ -129,9 +129,9 @@ export function ScholarshipResultsLookup() {
               return (
                 <div
                   key={item.id}
-                  className="flex flex-col gap-2 rounded-xl border border-white/10 bg-white/[0.04] p-4"
+                  className="flex flex-col gap-2 rounded-xl border border-overlay/10 bg-overlay/[0.04] p-4"
                 >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-navy/40 text-accent">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-overlay/10 bg-navy/40 text-accent">
                     <Icon size={18} aria-hidden="true" />
                   </span>
                   <p className="text-xs text-muted">{item.label}</p>
@@ -144,7 +144,7 @@ export function ScholarshipResultsLookup() {
           </div>
 
           {/* AI notu */}
-          <div className="mt-6 flex items-start gap-3 rounded-xl border border-white/10 bg-white/[0.02] p-5">
+          <div className="mt-6 flex items-start gap-3 rounded-xl border border-overlay/10 bg-overlay/[0.02] p-5">
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-accent/30 bg-navy/50 text-accent">
               <Sparkles size={18} aria-hidden="true" />
             </span>
@@ -159,7 +159,7 @@ export function ScholarshipResultsLookup() {
           </div>
 
           {/* Kayıt görüşmesi CTA */}
-          <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-6 text-center">
+          <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl border border-overlay/10 bg-overlay/[0.04] px-6 py-6 text-center">
             <p className="text-base font-semibold text-content">
               Bursunuzu kayıt görüşmesinde değerlendirelim.
             </p>
@@ -175,10 +175,10 @@ export function ScholarshipResultsLookup() {
           </div>
 
           {/* Burs kuralları tablosu */}
-          <div className="mt-6 overflow-hidden rounded-xl border border-white/10">
+          <div className="mt-6 overflow-hidden rounded-xl border border-overlay/10">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-white/10 bg-white/[0.04] text-left text-muted">
+                <tr className="border-b border-overlay/10 bg-overlay/[0.04] text-left text-muted">
                   <th className="px-4 py-3 font-medium">Başarı Dilimi</th>
                   <th className="px-4 py-3 font-medium">Burs Oranı</th>
                 </tr>
@@ -187,7 +187,7 @@ export function ScholarshipResultsLookup() {
                 {bursRules.map((rule) => (
                   <tr
                     key={rule.id}
-                    className="border-b border-white/5 last:border-0"
+                    className="border-b border-overlay/5 last:border-0"
                   >
                     <td className="px-4 py-3 text-content">{rule.label}</td>
                     <td className="px-4 py-3 text-muted">{rule.award}</td>

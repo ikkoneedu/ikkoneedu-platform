@@ -137,7 +137,7 @@ export function LunchMenuBoard({ readOnly = false }: { readOnly?: boolean }) {
                 id="lm-items" name="items" rows={4} required
                 defaultValue={editing?.items.join("\n")}
                 placeholder={"Mercimek çorbası\nIzgara köfte\nPilav\nMevsim salata"}
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
             {error && (
@@ -168,7 +168,7 @@ export function LunchMenuBoard({ readOnly = false }: { readOnly?: boolean }) {
         ) : (
           <ul className="flex flex-col gap-3">
             {items.map((m) => (
-              <li key={m.id} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+              <li key={m.id} className="rounded-xl border border-overlay/10 bg-overlay/[0.03] p-4">
                 <div className="flex items-center justify-between gap-2">
                   <span className="rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
                     {fmtDate(m.date)}
@@ -196,7 +196,7 @@ export function LunchMenuBoard({ readOnly = false }: { readOnly?: boolean }) {
                 </div>
                 <ul className="mt-3 flex flex-wrap gap-2">
                   {m.items.map((it, i) => (
-                    <li key={i} className="rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-sm text-content">
+                    <li key={i} className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-1.5 text-sm text-content">
                       {it}
                     </li>
                   ))}

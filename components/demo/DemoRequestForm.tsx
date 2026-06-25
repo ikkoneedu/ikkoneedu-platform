@@ -159,7 +159,7 @@ export function DemoRequestForm({ institutionTypes }: DemoRequestFormProps) {
             name="message"
             rows={4}
             placeholder="İhtiyaçlarınızı kısaca paylaşın..."
-            className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 transition-colors focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+            className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 transition-colors focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           />
         </div>
 
@@ -169,7 +169,7 @@ export function DemoRequestForm({ institutionTypes }: DemoRequestFormProps) {
             checked={accepted}
             onChange={(event) => setAccepted(event.target.checked)}
             required
-            className="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/[0.04] accent-accent"
+            className="mt-0.5 h-4 w-4 rounded border-overlay/20 bg-overlay/[0.04] accent-accent"
           />
           <span>KVKK metnini okudum ve kabul ediyorum.</span>
         </label>

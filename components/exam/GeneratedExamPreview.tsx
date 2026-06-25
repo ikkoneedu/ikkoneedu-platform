@@ -28,7 +28,7 @@ export function GeneratedExamPreview({ questions }: GeneratedExamPreviewProps) {
         {questions.map((question) => (
           <div
             key={question.id}
-            className="rounded-xl border border-white/5 bg-white/[0.03] p-4"
+            className="rounded-xl border border-overlay/5 bg-overlay/[0.03] p-4"
           >
             <div className="flex items-start gap-3">
               <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-navy/50 text-xs font-bold text-accent">
@@ -46,7 +46,7 @@ export function GeneratedExamPreview({ questions }: GeneratedExamPreviewProps) {
               <span className="rounded-full border border-accent/20 bg-accent/10 px-2 py-0.5 text-[11px] font-medium text-accent">
                 {question.outcome}
               </span>
-              <span className="rounded-full border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[11px] font-medium text-muted">
+              <span className="rounded-full border border-overlay/10 bg-overlay/[0.04] px-2 py-0.5 text-[11px] font-medium text-muted">
                 {question.type}
               </span>
             </div>

@@ -82,7 +82,7 @@ export function EmergencyBroadcast() {
           <textarea
             id="eb-body" name="body" rows={3} required
             placeholder="Yarın okul tatil edilmiştir…"
-            className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+            className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
           />
         </div>
 
@@ -104,7 +104,7 @@ export function EmergencyBroadcast() {
               <button
                 type="button"
                 onClick={() => setConfirming(false)}
-                className="rounded-lg border border-white/15 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:text-content"
+                className="rounded-lg border border-overlay/15 bg-overlay/[0.04] px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:text-content"
               >
                 Vazgeç
               </button>

@@ -7,6 +7,7 @@ import { Logo } from "@/components/shared/LogoMark";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { TenantSwitcher } from "@/components/layout/TenantSwitcher";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 interface TopbarLink {
   id: string;
@@ -31,11 +32,12 @@ function DefaultActions() {
         href="/coming-soon"
         aria-label="Ara (yakında)"
         title="Arama yakında"
-        className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-muted transition-colors hover:bg-white/[0.08] hover:text-content"
+        className="flex h-9 w-9 items-center justify-center rounded-lg border border-overlay/10 bg-overlay/[0.04] text-muted transition-colors hover:bg-overlay/[0.08] hover:text-content"
       >
         <Search size={18} aria-hidden="true" />
       </Link>
       <TenantSwitcher />
+      <ThemeToggle />
       <NotificationBell />
       <UserMenu />
     </>
@@ -52,7 +54,7 @@ export function Topbar({ title, centerLinks, actions, className = "" }: TopbarPr
     <header
       className={[
         "sticky top-0 z-30 flex h-16 items-center justify-between gap-4",
-        "border-b border-white/10 bg-background/70 px-4 backdrop-blur-xl sm:px-6",
+        "border-b border-overlay/10 bg-background/70 px-4 backdrop-blur-xl sm:px-6",
         className,
       ].join(" ")}
     >

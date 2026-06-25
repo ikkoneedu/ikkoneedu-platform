@@ -98,10 +98,10 @@ const STATUS_TONES: Record<string, string> = {
   interview_done: "border-violet-400/20 bg-violet-400/10 text-violet-300",
   offer_sent: "border-blue-400/20 bg-blue-400/10 text-blue-300",
   registered: "border-emerald-400/20 bg-emerald-400/10 text-emerald-300",
-  lost: "border-white/15 bg-white/5 text-muted",
+  lost: "border-overlay/15 bg-overlay/5 text-muted",
 };
 const PRIORITY_TONES: Record<string, string> = {
-  low: "border-white/15 bg-white/5 text-muted",
+  low: "border-overlay/15 bg-overlay/5 text-muted",
   normal: "border-sky-400/20 bg-sky-400/10 text-sky-300",
   high: "border-brand/30 bg-brand/10 text-brand",
 };
@@ -312,7 +312,7 @@ export function AdmissionsBoard() {
                 {openLeads.map((l) => (
                   <li
                     key={l.id}
-                    className="flex flex-wrap items-center gap-3 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2"
+                    className="flex flex-wrap items-center gap-3 rounded-lg border border-overlay/10 bg-overlay/[0.02] px-3 py-2"
                   >
                     <span className="min-w-0 flex-1 text-sm">
                       <span className="font-medium text-content">{l.fullName || "—"}</span>
@@ -348,7 +348,7 @@ export function AdmissionsBoard() {
                 {openScholar.map((s) => (
                   <li
                     key={s.id}
-                    className="flex flex-wrap items-center gap-3 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2"
+                    className="flex flex-wrap items-center gap-3 rounded-lg border border-overlay/10 bg-overlay/[0.02] px-3 py-2"
                   >
                     <span className="min-w-0 flex-1 text-sm">
                       <span className="font-medium text-content">{s.studentName || "—"}</span>
@@ -449,12 +449,12 @@ export function AdmissionsBoard() {
                   <th className="pb-2 font-medium">Güncelleme</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-overlay/5">
                 {visible.map((a) => (
                   <tr
                     key={a.id}
                     onClick={() => void openDetail(a.id)}
-                    className="cursor-pointer text-content transition hover:bg-white/[0.03]"
+                    className="cursor-pointer text-content transition hover:bg-overlay/[0.03]"
                   >
                     <td className="py-2.5 pr-3">
                       <span className="font-medium">{a.studentName}</span>
@@ -523,7 +523,7 @@ function FilterSelect({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-2 text-sm text-content outline-none focus:border-accent"
+        className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-2 text-sm text-content outline-none focus:border-accent"
       >
         {options.map(([v, l]) => (
           <option key={v} value={v} className="bg-surface">{l}</option>
@@ -537,7 +537,7 @@ function Badge({ tone, text }: { tone?: string; text: string }) {
   return (
     <span
       className={`inline-block rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
-        tone ?? "border-white/15 bg-white/5 text-muted"
+        tone ?? "border-overlay/15 bg-overlay/5 text-muted"
       }`}
     >
       {text}
@@ -613,7 +613,7 @@ function AdmissionDetail({
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/60 p-4">
-      <div className="my-6 w-full max-w-2xl rounded-2xl border border-white/10 bg-surface p-5 shadow-2xl">
+      <div className="my-6 w-full max-w-2xl rounded-2xl border border-overlay/10 bg-surface p-5 shadow-2xl">
         <div className="mb-4 flex items-center gap-2">
           <UserCheck size={18} className="text-accent" aria-hidden="true" />
           <h3 className="text-base font-semibold text-content">{a.studentName}</h3>
@@ -630,7 +630,7 @@ function AdmissionDetail({
 
         {/* Bilgi + durum/öncelik/atanan */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 text-sm">
+          <div className="rounded-xl border border-overlay/10 bg-overlay/[0.02] p-3 text-sm">
             <p className="text-muted">
               Veli: <span className="text-content">{a.parentName}</span>
             </p>
@@ -659,7 +659,7 @@ function AdmissionDetail({
                 onChange={(e) =>
                   void run(() => updateAdmissionStatus(tenantId, a.id, e.target.value as AdmissionStatus))
                 }
-                className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-2 text-sm text-content outline-none focus:border-accent"
+                className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-2 text-sm text-content outline-none focus:border-accent"
               >
                 {ADMISSION_STATUSES.map((s) => (
                   <option key={s} value={s} className="bg-surface">{admissionStatusLabel(s)}</option>
@@ -675,7 +675,7 @@ function AdmissionDetail({
                   onChange={(e) =>
                     void run(() => updateAdmission(tenantId, a.id, { priority: e.target.value as AdmissionPriority }))
                   }
-                  className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-2 text-sm text-content outline-none focus:border-accent"
+                  className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-2 text-sm text-content outline-none focus:border-accent"
                 >
                   {ADMISSION_PRIORITIES.map((s) => (
                     <option key={s} value={s} className="bg-surface">{priorityLabel(s)}</option>
@@ -703,7 +703,7 @@ function AdmissionDetail({
                       }
                     });
                   }}
-                  className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-2 text-sm text-content outline-none focus:border-accent"
+                  className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-2 text-sm text-content outline-none focus:border-accent"
                 >
                   <option value="" className="bg-surface">—</option>
                   {assignees.map((u) => (
@@ -726,7 +726,7 @@ function AdmissionDetail({
                 .slice()
                 .sort((x, y) => y.at - x.at)
                 .map((n, i) => (
-                  <li key={i} className="rounded-lg border border-white/10 bg-white/[0.02] px-3 py-1.5 text-sm">
+                  <li key={i} className="rounded-lg border border-overlay/10 bg-overlay/[0.02] px-3 py-1.5 text-sm">
                     <span className="text-content">{n.text}</span>
                     <span className="ml-2 text-xs text-muted">
                       {n.author} · {fmt(n.at)}
@@ -740,7 +740,7 @@ function AdmissionDetail({
               value={note}
               onChange={(e) => setNote(e.target.value)}
               placeholder="Not ekle…"
-              className="flex-1 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
+              className="flex-1 rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
             />
             <PrimaryButton
               type="button"
@@ -767,7 +767,7 @@ function AdmissionDetail({
               {meetings.map((m) => (
                 <li
                   key={m.id}
-                  className="flex flex-wrap items-center gap-2 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-1.5 text-sm"
+                  className="flex flex-wrap items-center gap-2 rounded-lg border border-overlay/10 bg-overlay/[0.02] px-3 py-1.5 text-sm"
                 >
                   <span className="text-content">{m.meetingDate}</span>
                   <span className="text-xs text-muted">{meetingTypeLabel(m.meetingType)}</span>
@@ -782,7 +782,7 @@ function AdmissionDetail({
                         updateAdmissionMeetingStatus(tenantId, m.id, e.target.value as MeetingStatus),
                       )
                     }
-                    className="ml-auto rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent"
+                    className="ml-auto rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent"
                   >
                     {MEETING_STATUSES.map((s) => (
                       <option key={s} value={s} className="bg-surface">{meetingStatusLabel(s)}</option>
@@ -821,12 +821,12 @@ function AdmissionDetail({
                 name="meetingDate"
                 type="datetime-local"
                 required
-                className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-2 text-sm text-content outline-none focus:border-accent"
+                className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-2 text-sm text-content outline-none focus:border-accent"
               />
             </label>
             <label className="flex flex-col gap-1 text-xs text-muted">
               Tür
-              <select name="meetingType" className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-2 text-sm text-content outline-none focus:border-accent">
+              <select name="meetingType" className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-2 text-sm text-content outline-none focus:border-accent">
                 {MEETING_TYPES.map((t) => (
                   <option key={t} value={t} className="bg-surface">{meetingTypeLabel(t)}</option>
                 ))}
@@ -834,7 +834,7 @@ function AdmissionDetail({
             </label>
             <label className="flex flex-col gap-1 text-xs text-muted">
               Atanan
-              <select name="assignedTo" defaultValue={a.assignedTo} className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-2 text-sm text-content outline-none focus:border-accent">
+              <select name="assignedTo" defaultValue={a.assignedTo} className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-2 text-sm text-content outline-none focus:border-accent">
                 <option value="" className="bg-surface">Ben</option>
                 {assignees.map((u) => (
                   <option key={u.uid} value={u.uid} className="bg-surface">{u.displayName || u.email}</option>
@@ -856,7 +856,7 @@ function AdmissionDetail({
                 Kesin kayıt yapıldı (öğrenci ve veli kaydı oluşturuldu).
               </p>
               {acctResult?.ok ? (
-                <p className="rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm">
+                <p className="rounded-lg border border-overlay/10 bg-overlay/[0.03] px-3 py-2 text-sm">
                   <span className="text-muted">Veli girişi: </span>
                   <span className="font-mono text-content">{acctResult.email}</span>
                   {acctResult.tempPassword && (

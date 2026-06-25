@@ -126,7 +126,7 @@ export function NewSchoolForm({ plans }: NewSchoolFormProps) {
           </div>
 
           {/* Marka kimliği (white-label) — okula özgü public sayfa için */}
-          <div className="mt-5 rounded-xl border border-white/10 bg-white/[0.02] p-4">
+          <div className="mt-5 rounded-xl border border-overlay/10 bg-overlay/[0.02] p-4">
             <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-accent">
               Marka Kimliği (opsiyonel)
             </p>
@@ -143,7 +143,7 @@ export function NewSchoolForm({ plans }: NewSchoolFormProps) {
                   name="brandColor"
                   type="color"
                   defaultValue="#B2C7EF"
-                  className="h-11 w-full cursor-pointer rounded-xl border border-white/10 bg-white/[0.04] px-2"
+                  className="h-11 w-full cursor-pointer rounded-xl border border-overlay/10 bg-overlay/[0.04] px-2"
                 />
               </div>
             </div>
@@ -156,7 +156,7 @@ export function NewSchoolForm({ plans }: NewSchoolFormProps) {
                 name="about"
                 rows={2}
                 placeholder="Okulunuzu kısaca tanıtın…"
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
           </div>

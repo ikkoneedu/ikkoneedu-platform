@@ -25,7 +25,7 @@ export function QualityAnalysisCard({ metrics }: QualityAnalysisCardProps) {
               <span className="text-content">{metric.label}</span>
               <span className="font-semibold text-accent">%{metric.value}</span>
             </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-white/10">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-overlay/10">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-accent/60 to-accent"
                 style={{ width: `${metric.value}%` }}

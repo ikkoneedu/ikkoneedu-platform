@@ -41,7 +41,7 @@ export default function PortalPage() {
   return (
     <div className="mesh-bg min-h-screen w-full overflow-x-hidden">
       {/* Üst bar */}
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-background/70 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b border-overlay/10 bg-background/70 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link href="/" className="flex items-center gap-2.5">
             <LogoMark size={32} />
@@ -52,7 +52,7 @@ export default function PortalPage() {
           <button
             type="button"
             onClick={handleSignOut}
-            className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-medium text-content transition-colors hover:border-accent/30 hover:bg-white/[0.06]"
+            className="flex items-center gap-2 rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm font-medium text-content transition-colors hover:border-accent/30 hover:bg-overlay/[0.06]"
           >
             <LogOut size={16} className="text-accent" aria-hidden="true" />
             Çıkış
@@ -84,7 +84,7 @@ export default function PortalPage() {
           {PUBLIC_SCHOOLS.map((school) => (
             <GlassCard key={school.slug} tone="navy" className="flex flex-col">
               <span
-                className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 text-content"
+                className="flex h-12 w-12 items-center justify-center rounded-xl border border-overlay/10 text-content"
                 style={{ backgroundColor: `${school.brandColor}22` }}
               >
                 <GraduationCap size={24} aria-hidden="true" />
@@ -109,7 +109,7 @@ export default function PortalPage() {
                 </Link>
                 <Link
                   href={`/school/${school.slug}`}
-                  className="flex items-center justify-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-medium text-content transition-colors hover:border-accent/30 hover:bg-white/[0.06]"
+                  className="flex items-center justify-center gap-1.5 rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm font-medium text-content transition-colors hover:border-accent/30 hover:bg-overlay/[0.06]"
                 >
                   <Globe size={15} className="text-accent" aria-hidden="true" />
                   Okul Sayfası

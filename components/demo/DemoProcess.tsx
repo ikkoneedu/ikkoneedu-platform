@@ -26,7 +26,7 @@ export function DemoProcess({ steps }: DemoProcessProps) {
                   <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-accent/20 bg-navy/50 text-accent">
                     <Icon size={22} aria-hidden="true" />
                   </span>
-                  <span className="text-3xl font-bold text-white/10">
+                  <span className="text-3xl font-bold text-overlay/10">
                     {step.step}
                   </span>
                 </div>

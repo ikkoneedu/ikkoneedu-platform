@@ -84,7 +84,7 @@ export function RealLeadPipeline() {
         <div className="flex items-center gap-2">
           <Kanban size={18} className="text-accent" aria-hidden="true" />
           <h2 className="text-lg font-semibold text-content">Lead Pipeline</h2>
-          <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] font-semibold text-muted">
+          <span className="rounded-full bg-overlay/[0.06] px-2 py-0.5 text-[10px] font-semibold text-muted">
             {total}
           </span>
         </div>
@@ -93,7 +93,7 @@ export function RealLeadPipeline() {
           onClick={() => void load()}
           disabled={refreshing}
           aria-label="Yenile"
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-muted transition-colors hover:bg-white/[0.08] hover:text-content disabled:opacity-50"
+          className="flex h-8 w-8 items-center justify-center rounded-lg border border-overlay/10 bg-overlay/[0.04] text-muted transition-colors hover:bg-overlay/[0.08] hover:text-content disabled:opacity-50"
         >
           <RefreshCw
             size={15}
@@ -128,7 +128,7 @@ export function RealLeadPipeline() {
                     <span className="text-xs font-semibold text-content">
                       {leadStatusLabel(status)}
                     </span>
-                    <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] font-semibold text-muted">
+                    <span className="rounded-full bg-overlay/[0.06] px-2 py-0.5 text-[10px] font-semibold text-muted">
                       {leads.length}
                     </span>
                   </div>
@@ -137,7 +137,7 @@ export function RealLeadPipeline() {
                     {leads.map((lead) => (
                       <div
                         key={lead.id}
-                        className="rounded-xl border border-white/10 bg-white/[0.04] p-3 transition-colors hover:border-accent/30"
+                        className="rounded-xl border border-overlay/10 bg-overlay/[0.04] p-3 transition-colors hover:border-accent/30"
                       >
                         <p className="text-sm font-semibold text-content">
                           {lead.fullName || "—"}

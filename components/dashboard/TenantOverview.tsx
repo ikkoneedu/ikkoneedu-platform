@@ -70,7 +70,7 @@ export function TenantOverview() {
           return (
             <div
               key={card.label}
-              className="rounded-xl border border-white/10 bg-white/[0.03] p-4"
+              className="rounded-xl border border-overlay/10 bg-overlay/[0.03] p-4"
             >
               <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-accent/20 bg-navy/50 text-accent">
                 <Icon size={18} aria-hidden="true" />

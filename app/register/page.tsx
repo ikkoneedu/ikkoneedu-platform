@@ -130,7 +130,7 @@ export default function RegisterPage() {
                 checked={accepted}
                 onChange={(event) => setAccepted(event.target.checked)}
                 required
-                className="mt-0.5 h-4 w-4 rounded border-white/20 bg-white/[0.04] accent-accent"
+                className="mt-0.5 h-4 w-4 rounded border-overlay/20 bg-overlay/[0.04] accent-accent"
               />
               <span>KVKK metnini okudum ve kabul ediyorum.</span>
             </label>

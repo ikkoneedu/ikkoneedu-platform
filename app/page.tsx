@@ -16,6 +16,7 @@ import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Reveal } from "@/components/landing/Reveal";
 import { CinematicHero } from "@/components/landing/CinematicHero";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildMetadata } from "@/lib/seo/seo";
 import {
@@ -73,7 +74,7 @@ export default function HomePage() {
     <div className="mesh-bg min-h-screen w-full overflow-x-hidden">
       <JsonLd data={[organizationSchema(), softwareApplicationSchema()]} />
       {/* Üst bar */}
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-background/70 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b border-overlay/10 bg-background/70 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2.5">
             <LogoMark size={32} />
@@ -102,6 +103,7 @@ export default function HomePage() {
                 Giriş Yap
               </PrimaryButton>
             </Link>
+            <ThemeToggle />
             <Link href="/demo">
               <PrimaryButton size="sm">Demo Talep Et</PrimaryButton>
             </Link>
@@ -244,7 +246,7 @@ export default function HomePage() {
               className="flex flex-col items-center gap-6 px-6 py-12 text-center sm:px-10 lg:flex-row lg:justify-between lg:text-left"
             >
               <div className="max-w-xl">
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-accent">
+                <span className="inline-flex items-center gap-2 rounded-full border border-overlay/10 bg-overlay/[0.04] px-3 py-1 text-xs font-medium text-accent">
                   <Smartphone size={14} aria-hidden="true" />
                   Mobil Uygulama
                 </span>
@@ -274,7 +276,7 @@ export default function HomePage() {
               className="ai-gradient flex flex-col items-center gap-6 border-accent/20 px-6 py-12 text-center sm:px-10 lg:flex-row lg:justify-between lg:text-left"
             >
               <div className="max-w-xl">
-                <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-xs font-medium text-accent">
+                <span className="inline-flex items-center gap-2 rounded-full border border-overlay/10 bg-overlay/[0.04] px-3 py-1 text-xs font-medium text-accent">
                   <Award size={14} aria-hidden="true" />
                   Bursluluk Sınavı
                 </span>

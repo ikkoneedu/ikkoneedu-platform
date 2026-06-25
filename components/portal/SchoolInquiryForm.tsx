@@ -111,7 +111,7 @@ export function SchoolInquiryForm({
           name="message"
           rows={3}
           placeholder="Sormak istedikleriniz…"
-          className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-content placeholder:text-muted/60 outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+          className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm text-content placeholder:text-muted/60 outline-none focus:border-accent focus:ring-1 focus:ring-accent"
         />
       </div>
       {error && (

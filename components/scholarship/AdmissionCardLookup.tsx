@@ -153,7 +153,7 @@ export function AdmissionCardLookup() {
       {/* Belge kartı */}
       {shown && (
         <GlassCard tone="navy">
-          <div className="flex flex-col gap-1 border-b border-white/10 pb-5">
+          <div className="flex flex-col gap-1 border-b border-overlay/10 pb-5">
             <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent">
               <CheckCircle2 size={14} aria-hidden="true" />
               Sınav Giriş Belgesi
@@ -170,9 +170,9 @@ export function AdmissionCardLookup() {
                 return (
                   <div
                     key={item.id}
-                    className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3"
+                    className="flex items-center gap-3 rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3"
                   >
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-navy/40 text-accent">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-overlay/10 bg-navy/40 text-accent">
                       <Icon size={18} aria-hidden="true" />
                     </span>
                     <div className="min-w-0">
@@ -187,7 +187,7 @@ export function AdmissionCardLookup() {
             </div>
 
             {/* QR kod — salonda hızlı doğrulama (gerçek, taranabilir) */}
-            <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/[0.02] p-6">
+            <div className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-overlay/15 bg-overlay/[0.02] p-6">
               <div className="rounded-xl bg-white p-3">
                 <QRCodeSVG
                   value={qrPayload}
@@ -206,7 +206,7 @@ export function AdmissionCardLookup() {
 
           {/* Sınav kuralları */}
           <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
+            <div className="rounded-xl border border-overlay/10 bg-overlay/[0.02] p-5">
               <h4 className="text-sm font-semibold text-content">
                 Sınav Kuralları
               </h4>
@@ -226,7 +226,7 @@ export function AdmissionCardLookup() {
                 ))}
               </ul>
             </div>
-            <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
+            <div className="rounded-xl border border-overlay/10 bg-overlay/[0.02] p-5">
               <h4 className="text-sm font-semibold text-content">
                 Gerekli Belgeler
               </h4>
@@ -249,7 +249,7 @@ export function AdmissionCardLookup() {
           </div>
 
           {/* Harita / yol tarifi placeholder */}
-          <div className="mt-6 flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-white/15 bg-white/[0.02] py-10 text-muted">
+          <div className="mt-6 flex flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-overlay/15 bg-overlay/[0.02] py-10 text-muted">
             <MapPinned size={28} className="text-accent" aria-hidden="true" />
             <p className="text-sm">Harita yakında</p>
           </div>

@@ -24,7 +24,7 @@ export function LeadPipeline({ columns }: LeadPipelineProps) {
             <div key={column.id} className="flex w-[160px] flex-1 flex-col">
               <div className="mb-3 flex items-center justify-between gap-2">
                 <span className="text-xs font-semibold text-content">{column.title}</span>
-                <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] font-semibold text-muted">
+                <span className="rounded-full bg-overlay/[0.06] px-2 py-0.5 text-[10px] font-semibold text-muted">
                   {column.leads.length}
                 </span>
               </div>
@@ -33,7 +33,7 @@ export function LeadPipeline({ columns }: LeadPipelineProps) {
                 {column.leads.map((lead) => (
                   <div
                     key={lead.id}
-                    className="rounded-xl border border-white/10 bg-white/[0.04] p-3 transition-colors hover:border-accent/30"
+                    className="rounded-xl border border-overlay/10 bg-overlay/[0.04] p-3 transition-colors hover:border-accent/30"
                   >
                     <p className="text-sm font-semibold text-content">{lead.parentName}</p>
                     <p className="mt-1 flex items-center gap-1 text-[11px] text-muted">
@@ -44,7 +44,7 @@ export function LeadPipeline({ columns }: LeadPipelineProps) {
                       <MapPin size={12} aria-hidden="true" />
                       {lead.campus}
                     </p>
-                    <p className="mt-2 flex items-center gap-1 border-t border-white/5 pt-2 text-[11px] text-accent">
+                    <p className="mt-2 flex items-center gap-1 border-t border-overlay/5 pt-2 text-[11px] text-accent">
                       <UserCheck size={12} aria-hidden="true" />
                       {lead.advisor}
                     </p>

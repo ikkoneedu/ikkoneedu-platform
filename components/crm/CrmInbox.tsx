@@ -97,7 +97,7 @@ export function CrmInbox() {
         ) : (
           <ul className="flex flex-col gap-2">
             {apps.map((a) => (
-              <li key={a.id} className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm">
+              <li key={a.id} className="rounded-lg border border-overlay/10 bg-overlay/[0.03] p-3 text-sm">
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-medium text-content">{a.studentName || "—"}</span>
                   <span className="font-mono text-xs text-accent">{a.applicationNo}</span>
@@ -148,7 +148,7 @@ export function CrmInbox() {
         ) : (
           <ul className="flex flex-col gap-2">
             {leads.map((l) => (
-              <li key={l.id} className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm">
+              <li key={l.id} className="rounded-lg border border-overlay/10 bg-overlay/[0.03] p-3 text-sm">
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-medium text-content">{l.fullName || "—"}</span>
                   <span className="text-xs text-muted">{l.source || "—"}</span>
@@ -189,7 +189,7 @@ export function CrmInbox() {
         ) : (
           <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {inquiries.map((i) => (
-              <li key={i.id} className="rounded-lg border border-white/10 bg-white/[0.03] p-3 text-sm">
+              <li key={i.id} className="rounded-lg border border-overlay/10 bg-overlay/[0.03] p-3 text-sm">
                 <div className="flex items-center justify-between gap-2">
                   <span className="font-medium text-content">{i.fullName || "—"}</span>
                   {i.grade && <span className="text-xs text-accent">{i.grade}</span>}

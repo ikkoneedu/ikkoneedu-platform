@@ -32,7 +32,7 @@ const STATUS_TONES: Record<string, string> = {
   trial: "border-amber-400/20 bg-amber-400/10 text-amber-300",
   active: "border-emerald-400/20 bg-emerald-400/10 text-emerald-300",
   suspended: "border-brand/30 bg-brand/10 text-brand",
-  cancelled: "border-white/15 bg-white/5 text-muted",
+  cancelled: "border-overlay/15 bg-overlay/5 text-muted",
 };
 
 const FILTERS = [
@@ -156,7 +156,7 @@ export function TenantsTable({ reloadKey = 0 }: { reloadKey?: number }) {
               className={`rounded-lg border px-2.5 py-1 text-xs transition ${
                 filter === f.id
                   ? "border-accent/40 bg-accent/10 text-accent"
-                  : "border-white/10 text-muted hover:text-content"
+                  : "border-overlay/10 text-muted hover:text-content"
               }`}
             >
               {f.label}
@@ -194,7 +194,7 @@ export function TenantsTable({ reloadKey = 0 }: { reloadKey?: number }) {
             return (
               <div
                 key={t.tenantId}
-                className="rounded-xl border border-white/10 bg-white/[0.02]"
+                className="rounded-xl border border-overlay/10 bg-overlay/[0.02]"
               >
                 <div className="flex flex-wrap items-center gap-3 px-4 py-3">
                   <button
@@ -217,7 +217,7 @@ export function TenantsTable({ reloadKey = 0 }: { reloadKey?: number }) {
                     </span>
                   </button>
 
-                  <span className="rounded-md bg-white/5 px-2 py-0.5 text-[11px] text-muted">
+                  <span className="rounded-md bg-overlay/5 px-2 py-0.5 text-[11px] text-muted">
                     {packageLabel(t.packageId)}
                   </span>
                   <span className="inline-flex items-center gap-1 text-xs text-muted">
@@ -243,7 +243,7 @@ export function TenantsTable({ reloadKey = 0 }: { reloadKey?: number }) {
                     onChange={(e) =>
                       handleStatus(t.tenantId, e.target.value as TenantStatus)
                     }
-                    className="rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
+                    className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
                     aria-label="Tenant durumu"
                   >
                     {TENANT_STATUSES.map((s) => (
@@ -255,7 +255,7 @@ export function TenantsTable({ reloadKey = 0 }: { reloadKey?: number }) {
                 </div>
 
                 {open && (
-                  <div className="grid grid-cols-1 gap-4 border-t border-white/10 px-4 py-4 sm:grid-cols-2">
+                  <div className="grid grid-cols-1 gap-4 border-t border-overlay/10 px-4 py-4 sm:grid-cols-2">
                     <div className="text-sm">
                       <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
                         Okul Profili
@@ -304,7 +304,7 @@ export function TenantsTable({ reloadKey = 0 }: { reloadKey?: number }) {
                           {admins.map((a) => (
                             <li
                               key={a.uid}
-                              className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/[0.02] px-2.5 py-1.5"
+                              className="flex items-center justify-between gap-2 rounded-lg border border-overlay/10 bg-overlay/[0.02] px-2.5 py-1.5"
                             >
                               <span className="min-w-0">
                                 <span className="block truncate text-content">

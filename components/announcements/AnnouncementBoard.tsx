@@ -151,7 +151,7 @@ export function AnnouncementBoard({ readOnly = false }: { readOnly?: boolean }) 
                 rows={3}
                 required
                 placeholder="Duyuru metni…"
-                className="w-full rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
             {isTeacher && classes.length > 0 && (
@@ -160,7 +160,7 @@ export function AnnouncementBoard({ readOnly = false }: { readOnly?: boolean }) 
                 <select
                   name="classId"
                   defaultValue=""
-                  className="rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+                  className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
                 >
                   <option value="" className="bg-surface">Tüm okul</option>
                   {classes.map((c) => (
@@ -203,7 +203,7 @@ export function AnnouncementBoard({ readOnly = false }: { readOnly?: boolean }) 
             {items.map((a) => (
               <li
                 key={a.id}
-                className="rounded-xl border border-white/10 bg-white/[0.03] p-4"
+                className="rounded-xl border border-overlay/10 bg-overlay/[0.03] p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <h3 className="font-semibold text-content">{a.title}</h3>

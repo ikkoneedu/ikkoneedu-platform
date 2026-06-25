@@ -60,7 +60,7 @@ export function PartnershipModel({ columns }: PartnershipModelProps) {
       </div>
 
       <Reveal delay={0.2}>
-        <div className="mx-auto mt-6 flex w-fit items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-muted">
+        <div className="mx-auto mt-6 flex w-fit items-center gap-2 rounded-full border border-overlay/10 bg-overlay/[0.04] px-4 py-2 text-sm text-muted">
           <Handshake size={16} className="text-accent" aria-hidden="true" />
           Eğitim uzmanlığı ve teknoloji gücü tek bir vizyonda birleşir.
         </div>

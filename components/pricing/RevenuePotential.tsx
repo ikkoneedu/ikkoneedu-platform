@@ -40,7 +40,7 @@ export function RevenuePotential({ tiers, averageMonthly, share }: RevenuePotent
               "rounded-2xl border p-5",
               tier.highlight
                 ? "border-accent/40 bg-navy/40 ring-1 ring-inset ring-accent/20"
-                : "border-white/10 bg-white/[0.03]",
+                : "border-overlay/10 bg-overlay/[0.03]",
             ].join(" ")}
           >
             <p className="text-sm font-semibold text-accent">{tier.schools}</p>
@@ -53,7 +53,7 @@ export function RevenuePotential({ tiers, averageMonthly, share }: RevenuePotent
       </div>
 
       {/* Gelir paylaşımı modeli */}
-      <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+      <div className="mt-8 rounded-2xl border border-overlay/10 bg-overlay/[0.03] p-6">
         <div className="flex items-center gap-2">
           <PieChart size={18} className="text-accent" aria-hidden="true" />
           <h3 className="text-base font-semibold text-content">
@@ -66,14 +66,14 @@ export function RevenuePotential({ tiers, averageMonthly, share }: RevenuePotent
             <p className="text-2xl font-bold text-accent">%{share.ownerPercent}</p>
             <p className="mt-0.5 text-sm text-content">Proje Sahibi</p>
           </div>
-          <div className="rounded-xl border border-white/10 bg-white/[0.04] p-4">
+          <div className="rounded-xl border border-overlay/10 bg-overlay/[0.04] p-4">
             <p className="text-2xl font-bold text-content">%{share.partnerPercent}</p>
             <p className="mt-0.5 text-sm text-content">İngiliz Kültür Kolejleri</p>
           </div>
         </div>
 
         {/* 50 okul senaryosu */}
-        <div className="mt-5 border-t border-white/10 pt-5">
+        <div className="mt-5 border-t border-overlay/10 pt-5">
           <div className="mb-3 flex items-center gap-2">
             <Handshake size={16} className="text-accent" aria-hidden="true" />
             <span className="text-sm font-medium text-content">
@@ -81,15 +81,15 @@ export function RevenuePotential({ tiers, averageMonthly, share }: RevenuePotent
             </span>
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div className="rounded-lg bg-white/[0.03] p-3">
+            <div className="rounded-lg bg-overlay/[0.03] p-3">
               <p className="text-xs text-muted">Toplam yıllık gelir</p>
               <p className="mt-1 text-lg font-bold text-content">{share.totalYearly}</p>
             </div>
-            <div className="rounded-lg bg-white/[0.03] p-3">
+            <div className="rounded-lg bg-overlay/[0.03] p-3">
               <p className="text-xs text-muted">Proje sahibi payı</p>
               <p className="mt-1 text-lg font-bold text-accent">{share.ownerShare}</p>
             </div>
-            <div className="rounded-lg bg-white/[0.03] p-3">
+            <div className="rounded-lg bg-overlay/[0.03] p-3">
               <p className="text-xs text-muted">İngiliz Kültür Kolejleri payı</p>
               <p className="mt-1 text-lg font-bold text-content">{share.partnerShare}</p>
             </div>

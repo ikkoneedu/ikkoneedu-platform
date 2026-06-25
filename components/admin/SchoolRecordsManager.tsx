@@ -113,7 +113,7 @@ function StatusBadge({ status }: { status: string }) {
       className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] font-semibold ${
         active
           ? "border-emerald-400/30 bg-emerald-400/10 text-emerald-300"
-          : "border-white/15 bg-white/5 text-muted"
+          : "border-overlay/15 bg-overlay/5 text-muted"
       }`}
     >
       {active ? "Aktif" : status === "archived" ? "Arşiv" : "Pasif"}
@@ -346,7 +346,7 @@ export function SchoolRecordsManager() {
               className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-sm transition ${
                 active
                   ? "border-accent/40 bg-accent/10 text-accent"
-                  : "border-white/10 text-muted hover:text-content"
+                  : "border-overlay/10 text-muted hover:text-content"
               }`}
             >
               <Icon size={16} aria-hidden="true" />
@@ -384,7 +384,7 @@ export function SchoolRecordsManager() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Ara…"
-            className="w-full rounded-xl border border-white/10 bg-white/[0.04] py-2.5 pl-9 pr-4 text-sm text-content outline-none focus:border-accent"
+            className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] py-2.5 pl-9 pr-4 text-sm text-content outline-none focus:border-accent"
           />
         </div>
       )}
@@ -438,7 +438,7 @@ export function SchoolRecordsManager() {
                       .map((s) => (
                         <li
                           key={s.id}
-                          className="flex flex-wrap items-center gap-3 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2.5"
+                          className="flex flex-wrap items-center gap-3 rounded-lg border border-overlay/10 bg-overlay/[0.02] px-3 py-2.5"
                         >
                           <span className="min-w-0 flex-1">
                             <span className="block truncate text-sm font-medium text-content">
@@ -462,7 +462,7 @@ export function SchoolRecordsManager() {
                                   : removeStudentFromClass(tenantId, s.id),
                               );
                             }}
-                            className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
+                            className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
                             aria-label="Sınıf ata"
                           >
                             <option value="" className="bg-surface">Sınıfsız</option>
@@ -534,7 +534,7 @@ export function SchoolRecordsManager() {
                       .map((p) => (
                         <li
                           key={p.id}
-                          className="flex flex-wrap items-center gap-3 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2.5"
+                          className="flex flex-wrap items-center gap-3 rounded-lg border border-overlay/10 bg-overlay/[0.02] px-3 py-2.5"
                         >
                           <span className="min-w-0 flex-1">
                             <span className="block truncate text-sm font-medium text-content">
@@ -552,7 +552,7 @@ export function SchoolRecordsManager() {
                               const sid = e.target.value;
                               if (sid) void run(() => linkParentToStudent(tenantId, p.id, sid));
                             }}
-                            className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
+                            className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
                             aria-label="Öğrenci bağla"
                           >
                             <option value="" className="bg-surface">Öğrenci bağla…</option>
@@ -581,7 +581,7 @@ export function SchoolRecordsManager() {
                               {p.linkedStudentIds.map((sid) => (
                                 <span
                                   key={sid}
-                                  className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/[0.03] px-2 py-0.5 text-xs text-muted"
+                                  className="inline-flex items-center gap-1 rounded-md border border-overlay/10 bg-overlay/[0.03] px-2 py-0.5 text-xs text-muted"
                                 >
                                   {students.find((s) => s.id === sid)?.fullName || sid}
                                   <button
@@ -652,7 +652,7 @@ export function SchoolRecordsManager() {
                       .map((t) => (
                         <li
                           key={t.id}
-                          className="flex flex-wrap items-center gap-3 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2.5"
+                          className="flex flex-wrap items-center gap-3 rounded-lg border border-overlay/10 bg-overlay/[0.02] px-3 py-2.5"
                         >
                           <span className="min-w-0 flex-1">
                             <span className="block truncate text-sm font-medium text-content">
@@ -671,7 +671,7 @@ export function SchoolRecordsManager() {
                               const cid = e.target.value;
                               if (cid) void run(() => assignTeacherToClass(tenantId, t.id, cid));
                             }}
-                            className="rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
+                            className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
                             aria-label="Sınıfa ata"
                           >
                             <option value="" className="bg-surface">Sınıfa ata…</option>
@@ -700,7 +700,7 @@ export function SchoolRecordsManager() {
                               {t.classIds.map((cid) => (
                                 <span
                                   key={cid}
-                                  className="inline-flex items-center gap-1 rounded-md border border-white/10 bg-white/[0.03] px-2 py-0.5 text-xs text-muted"
+                                  className="inline-flex items-center gap-1 rounded-md border border-overlay/10 bg-overlay/[0.03] px-2 py-0.5 text-xs text-muted"
                                 >
                                   {className(cid)}
                                   <button
@@ -766,7 +766,7 @@ export function SchoolRecordsManager() {
                     {classes.map((c) => (
                       <li
                         key={c.id}
-                        className="flex flex-wrap items-center gap-3 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2.5"
+                        className="flex flex-wrap items-center gap-3 rounded-lg border border-overlay/10 bg-overlay/[0.02] px-3 py-2.5"
                       >
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-sm font-medium text-content">
@@ -789,7 +789,7 @@ export function SchoolRecordsManager() {
                             type="button"
                             onClick={() => void run(() => archiveClass(tenantId, c.id))}
                             disabled={busy}
-                            className="inline-flex items-center gap-1 rounded-lg border border-white/10 px-2 py-1 text-xs text-muted transition hover:text-content disabled:opacity-50"
+                            className="inline-flex items-center gap-1 rounded-lg border border-overlay/10 px-2 py-1 text-xs text-muted transition hover:text-content disabled:opacity-50"
                           >
                             <Archive size={13} aria-hidden="true" /> Arşivle
                           </button>
@@ -807,7 +807,7 @@ export function SchoolRecordsManager() {
       {/* Giriş hesabı oluşturma / sonuç modalı */}
       {acctTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-surface p-5 shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl border border-overlay/10 bg-surface p-5 shadow-2xl">
             <div className="mb-4 flex items-center gap-2">
               <KeyRound size={18} className="text-accent" aria-hidden="true" />
               <h3 className="text-base font-semibold text-content">
@@ -831,7 +831,7 @@ export function SchoolRecordsManager() {
                     ? "Hesap oluşturuldu."
                     : "Mevcut kullanıcı bu kayda bağlandı."}
                 </p>
-                <div className="rounded-xl border border-white/10 bg-white/[0.03] p-3 text-sm">
+                <div className="rounded-xl border border-overlay/10 bg-overlay/[0.03] p-3 text-sm">
                   <p className="text-muted">
                     E-posta:{" "}
                     <span className="font-mono text-content">{acctResult.email}</span>
@@ -945,7 +945,7 @@ function EditButton({ onClick }: { onClick: () => void }) {
       type="button"
       onClick={onClick}
       aria-label="Düzenle"
-      className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-white/10 px-2 py-1 text-xs text-muted transition hover:text-content"
+      className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-overlay/10 px-2 py-1 text-xs text-muted transition hover:text-content"
     >
       <Pencil size={13} aria-hidden="true" /> Düzenle
     </button>
@@ -998,7 +998,7 @@ function RecordEditModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
-      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-surface p-5 shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl border border-overlay/10 bg-surface p-5 shadow-2xl">
         <div className="mb-4 flex items-center gap-2">
           <Pencil size={18} className="text-accent" aria-hidden="true" />
           <h3 className="text-base font-semibold text-content">{titles[kind]}</h3>

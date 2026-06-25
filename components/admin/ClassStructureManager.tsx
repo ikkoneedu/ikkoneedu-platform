@@ -222,7 +222,7 @@ export function ClassStructureManager() {
                   {list.map((c) => (
                     <span
                       key={c.id}
-                      className="group inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-content"
+                      className="group inline-flex items-center gap-2 rounded-lg border border-overlay/10 bg-overlay/[0.03] px-3 py-2 text-sm text-content"
                     >
                       <span className="font-medium">{c.name}</span>
                       <button

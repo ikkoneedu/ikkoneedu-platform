@@ -40,7 +40,7 @@ export function VisionSection({ metrics }: VisionSectionProps) {
                   "rounded-2xl border bg-background/30 p-5 text-center",
                   metric.highlight
                     ? "border-accent/40 ring-1 ring-inset ring-accent/20"
-                    : "border-white/10",
+                    : "border-overlay/10",
                 ].join(" ")}
               >
                 <p className="text-sm font-semibold text-accent">{metric.schools}</p>

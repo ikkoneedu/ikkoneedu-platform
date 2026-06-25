@@ -111,7 +111,7 @@ function Lookup({ tenantId, schoolName }: { tenantId: string; schoolName: string
 
         {result && (
           <GlassCard tone="navy" className="mt-6">
-            <div className="flex flex-col gap-1 border-b border-white/10 pb-5">
+            <div className="flex flex-col gap-1 border-b border-overlay/10 pb-5">
               <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-accent">
                 <CheckCircle2 size={14} aria-hidden="true" /> Sınav Sonucu
               </span>
@@ -130,8 +130,8 @@ function Lookup({ tenantId, schoolName }: { tenantId: string; schoolName: string
               {stats.map((s) => {
                 const Icon = s.icon;
                 return (
-                  <div key={s.label} className="flex flex-col gap-2 rounded-xl border border-white/10 bg-white/[0.04] p-4">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-navy/40 text-accent">
+                  <div key={s.label} className="flex flex-col gap-2 rounded-xl border border-overlay/10 bg-overlay/[0.04] p-4">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-lg border border-overlay/10 bg-navy/40 text-accent">
                       <Icon size={18} aria-hidden="true" />
                     </span>
                     <p className="text-xs text-muted">{s.label}</p>

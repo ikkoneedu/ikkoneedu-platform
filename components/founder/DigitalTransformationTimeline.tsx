@@ -19,7 +19,7 @@ export function DigitalTransformationTimeline({ items }: DigitalTransformationTi
       </Reveal>
 
       <div className="mx-auto mt-10 max-w-3xl">
-        <ol className="relative space-y-6 border-l border-white/10 pl-8">
+        <ol className="relative space-y-6 border-l border-overlay/10 pl-8">
           {items.map((item, index) => (
             <Reveal key={item.id} delay={index * 0.06}>
               <li className="relative">
@@ -31,7 +31,7 @@ export function DigitalTransformationTimeline({ items }: DigitalTransformationTi
                   <span className="text-xl font-bold tracking-tight text-accent">
                     {item.year}
                   </span>
-                  <span className="h-8 w-px bg-white/10" />
+                  <span className="h-8 w-px bg-overlay/10" />
                   <span className="text-sm font-medium text-content sm:text-base">
                     {item.title}
                   </span>

@@ -18,7 +18,7 @@ export function PricingFaq({ items }: PricingFaqProps) {
         {items.map((item) => (
           <details
             key={item.id}
-            className="group rounded-xl border border-white/10 bg-white/[0.03] p-4 [&_summary::-webkit-details-marker]:hidden"
+            className="group rounded-xl border border-overlay/10 bg-overlay/[0.03] p-4 [&_summary::-webkit-details-marker]:hidden"
           >
             <summary className="flex cursor-pointer items-center justify-between gap-4 text-sm font-semibold text-content">
               {item.question}

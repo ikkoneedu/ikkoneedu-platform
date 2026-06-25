@@ -339,7 +339,7 @@ export function MessageCenter() {
               rows={3}
               required
               placeholder="Mesajınızı yazın…"
-              className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-content outline-none focus:border-accent"
+              className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content outline-none focus:border-accent"
             />
           </label>
 
@@ -353,27 +353,27 @@ export function MessageCenter() {
                   value={filter}
                   onChange={(e) => setFilter(e.target.value)}
                   placeholder="Ara…"
-                  className="ml-auto rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-xs text-content outline-none focus:border-accent"
+                  className="ml-auto rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-1 text-xs text-content outline-none focus:border-accent"
                 />
               )}
             </div>
             {candidates.length === 0 ? (
-              <p className="rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-xs text-muted">
+              <p className="rounded-lg border border-overlay/10 bg-overlay/[0.02] px-3 py-2 text-xs text-muted">
                 Mesaj gönderebileceğiniz kişi bulunamadı. Gelen mesajlara yanıt
                 verebilirsiniz.
               </p>
             ) : (
-              <div className="flex max-h-40 flex-col gap-1 overflow-y-auto rounded-lg border border-white/10 bg-white/[0.02] p-2">
+              <div className="flex max-h-40 flex-col gap-1 overflow-y-auto rounded-lg border border-overlay/10 bg-overlay/[0.02] p-2">
                 {filteredCandidates.map((c) => (
                   <label
                     key={c.uid}
-                    className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-sm text-content hover:bg-white/[0.04]"
+                    className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-sm text-content hover:bg-overlay/[0.04]"
                   >
                     <input
                       type="checkbox"
                       checked={selected.has(c.uid)}
                       onChange={() => toggle(c.uid)}
-                      className="h-4 w-4 rounded border-white/20 bg-white/[0.04] accent-accent"
+                      className="h-4 w-4 rounded border-overlay/20 bg-overlay/[0.04] accent-accent"
                     />
                     <span className="min-w-0 flex-1 truncate">{c.name}</span>
                     <span className="shrink-0 text-xs text-muted">
@@ -454,8 +454,8 @@ export function MessageCenter() {
               return (
                 <li
                   key={m.id}
-                  className={`rounded-lg border bg-white/[0.02] ${
-                    unread ? "border-accent/30" : "border-white/10"
+                  className={`rounded-lg border bg-overlay/[0.02] ${
+                    unread ? "border-accent/30" : "border-overlay/10"
                   }`}
                 >
                   <button
@@ -495,7 +495,7 @@ export function MessageCenter() {
                     </span>
                   </button>
                   {open && (
-                    <div className="border-t border-white/10 px-3 py-3">
+                    <div className="border-t border-overlay/10 px-3 py-3">
                       <p className="whitespace-pre-wrap text-sm text-content">{m.body}</p>
                       {tab === "inbox" && (
                         <div className="mt-3">
@@ -514,7 +514,7 @@ export function MessageCenter() {
                             type="button"
                             onClick={() => void changeStatus(m, "archived")}
                             disabled={busy || archived}
-                            className="inline-flex items-center gap-1 rounded-lg border border-white/10 px-2 py-1 text-xs text-muted transition hover:text-content disabled:opacity-50"
+                            className="inline-flex items-center gap-1 rounded-lg border border-overlay/10 px-2 py-1 text-xs text-muted transition hover:text-content disabled:opacity-50"
                           >
                             <Archive size={13} aria-hidden="true" /> Arşivle
                           </button>

@@ -25,7 +25,7 @@ export function AdmissionsActions({ actions }: AdmissionsActionsProps) {
             <Link
               key={action.id}
               href={action.href ?? "/coming-soon"}
-              className="group flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-left transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:bg-white/[0.06]"
+              className="group flex items-center gap-3 rounded-2xl border border-overlay/10 bg-overlay/[0.04] p-4 text-left transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:bg-overlay/[0.06]"
             >
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-navy/50 text-accent">
                 <Icon size={20} aria-hidden="true" />

@@ -108,7 +108,7 @@ export function MyClasses() {
             const open = openId === c.id;
             const students = roster[c.id];
             return (
-              <li key={c.id} className="rounded-xl border border-white/10 bg-white/[0.02]">
+              <li key={c.id} className="rounded-xl border border-overlay/10 bg-overlay/[0.02]">
                 <button
                   type="button"
                   onClick={() => void toggle(c)}
@@ -129,7 +129,7 @@ export function MyClasses() {
                   </span>
                 </button>
                 {open && (
-                  <div className="border-t border-white/10 px-4 py-3">
+                  <div className="border-t border-overlay/10 px-4 py-3">
                     {students === undefined ? (
                       <p className="text-sm text-muted">Yükleniyor…</p>
                     ) : students.length === 0 ? (
@@ -139,7 +139,7 @@ export function MyClasses() {
                         {students.map((s) => (
                           <li
                             key={s.id}
-                            className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.02] px-3 py-1.5 text-sm"
+                            className="flex items-center gap-2 rounded-lg border border-overlay/10 bg-overlay/[0.02] px-3 py-1.5 text-sm"
                           >
                             <span className="text-content">{s.fullName}</span>
                             {s.studentNo && (

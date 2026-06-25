@@ -243,7 +243,7 @@ export function PaymentManager() {
                   <th className="pb-2 font-medium">Ödenen / İşlem</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-overlay/5">
                 {rows.map((r) => (
                   <tr key={r.id} className="text-content">
                     <td className="py-2.5 pr-4">
@@ -263,7 +263,7 @@ export function PaymentManager() {
                           type="number"
                           value={paid[r.id] ?? String(r.paidAmount)}
                           onChange={(e) => setPaid((p) => ({ ...p, [r.id]: e.target.value }))}
-                          className="w-24 rounded-lg border border-white/10 bg-white/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent"
+                          className="w-24 rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent"
                         />
                         <PrimaryButton
                           size="sm"

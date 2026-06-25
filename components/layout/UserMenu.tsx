@@ -26,7 +26,7 @@ export function UserMenu() {
     return (
       <div
         aria-hidden="true"
-        className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-navy text-xs font-semibold text-content"
+        className="flex h-9 w-9 items-center justify-center rounded-full border border-overlay/10 bg-navy text-xs font-semibold text-content"
       >
         IK
       </div>
@@ -60,7 +60,7 @@ export function UserMenu() {
         type="button"
         onClick={handleSignOut}
         aria-label="Çıkış yap"
-        className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-muted transition-colors hover:border-brand/40 hover:text-brand"
+        className="flex h-9 w-9 items-center justify-center rounded-lg border border-overlay/10 bg-overlay/[0.04] text-muted transition-colors hover:border-brand/40 hover:text-brand"
       >
         <LogOut size={18} aria-hidden="true" />
       </button>

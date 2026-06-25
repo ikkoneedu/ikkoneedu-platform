@@ -34,7 +34,7 @@ export function ScholarshipCRMConversion() {
                     )}
                   </span>
                 </div>
-                <div className="h-7 overflow-hidden rounded-lg bg-white/[0.04]">
+                <div className="h-7 overflow-hidden rounded-lg bg-overlay/[0.04]">
                   <div
                     className="h-full rounded-lg bg-gradient-to-r from-accent/40 to-accent"
                     style={{ width: `${width}%` }}
@@ -52,7 +52,7 @@ export function ScholarshipCRMConversion() {
             return (
               <div
                 key={metric.id}
-                className="rounded-2xl border border-white/10 bg-white/[0.03] p-4"
+                className="rounded-2xl border border-overlay/10 bg-overlay/[0.03] p-4"
               >
                 <span className="grid size-9 place-items-center rounded-xl bg-accent/10 text-accent">
                   <Icon size={18} aria-hidden="true" />
