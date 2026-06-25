@@ -3,6 +3,8 @@ import { SEO, siteUrl, baseKeywords } from "@/lib/seo/seo";
 import { colors } from "@/lib/constants";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
+import { getServerLocale } from "@/lib/i18n/server";
 import "./globals.css";
 
 /**
@@ -56,19 +58,22 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getServerLocale();
   return (
-    <html lang="tr" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body className="font-sans antialiased">
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <LocaleProvider initialLocale={locale}>
+            <AuthProvider>{children}</AuthProvider>
+          </LocaleProvider>
         </ThemeProvider>
       </body>
     </html>

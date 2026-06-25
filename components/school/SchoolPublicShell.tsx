@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { LanguageToggle } from "@/components/i18n/LanguageToggle";
 import { productName } from "@/lib/constants";
 import type { PublicSchool } from "@/lib/tenant/tenant-config";
 
@@ -27,6 +28,7 @@ export function SchoolPublicShell({ school, children }: SchoolPublicShellProps) 
             </span>
           </Link>
           <div className="flex items-center gap-2">
+            <LanguageToggle />
             <ThemeToggle />
             <Link href={`/login?school=${school.slug}`}>
               <PrimaryButton size="sm">Okul Portalına Giriş</PrimaryButton>

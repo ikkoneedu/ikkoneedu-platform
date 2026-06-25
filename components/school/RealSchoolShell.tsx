@@ -6,6 +6,7 @@ import { ShieldQuestion, ArrowLeft } from "lucide-react";
 import { LogoMark } from "@/components/shared/LogoMark";
 import { SchoolLogo } from "@/components/school/SchoolLogo";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { LanguageToggle } from "@/components/i18n/LanguageToggle";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { getSchool, type SchoolRecord } from "@/lib/services/schools";
 import { productName } from "@/lib/constants";
@@ -88,6 +89,7 @@ export function RealSchoolShell({
             </span>
           </Link>
           <div className="flex items-center gap-2">
+            <LanguageToggle />
             <ThemeToggle />
             <Link href={`/login?school=${school.slug}`}>
               <button

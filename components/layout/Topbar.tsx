@@ -8,6 +8,7 @@ import { UserMenu } from "@/components/layout/UserMenu";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { TenantSwitcher } from "@/components/layout/TenantSwitcher";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { LanguageToggle } from "@/components/i18n/LanguageToggle";
 
 interface TopbarLink {
   id: string;
@@ -37,6 +38,7 @@ function DefaultActions() {
         <Search size={18} aria-hidden="true" />
       </Link>
       <TenantSwitcher />
+      <LanguageToggle />
       <ThemeToggle />
       <NotificationBell />
       <UserMenu />

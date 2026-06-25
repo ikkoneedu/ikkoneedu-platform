@@ -17,6 +17,7 @@ import { Reveal } from "@/components/landing/Reveal";
 import { CinematicHero } from "@/components/landing/CinematicHero";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { LanguageToggle } from "@/components/i18n/LanguageToggle";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { buildMetadata } from "@/lib/seo/seo";
 import {
@@ -103,6 +104,7 @@ export default function HomePage() {
                 Giriş Yap
               </PrimaryButton>
             </Link>
+            <LanguageToggle />
             <ThemeToggle />
             <Link href="/demo">
               <PrimaryButton size="sm">Demo Talep Et</PrimaryButton>
