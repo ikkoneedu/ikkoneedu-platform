@@ -67,6 +67,7 @@ export const PROTECTED_PREFIXES: string[] = [
   "/lesson-plans",
   "/social-studio",
   "/hiring",
+  "/certificates",
 ];
 
 /** Okul yaşamı modülleri — tüm okul üyeleri erişir (personel oluşturur, herkes görür). */
@@ -165,6 +166,11 @@ export const ROUTE_ROLES: Record<string, Role[]> = {
   "/hiring": [
     ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
     ROLES.SUPER_ADMIN,
+  ],
+  // Sertifika & Belge — yönetim + koordinatör + öğretmen (belge düzenler).
+  "/certificates": [
+    ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
+    ROLES.COORDINATOR, ROLES.TEACHER, ROLES.SUPER_ADMIN,
   ],
 };
 

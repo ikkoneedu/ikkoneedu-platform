@@ -128,7 +128,7 @@ export const MODULE_CATALOG: ModuleDefinition[] = [
 
   // Okul yaşamı
   mk("events", "schoolLife", "starter", "live", EVERYONE, { route: "/events" }),
-  mk("certificates", "schoolLife", "professional", "comingSoon", MGMT_PLUS_COORD, {
+  mk("certificates", "schoolLife", "starter", "pilot", STAFF, {
     route: "/certificates",
   }),
 

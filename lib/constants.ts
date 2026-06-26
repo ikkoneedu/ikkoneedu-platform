@@ -107,6 +107,7 @@ export const navigationItems: NavigationItem[] = [
   { id: "crm", labelKey: "nav.crm", href: "/crm", icon: Contact, moduleId: "admissions" },
   { id: "sosyal-studyo", labelKey: "nav.socialStudio", href: "/social-studio", icon: Sparkles, moduleId: "socialStudio" },
   { id: "ik-cv", labelKey: "nav.hiring", href: "/hiring", icon: ClipboardCheck, moduleId: "hiring" },
+  { id: "sertifikalar", labelKey: "nav.certificates", href: "/certificates", icon: Award, moduleId: "certificates" },
   { id: "messages", labelKey: "nav.messages", href: "/messages", icon: MessageSquare, moduleId: "messages" },
   { id: "bildirimler", labelKey: "nav.notifications", href: "/notifications", icon: Bell, moduleId: "notifications" },
   { id: "demo", labelKey: "nav.demo", href: "/demo", icon: Rocket },
