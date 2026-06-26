@@ -71,8 +71,8 @@ export const tr = {
   "modules.exams.short": "Burs/kayıt sınavlarını başvuru, gözetim ve sonuçla yönet.",
   "modules.exams.sales": "Burs sınavından kayda uçtan uca süreç.",
 
-  "modules.hiring.name": "İK & İşe Alım",
-  "modules.hiring.short": "Öğretmen ve personel ilanlarını, başvuruları yönet.",
+  "modules.hiring.name": "İK · Öğretmen CV AI İnceleme",
+  "modules.hiring.short": "Öğretmen başvurularını ve CV'leri AI ile saniyede ön değerlendir.",
   "modules.hiring.sales": "Doğru öğretmeni daha hızlı bul.",
 
   "modules.parentCommunication.name": "Veli İletişimi",
@@ -182,8 +182,8 @@ export const en = {
   "modules.exams.short": "Run scholarship/admission exams from application to proctoring and results.",
   "modules.exams.sales": "End-to-end from scholarship exam to enrolment.",
 
-  "modules.hiring.name": "HR & Hiring",
-  "modules.hiring.short": "Manage teacher and staff postings and applications.",
+  "modules.hiring.name": "HR · Teacher CV AI Review",
+  "modules.hiring.short": "Pre-screen teacher applications and CVs with AI in seconds.",
   "modules.hiring.sales": "Find the right teacher faster.",
 
   "modules.parentCommunication.name": "Parent Communication",

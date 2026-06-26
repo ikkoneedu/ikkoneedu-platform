@@ -39,6 +39,7 @@ import * as panelTeacher from "@/lib/i18n/dict/panelTeacher";
 import * as modules from "@/lib/i18n/dict/modules";
 import * as socialStudio from "@/lib/i18n/dict/socialStudio";
 import * as previewLabels from "@/lib/i18n/dict/previewLabels";
+import * as hiring from "@/lib/i18n/dict/hiring";
 
 type Dict = Record<string, string>;
 
@@ -50,7 +51,7 @@ const ZONE_TR: Dict[] = [
   dashStudent.tr, dashAdmin.tr, dashExec.tr,
   panelCrm.tr, panelSettings.tr, panelSaas.tr, panelFinance.tr, panelExec.tr,
   schoolLife.tr, panelAdmin2.tr, panelTeacher.tr, modules.tr, socialStudio.tr,
-  previewLabels.tr,
+  previewLabels.tr, hiring.tr,
 ];
 const ZONE_EN: Dict[] = [
   pricing.en, demo.en, features.en, register.en, codeLogin.en,
@@ -59,7 +60,7 @@ const ZONE_EN: Dict[] = [
   dashStudent.en, dashAdmin.en, dashExec.en,
   panelCrm.en, panelSettings.en, panelSaas.en, panelFinance.en, panelExec.en,
   schoolLife.en, panelAdmin2.en, panelTeacher.en, modules.en, socialStudio.en,
-  previewLabels.en,
+  previewLabels.en, hiring.en,
 ];
 
 const tr: Dict = {
@@ -116,6 +117,7 @@ const tr: Dict = {
   "nav.finance": "Finans Merkezi",
   "nav.crm": "CRM",
   "nav.socialStudio": "Sosyal Stüdyo",
+  "nav.hiring": "İK · CV İnceleme",
   "nav.messages": "Mesajlar",
   "nav.notifications": "Bildirim Merkezi",
   "nav.demo": "Demo Talep",
@@ -368,6 +370,7 @@ const en: Dict = {
   "nav.finance": "Finance Center",
   "nav.crm": "CRM",
   "nav.socialStudio": "Social Studio",
+  "nav.hiring": "HR · CV Review",
   "nav.messages": "Messages",
   "nav.notifications": "Notification Center",
   "nav.demo": "Request Demo",

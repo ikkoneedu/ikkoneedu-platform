@@ -66,6 +66,7 @@ export const PROTECTED_PREFIXES: string[] = [
   "/bus-routes",
   "/lesson-plans",
   "/social-studio",
+  "/hiring",
 ];
 
 /** Okul yaşamı modülleri — tüm okul üyeleri erişir (personel oluşturur, herkes görür). */
@@ -159,6 +160,11 @@ export const ROUTE_ROLES: Record<string, Role[]> = {
   "/social-studio": [
     ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
     ROLES.PR, ROLES.SALES, ROLES.SUPER_ADMIN,
+  ],
+  // İK · Öğretmen CV AI İnceleme — yalnız yönetim. Demo (gerçek AI sonraki faz).
+  "/hiring": [
+    ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
+    ROLES.SUPER_ADMIN,
   ],
 };
 

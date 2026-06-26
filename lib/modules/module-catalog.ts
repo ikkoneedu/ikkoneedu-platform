@@ -138,7 +138,7 @@ export const MODULE_CATALOG: ModuleDefinition[] = [
   mk("socialStudio", "growth", "starter", "aiReady", GROWTH_ROLES, {
     route: "/social-studio",
   }),
-  mk("hiring", "growth", "professional", "comingSoon", MGMT, { route: "/hiring" }),
+  mk("hiring", "growth", "starter", "aiReady", MGMT, { route: "/hiring" }),
 
   // Akademik
   mk("exams", "academic", "professional", "pilot", MGMT_PLUS_COORD, {
