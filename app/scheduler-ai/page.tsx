@@ -1,71 +1,42 @@
 import type { Metadata } from "next";
-import { AiComingSoonNotice } from "@/components/ai/AiComingSoonNotice";
+import { Sparkles } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
-import { SchedulerHero } from "@/components/scheduler/SchedulerHero";
-import { SchedulerForm } from "@/components/scheduler/SchedulerForm";
-import { RulePanel } from "@/components/scheduler/RulePanel";
-import { WeeklyTimetable } from "@/components/scheduler/WeeklyTimetable";
-import { ConflictAnalysis } from "@/components/scheduler/ConflictAnalysis";
-import { AiScheduleSuggestions } from "@/components/scheduler/AiScheduleSuggestions";
-import { ScheduleExportActions } from "@/components/scheduler/ScheduleExportActions";
+import { SmartScheduleBuilder } from "@/components/scheduler/SmartScheduleBuilder";
+import { getServerT } from "@/lib/i18n/server";
 import { productName } from "@/lib/constants";
-import {
-  schedulerFormOptions,
-  schedulerSmartRules,
-  schedulerDays,
-  schedulerHours,
-  schedulerTimetable,
-  schedulerConflictAnalysis,
-  schedulerAiSuggestions,
-} from "@/lib/scheduler-mock-data";
 
-export const metadata: Metadata = {
-  title: `AI Ders Programı Oluşturucu — ${productName}`,
-  description:
-    "Öğretmen, sınıf, ders ve kurum kurallarını dikkate alarak çakışmasız haftalık ders programları oluşturun.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: `AI Ders Programı Oluşturucu — ${productName}`,
+    description: t("sched.demo.body"),
+  };
+}
 
-export default function SchedulerAiPage() {
+export default async function SchedulerAiPage() {
+  const t = await getServerT();
   return (
     <PageShell title="AI Ders Programı Oluşturucu">
       <div className="flex flex-col gap-10">
-        <AiComingSoonNotice />
+        {/* Çalışan demo şeridi — gerçek AI optimizasyonu sonraki faz */}
+        <div className="flex items-start gap-3 rounded-xl border border-accent/30 bg-accent/[0.06] px-4 py-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-accent/30 bg-navy/50 text-accent">
+            <Sparkles size={18} aria-hidden="true" />
+          </span>
+          <div className="text-sm">
+            <p className="font-semibold text-content">{t("sched.demo.title")}</p>
+            <p className="mt-0.5 text-muted">{t("sched.demo.body")}</p>
+          </div>
+        </div>
 
         <SectionHeader
           eyebrow="Yapay Zeka"
           title="AI Ders Programı Oluşturucu"
-          description="Öğretmen, sınıf, ders ve kurum kurallarını dikkate alarak çakışmasız haftalık ders programları oluşturun."
+          description="Öğretmen, sınıf ve ders kurallarını dikkate alarak çakışmasız haftalık ders programları oluşturun."
         />
 
-        {/* 1. Hero */}
-        <SchedulerHero />
-
-        {/* 2 + 3. Form ve kural paneli */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <SchedulerForm options={schedulerFormOptions} />
-          <RulePanel rules={schedulerSmartRules} />
-        </div>
-
-        {/* 4. Haftalık program */}
-        <WeeklyTimetable
-          days={schedulerDays}
-          hours={schedulerHours}
-          timetable={schedulerTimetable}
-        />
-
-        {/* 5 + 6. Çakışma analizi ve AI önerileri */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <ConflictAnalysis data={schedulerConflictAnalysis} />
-          <AiScheduleSuggestions suggestions={schedulerAiSuggestions} />
-        </div>
-
-        {/* 7. Kaydet / Dışa aktar */}
-        <ScheduleExportActions
-          days={schedulerDays}
-          hours={schedulerHours}
-          timetable={schedulerTimetable}
-        />
+        <SmartScheduleBuilder />
       </div>
     </PageShell>
   );
