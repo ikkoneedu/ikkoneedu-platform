@@ -34,6 +34,8 @@ export const tr: Record<string, string> = {
   "dash.parent.feat.lunch.desc": "Günlük yemek menüsünü görüntüleyin.",
   "dash.parent.feat.bus.title": "Servis Takibi",
   "dash.parent.feat.bus.desc": "Servis rotalarını, durakları ve saatleri görüntüleyin.",
+  "dash.parent.finance.title": "Ödeme Durumu",
+  "dash.parent.finance.locked": "Ödeme görüntüleme modülü okul tarafından aktif edildiğinde burada görünecek.",
   // Öğretmen portalı
   "dash.teacher.metaTitle": "Öğretmen Portalı",
   "dash.teacher.metaDesc": "Sınıflarınızı yönetin, ödev ve notları takip edin, veli ve öğrencilerle iletişim kurun.",
@@ -77,6 +79,8 @@ export const en: Record<string, string> = {
   "dash.parent.feat.lunch.desc": "View the daily lunch menu.",
   "dash.parent.feat.bus.title": "Bus Tracking",
   "dash.parent.feat.bus.desc": "View bus routes, stops and times.",
+  "dash.parent.finance.title": "Payment Status",
+  "dash.parent.finance.locked": "The payment view module will appear here once your school activates it.",
   "dash.teacher.metaTitle": "Teacher Portal",
   "dash.teacher.metaDesc": "Manage your classes, track assignments and grades, communicate with parents and students.",
   "dash.teacher.title": "Teacher Portal",

@@ -1,116 +1,37 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Wallet, Inbox } from "lucide-react";
+import { Wallet, Lock } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
-import {
-  listPayments,
-  summarizePayments,
-  paymentStatusLabel,
-  type PaymentRecord,
-} from "@/lib/services/payments";
-
-const STATUS_STYLE: Record<string, string> = {
-  PENDING: "border-amber-400/30 bg-amber-400/10 text-amber-300",
-  PARTIAL: "border-sky-400/30 bg-sky-400/10 text-sky-300",
-  PAID: "border-emerald-400/30 bg-emerald-400/10 text-emerald-300",
-  OVERDUE: "border-brand/30 bg-brand/10 text-brand",
-};
-
-const fmt = (n: number) =>
-  new Intl.NumberFormat("tr-TR", { maximumFractionDigits: 0 }).format(n) + " ₺";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 /**
- * Veli Finans Kartı — bağlı öğrencinin ödeme durumunu (salt okunur) gösterir.
- * Ödemeler öğrenci uid'i VEYA adı ile eşlenir. Gerçek Firestore; tenant izole.
+ * Veli Finans Kartı — kilitli (salt bilgilendirme) durum.
+ *
+ * Finans/ödeme verisi HASSAS'tır: Firestore kuralları `payments` koleksiyonunu
+ * yalnızca okul yönetimine açar (PARENT/STUDENT/TEACHER erişemez). Bu nedenle
+ * veli panelinde ödeme listesi ÇEKİLMEZ; bunun yerine modül okul tarafından
+ * aktif edildiğinde görüneceğini bildiren kilitli bir kart gösterilir.
+ * (Gerçek veli ödeme görünümü ayrı bir faz; kuralları genişletmeden gelecek.)
  */
 export function ParentFinanceCard() {
   const { profile, firebaseReady } = useAuth();
-  const tenantId = profile?.tenantId;
   const isParent = profile?.role === ROLES.PARENT;
-  const usable = firebaseReady && Boolean(tenantId) && isParent;
+  const t = useT();
 
-  const [all, setAll] = useState<PaymentRecord[] | null>(null);
-
-  useEffect(() => {
-    if (!usable || !tenantId) return;
-    let active = true;
-    void (async () => {
-      const list = await listPayments(tenantId);
-      if (active) setAll(list);
-    })();
-    return () => {
-      active = false;
-    };
-  }, [usable, tenantId]);
-
-  const mine = useMemo(() => {
-    if (!all) return [];
-    const ids = new Set(profile?.linkedStudentIds ?? []);
-    const names = new Set(
-      (profile?.linkedStudents ?? []).map((s) => s.displayName.toLowerCase()),
-    );
-    return all.filter(
-      (p) =>
-        (p.studentUid && ids.has(p.studentUid)) ||
-        (p.studentName && names.has(p.studentName.toLowerCase())),
-    );
-  }, [all, profile]);
-
-  if (!usable || all === null) return null;
-
-  const summary = summarizePayments(mine);
+  if (!firebaseReady || !isParent) return null;
 
   return (
     <GlassCard tone="navy">
-      <div className="mb-4 flex items-center gap-2">
+      <div className="mb-3 flex items-center gap-2">
         <Wallet size={18} className="text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Ödeme Durumu</h2>
-        <span className="ml-auto text-xs text-muted">{mine.length} kayıt</span>
+        <h2 className="text-lg font-semibold text-content">{t("dash.parent.finance.title")}</h2>
+        <Lock size={14} className="ml-auto text-muted" aria-hidden="true" />
       </div>
-
-      {mine.length === 0 ? (
-        <p className="flex items-center gap-2 text-sm text-muted">
-          <Inbox size={15} aria-hidden="true" /> Görüntülenecek ödeme kaydı yok.
-        </p>
-      ) : (
-        <>
-          <div className="mb-4 grid grid-cols-3 gap-3">
-            <div className="rounded-xl border border-overlay/10 bg-overlay/[0.03] p-3">
-              <p className="text-xs text-muted">Toplam</p>
-              <p className="text-base font-bold text-content">{fmt(summary.total)}</p>
-            </div>
-            <div className="rounded-xl border border-overlay/10 bg-overlay/[0.03] p-3">
-              <p className="text-xs text-muted">Ödenen</p>
-              <p className="text-base font-bold text-emerald-300">{fmt(summary.collected)}</p>
-            </div>
-            <div className="rounded-xl border border-overlay/10 bg-overlay/[0.03] p-3">
-              <p className="text-xs text-muted">Bakiye</p>
-              <p className="text-base font-bold text-brand">{fmt(summary.outstanding)}</p>
-            </div>
-          </div>
-
-          <ul className="flex flex-col gap-2">
-            {mine.map((p) => (
-              <li
-                key={p.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-overlay/10 bg-overlay/[0.03] px-3 py-2.5 text-sm"
-              >
-                <div>
-                  <span className="font-medium text-content">{fmt(p.amount)}</span>
-                  {p.dueDate && <span className="ml-2 text-xs text-muted">Vade: {p.dueDate}</span>}
-                  {p.note && <p className="mt-0.5 text-xs text-muted/70">{p.note}</p>}
-                </div>
-                <span className={`shrink-0 rounded-full border px-2 py-0.5 text-xs ${STATUS_STYLE[p.status]}`}>
-                  {paymentStatusLabel(p.status)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
+      <p className="flex items-start gap-2 rounded-xl border border-overlay/10 bg-overlay/[0.03] px-4 py-3 text-sm text-muted">
+        {t("dash.parent.finance.locked")}
+      </p>
     </GlassCard>
   );
 }
