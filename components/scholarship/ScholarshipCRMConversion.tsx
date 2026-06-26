@@ -1,5 +1,6 @@
 import { Filter } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { PreviewBadge } from "@/components/shared/PreviewBadge";
 import { crmFunnel, crmMetrics } from "@/lib/scholarship-exam-mock-data";
 
 /**
@@ -14,6 +15,7 @@ export function ScholarshipCRMConversion() {
       <div className="mb-5 flex items-center gap-2">
         <Filter size={18} className="text-accent" aria-hidden="true" />
         <h2 className="text-lg font-semibold text-content">CRM Dönüşüm Takibi</h2>
+        <PreviewBadge className="ml-auto" />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

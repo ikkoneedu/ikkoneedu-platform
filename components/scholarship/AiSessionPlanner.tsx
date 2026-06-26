@@ -1,6 +1,7 @@
 import { Sparkles, CheckCircle2 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { PreviewBadge } from "@/components/shared/PreviewBadge";
 import {
   sessionPlanningRules,
   aiSessionSuggestions,
@@ -18,6 +19,7 @@ export function AiSessionPlanner() {
         <h2 className="text-lg font-semibold text-content">
           AI Oturum ve Salon Planlama
         </h2>
+        <PreviewBadge ai className="ml-auto" />
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">

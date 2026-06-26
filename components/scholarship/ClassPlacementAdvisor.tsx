@@ -2,6 +2,7 @@ import { Sparkles, AlertTriangle, GraduationCap } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
+import { PreviewBadge } from "@/components/shared/PreviewBadge";
 import { placementSuggestion } from "@/lib/scholarship-exam-mock-data";
 
 /**
@@ -16,6 +17,7 @@ export function ClassPlacementAdvisor() {
         <h2 className="text-lg font-semibold text-content">
           Otomatik Sınıf / Kademe Yerleştirme
         </h2>
+        <PreviewBadge ai className="ml-auto" />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

@@ -1,5 +1,6 @@
 import { Award, Sparkles } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { PreviewBadge } from "@/components/shared/PreviewBadge";
 import { sampleResult, bursRules } from "@/lib/scholarship-exam-mock-data";
 
 /**
@@ -14,6 +15,7 @@ export function ScholarshipResultEngine() {
       <div className="mb-5 flex items-center gap-2">
         <Award size={18} className="text-accent" aria-hidden="true" />
         <h2 className="text-lg font-semibold text-content">Sonuç ve Burs Hesaplama</h2>
+        <PreviewBadge ai className="ml-auto" />
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">

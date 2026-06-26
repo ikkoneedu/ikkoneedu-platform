@@ -1,4 +1,5 @@
 import { GlassCard } from "@/components/shared/GlassCard";
+import { PreviewBadge } from "@/components/shared/PreviewBadge";
 import { dashboardMetrics } from "@/lib/scholarship-exam-mock-data";
 
 /**
@@ -7,8 +8,12 @@ import { dashboardMetrics } from "@/lib/scholarship-exam-mock-data";
  */
 export function ScholarshipDashboard() {
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-3">
-      {dashboardMetrics.map((metric) => {
+    <div className="flex flex-col gap-3">
+      <div className="flex justify-end">
+        <PreviewBadge />
+      </div>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-3">
+        {dashboardMetrics.map((metric) => {
         const Icon = metric.icon;
         return (
           <GlassCard key={metric.id} tone="navy" interactive className="p-4 sm:p-5">
@@ -25,7 +30,8 @@ export function ScholarshipDashboard() {
             </div>
           </GlassCard>
         );
-      })}
+        })}
+      </div>
     </div>
   );
 }
