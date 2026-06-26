@@ -12,20 +12,24 @@ import { CrmInbox } from "@/components/crm/CrmInbox";
 import { AppointmentManager } from "@/components/crm/AppointmentManager";
 import { productName } from "@/lib/constants";
 import { crmActions } from "@/lib/crm-mock-data";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: `CRM & Lead Yönetimi — ${productName}`,
-  description:
-    "Aday velileri, görüşmeleri ve kayıt süreçlerini tek merkezden yönetin.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("panelCrm.meta.title", { product: productName }),
+    description: t("panelCrm.meta.description"),
+  };
+}
 
 /* Hızlı İşlemler — crmActions verisiyle */
-function CrmQuickActions() {
+async function CrmQuickActions() {
+  const t = await getServerT();
   return (
     <GlassCard tone="navy">
       <div className="mb-5 flex items-center gap-2">
         <Zap size={18} className="text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Hızlı İşlemler</h2>
+        <h2 className="text-lg font-semibold text-content">{t("panelCrm.quickActions.title")}</h2>
       </div>
       <div className="grid grid-cols-1 gap-3">
         {crmActions.map((action) => {
@@ -51,15 +55,16 @@ function CrmQuickActions() {
   );
 }
 
-export default function CrmPage() {
+export default async function CrmPage() {
+  const t = await getServerT();
   return (
-    <PageShell title="CRM & Lead Yönetimi">
+    <PageShell title={t("panelCrm.page.title")}>
       <div className="flex flex-col gap-10">
         {/* 1. Başlık */}
         <SectionHeader
-          eyebrow="Satış & Kayıt"
-          title="CRM & Lead Yönetimi"
-          description="Aday velileri, görüşmeleri ve kayıt süreçlerini tek merkezden yönetin."
+          eyebrow={t("panelCrm.header.eyebrow")}
+          title={t("panelCrm.header.title")}
+          description={t("panelCrm.header.description")}
         />
 
         {/* Genel metrikler — GERÇEK (lead + randevu sayımları, tenant izole) */}

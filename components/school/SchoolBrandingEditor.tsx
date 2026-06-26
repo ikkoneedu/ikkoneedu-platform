@@ -6,6 +6,7 @@ import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { SchoolLogo } from "@/components/school/SchoolLogo";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import {
@@ -26,6 +27,7 @@ const MANAGER_ROLES: string[] = [
  * gösterir. Veriler public okul sayfasında (tenants/{id}) kullanılır. Tenant izole.
  */
 export function SchoolBrandingEditor() {
+  const t = useT();
   const { profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const canEdit = profile != null && MANAGER_ROLES.includes(profile.role);
@@ -70,7 +72,7 @@ export function SchoolBrandingEditor() {
     e.preventDefault();
     if (busy) return;
     if (logo && !/^https?:\/\//i.test(logo.trim())) {
-      setError("Logo bağlantısı http(s) ile başlamalı (veya boş bırakın).");
+      setError(t("panelSettings.brand.logoError"));
       return;
     }
     setBusy(true);
@@ -98,10 +100,8 @@ export function SchoolBrandingEditor() {
           <Palette size={18} aria-hidden="true" />
         </span>
         <div>
-          <h2 className="text-lg font-semibold text-content">Okul Marka Kimliği</h2>
-          <p className="text-xs text-muted">
-            Logo, slogan, marka rengi ve tanıtım metni — public okul sayfanızda görünür.
-          </p>
+          <h2 className="text-lg font-semibold text-content">{t("panelSettings.brand.title")}</h2>
+          <p className="text-xs text-muted">{t("panelSettings.brand.subtitle")}</p>
         </div>
         {slug && (
           <a
@@ -110,33 +110,33 @@ export function SchoolBrandingEditor() {
             rel="noreferrer"
             className="ml-auto inline-flex items-center gap-1 text-xs text-muted transition hover:text-accent"
           >
-            Sayfayı gör <ExternalLink size={12} aria-hidden="true" />
+            {t("panelSettings.brand.viewPage")} <ExternalLink size={12} aria-hidden="true" />
           </a>
         )}
       </div>
 
       {!loaded ? (
-        <p className="text-sm text-muted">Yükleniyor…</p>
+        <p className="text-sm text-muted">{t("panelSettings.brand.loading")}</p>
       ) : (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_auto]">
           <form onSubmit={handleSubmit} className="space-y-4">
             <TextField
-              label="Logo Bağlantısı (URL)"
+              label={t("panelSettings.brand.logo.label")}
               name="logo"
               value={logo}
               onChange={(e) => setLogo(e.target.value)}
-              placeholder="https://…/logo.png"
+              placeholder={t("panelSettings.brand.logo.placeholder")}
             />
             <TextField
-              label="Slogan"
+              label={t("panelSettings.brand.slogan.label")}
               name="slogan"
               value={slogan}
               onChange={(e) => setSlogan(e.target.value)}
-              placeholder="Geleceğe açılan kapı"
+              placeholder={t("panelSettings.brand.slogan.placeholder")}
             />
             <div className="flex flex-col gap-1.5">
               <label htmlFor="be-color" className="text-sm font-medium text-muted">
-                Marka Rengi
+                {t("panelSettings.brand.color.label")}
               </label>
               <div className="flex items-center gap-3">
                 <input
@@ -151,14 +151,14 @@ export function SchoolBrandingEditor() {
             </div>
             <div className="flex flex-col gap-1.5">
               <label htmlFor="be-about" className="text-sm font-medium text-muted">
-                Tanıtım Metni
+                {t("panelSettings.brand.about.label")}
               </label>
               <textarea
                 id="be-about"
                 value={about}
                 onChange={(e) => setAbout(e.target.value)}
                 rows={3}
-                placeholder="Okulunuzu kısaca tanıtın…"
+                placeholder={t("panelSettings.brand.about.placeholder")}
                 className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
@@ -170,13 +170,13 @@ export function SchoolBrandingEditor() {
             )}
             {saved && (
               <p className="flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-2.5 text-sm text-emerald-300">
-                <CheckCircle2 size={16} aria-hidden="true" /> Marka kimliği kaydedildi.
+                <CheckCircle2 size={16} aria-hidden="true" /> {t("panelSettings.brand.saved")}
               </p>
             )}
 
             <PrimaryButton type="submit" size="md" disabled={busy}>
               <Save size={16} aria-hidden="true" />
-              {busy ? "Kaydediliyor…" : "Kaydet"}
+              {busy ? t("panelSettings.brand.saving") : t("panelSettings.brand.save")}
             </PrimaryButton>
           </form>
 
@@ -187,7 +187,7 @@ export function SchoolBrandingEditor() {
           >
             <div className="h-1 w-full rounded-full" style={{ backgroundColor: brandColor }} />
             <SchoolLogo logo={logo} brand={brandColor} size={64} name={name} rounded="rounded-2xl" />
-            <p className="text-sm font-bold text-content">{name || "Okul Adı"}</p>
+            <p className="text-sm font-bold text-content">{name || t("panelSettings.brand.preview.schoolName")}</p>
             {slogan && (
               <p className="text-xs font-medium italic" style={{ color: brandColor }}>
                 “{slogan}”

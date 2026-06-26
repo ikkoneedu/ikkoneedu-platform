@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { listSchools } from "@/lib/services/schools";
@@ -21,12 +22,12 @@ import { listPlatformAuditLogs } from "@/lib/services/audit-logs";
 import { downloadJSON } from "@/lib/export/download";
 
 const items = [
-  { id: "gunluk", label: "Günlük Yedekleme", icon: CalendarClock },
-  { id: "haftalik", label: "Haftalık Yedekleme", icon: CalendarRange },
-  { id: "disa", label: "Veri Dışa Aktarma", icon: Download },
-  { id: "log", label: "Log Arşivi", icon: Archive },
-  { id: "izolasyon", label: "Okul Bazlı Veri İzolasyonu", icon: ShieldCheck },
-  { id: "kurtarma", label: "Silinen Veri Kurtarma", icon: RotateCcw },
+  { id: "gunluk", label: "panelSettings.backup.item.daily", icon: CalendarClock },
+  { id: "haftalik", label: "panelSettings.backup.item.weekly", icon: CalendarRange },
+  { id: "disa", label: "panelSettings.backup.item.export", icon: Download },
+  { id: "log", label: "panelSettings.backup.item.logArchive", icon: Archive },
+  { id: "izolasyon", label: "panelSettings.backup.item.isolation", icon: ShieldCheck },
+  { id: "kurtarma", label: "panelSettings.backup.item.recovery", icon: RotateCcw },
 ];
 
 /**
@@ -35,6 +36,7 @@ const items = [
  * kaydı verisini JSON olarak indirir. Diğer rollerde bilgilendirme gösterir.
  */
 export function DataBackupSettings() {
+  const t = useT();
   const { profile, firebaseReady } = useAuth();
   const isSuper = profile?.role === ROLES.SUPER_ADMIN;
   const [busy, setBusy] = useState<string | null>(null);
@@ -59,9 +61,17 @@ export function DataBackupSettings() {
       };
       const stamp = new Date().toISOString().slice(0, 10);
       downloadJSON(`ikkoneedu-${withLogs ? "yedek" : "veri"}-${stamp}.json`, backup);
-      setMsg(`İndirildi: ${schools.length} okul, ${users.length} kullanıcı${withLogs ? `, ${logs.length} log` : ""}.`);
+      setMsg(
+        t("panelSettings.backup.success", {
+          schools: schools.length,
+          users: users.length,
+          logs: withLogs
+            ? t("panelSettings.backup.success.logs", { count: logs.length })
+            : "",
+        }),
+      );
     } catch {
-      setMsg("Dışa aktarma başarısız. Yetki/erişim kontrol edin.");
+      setMsg(t("panelSettings.backup.error"));
     } finally {
       setBusy(null);
     }
@@ -71,7 +81,7 @@ export function DataBackupSettings() {
     <GlassCard tone="navy">
       <div className="mb-5 flex items-center gap-2">
         <DatabaseBackup size={18} className="text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Veri Yönetimi</h2>
+        <h2 className="text-lg font-semibold text-content">{t("panelSettings.backup.title")}</h2>
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -85,7 +95,7 @@ export function DataBackupSettings() {
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-accent/20 bg-navy/50 text-accent">
                 <Icon size={18} aria-hidden="true" />
               </span>
-              <span className="text-sm font-medium text-content">{item.label}</span>
+              <span className="text-sm font-medium text-content">{t(item.label)}</span>
             </div>
           );
         })}
@@ -96,7 +106,9 @@ export function DataBackupSettings() {
           <div className="mt-6 flex flex-wrap gap-3">
             <PrimaryButton size="md" onClick={() => exportData(true, "yedek")} disabled={busy !== null}>
               <DatabaseBackup size={16} aria-hidden="true" />
-              {busy === "yedek" ? "Hazırlanıyor…" : "Yedek Al (JSON)"}
+              {busy === "yedek"
+                ? t("panelSettings.backup.backup.busy")
+                : t("panelSettings.backup.backup.idle")}
             </PrimaryButton>
             <PrimaryButton
               variant="secondary"
@@ -105,22 +117,21 @@ export function DataBackupSettings() {
               disabled={busy !== null}
             >
               <Download size={16} aria-hidden="true" />
-              {busy === "veri" ? "Hazırlanıyor…" : "Verileri Dışa Aktar"}
+              {busy === "veri"
+                ? t("panelSettings.backup.export.busy")
+                : t("panelSettings.backup.export.idle")}
             </PrimaryButton>
             <a href="/super-admin">
               <PrimaryButton variant="secondary" size="md">
                 <FileSearch size={16} aria-hidden="true" />
-                Logları İncele
+                {t("panelSettings.backup.inspectLogs")}
               </PrimaryButton>
             </a>
           </div>
           {msg && <p className="mt-3 text-sm text-muted">{msg}</p>}
         </>
       ) : (
-        <p className="mt-6 text-sm text-muted">
-          Canlı yedek/dışa aktarma yalnızca giriş yapmış bir süper admin hesabıyla
-          ve Firebase aktifken kullanılabilir.
-        </p>
+        <p className="mt-6 text-sm text-muted">{t("panelSettings.backup.restricted")}</p>
       )}
     </GlassCard>
   );

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { UserCheck, Copy, CheckCircle2, AlertCircle, X } from "lucide-react";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { ROLES } from "@/lib/auth/role-constants";
 import { createCodedAccount } from "@/lib/services/access-codes";
@@ -42,6 +43,7 @@ export function ConvertToStudentAction({
   staffName?: string;
   onConverted?: () => void | Promise<void>;
 }) {
+  const t = useT();
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<ConvertResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -99,14 +101,14 @@ export function ConvertToStudentAction({
     return (
       <div className="flex flex-col gap-1.5 rounded-lg border border-emerald-400/30 bg-emerald-400/5 px-2.5 py-2">
         <CodeRow
-          label="Öğrenci kodu"
+          label={t("panelCrm.convert.studentCode")}
           code={result.studentCode}
           copied={copied === result.studentCode}
           onCopy={() => copy(result.studentCode)}
         />
         {result.parentCode && (
           <CodeRow
-            label="Veli kodu"
+            label={t("panelCrm.convert.parentCode")}
             code={result.parentCode}
             copied={copied === result.parentCode}
             onCopy={() => copy(result.parentCode!)}
@@ -120,13 +122,13 @@ export function ConvertToStudentAction({
     <div className="flex items-center gap-2">
       <PrimaryButton type="button" variant="secondary" size="sm" onClick={convert} disabled={busy}>
         <UserCheck size={14} aria-hidden="true" />
-        {busy ? "Dönüştürülüyor…" : "Kayda Dönüştür"}
+        {busy ? t("panelCrm.convert.busy") : t("panelCrm.convert.action")}
       </PrimaryButton>
       {error && (
         <span className="flex items-center gap-1 text-xs text-brand">
           <AlertCircle size={12} aria-hidden="true" />
           {error}
-          <button type="button" onClick={() => setError(null)} aria-label="Kapat">
+          <button type="button" onClick={() => setError(null)} aria-label={t("panelCrm.convert.close")}>
             <X size={12} />
           </button>
         </span>
@@ -146,6 +148,7 @@ function CodeRow({
   copied: boolean;
   onCopy: () => void;
 }) {
+  const t = useT();
   return (
     <div className="flex items-center gap-2">
       <CheckCircle2 size={13} className="shrink-0 text-emerald-400" aria-hidden="true" />
@@ -156,7 +159,7 @@ function CodeRow({
         type="button"
         onClick={onCopy}
         className="ml-auto text-muted transition hover:text-content"
-        aria-label={`${label} kopyala`}
+        aria-label={t("panelCrm.convert.copy", { label })}
       >
         {copied ? <CheckCircle2 size={13} /> : <Copy size={13} />}
       </button>

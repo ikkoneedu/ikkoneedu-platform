@@ -2,6 +2,7 @@
 
 import { Flame, CheckCircle2, CircleDashed } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { isFirebaseConfigured } from "@/lib/firebase/client";
 
 /**
@@ -11,13 +12,14 @@ import { isFirebaseConfigured } from "@/lib/firebase/client";
  * Gerçek bir bağlantı testi yapmaz; yalnızca yapılandırma varlığını gösterir.
  */
 export function FirebaseStatusCard() {
+  const t = useT();
   const configured = isFirebaseConfigured();
 
   return (
     <GlassCard tone="navy">
       <div className="mb-5 flex items-center gap-2">
         <Flame size={18} className="text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Firebase Bağlantısı</h2>
+        <h2 className="text-lg font-semibold text-content">{t("panelSettings.firebase.title")}</h2>
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -38,12 +40,14 @@ export function FirebaseStatusCard() {
           </span>
           <div>
             <p className="text-sm font-semibold text-content">
-              {configured ? "Bağlantıya Hazır" : "Mock Mod"}
+              {configured
+                ? t("panelSettings.firebase.ready.title")
+                : t("panelSettings.firebase.mock.title")}
             </p>
             <p className="mt-0.5 max-w-md text-xs text-muted">
               {configured
-                ? "Firebase ortam değişkenleri tanımlı. Auth ve Firestore bağlantısı kurulabilir; formlar Firestore'a yazmaya hazırdır."
-                : "Firebase ortam değişkenleri tanımlı değil. Formlar mock modda çalışır: kullanıcıya başarı mesajı gösterilir, Firestore'a yazılmaz."}
+                ? t("panelSettings.firebase.ready.body")
+                : t("panelSettings.firebase.mock.body")}
             </p>
           </div>
         </div>
@@ -62,7 +66,9 @@ export function FirebaseStatusCard() {
               configured ? "bg-emerald-400" : "bg-amber-400",
             ].join(" ")}
           />
-          {configured ? "Hazır" : "Mock"}
+          {configured
+            ? t("panelSettings.firebase.badge.ready")
+            : t("panelSettings.firebase.badge.mock")}
         </span>
       </div>
     </GlassCard>

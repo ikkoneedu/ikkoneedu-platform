@@ -11,6 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { listLeads, type LeadRecord } from "@/lib/services/leads";
@@ -40,6 +41,7 @@ interface Metric {
  * Mock `CrmMetrics` yerine kullanılır; sayımlar canlı veriden hesaplanır.
  */
 export function RealCrmMetrics() {
+  const t = useT();
   const { profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const canView = profile != null && CRM_ROLES.includes(profile.role);
@@ -74,34 +76,34 @@ export function RealCrmMetrics() {
   const apptRows = appointments ?? [];
 
   const metrics: Metric[] = [
-    { id: "toplam", label: "Toplam Lead", value: leadRows.length, icon: Users },
+    { id: "toplam", label: t("panelCrm.metrics.totalLead"), value: leadRows.length, icon: Users },
     {
       id: "yeni",
-      label: "Yeni Lead",
+      label: t("panelCrm.metrics.newLead"),
       value: leadRows.filter((l) => l.status === "new").length,
       icon: Sparkle,
     },
     {
       id: "randevu",
-      label: "Toplam Randevu",
+      label: t("panelCrm.metrics.totalAppointment"),
       value: apptRows.length,
       icon: CalendarClock,
     },
     {
       id: "planli",
-      label: "Planlı Randevu",
+      label: t("panelCrm.metrics.scheduledAppointment"),
       value: apptRows.filter((a) => a.status === "SCHEDULED").length,
       icon: CalendarCheck,
     },
     {
       id: "kazanilan",
-      label: "Kazanılan",
+      label: t("panelCrm.metrics.won"),
       value: leadRows.filter((l) => l.status === "won").length,
       icon: Trophy,
     },
     {
       id: "kaybedilen",
-      label: "Kaybedilen",
+      label: t("panelCrm.metrics.lost"),
       value: leadRows.filter((l) => l.status === "lost").length,
       icon: XCircle,
     },

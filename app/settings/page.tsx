@@ -6,28 +6,32 @@ import { SchoolBrandingEditor } from "@/components/school/SchoolBrandingEditor";
 import { FirebaseStatusCard } from "@/components/settings/FirebaseStatusCard";
 import { DataBackupSettings } from "@/components/settings/DataBackupSettings";
 import { productName } from "@/lib/constants";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: `Sistem Ayarları — ${productName}`,
-  description:
-    "Okul yapılandırması, bağlantı durumu ve veri yedekleme tek merkezden.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("panelSettings.meta.title", { product: productName }),
+    description: t("panelSettings.meta.description"),
+  };
+}
 
 const categories = [
-  { id: "okul-ayarlari", label: "Okul Ayarları" },
-  { id: "marka", label: "Marka Kimliği" },
-  { id: "baglanti", label: "Bağlantı" },
-  { id: "veri", label: "Veri" },
+  { id: "okul-ayarlari", labelKey: "panelSettings.category.school" },
+  { id: "marka", labelKey: "panelSettings.category.brand" },
+  { id: "baglanti", labelKey: "panelSettings.category.connection" },
+  { id: "veri", labelKey: "panelSettings.category.data" },
 ];
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const t = await getServerT();
   return (
-    <PageShell title="Sistem Ayarları">
+    <PageShell title={t("panelSettings.page.title")}>
       <div className="flex flex-col gap-8">
         <SectionHeader
-          eyebrow="Yönetim"
-          title="Sistem Ayarları"
-          description="Okul yapılandırmasını, Firebase bağlantı durumunu ve veri yedeklemeyi yönetin. (Rol/güvenlik/AI ayar panelleri ilgili fazlarda eklenecek.)"
+          eyebrow={t("panelSettings.header.eyebrow")}
+          title={t("panelSettings.header.title")}
+          description={t("panelSettings.header.description")}
         />
 
         {/* Kategori hızlı navigasyonu */}
@@ -39,7 +43,7 @@ export default function SettingsPage() {
                 href={`#${category.id}`}
                 className="shrink-0 rounded-full border border-overlay/10 bg-overlay/[0.04] px-3.5 py-1.5 text-xs font-medium text-muted transition-colors hover:border-accent/40 hover:text-accent"
               >
-                {category.label}
+                {t(category.labelKey)}
               </a>
             ))}
           </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useT } from "@/components/i18n/LocaleProvider";
 import {
   CRM_STATUSES,
   crmStatusLabel,
@@ -40,8 +41,15 @@ export function CrmStatusSelect({
   onError?: (message: string) => void;
   onAction?: (status: CrmStatus) => void | Promise<void>;
 }) {
+  const t = useT();
   const [busy, setBusy] = useState(false);
   const [value, setValue] = useState(status);
+
+  // Bilinen durumlar için çeviri; bilinmeyenler (ör. "received") servis etiketine düşer.
+  const statusLabel = (s: string) =>
+    (CRM_STATUSES as readonly string[]).includes(s)
+      ? t(`panelCrm.crmStatus.${s}`)
+      : crmStatusLabel(s);
 
   const handle = async (next: string) => {
     const status = next as CrmStatus;
@@ -71,11 +79,11 @@ export function CrmStatusSelect({
       disabled={busy}
       onChange={(e) => void handle(e.target.value)}
       className={`rounded-lg border bg-overlay/[0.04] px-2 py-1 text-xs outline-none focus:border-accent disabled:opacity-50 ${STATUS_STYLE[value] ?? "border-overlay/15 text-content"}`}
-      aria-label="Durum değiştir"
+      aria-label={t("panelCrm.crmStatus.ariaLabel")}
     >
       {options.map((s) => (
         <option key={s} value={s} className="bg-surface text-content">
-          {crmStatusLabel(s)}
+          {statusLabel(s)}
         </option>
       ))}
     </select>

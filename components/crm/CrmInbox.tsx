@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Inbox, Award, Contact, MessageSquare, AlertCircle } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import {
@@ -42,6 +43,7 @@ const ENROLL_ROLES = [
  * Yalnızca giriş yapmış CRM personeli + Firebase aktifken görünür.
  */
 export function CrmInbox() {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const canEnroll =
@@ -88,22 +90,25 @@ export function CrmInbox() {
       <GlassCard tone="navy">
         <div className="mb-4 flex items-center gap-2">
           <Award size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Bursluluk Başvuruları</h2>
+          <h2 className="text-lg font-semibold text-content">{t("panelCrm.inbox.scholarshipTitle")}</h2>
           <NewBadge count={newApps} />
           <span className="ml-auto text-xs text-muted">{apps.length}</span>
         </div>
         {apps.length === 0 ? (
-          <p className="text-sm text-muted">Henüz başvuru yok.</p>
+          <p className="text-sm text-muted">{t("panelCrm.inbox.scholarshipEmpty")}</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {apps.map((a) => (
               <li key={a.id} className="rounded-lg border border-overlay/10 bg-overlay/[0.03] p-3 text-sm">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-medium text-content">{a.studentName || "—"}</span>
+                  <span className="font-medium text-content">{a.studentName || t("panelCrm.inbox.dash")}</span>
                   <span className="font-mono text-xs text-accent">{a.applicationNo}</span>
                 </div>
                 <p className="mt-0.5 text-xs text-muted">
-                  Veli: {a.parentName || "—"} · {a.parentPhone || a.parentEmail || "—"}
+                  {t("panelCrm.inbox.parent", {
+                    name: a.parentName || t("panelCrm.inbox.dash"),
+                    contact: a.parentPhone || a.parentEmail || t("panelCrm.inbox.dash"),
+                  })}
                 </p>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   <CrmStatusSelect
@@ -136,25 +141,25 @@ export function CrmInbox() {
       <GlassCard tone="navy">
         <div className="mb-4 flex items-center gap-2">
           <Contact size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Lead&apos;ler</h2>
+          <h2 className="text-lg font-semibold text-content">{t("panelCrm.inbox.leadsTitle")}</h2>
           <NewBadge count={newLeads} />
           <span className="ml-auto text-xs text-muted">{leads.length}</span>
         </div>
         {leads.length === 0 ? (
           <p className="flex items-center gap-2 text-sm text-muted">
             <Inbox size={15} aria-hidden="true" />
-            Henüz lead yok.
+            {t("panelCrm.inbox.leadsEmpty")}
           </p>
         ) : (
           <ul className="flex flex-col gap-2">
             {leads.map((l) => (
               <li key={l.id} className="rounded-lg border border-overlay/10 bg-overlay/[0.03] p-3 text-sm">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-medium text-content">{l.fullName || "—"}</span>
-                  <span className="text-xs text-muted">{l.source || "—"}</span>
+                  <span className="font-medium text-content">{l.fullName || t("panelCrm.inbox.dash")}</span>
+                  <span className="text-xs text-muted">{l.source || t("panelCrm.inbox.dash")}</span>
                 </div>
                 <p className="mt-0.5 text-xs text-muted">
-                  {l.phone || "—"}
+                  {l.phone || t("panelCrm.inbox.dash")}
                   {l.email ? ` · ${l.email}` : ""}
                 </p>
                 {l.note && <p className="mt-1 text-xs text-muted/70">{l.note}</p>}
@@ -177,25 +182,25 @@ export function CrmInbox() {
       <GlassCard tone="navy" className="lg:col-span-2">
         <div className="mb-4 flex items-center gap-2">
           <MessageSquare size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Aday Bilgi Talepleri</h2>
+          <h2 className="text-lg font-semibold text-content">{t("panelCrm.inbox.inquiriesTitle")}</h2>
           <NewBadge count={newInquiries} />
           <span className="ml-auto text-xs text-muted">{inquiries.length}</span>
         </div>
         {inquiries.length === 0 ? (
           <p className="flex items-center gap-2 text-sm text-muted">
             <Inbox size={15} aria-hidden="true" />
-            Portaldan gelen aday talebi yok.
+            {t("panelCrm.inbox.inquiriesEmpty")}
           </p>
         ) : (
           <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             {inquiries.map((i) => (
               <li key={i.id} className="rounded-lg border border-overlay/10 bg-overlay/[0.03] p-3 text-sm">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-medium text-content">{i.fullName || "—"}</span>
+                  <span className="font-medium text-content">{i.fullName || t("panelCrm.inbox.dash")}</span>
                   {i.grade && <span className="text-xs text-accent">{i.grade}</span>}
                 </div>
                 <p className="mt-0.5 text-xs text-muted">
-                  {i.phone || "—"}
+                  {i.phone || t("panelCrm.inbox.dash")}
                   {i.email ? ` · ${i.email}` : ""}
                 </p>
                 {i.message && <p className="mt-1 text-xs text-muted/70">{i.message}</p>}
@@ -231,10 +236,11 @@ export function CrmInbox() {
 
 /** İşlenmemiş (yeni) kayıt sayısını vurgulayan rozet. */
 function NewBadge({ count }: { count: number }) {
+  const t = useT();
   if (count <= 0) return null;
   return (
     <span className="rounded-full border border-amber-400/30 bg-amber-400/10 px-2 py-0.5 text-xs font-medium text-amber-300">
-      {count} yeni
+      {t("panelCrm.inbox.newBadge", { count })}
     </span>
   );
 }
