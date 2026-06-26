@@ -42,6 +42,7 @@ import * as previewLabels from "@/lib/i18n/dict/previewLabels";
 import * as hiring from "@/lib/i18n/dict/hiring";
 import * as certificates from "@/lib/i18n/dict/certificates";
 import * as schedulerSmart from "@/lib/i18n/dict/schedulerSmart";
+import * as examGen from "@/lib/i18n/dict/examGen";
 
 type Dict = Record<string, string>;
 
@@ -53,7 +54,7 @@ const ZONE_TR: Dict[] = [
   dashStudent.tr, dashAdmin.tr, dashExec.tr,
   panelCrm.tr, panelSettings.tr, panelSaas.tr, panelFinance.tr, panelExec.tr,
   schoolLife.tr, panelAdmin2.tr, panelTeacher.tr, modules.tr, socialStudio.tr,
-  previewLabels.tr, hiring.tr, certificates.tr, schedulerSmart.tr,
+  previewLabels.tr, hiring.tr, certificates.tr, schedulerSmart.tr, examGen.tr,
 ];
 const ZONE_EN: Dict[] = [
   pricing.en, demo.en, features.en, register.en, codeLogin.en,
@@ -62,7 +63,7 @@ const ZONE_EN: Dict[] = [
   dashStudent.en, dashAdmin.en, dashExec.en,
   panelCrm.en, panelSettings.en, panelSaas.en, panelFinance.en, panelExec.en,
   schoolLife.en, panelAdmin2.en, panelTeacher.en, modules.en, socialStudio.en,
-  previewLabels.en, hiring.en, certificates.en, schedulerSmart.en,
+  previewLabels.en, hiring.en, certificates.en, schedulerSmart.en, examGen.en,
 ];
 
 const tr: Dict = {

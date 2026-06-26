@@ -1,75 +1,42 @@
 import type { Metadata } from "next";
-import { AiComingSoonNotice } from "@/components/ai/AiComingSoonNotice";
+import { Sparkles } from "lucide-react";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
-import { ExamHero } from "@/components/exam/ExamHero";
-import { ExamBuilderForm } from "@/components/exam/ExamBuilderForm";
-import { GeneratedExamPreview } from "@/components/exam/GeneratedExamPreview";
-import { QuestionBankOverview } from "@/components/exam/QuestionBankOverview";
-import { QualityAnalysisCard } from "@/components/exam/QualityAnalysisCard";
-import { WorksheetGenerator } from "@/components/exam/WorksheetGenerator";
-import { QuizGenerator } from "@/components/exam/QuizGenerator";
-import { ExportCenter } from "@/components/exam/ExportCenter";
-import { AiExamSuggestions } from "@/components/exam/AiExamSuggestions";
+import { ExamGeneratorStudio } from "@/components/exam/ExamGeneratorStudio";
+import { getServerT } from "@/lib/i18n/server";
 import { productName } from "@/lib/constants";
-import {
-  examFormOptions,
-  examGeneratedQuestions,
-  examQuestionBankMetrics,
-  examBankFilters,
-  examQualityMetrics,
-  examWorksheetOptions,
-  examQuizOptions,
-  examAiSuggestions,
-} from "@/lib/exam-mock-data";
 
-export const metadata: Metadata = {
-  title: `AI Sınav Oluşturucu — ${productName}`,
-  description:
-    "Yapay zeka desteğiyle sınavlar, quizler ve çalışma kağıtları oluşturun.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: `${t("exam.meta.title")} — ${productName}`,
+    description: t("exam.meta.desc"),
+  };
+}
 
-export default function ExamAiPage() {
+export default async function ExamAiPage() {
+  const t = await getServerT();
   return (
-    <PageShell title="AI Sınav Oluşturucu">
+    <PageShell title={t("exam.shell.title")}>
       <div className="flex flex-col gap-10">
-        <AiComingSoonNotice />
+        {/* Çalışan demo şeridi — gerçek AI üretimi sonraki faz */}
+        <div className="flex items-start gap-3 rounded-xl border border-accent/30 bg-accent/[0.06] px-4 py-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-accent/30 bg-navy/50 text-accent">
+            <Sparkles size={18} aria-hidden="true" />
+          </span>
+          <div className="text-sm">
+            <p className="font-semibold text-content">{t("exam.demo.title")}</p>
+            <p className="mt-0.5 text-muted">{t("exam.demo.body")}</p>
+          </div>
+        </div>
 
         <SectionHeader
-          eyebrow="Yapay Zeka"
-          title="AI Sınav Oluşturucu"
-          description="Yapay zeka desteğiyle sınavlar, quizler ve çalışma kağıtları oluşturun."
+          eyebrow={t("exam.header.eyebrow")}
+          title={t("exam.header.title")}
+          description={t("exam.header.desc")}
         />
 
-        {/* 1. Hero */}
-        <ExamHero />
-
-        {/* 2 + 3. Form ve önizleme */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <ExamBuilderForm options={examFormOptions} />
-          <GeneratedExamPreview questions={examGeneratedQuestions} />
-        </div>
-
-        {/* 4. Soru bankası */}
-        <QuestionBankOverview
-          metrics={examQuestionBankMetrics}
-          filters={examBankFilters}
-        />
-
-        {/* 5. Kalite analizi */}
-        <QualityAnalysisCard metrics={examQualityMetrics} />
-
-        {/* 6 + 7. Çalışma kağıdı ve quiz üretici */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <WorksheetGenerator options={examWorksheetOptions} />
-          <QuizGenerator options={examQuizOptions} />
-        </div>
-
-        {/* 8. Dışa aktarma */}
-        <ExportCenter questions={examGeneratedQuestions} />
-
-        {/* 9. AI önerileri */}
-        <AiExamSuggestions suggestions={examAiSuggestions} />
+        <ExamGeneratorStudio />
       </div>
     </PageShell>
   );
