@@ -65,6 +65,7 @@ export const PROTECTED_PREFIXES: string[] = [
   "/lunch-menu",
   "/bus-routes",
   "/lesson-plans",
+  "/social-studio",
 ];
 
 /** Okul yaşamı modülleri — tüm okul üyeleri erişir (personel oluşturur, herkes görür). */
@@ -153,6 +154,11 @@ export const ROUTE_ROLES: Record<string, Role[]> = {
   "/admissions-ai": [
     ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
     ROLES.COORDINATOR, ROLES.PR, ROLES.SALES, ROLES.SUPER_ADMIN,
+  ],
+  // Sosyal Medya AI Stüdyo — tanıtım/yönetim. Demo taslak (gerçek AI sonraki faz).
+  "/social-studio": [
+    ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
+    ROLES.PR, ROLES.SALES, ROLES.SUPER_ADMIN,
   ],
 };
 

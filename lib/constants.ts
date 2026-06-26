@@ -104,6 +104,7 @@ export const navigationItems: NavigationItem[] = [
   { id: "servis", labelKey: "nav.bus", href: "/bus-routes", icon: Bus },
   { id: "finans", labelKey: "nav.finance", href: "/finance", icon: Wallet, moduleId: "finance" },
   { id: "crm", labelKey: "nav.crm", href: "/crm", icon: Contact, moduleId: "admissions" },
+  { id: "sosyal-studyo", labelKey: "nav.socialStudio", href: "/social-studio", icon: Sparkles, moduleId: "socialStudio" },
   { id: "messages", labelKey: "nav.messages", href: "/messages", icon: MessageSquare, moduleId: "messages" },
   { id: "bildirimler", labelKey: "nav.notifications", href: "/notifications", icon: Bell, moduleId: "notifications" },
   { id: "demo", labelKey: "nav.demo", href: "/demo", icon: Rocket },
