@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { listTenantUsers } from "@/lib/services/users";
 import { listLeads } from "@/lib/services/leads";
@@ -49,6 +50,7 @@ const fmtMoney = (n: number) =>
  */
 export function LiveExecutiveMetrics() {
   const { profile, firebaseReady } = useAuth();
+  const t = useT();
   const tenantId = profile?.tenantId;
   const canSee = profile != null && MGMT_ROLES.includes(profile.role);
   const usable =
@@ -92,22 +94,22 @@ export function LiveExecutiveMetrics() {
   if (!usable || !m) return null;
 
   const items = [
-    { icon: GraduationCap, label: "Öğrenci", value: String(m.students) },
-    { icon: BookOpen, label: "Öğretmen", value: String(m.teachers) },
-    { icon: Users, label: "Veli", value: String(m.parents) },
-    { icon: Contact, label: "Lead", value: String(m.leads) },
-    { icon: CalendarClock, label: "Randevu", value: String(m.appointments) },
-    { icon: Award, label: "Bursluluk Başvurusu", value: String(m.scholarship) },
-    { icon: Wallet, label: "Tahsilat", value: fmtMoney(m.collected), tone: "emerald" },
-    { icon: TrendingDown, label: "Bakiye", value: fmtMoney(m.outstanding), tone: "brand" },
+    { icon: GraduationCap, label: t("panelExec.metric.students"), value: String(m.students) },
+    { icon: BookOpen, label: t("panelExec.metric.teachers"), value: String(m.teachers) },
+    { icon: Users, label: t("panelExec.metric.parents"), value: String(m.parents) },
+    { icon: Contact, label: t("panelExec.metric.leads"), value: String(m.leads) },
+    { icon: CalendarClock, label: t("panelExec.metric.appointments"), value: String(m.appointments) },
+    { icon: Award, label: t("panelExec.metric.scholarship"), value: String(m.scholarship) },
+    { icon: Wallet, label: t("panelExec.metric.collection"), value: fmtMoney(m.collected), tone: "emerald" },
+    { icon: TrendingDown, label: t("panelExec.metric.balance"), value: fmtMoney(m.outstanding), tone: "brand" },
   ];
 
   return (
     <GlassCard tone="navy">
       <div className="mb-4 flex items-center gap-2">
         <TrendingDown size={18} className="rotate-180 text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Canlı Okul Metrikleri</h2>
-        <span className="ml-auto text-xs text-muted">gerçek veri</span>
+        <h2 className="text-lg font-semibold text-content">{t("panelExec.metrics.heading")}</h2>
+        <span className="ml-auto text-xs text-muted">{t("panelExec.metrics.realData")}</span>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {items.map((it) => {

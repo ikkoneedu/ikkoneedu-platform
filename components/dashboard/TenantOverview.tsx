@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { GraduationCap, Users, BookOpen, UsersRound } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { listTenantUsers } from "@/lib/services/users";
 
@@ -14,6 +15,7 @@ import { listTenantUsers } from "@/lib/services/users";
  */
 export function TenantOverview() {
   const { profile, firebaseReady } = useAuth();
+  const t = useT();
   const tenantId = profile?.tenantId;
   const isStaff =
     profile?.role === ROLES.SCHOOL_ADMIN ||
@@ -52,17 +54,17 @@ export function TenantOverview() {
   if (!firebaseReady || !isStaff || !counts) return null;
 
   const cards = [
-    { label: "Öğrenci", value: counts.students, icon: GraduationCap },
-    { label: "Veli", value: counts.parents, icon: Users },
-    { label: "Öğretmen / Müdür", value: counts.teachers, icon: BookOpen },
-    { label: "Toplam Kullanıcı", value: counts.total, icon: UsersRound },
+    { label: t("panelExec.overview.students"), value: counts.students, icon: GraduationCap },
+    { label: t("panelExec.overview.parents"), value: counts.parents, icon: Users },
+    { label: t("panelExec.overview.staff"), value: counts.teachers, icon: BookOpen },
+    { label: t("panelExec.overview.total"), value: counts.total, icon: UsersRound },
   ];
 
   return (
     <GlassCard tone="navy">
       <div className="mb-4 flex items-center gap-2">
         <UsersRound size={18} className="text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Okul Özeti (canlı)</h2>
+        <h2 className="text-lg font-semibold text-content">{t("panelExec.overview.heading")}</h2>
       </div>
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {cards.map((card) => {

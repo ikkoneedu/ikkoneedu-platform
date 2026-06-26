@@ -1,3 +1,43 @@
-/** panelExec paneli çeviri anahtarları. tr kaynak; en eşleşir. */
-export const tr: Record<string, string> = {};
-export const en: Record<string, string> = {};
+/** Executive alt bileşenleri çeviri anahtarları. tr kaynak; en eşleşir. */
+export const tr: Record<string, string> = {
+  "panelExec.hero.eyebrow": "Yönetim",
+  "panelExec.hero.title": "Executive Dashboard",
+  "panelExec.hero.desc": "Kayıt, finans, veli memnuniyeti, akademik başarı ve yapay zeka kullanımını tek ekrandan izleyin.",
+  "panelExec.strategic.heading": "Stratejik Aksiyonlar",
+  "panelExec.metrics.heading": "Canlı Okul Metrikleri",
+  "panelExec.metrics.realData": "gerçek veri",
+  "panelExec.metric.students": "Öğrenci",
+  "panelExec.metric.teachers": "Öğretmen",
+  "panelExec.metric.parents": "Veli",
+  "panelExec.metric.leads": "Lead",
+  "panelExec.metric.appointments": "Randevu",
+  "panelExec.metric.scholarship": "Bursluluk Başvurusu",
+  "panelExec.metric.collection": "Tahsilat",
+  "panelExec.metric.balance": "Bakiye",
+  "panelExec.overview.heading": "Okul Özeti (canlı)",
+  "panelExec.overview.students": "Öğrenci",
+  "panelExec.overview.parents": "Veli",
+  "panelExec.overview.staff": "Öğretmen / Müdür",
+  "panelExec.overview.total": "Toplam Kullanıcı",
+};
+export const en: Record<string, string> = {
+  "panelExec.hero.eyebrow": "Management",
+  "panelExec.hero.title": "Executive Dashboard",
+  "panelExec.hero.desc": "Monitor enrollment, finance, parent satisfaction, academic success and AI usage from one screen.",
+  "panelExec.strategic.heading": "Strategic Actions",
+  "panelExec.metrics.heading": "Live School Metrics",
+  "panelExec.metrics.realData": "real data",
+  "panelExec.metric.students": "Students",
+  "panelExec.metric.teachers": "Teachers",
+  "panelExec.metric.parents": "Parents",
+  "panelExec.metric.leads": "Leads",
+  "panelExec.metric.appointments": "Appointments",
+  "panelExec.metric.scholarship": "Scholarship Applications",
+  "panelExec.metric.collection": "Collection",
+  "panelExec.metric.balance": "Balance",
+  "panelExec.overview.heading": "School Summary (live)",
+  "panelExec.overview.students": "Students",
+  "panelExec.overview.parents": "Parents",
+  "panelExec.overview.staff": "Teacher / Principal",
+  "panelExec.overview.total": "Total Users",
+};

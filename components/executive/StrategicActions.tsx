@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Target } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { getServerT } from "@/lib/i18n/server";
 import type { StrategicAction } from "@/lib/executive-mock-data";
 
 interface StrategicActionsProps {
@@ -10,12 +11,13 @@ interface StrategicActionsProps {
 /**
  * Stratejik Aksiyonlar — rapor ve sunum kısayolları (mock).
  */
-export function StrategicActions({ actions }: StrategicActionsProps) {
+export async function StrategicActions({ actions }: StrategicActionsProps) {
+  const t = await getServerT();
   return (
     <GlassCard tone="navy">
       <div className="mb-5 flex items-center gap-2">
         <Target size={18} className="text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Stratejik Aksiyonlar</h2>
+        <h2 className="text-lg font-semibold text-content">{t("panelExec.strategic.heading")}</h2>
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
