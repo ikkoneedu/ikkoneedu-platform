@@ -36,6 +36,7 @@ import * as panelExec from "@/lib/i18n/dict/panelExec";
 import * as schoolLife from "@/lib/i18n/dict/schoolLife";
 import * as panelAdmin2 from "@/lib/i18n/dict/panelAdmin2";
 import * as panelTeacher from "@/lib/i18n/dict/panelTeacher";
+import * as modules from "@/lib/i18n/dict/modules";
 
 type Dict = Record<string, string>;
 
@@ -46,7 +47,7 @@ const ZONE_TR: Dict[] = [
   boardA.tr, boardB.tr, boardC.tr, boardD.tr, dashboard.tr,
   dashStudent.tr, dashAdmin.tr, dashExec.tr,
   panelCrm.tr, panelSettings.tr, panelSaas.tr, panelFinance.tr, panelExec.tr,
-  schoolLife.tr, panelAdmin2.tr, panelTeacher.tr,
+  schoolLife.tr, panelAdmin2.tr, panelTeacher.tr, modules.tr,
 ];
 const ZONE_EN: Dict[] = [
   pricing.en, demo.en, features.en, register.en, codeLogin.en,
@@ -54,7 +55,7 @@ const ZONE_EN: Dict[] = [
   boardA.en, boardB.en, boardC.en, boardD.en, dashboard.en,
   dashStudent.en, dashAdmin.en, dashExec.en,
   panelCrm.en, panelSettings.en, panelSaas.en, panelFinance.en, panelExec.en,
-  schoolLife.en, panelAdmin2.en, panelTeacher.en,
+  schoolLife.en, panelAdmin2.en, panelTeacher.en, modules.en,
 ];
 
 const tr: Dict = {
