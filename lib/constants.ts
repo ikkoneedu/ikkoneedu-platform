@@ -3,6 +3,7 @@
  * Ürün bilgisi, tasarım sistemi renkleri ve navigasyon tek kaynaktan yönetilir.
  */
 
+import type { ModuleId } from "@/lib/modules/module-catalog";
 import {
   LayoutDashboard,
   School,
@@ -70,6 +71,13 @@ export interface NavigationItem {
   labelKey: string;
   href: string;
   icon: LucideIcon;
+  /**
+   * Opsiyonel modül bağı (lib/modules/module-catalog.ts ModuleId).
+   * Sidebar modül farkındalığı için kullanılır: tanımlıysa ve modül tenant'ta
+   * kilitliyse öğe "Yakında/Kilitli" rozetiyle gösterilebilir. Tanımsız öğeler
+   * (genel-bakış, ayarlar, süper admin gibi) her zaman görünür.
+   */
+  moduleId?: ModuleId;
 }
 
 /** Ana navigasyon öğeleri — sidebar, topbar ve mobil menüde ortak kullanılır. */
@@ -79,25 +87,25 @@ export const navigationItems: NavigationItem[] = [
   { id: "personel", labelKey: "nav.staff", href: "/admin/users", icon: UserPlus },
   { id: "okul-kayitlari", labelKey: "nav.records", href: "/admin/records", icon: GraduationCap },
   { id: "ders-programi", labelKey: "nav.timetable", href: "/admin/timetable", icon: CalendarDays },
-  { id: "executive", labelKey: "nav.executive", href: "/executive", icon: BarChart3 },
+  { id: "executive", labelKey: "nav.executive", href: "/executive", icon: BarChart3, moduleId: "reports" },
   { id: "okullar", labelKey: "nav.schools", href: "/school-select", icon: School },
   { id: "ogrenciler", labelKey: "nav.students", href: "/student", icon: GraduationCap },
   { id: "veliler", labelKey: "nav.parents", href: "/parent", icon: Users },
   { id: "ogretmenler", labelKey: "nav.teachers", href: "/teacher", icon: BookOpen },
   { id: "siniflarim", labelKey: "nav.myClasses", href: "/teacher/classes", icon: School },
-  { id: "yapay-zeka", labelKey: "nav.aiBrain", href: "/ai-brain", icon: Sparkles },
-  { id: "kayit-danismani", labelKey: "nav.aiAdmissions", href: "/admissions-ai", icon: UserPlus },
-  { id: "bursluluk", labelKey: "nav.scholarship", href: "/scholarship-exam", icon: Award },
-  { id: "karne-asistani", labelKey: "nav.aiReportCard", href: "/report-card-ai", icon: ClipboardPen },
-  { id: "rehberlik", labelKey: "nav.counseling", href: "/counseling", icon: HeartHandshake },
+  { id: "yapay-zeka", labelKey: "nav.aiBrain", href: "/ai-brain", icon: Sparkles, moduleId: "aiBrain" },
+  { id: "kayit-danismani", labelKey: "nav.aiAdmissions", href: "/admissions-ai", icon: UserPlus, moduleId: "admissions" },
+  { id: "bursluluk", labelKey: "nav.scholarship", href: "/scholarship-exam", icon: Award, moduleId: "exams" },
+  { id: "karne-asistani", labelKey: "nav.aiReportCard", href: "/report-card-ai", icon: ClipboardPen, moduleId: "reportCardAi" },
+  { id: "rehberlik", labelKey: "nav.counseling", href: "/counseling", icon: HeartHandshake, moduleId: "counseling" },
   { id: "ders-planlari", labelKey: "nav.lessonPlans", href: "/lesson-plans", icon: NotebookPen },
-  { id: "etkinlikler", labelKey: "nav.events", href: "/events", icon: CalendarCheck },
+  { id: "etkinlikler", labelKey: "nav.events", href: "/events", icon: CalendarCheck, moduleId: "events" },
   { id: "yemek", labelKey: "nav.lunch", href: "/lunch-menu", icon: UtensilsCrossed },
   { id: "servis", labelKey: "nav.bus", href: "/bus-routes", icon: Bus },
-  { id: "finans", labelKey: "nav.finance", href: "/finance", icon: Wallet },
-  { id: "crm", labelKey: "nav.crm", href: "/crm", icon: Contact },
-  { id: "messages", labelKey: "nav.messages", href: "/messages", icon: MessageSquare },
-  { id: "bildirimler", labelKey: "nav.notifications", href: "/notifications", icon: Bell },
+  { id: "finans", labelKey: "nav.finance", href: "/finance", icon: Wallet, moduleId: "finance" },
+  { id: "crm", labelKey: "nav.crm", href: "/crm", icon: Contact, moduleId: "admissions" },
+  { id: "messages", labelKey: "nav.messages", href: "/messages", icon: MessageSquare, moduleId: "messages" },
+  { id: "bildirimler", labelKey: "nav.notifications", href: "/notifications", icon: Bell, moduleId: "notifications" },
   { id: "demo", labelKey: "nav.demo", href: "/demo", icon: Rocket },
   { id: "settings", labelKey: "nav.settings", href: "/settings", icon: Settings },
   { id: "super-admin", labelKey: "nav.superAdmin", href: "/super-admin", icon: ShieldCheck },

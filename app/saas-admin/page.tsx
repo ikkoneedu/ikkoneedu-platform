@@ -7,6 +7,7 @@ import { PlatformLeadsInbox } from "@/components/saas/PlatformLeadsInbox";
 import { TenantManagement } from "@/components/saas/TenantManagement";
 import { RealSchoolTable } from "@/components/saas/RealSchoolTable";
 import { NewSchoolForm } from "@/components/saas/NewSchoolForm";
+import { ModuleEntitlementsPreview } from "@/components/saas/ModuleEntitlementsPreview";
 import { VisionCard } from "@/components/saas/VisionCard";
 import { productName } from "@/lib/constants";
 import { saasPlanTypes, saasVisionTiers } from "@/lib/saas-mock-data";
@@ -48,6 +49,9 @@ export default async function SaasAdminPage() {
 
         {/* Yeni okul ekle (gerçek Firestore'a yazar) */}
         <NewSchoolForm plans={saasPlanTypes} />
+
+        {/* Modül yetkileri önizleme — SALT OKUNUR (paket→modül çözümleme) */}
+        <ModuleEntitlementsPreview />
 
         {/* Gelecek vizyonu (bilgilendirici — abonelik/gelir/AI fazları sonra) */}
         <VisionCard tiers={saasVisionTiers} />

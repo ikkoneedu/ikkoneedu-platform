@@ -59,6 +59,11 @@ export interface TenantRecord {
   status: string;
   packageId: string;
   city: string;
+  /**
+   * Opsiyonel modül override (moduleId → açık/kapalı). Tanımsızsa modül erişimi
+   * pakete göre çözülür (lib/modules/resolver.ts). Geriye dönük uyumlu.
+   */
+  modules?: Record<string, boolean>;
   createdAt: number | null;
   updatedAt: number | null;
 }
@@ -78,6 +83,15 @@ function toMillis(v: unknown): number | null {
   return ts && typeof ts.toMillis === "function" ? ts.toMillis() : null;
 }
 
+function mapModules(v: unknown): Record<string, boolean> | undefined {
+  if (!v || typeof v !== "object" || Array.isArray(v)) return undefined;
+  const out: Record<string, boolean> = {};
+  for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+    if (typeof val === "boolean") out[k] = val;
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
+}
+
 function mapTenant(id: string, data: Record<string, unknown>): TenantRecord {
   return {
     tenantId: id,
@@ -86,6 +100,7 @@ function mapTenant(id: string, data: Record<string, unknown>): TenantRecord {
     status: String(data.status ?? "active"),
     packageId: String(data.packageId ?? DEFAULT_PACKAGE_ID),
     city: String(data.city ?? ""),
+    modules: mapModules(data.modules),
     createdAt: toMillis(data.createdAt),
     updatedAt: toMillis(data.updatedAt),
   };

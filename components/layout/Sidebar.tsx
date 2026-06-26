@@ -8,6 +8,16 @@ import { navigationItems, type NavigationItem } from "@/lib/constants";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useT } from "@/components/i18n/LocaleProvider";
 import { canRoleAccess } from "@/lib/auth/route-config";
+import { useTenantModules } from "@/components/modules/useTenantModules";
+import type { ModuleStatus } from "@/lib/modules/module-catalog";
+
+/** Menü öğesi için modül durum rozeti stili (yalnız bilgilendirici). */
+const BADGE_STYLE: Partial<Record<ModuleStatus, string>> = {
+  comingSoon: "border-amber-400/30 bg-amber-400/10 text-amber-300",
+  pilot: "border-sky-400/30 bg-sky-400/10 text-sky-300",
+  aiReady: "border-accent/30 bg-accent/10 text-accent",
+  locked: "border-overlay/15 bg-overlay/[0.05] text-muted",
+};
 
 interface SidebarProps {
   /** Menü öğeleri (varsayılan: genel navigasyon). */
@@ -36,6 +46,7 @@ export function Sidebar({
   const pathname = usePathname();
   const { profile, firebaseReady } = useAuth();
   const t = useT();
+  const { ready: modulesReady, statusOf } = useTenantModules();
 
   // Rol-duyarlı menü: oturum açıkken kullanıcının erişemediği öğeler gizlenir.
   // Mock Mod'da (Firebase yok) veya profil yokken tüm öğeler gösterilir.
@@ -74,6 +85,12 @@ export function Sidebar({
           const isActive = isItemActive(item);
           const Icon = item.icon;
 
+          // Modül durum rozeti — yalnız bilgilendirici; öğe ASLA gizlenmez.
+          // "live" ve veri hazır değilken rozet gösterilmez (gürültü olmasın).
+          const status =
+            modulesReady && item.moduleId ? statusOf(item.moduleId) : null;
+          const badge = status && status !== "live" ? BADGE_STYLE[status] : null;
+
           return (
             <Link
               key={item.id}
@@ -87,7 +104,14 @@ export function Sidebar({
               ].join(" ")}
             >
               <Icon size={18} aria-hidden="true" />
-              {t(item.labelKey)}
+              <span className="flex-1 truncate">{t(item.labelKey)}</span>
+              {badge && status && (
+                <span
+                  className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[10px] font-medium ${badge}`}
+                >
+                  {t(`modules.status.${status}`)}
+                </span>
+              )}
             </Link>
           );
         })}
