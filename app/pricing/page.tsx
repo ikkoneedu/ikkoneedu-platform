@@ -7,6 +7,7 @@ import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Reveal } from "@/components/landing/Reveal";
 import { PricingPlans } from "@/components/pricing/PricingPlans";
+import { ModuleMatrix } from "@/components/pricing/ModuleMatrix";
 import { RevenuePotential } from "@/components/pricing/RevenuePotential";
 import { ComparisonTable } from "@/components/pricing/ComparisonTable";
 import { PricingFaq } from "@/components/pricing/PricingFaq";
@@ -77,6 +78,13 @@ export default async function PricingPage() {
         {/* Paketler */}
         <section className="pb-8">
           <PricingPlans plans={pricingPlans} />
+        </section>
+
+        {/* Modül matrisi — katalog odaklı (paket→modül), ödeme yok */}
+        <section className="py-12 lg:py-16">
+          <Reveal>
+            <ModuleMatrix />
+          </Reveal>
         </section>
 
         {/* Gelir potansiyeli */}

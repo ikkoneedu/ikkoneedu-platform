@@ -43,6 +43,13 @@ export const tr = {
   "modules.preview.source.override-on": "Override: açık",
   "modules.preview.source.override-off": "Override: kapalı",
 
+  // Modül matrisi (fiyatlandırma — paket başına modül kapsamı)
+  "modules.matrix.title": "Pakete Göre Modüller",
+  "modules.matrix.desc": "Hangi modülün hangi pakette yer aldığını görün. Yapay zekâ modülleri yakında; ödeme yok — Demo veya teklif ile başlayın.",
+  "modules.matrix.included": "Dahil",
+  "modules.matrix.notIncluded": "Dahil değil",
+  "modules.matrix.cta": "Demo İste",
+
   // Modüller
   "modules.admissions.name": "Kayıt & Aday Hunisi",
   "modules.admissions.short": "Aday velileri CRM hunisinde topla, takip et ve kayda çevir.",
@@ -148,6 +155,12 @@ export const en = {
   "modules.preview.source.package-excluded": "Not in plan",
   "modules.preview.source.override-on": "Override: on",
   "modules.preview.source.override-off": "Override: off",
+
+  "modules.matrix.title": "Modules by Plan",
+  "modules.matrix.desc": "See which module is in which plan. AI modules are coming soon; no payment — start with a demo or quote.",
+  "modules.matrix.included": "Included",
+  "modules.matrix.notIncluded": "Not included",
+  "modules.matrix.cta": "Request a demo",
 
   "modules.admissions.name": "Admissions & Lead Funnel",
   "modules.admissions.short": "Capture prospective parents in a CRM funnel and convert them to enrolments.",
