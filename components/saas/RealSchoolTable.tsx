@@ -6,6 +6,7 @@ import { Building2, RefreshCw, Inbox, ExternalLink } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { DataExportButtons } from "@/components/shared/DataExportButtons";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { listSchools, type SchoolRecord } from "@/lib/services/schools";
@@ -21,6 +22,7 @@ const STATUS_STYLE: Record<string, string> = {
  * Mock `SchoolTable` yerine kullanılır; boş/yükleniyor durumları ele alınır.
  */
 export function RealSchoolTable() {
+  const t = useT();
   const { profile, firebaseReady } = useAuth();
   const isSuper = profile?.role === ROLES.SUPER_ADMIN;
   const usable = firebaseReady && isSuper;
@@ -50,19 +52,19 @@ export function RealSchoolTable() {
     <GlassCard tone="navy">
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <Building2 size={18} className="text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Okullar Listesi</h2>
+        <h2 className="text-lg font-semibold text-content">{t("panelSaas.schools.heading")}</h2>
         <span className="rounded-full bg-overlay/[0.06] px-2 py-0.5 text-[10px] font-semibold text-muted">
           {schools.length}
         </span>
         <div className="ml-auto flex items-center gap-2">
           <DataExportButtons
-            filename="okullar-listesi"
-            title="Okullar Listesi"
+            filename={t("panelSaas.schools.export.filename")}
+            title={t("panelSaas.schools.export.title")}
             columns={[
-              { key: "name", label: "Okul" },
-              { key: "city", label: "Şehir" },
-              { key: "status", label: "Durum" },
-              { key: "slug", label: "Slug" },
+              { key: "name", label: t("panelSaas.schools.col.name") },
+              { key: "city", label: t("panelSaas.schools.col.city") },
+              { key: "status", label: t("panelSaas.schools.col.status") },
+              { key: "slug", label: t("panelSaas.schools.col.slug") },
             ]}
             rows={schools as unknown as Record<string, unknown>[]}
           />
@@ -70,7 +72,7 @@ export function RealSchoolTable() {
             type="button"
             onClick={load}
             disabled={refreshing}
-            aria-label="Yenile"
+            aria-label={t("panelSaas.schools.refreshAria")}
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-overlay/10 bg-overlay/[0.04] text-muted transition-colors hover:bg-overlay/[0.08] hover:text-content disabled:opacity-50"
           >
             <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} aria-hidden="true" />
@@ -79,20 +81,20 @@ export function RealSchoolTable() {
       </div>
 
       {rows === null ? (
-        <p className="py-10 text-center text-sm text-muted">Yükleniyor…</p>
+        <p className="py-10 text-center text-sm text-muted">{t("panelSaas.schools.loading")}</p>
       ) : schools.length === 0 ? (
         <div className="flex flex-col items-center gap-2 py-10 text-center text-muted">
           <Inbox size={26} className="text-accent" aria-hidden="true" />
-          <p className="text-sm">Henüz okul yok. Aşağıdaki formdan ekleyebilirsiniz.</p>
+          <p className="text-sm">{t("panelSaas.schools.empty")}</p>
         </div>
       ) : (
         <>
           <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4 border-b border-overlay/10 px-2 pb-3 text-xs font-semibold uppercase tracking-wide text-muted lg:grid">
-            <span>Okul</span>
-            <span>Şehir</span>
-            <span>Durum</span>
-            <span>Sayfa</span>
-            <span className="text-right">İşlem</span>
+            <span>{t("panelSaas.schools.th.name")}</span>
+            <span>{t("panelSaas.schools.th.city")}</span>
+            <span>{t("panelSaas.schools.th.status")}</span>
+            <span>{t("panelSaas.schools.th.page")}</span>
+            <span className="text-right">{t("panelSaas.schools.th.action")}</span>
           </div>
 
           <ul className="divide-y divide-overlay/5">
@@ -130,7 +132,7 @@ export function RealSchoolTable() {
                   <span className="lg:text-right">
                     <Link href="/super-admin">
                       <PrimaryButton variant="secondary" size="sm" className="w-full lg:w-auto">
-                        Yönet
+                        {t("panelSaas.schools.manage")}
                       </PrimaryButton>
                     </Link>
                   </span>

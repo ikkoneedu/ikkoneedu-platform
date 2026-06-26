@@ -23,6 +23,8 @@ import {
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
+import { useT } from "@/components/i18n/LocaleProvider";
+import type { TranslateFn } from "@/lib/i18n/dictionaries";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useHasRole } from "@/components/auth/RoleGate";
 import { ROLES, ROLE_LABELS, type Role } from "@/lib/auth/role-constants";
@@ -66,6 +68,7 @@ const ALL_ASSIGNABLE_ROLES = Object.values(ROLES) as Role[];
  * Yalnızca SUPER_ADMIN erişebilir (Firestore kuralları da zorunlu kılar).
  */
 export function SuperAdminConsole() {
+  const t = useT();
   const { user, firebaseReady, loading } = useAuth();
   const isSuperAdmin = useHasRole([ROLES.SUPER_ADMIN]);
   const adminUid = user?.uid;
@@ -172,11 +175,11 @@ export function SuperAdminConsole() {
     const founderEmail = form.founderEmail.trim();
     const founderName = form.founderName.trim();
     if (!name) {
-      setError("Lütfen okul adını girin.");
+      setError(t("panelSaas.console.err.nameRequired"));
       return;
     }
     if (founderEmail && !founderEmail.includes("@")) {
-      setError("Kurucu için geçerli bir e-posta girin (veya boş bırakın).");
+      setError(t("panelSaas.console.err.founderEmail"));
       return;
     }
 
@@ -254,7 +257,7 @@ export function SuperAdminConsole() {
   };
 
   if (loading) {
-    return <GlassCard tone="navy" className="text-sm text-muted">Yükleniyor…</GlassCard>;
+    return <GlassCard tone="navy" className="text-sm text-muted">{t("panelSaas.console.loading")}</GlassCard>;
   }
 
   if (!ready) {
@@ -262,10 +265,9 @@ export function SuperAdminConsole() {
       <GlassCard tone="navy" className="flex items-start gap-3">
         <AlertCircle size={18} className="mt-0.5 shrink-0 text-amber-400" aria-hidden="true" />
         <div className="text-sm text-muted">
-          <p className="font-semibold text-content">Süper Admin konsolu kullanılamıyor</p>
+          <p className="font-semibold text-content">{t("panelSaas.console.unavailableTitle")}</p>
           <p className="mt-1">
-            Bu bölüm yalnızca giriş yapmış bir SUPER_ADMIN hesabıyla ve Firebase
-            yapılandırması aktifken çalışır.
+            {t("panelSaas.console.unavailableBody")}
           </p>
         </div>
       </GlassCard>
@@ -283,8 +285,8 @@ export function SuperAdminConsole() {
 
       {/* Global istatistikler */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <StatCard icon={<School size={18} />} label="Okul" value={schools.length} />
-        <StatCard icon={<Users size={18} />} label="Toplam Kullanıcı" value={users.length} />
+        <StatCard icon={<School size={18} />} label={t("panelSaas.console.stat.school")} value={schools.length} />
+        <StatCard icon={<Users size={18} />} label={t("panelSaas.console.stat.totalUsers")} value={users.length} />
         <StatCard
           icon={<Users size={18} />}
           label={ROLE_LABELS.TEACHER}
@@ -301,63 +303,62 @@ export function SuperAdminConsole() {
       <GlassCard tone="navy">
         <div className="mb-1 flex items-center gap-2">
           <Building2 size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Okul Oluştur</h2>
+          <h2 className="text-lg font-semibold text-content">{t("panelSaas.console.create.heading")}</h2>
         </div>
         <p className="mb-4 text-xs text-muted">
-          Kurucu e-postası girerseniz okul açılışıyla birlikte bir{" "}
-          <span className="text-accent">Kurucu</span> hesabı oluşturulur ve geçici
-          şifre üretilir.
+          {t("panelSaas.console.create.intro.before")}{" "}
+          <span className="text-accent">{t("panelSaas.console.create.intro.founder")}</span> {t("panelSaas.console.create.intro.after")}
         </p>
         <form onSubmit={handleCreate} className="flex flex-col gap-4">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <TextField
-              label="Okul Adı"
+              label={t("panelSaas.console.field.name")}
               name="name"
-              placeholder="Örnek Koleji"
+              placeholder={t("panelSaas.console.field.namePlaceholder")}
               required
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
             />
             <TextField
-              label="Kısa Ad (slug)"
+              label={t("panelSaas.console.field.slug")}
               name="slug"
-              placeholder={slugPreview || "ornek-koleji"}
+              placeholder={slugPreview || t("panelSaas.console.field.slugPlaceholder")}
               value={form.slug}
               onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
             />
             <TextField
-              label="Şehir"
+              label={t("panelSaas.console.field.city")}
               name="city"
-              placeholder="İstanbul"
+              placeholder={t("panelSaas.console.field.cityPlaceholder")}
               value={form.city}
               onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
             />
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 sm:items-end">
             <TextField
-              label="Kurucu Ad Soyad (opsiyonel)"
+              label={t("panelSaas.console.field.founderName")}
               name="founderName"
-              placeholder="Ad Soyad"
+              placeholder={t("panelSaas.console.field.founderNamePlaceholder")}
               value={form.founderName}
               onChange={(e) => setForm((f) => ({ ...f, founderName: e.target.value }))}
             />
             <TextField
-              label="Kurucu E-posta (opsiyonel)"
+              label={t("panelSaas.console.field.founderEmail")}
               name="founderEmail"
               type="email"
-              placeholder="kurucu@okul.com"
+              placeholder={t("panelSaas.console.field.founderEmailPlaceholder")}
               value={form.founderEmail}
               onChange={(e) => setForm((f) => ({ ...f, founderEmail: e.target.value }))}
             />
             <PrimaryButton type="submit" size="md" disabled={busy}>
               <Plus size={16} aria-hidden="true" />
-              {busy ? "Oluşturuluyor…" : "Okulu Oluştur"}
+              {busy ? t("panelSaas.console.create.busy") : t("panelSaas.console.create.submit")}
             </PrimaryButton>
           </div>
         </form>
         {slugPreview && !onboarded && (
           <p className="mt-2 text-xs text-muted">
-            Kimlik: <span className="font-mono text-accent">{slugPreview}</span>
+            {t("panelSaas.console.identity")} <span className="font-mono text-accent">{slugPreview}</span>
           </p>
         )}
 
@@ -365,30 +366,28 @@ export function SuperAdminConsole() {
           <div className="mt-4 flex flex-col gap-2 rounded-xl border border-accent/30 bg-accent/5 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="text-sm">
               <p className="font-semibold text-content">
-                Okul ve kurucu hesabı oluşturuldu
+                {t("panelSaas.console.onboarded.title")}
               </p>
               <p className="mt-0.5 text-muted">
-                {onboarded.school} · Kurucu: {onboarded.email} · Geçici şifre:{" "}
+                {t("panelSaas.console.onboarded.line", { school: onboarded.school, email: onboarded.email })}{" "}
                 <span className="font-mono text-accent">{onboarded.password}</span>
               </p>
               <p className="mt-0.5 text-xs text-muted">
-                Bu bilgileri kurucuya iletin; e-posta + şifre ile /login üzerinden
-                giriş yapacak. Alternatif olarak kurucunun kendi şifresini
-                belirlemesi için sıfırlama e-postası gönderebilirsiniz.
+                {t("panelSaas.console.onboarded.note")}
               </p>
               {resetState === "sent" && (
                 <p className="mt-1 text-xs text-emerald-400">
-                  Şifre belirleme e-postası gönderildi.
+                  {t("panelSaas.console.reset.sent")}
                 </p>
               )}
               {resetState === "error" && (
-                <p className="mt-1 text-xs text-brand">E-posta gönderilemedi.</p>
+                <p className="mt-1 text-xs text-brand">{t("panelSaas.console.reset.error")}</p>
               )}
             </div>
             <div className="flex shrink-0 flex-col gap-2">
               <PrimaryButton type="button" variant="secondary" size="sm" onClick={copyPassword}>
                 {copied ? <CheckCircle2 size={15} /> : <Copy size={15} />}
-                {copied ? "Kopyalandı" : "Şifreyi Kopyala"}
+                {copied ? t("panelSaas.console.copied") : t("panelSaas.console.copyPw")}
               </PrimaryButton>
               <PrimaryButton
                 type="button"
@@ -399,10 +398,10 @@ export function SuperAdminConsole() {
               >
                 <Mail size={15} aria-hidden="true" />
                 {resetState === "sending"
-                  ? "Gönderiliyor…"
+                  ? t("panelSaas.console.reset.sending")
                   : resetState === "sent"
-                    ? "Gönderildi"
-                    : "Şifre E-postası Gönder"}
+                    ? t("panelSaas.console.reset.sentBtn")
+                    : t("panelSaas.console.reset.send")}
               </PrimaryButton>
             </div>
           </div>
@@ -413,11 +412,11 @@ export function SuperAdminConsole() {
       <GlassCard tone="navy">
         <div className="mb-4 flex items-center gap-2">
           <Inbox size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Demo Talepleri</h2>
-          <span className="ml-auto text-xs text-muted">{demoRequests.length} talep</span>
+          <h2 className="text-lg font-semibold text-content">{t("panelSaas.console.demo.heading")}</h2>
+          <span className="ml-auto text-xs text-muted">{t("panelSaas.console.demo.count", { count: demoRequests.length })}</span>
         </div>
         {demoRequests.length === 0 ? (
-          <p className="text-sm text-muted">Bekleyen demo talebi yok.</p>
+          <p className="text-sm text-muted">{t("panelSaas.console.demo.empty")}</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {demoRequests.map((d) => (
@@ -439,7 +438,7 @@ export function SuperAdminConsole() {
                   onClick={() => prefillFromDemo(d)}
                 >
                   <UserPlus size={15} aria-hidden="true" />
-                  Okula Dönüştür
+                  {t("panelSaas.console.demo.convert")}
                 </PrimaryButton>
               </li>
             ))}
@@ -451,31 +450,31 @@ export function SuperAdminConsole() {
       <GlassCard tone="navy">
         <div className="mb-4 flex items-center gap-2">
           <School size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Okullar</h2>
-          <span className="ml-auto text-xs text-muted">{schools.length} okul</span>
+          <h2 className="text-lg font-semibold text-content">{t("panelSaas.console.schools.heading")}</h2>
+          <span className="ml-auto text-xs text-muted">{t("panelSaas.console.schools.count", { count: schools.length })}</span>
           <button
             type="button"
             onClick={() => void refresh()}
             disabled={refreshing}
             className="text-muted transition hover:text-content disabled:opacity-50"
-            aria-label="Yenile"
+            aria-label={t("panelSaas.console.refreshAria")}
           >
             <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} />
           </button>
         </div>
         {schools.length === 0 ? (
-          <p className="text-sm text-muted">Henüz okul yok. Yukarıdan ilk okulu oluşturun.</p>
+          <p className="text-sm text-muted">{t("panelSaas.console.schools.empty")}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="text-xs uppercase tracking-wide text-muted">
-                  <th className="pb-2 pr-4 font-medium">Okul</th>
-                  <th className="pb-2 pr-4 font-medium">Kimlik</th>
-                  <th className="pb-2 pr-4 font-medium">Şehir</th>
-                  <th className="pb-2 pr-4 font-medium">Durum</th>
-                  <th className="pb-2 pr-4 font-medium">Kullanıcı</th>
-                  <th className="pb-2 font-medium">İşlem</th>
+                  <th className="pb-2 pr-4 font-medium">{t("panelSaas.console.th.school")}</th>
+                  <th className="pb-2 pr-4 font-medium">{t("panelSaas.console.th.identity")}</th>
+                  <th className="pb-2 pr-4 font-medium">{t("panelSaas.console.th.city")}</th>
+                  <th className="pb-2 pr-4 font-medium">{t("panelSaas.console.th.status")}</th>
+                  <th className="pb-2 pr-4 font-medium">{t("panelSaas.console.th.user")}</th>
+                  <th className="pb-2 font-medium">{t("panelSaas.console.th.action")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-overlay/5">
@@ -487,6 +486,7 @@ export function SuperAdminConsole() {
                     onChanged={refresh}
                     onError={setError}
                     onAudit={logAction}
+                    t={t}
                   />
                 ))}
               </tbody>
@@ -499,34 +499,34 @@ export function SuperAdminConsole() {
       <GlassCard tone="navy">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <Users size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Tüm Kullanıcılar</h2>
-          <span className="text-xs text-muted">{users.length} kayıt</span>
+          <h2 className="text-lg font-semibold text-content">{t("panelSaas.console.users.heading")}</h2>
+          <span className="text-xs text-muted">{t("panelSaas.console.users.count", { count: users.length })}</span>
           <DataExportButtons
             className="ml-auto"
-            filename="tum-kullanicilar"
-            title="Tüm Kullanıcılar"
+            filename={t("panelSaas.console.users.export.filename")}
+            title={t("panelSaas.console.users.export.title")}
             columns={[
-              { key: "displayName", label: "Ad" },
-              { key: "email", label: "E-posta" },
-              { key: "role", label: "Rol" },
-              { key: "tenantId", label: "Okul" },
-              { key: "status", label: "Durum" },
+              { key: "displayName", label: t("panelSaas.console.users.col.name") },
+              { key: "email", label: t("panelSaas.console.users.col.email") },
+              { key: "role", label: t("panelSaas.console.users.col.role") },
+              { key: "tenantId", label: t("panelSaas.console.users.col.school") },
+              { key: "status", label: t("panelSaas.console.users.col.status") },
             ]}
             rows={users as unknown as Record<string, unknown>[]}
           />
         </div>
         {users.length === 0 ? (
-          <p className="text-sm text-muted">Henüz kullanıcı yok.</p>
+          <p className="text-sm text-muted">{t("panelSaas.console.users.empty")}</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="text-xs uppercase tracking-wide text-muted">
-                  <th className="pb-2 pr-4 font-medium">Ad</th>
-                  <th className="pb-2 pr-4 font-medium">E-posta</th>
-                  <th className="pb-2 pr-4 font-medium">Okul</th>
-                  <th className="pb-2 pr-4 font-medium">Durum</th>
-                  <th className="pb-2 font-medium">Rol / İşlem</th>
+                  <th className="pb-2 pr-4 font-medium">{t("panelSaas.console.users.th.name")}</th>
+                  <th className="pb-2 pr-4 font-medium">{t("panelSaas.console.users.th.email")}</th>
+                  <th className="pb-2 pr-4 font-medium">{t("panelSaas.console.users.th.school")}</th>
+                  <th className="pb-2 pr-4 font-medium">{t("panelSaas.console.users.th.status")}</th>
+                  <th className="pb-2 font-medium">{t("panelSaas.console.users.th.roleAction")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-overlay/5">
@@ -536,11 +536,11 @@ export function SuperAdminConsole() {
                     <td className="py-2.5 pr-4 text-muted">{u.email}</td>
                     <td className="py-2.5 pr-4 font-mono text-xs text-muted">{u.tenantId || "—"}</td>
                     <td className="py-2.5 pr-4">
-                      <StatusBadge status={u.status} />
+                      <StatusBadge status={u.status} t={t} />
                     </td>
                     <td className="py-2.5">
                       {u.uid === adminUid ? (
-                        <span className="text-xs text-muted">{ROLE_LABELS[u.role] ?? u.role} (siz)</span>
+                        <span className="text-xs text-muted">{t("panelSaas.console.users.you", { role: ROLE_LABELS[u.role] ?? u.role })}</span>
                       ) : (
                         <UserAdminActions
                           uid={u.uid}
@@ -567,25 +567,25 @@ export function SuperAdminConsole() {
       <GlassCard tone="navy">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <FileClock size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">İşlem Kayıtları</h2>
-          <span className="text-xs text-muted">son {auditLogs.length}</span>
+          <h2 className="text-lg font-semibold text-content">{t("panelSaas.console.audit.heading")}</h2>
+          <span className="text-xs text-muted">{t("panelSaas.console.audit.recent", { count: auditLogs.length })}</span>
           <div className="ml-auto flex items-center gap-2">
             <select
               value={auditFilter}
               onChange={(e) => setAuditFilter(e.target.value)}
               className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-1 text-xs text-content outline-none focus:border-accent"
-              aria-label="İşlem türü filtrele"
+              aria-label={t("panelSaas.console.audit.filterAria")}
             >
-              <option value="ALL" className="bg-surface">Tümü</option>
-              {Object.keys(AUDIT_ACTION_LABELS).map((a) => (
+              <option value="ALL" className="bg-surface">{t("panelSaas.console.audit.all")}</option>
+              {AUDIT_ACTION_KEYS.map((a) => (
                 <option key={a} value={a} className="bg-surface">
-                  {AUDIT_ACTION_LABELS[a]}
+                  {auditActionLabel(a, t)}
                 </option>
               ))}
             </select>
             <button
               type="button"
-              onClick={() => exportAuditCsv(filteredAuditLogs)}
+              onClick={() => exportAuditCsv(filteredAuditLogs, t)}
               disabled={filteredAuditLogs.length === 0}
               className="inline-flex items-center gap-1 rounded-lg border border-overlay/10 px-2 py-1 text-xs text-muted transition hover:text-content disabled:opacity-50"
             >
@@ -596,7 +596,7 @@ export function SuperAdminConsole() {
         </div>
         {filteredAuditLogs.length === 0 ? (
           <p className="text-sm text-muted">
-            {auditLogs.length === 0 ? "Henüz kayıt yok." : "Bu filtre için kayıt yok."}
+            {auditLogs.length === 0 ? t("panelSaas.console.audit.emptyNone") : t("panelSaas.console.audit.emptyFilter")}
           </p>
         ) : (
           <ul className="flex flex-col gap-1.5">
@@ -606,7 +606,7 @@ export function SuperAdminConsole() {
                 className="flex items-center justify-between gap-3 rounded-lg border border-overlay/10 bg-overlay/[0.03] px-3 py-2 text-sm"
               >
                 <div className="min-w-0">
-                  <span className="font-medium text-content">{auditActionLabel(log.action)}</span>
+                  <span className="font-medium text-content">{auditActionLabel(log.action, t)}</span>
                   {log.resource && (
                     <span className="ml-2 font-mono text-xs text-muted">{log.resource}</span>
                   )}
@@ -621,28 +621,38 @@ export function SuperAdminConsole() {
   );
 }
 
-const AUDIT_ACTION_LABELS: Record<string, string> = {
-  "school.create": "Okul oluşturuldu",
-  "school.update": "Okul güncellendi",
-  "school.delete": "Okul silindi",
-  "founder.create": "Kurucu hesabı açıldı",
-  "user.role_change": "Rol değiştirildi",
-  "user.suspend": "Kullanıcı askıya alındı",
-  "user.activate": "Kullanıcı etkinleştirildi",
-};
+const AUDIT_ACTION_KEYS: string[] = [
+  "school.create",
+  "school.update",
+  "school.delete",
+  "founder.create",
+  "user.role_change",
+  "user.suspend",
+  "user.activate",
+];
 
-function auditActionLabel(action: string): string {
-  return AUDIT_ACTION_LABELS[action] ?? action;
+function auditActionLabel(action: string, t: TranslateFn): string {
+  if (AUDIT_ACTION_KEYS.includes(action)) {
+    return t(`panelSaas.console.audit.action.${action}`);
+  }
+  return action;
 }
 
 /** Denetim kayıtlarını CSV olarak indirir. */
-function exportAuditCsv(logs: PlatformAuditRecord[]): void {
+function exportAuditCsv(logs: PlatformAuditRecord[], t: TranslateFn): void {
   if (typeof window === "undefined" || logs.length === 0) return;
   const escape = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-  const header = ["Tarih", "İşlem", "Eylem Kodu", "Kaynak", "Yapan", "Detay"];
+  const header = [
+    t("panelSaas.console.audit.csv.date"),
+    t("panelSaas.console.audit.csv.action"),
+    t("panelSaas.console.audit.csv.actionCode"),
+    t("panelSaas.console.audit.csv.resource"),
+    t("panelSaas.console.audit.csv.actor"),
+    t("panelSaas.console.audit.csv.detail"),
+  ];
   const rows = logs.map((l) => [
     formatAuditTime(l.createdAt),
-    auditActionLabel(l.action),
+    auditActionLabel(l.action, t),
     l.action,
     l.resource,
     l.actorId,
@@ -671,7 +681,7 @@ function formatAuditTime(ms: number | null): string {
   }).format(new Date(ms));
 }
 
-function StatusBadge({ status }: { status: string }) {
+function StatusBadge({ status, t }: { status: string; t: TranslateFn }) {
   const suspended = status === "SUSPENDED";
   return (
     <span
@@ -682,7 +692,7 @@ function StatusBadge({ status }: { status: string }) {
           : "border-emerald-400/30 bg-emerald-400/10 text-emerald-400",
       ].join(" ")}
     >
-      {suspended ? "Askıda" : status || "—"}
+      {suspended ? t("panelSaas.console.status.suspended") : status || "—"}
     </span>
   );
 }
@@ -693,6 +703,7 @@ function SchoolRow({
   onChanged,
   onError,
   onAudit,
+  t,
 }: {
   school: SchoolRecord;
   userCount: number;
@@ -703,6 +714,7 @@ function SchoolRow({
     resource: string,
     meta?: Record<string, unknown>,
   ) => void | Promise<void>;
+  t: TranslateFn;
 }) {
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -728,7 +740,7 @@ function SchoolRow({
   const remove = async () => {
     if (busy) return;
     const ok = window.confirm(
-      `"${school.name}" okulunu silmek istediğinize emin misiniz? Bu işlem geri alınamaz.`,
+      t("panelSaas.console.row.confirmDelete", { name: school.name }),
     );
     if (!ok) return;
     setBusy(true);
@@ -767,8 +779,8 @@ function SchoolRow({
             onChange={(e) => setStatus(e.target.value)}
             className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-1 text-xs outline-none focus:border-accent"
           >
-            <option value="ACTIVE" className="bg-surface">Aktif</option>
-            <option value="SUSPENDED" className="bg-surface">Askıda</option>
+            <option value="ACTIVE" className="bg-surface">{t("panelSaas.console.status.active")}</option>
+            <option value="SUSPENDED" className="bg-surface">{t("panelSaas.console.status.suspended")}</option>
           </select>
         </td>
         <td className="py-2 pr-4">{userCount}</td>
@@ -780,7 +792,7 @@ function SchoolRow({
               disabled={busy}
               className="inline-flex items-center gap-1 rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-2 py-1 text-xs text-emerald-400 disabled:opacity-50"
             >
-              <Check size={13} /> Kaydet
+              <Check size={13} /> {t("panelSaas.console.row.save")}
             </button>
             <button
               type="button"
@@ -788,7 +800,7 @@ function SchoolRow({
               disabled={busy}
               className="inline-flex items-center gap-1 rounded-lg border border-overlay/10 px-2 py-1 text-xs text-muted disabled:opacity-50"
             >
-              <X size={13} /> İptal
+              <X size={13} /> {t("panelSaas.console.row.cancel")}
             </button>
           </div>
         </td>
@@ -802,7 +814,7 @@ function SchoolRow({
       <td className="py-2.5 pr-4 font-mono text-xs text-accent">{school.slug}</td>
       <td className="py-2.5 pr-4 text-muted">{school.city || "—"}</td>
       <td className="py-2.5 pr-4">
-        <StatusBadge status={school.status} />
+        <StatusBadge status={school.status} t={t} />
       </td>
       <td className="py-2.5 pr-4">{userCount}</td>
       <td className="py-2.5">
@@ -812,7 +824,7 @@ function SchoolRow({
             onClick={() => setEditing(true)}
             className="inline-flex items-center gap-1 rounded-lg border border-overlay/10 px-2 py-1 text-xs text-muted transition hover:text-content"
           >
-            <Pencil size={13} /> Düzenle
+            <Pencil size={13} /> {t("panelSaas.console.row.edit")}
           </button>
           <button
             type="button"
@@ -820,7 +832,7 @@ function SchoolRow({
             disabled={busy}
             className="inline-flex items-center gap-1 rounded-lg border border-brand/30 bg-brand/10 px-2 py-1 text-xs text-brand transition hover:bg-brand/20 disabled:opacity-50"
           >
-            <Trash2 size={13} /> Sil
+            <Trash2 size={13} /> {t("panelSaas.console.row.delete")}
           </button>
         </div>
       </td>

@@ -10,21 +10,25 @@ import { NewSchoolForm } from "@/components/saas/NewSchoolForm";
 import { VisionCard } from "@/components/saas/VisionCard";
 import { productName } from "@/lib/constants";
 import { saasPlanTypes, saasVisionTiers } from "@/lib/saas-mock-data";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: `SaaS Yönetim Merkezi — ${productName}`,
-  description:
-    "Tüm okulları, abonelikleri, kullanıcıları ve yapay zeka kullanımını tek merkezden yönetin.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("panelSaas.meta.title", { product: productName }),
+    description: t("panelSaas.meta.description"),
+  };
+}
 
-export default function SaasAdminPage() {
+export default async function SaasAdminPage() {
+  const t = await getServerT();
   return (
-    <PageShell title="SaaS Yönetim Merkezi">
+    <PageShell title={t("panelSaas.shell.title")}>
       <div className="flex flex-col gap-12">
         <SectionHeader
-          eyebrow="Platform Yönetimi"
-          title="SaaS Yönetim Merkezi"
-          description="Tüm okulları, abonelikleri, kullanıcıları ve yapay zeka kullanımını tek merkezden yönetin."
+          eyebrow={t("panelSaas.header.eyebrow")}
+          title={t("panelSaas.header.title")}
+          description={t("panelSaas.header.description")}
         />
 
         {/* Genel durum — GERÇEK (okul/lead/demo sayımları) */}

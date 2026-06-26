@@ -9,6 +9,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { listSchools } from "@/lib/services/schools";
@@ -28,6 +29,7 @@ interface Metric {
  * Mock `SaasOverview` yerine kullanılır.
  */
 export function RealSaasOverview() {
+  const t = useT();
   const { profile, firebaseReady } = useAuth();
   const isSuper = profile?.role === ROLES.SUPER_ADMIN;
   const usable = firebaseReady && isSuper;
@@ -67,10 +69,10 @@ export function RealSaasOverview() {
 
   const ready = schools !== null;
   const metrics: Metric[] = [
-    { id: "okul", label: "Toplam Okul", value: schools ?? 0, icon: School },
-    { id: "aktif", label: "Aktif Okul", value: activeSchools, icon: CheckCircle2 },
-    { id: "lead", label: "Platform Lead", value: leads, icon: Handshake },
-    { id: "demo", label: "Demo Talebi", value: demos, icon: MailQuestion },
+    { id: "okul", label: t("panelSaas.overview.okul"), value: schools ?? 0, icon: School },
+    { id: "aktif", label: t("panelSaas.overview.aktif"), value: activeSchools, icon: CheckCircle2 },
+    { id: "lead", label: t("panelSaas.overview.lead"), value: leads, icon: Handshake },
+    { id: "demo", label: t("panelSaas.overview.demo"), value: demos, icon: MailQuestion },
   ];
 
   return (

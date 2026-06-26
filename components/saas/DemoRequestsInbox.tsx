@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { DataExportButtons } from "@/components/shared/DataExportButtons";
@@ -34,6 +35,7 @@ import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
  * çevirir (okul seçiliyse tenant lead'i; değilse platform satış lead'i).
  */
 export function DemoRequestsInbox() {
+  const t = useT();
   const { profile, firebaseReady } = useAuth();
   const isSuper = profile?.role === ROLES.SUPER_ADMIN;
 
@@ -87,7 +89,7 @@ export function DemoRequestsInbox() {
     try {
       await updateDemoRequest(id, { notes, assignedTo });
       patchLocal(id, { notes, assignedTo });
-      setNotice("Kaydedildi.");
+      setNotice(t("panelSaas.demo.saved"));
     } catch (err) {
       setError(getAuthErrorMessage(err));
     } finally {
@@ -105,7 +107,7 @@ export function DemoRequestsInbox() {
         tenantId: tenantId || undefined,
       });
       if (!result.ok) {
-        setError(result.error ?? "Lead oluşturulamadı.");
+        setError(result.error ?? t("panelSaas.demo.leadFailed"));
         return;
       }
       patchLocal(demo.id, {
@@ -115,8 +117,8 @@ export function DemoRequestsInbox() {
       });
       setNotice(
         result.tenantId
-          ? `Lead "${result.tenantId}" okuluna eklendi.`
-          : "Platform satış lead'i oluşturuldu.",
+          ? t("panelSaas.demo.leadAddedToSchool", { tenant: result.tenantId })
+          : t("panelSaas.demo.platformLeadCreated"),
       );
     } catch (err) {
       setError(getAuthErrorMessage(err));
@@ -131,24 +133,24 @@ export function DemoRequestsInbox() {
     <GlassCard tone="navy">
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <Rocket size={18} className="text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Demo Talepleri (canlı)</h2>
+        <h2 className="text-lg font-semibold text-content">{t("panelSaas.demo.heading")}</h2>
         <span className="text-xs text-muted">{items.length}</span>
         {items.length > 0 && (
           <DataExportButtons
             className="ml-auto"
-            filename="demo-talepleri"
-            title="Demo Talepleri"
+            filename={t("panelSaas.demo.export.filename")}
+            title={t("panelSaas.demo.export.title")}
             columns={[
-              { key: "institution", label: "Kurum" },
-              { key: "fullName", label: "Yetkili" },
-              { key: "phone", label: "Telefon" },
-              { key: "email", label: "E-posta" },
-              { key: "city", label: "Şehir" },
-              { key: "institutionType", label: "Kurum Türü" },
-              { key: "studentCount", label: "Öğrenci Sayısı" },
-              { key: "status", label: "Durum" },
-              { key: "assignedTo", label: "Atanan" },
-              { key: "message", label: "Mesaj" },
+              { key: "institution", label: t("panelSaas.demo.col.institution") },
+              { key: "fullName", label: t("panelSaas.demo.col.fullName") },
+              { key: "phone", label: t("panelSaas.demo.col.phone") },
+              { key: "email", label: t("panelSaas.demo.col.email") },
+              { key: "city", label: t("panelSaas.demo.col.city") },
+              { key: "institutionType", label: t("panelSaas.demo.col.institutionType") },
+              { key: "studentCount", label: t("panelSaas.demo.col.studentCount") },
+              { key: "status", label: t("panelSaas.demo.col.status") },
+              { key: "assignedTo", label: t("panelSaas.demo.col.assignedTo") },
+              { key: "message", label: t("panelSaas.demo.col.message") },
             ]}
             rows={items as unknown as Record<string, unknown>[]}
           />
@@ -167,7 +169,7 @@ export function DemoRequestsInbox() {
       )}
 
       {items.length === 0 ? (
-        <p className="text-sm text-muted">Henüz demo talebi yok.</p>
+        <p className="text-sm text-muted">{t("panelSaas.demo.empty")}</p>
       ) : (
         <div className="flex flex-col gap-2">
           {items.map((r) => (
@@ -218,6 +220,7 @@ function DemoRow({
   onSave: (notes: string, assignedTo: string) => void;
   onConvert: (tenantId: string) => void;
 }) {
+  const t = useT();
   const [notes, setNotes] = useState(record.notes);
   const [assignedTo, setAssignedTo] = useState(record.assignedTo);
   const [tenantId, setTenantId] = useState(record.leadTenantId);
@@ -261,7 +264,7 @@ function DemoRow({
           disabled={busy}
           onChange={(e) => onStatus(e.target.value as DemoStatus)}
           className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
-          aria-label="Durum"
+          aria-label={t("panelSaas.demo.statusAria")}
         >
           {DEMO_STATUSES.map((s) => (
             <option key={s} value={s} className="bg-surface">
@@ -280,7 +283,7 @@ function DemoRow({
           )}
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
-              Not
+              {t("panelSaas.demo.note")}
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
@@ -289,11 +292,11 @@ function DemoRow({
               />
             </label>
             <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
-              Atanan kişi (opsiyonel)
+              {t("panelSaas.demo.assignedToLabel")}
               <input
                 value={assignedTo}
                 onChange={(e) => setAssignedTo(e.target.value)}
-                placeholder="Ör. satış temsilcisi"
+                placeholder={t("panelSaas.demo.assignedToPlaceholder")}
                 className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
               />
             </label>
@@ -307,12 +310,12 @@ function DemoRow({
               disabled={busy}
               onClick={() => onSave(notes, assignedTo)}
             >
-              <Save size={15} aria-hidden="true" /> Kaydet
+              <Save size={15} aria-hidden="true" /> {t("panelSaas.demo.save")}
             </PrimaryButton>
 
             <div className="ml-auto flex items-end gap-2">
               <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
-                Lead hedefi
+                {t("panelSaas.demo.leadTarget")}
                 <select
                   value={tenantId}
                   disabled={busy || converted}
@@ -320,7 +323,7 @@ function DemoRow({
                   className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
                 >
                   <option value="" className="bg-surface">
-                    Platform (okul yok)
+                    {t("panelSaas.demo.platformNoSchool")}
                   </option>
                   {schools.map((s) => (
                     <option key={s.id} value={s.id} className="bg-surface">
@@ -336,7 +339,7 @@ function DemoRow({
                 onClick={() => onConvert(tenantId)}
               >
                 <ArrowRightCircle size={15} aria-hidden="true" />
-                {converted ? "Lead'e Çevrildi" : "Lead'e Çevir"}
+                {converted ? t("panelSaas.demo.convertedToLead") : t("panelSaas.demo.convertToLead")}
               </PrimaryButton>
             </div>
           </div>

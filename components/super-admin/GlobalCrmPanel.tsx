@@ -9,6 +9,7 @@ import {
   Search,
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useHasRole } from "@/components/auth/RoleGate";
 import { ROLES } from "@/lib/auth/role-constants";
@@ -38,6 +39,7 @@ const KIND_BADGE: Record<CrmKind, string> = {
  * birleşik gördüğü panel. Okul ve tür filtreleri, arama, sayımlar ve CSV.
  */
 export function GlobalCrmPanel() {
+  const t = useT();
   const { user, firebaseReady, loading } = useAuth();
   const isSuperAdmin = useHasRole([ROLES.SUPER_ADMIN]);
   const ready = firebaseReady && isSuperAdmin;
@@ -112,7 +114,7 @@ export function GlobalCrmPanel() {
   }, [filtered, statusCounts]);
 
   if (loading) {
-    return <GlassCard tone="navy" className="text-sm text-muted">Yükleniyor…</GlassCard>;
+    return <GlassCard tone="navy" className="text-sm text-muted">{t("panelSaas.crm.loading")}</GlassCard>;
   }
 
   if (!ready) {
@@ -120,10 +122,9 @@ export function GlobalCrmPanel() {
       <GlassCard tone="navy" className="flex items-start gap-3">
         <AlertCircle size={18} className="mt-0.5 shrink-0 text-amber-400" aria-hidden="true" />
         <div className="text-sm text-muted">
-          <p className="font-semibold text-content">Global CRM kullanılamıyor</p>
+          <p className="font-semibold text-content">{t("panelSaas.crm.unavailableTitle")}</p>
           <p className="mt-1">
-            Bu görünüm yalnızca giriş yapmış bir SUPER_ADMIN hesabıyla ve Firebase
-            aktifken çalışır.
+            {t("panelSaas.crm.unavailableBody")}
           </p>
         </div>
       </GlassCard>
@@ -134,20 +135,31 @@ export function GlobalCrmPanel() {
     <GlassCard tone="navy">
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <Database size={18} className="text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Global CRM</h2>
-        <span className="text-xs text-muted">tüm okullar · {entries.length} kayıt</span>
+        <h2 className="text-lg font-semibold text-content">{t("panelSaas.crm.heading")}</h2>
+        <span className="text-xs text-muted">{t("panelSaas.crm.subtitle", { count: entries.length })}</span>
         <button
           type="button"
           onClick={() => void refresh()}
           disabled={refreshing}
           className="ml-auto text-muted transition hover:text-content disabled:opacity-50"
-          aria-label="Yenile"
+          aria-label={t("panelSaas.crm.refreshAria")}
         >
           <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} />
         </button>
         <button
           type="button"
-          onClick={() => exportCrmCsv(filtered, schoolName)}
+          onClick={() =>
+            exportCrmCsv(filtered, schoolName, [
+              t("panelSaas.crm.csv.col.school"),
+              t("panelSaas.crm.csv.col.kind"),
+              t("panelSaas.crm.csv.col.name"),
+              t("panelSaas.crm.csv.col.phone"),
+              t("panelSaas.crm.csv.col.email"),
+              t("panelSaas.crm.csv.col.status"),
+              t("panelSaas.crm.csv.col.detail"),
+              t("panelSaas.crm.csv.col.date"),
+            ])
+          }
           disabled={filtered.length === 0}
           className="inline-flex items-center gap-1 rounded-lg border border-overlay/10 px-2 py-1 text-xs text-muted transition hover:text-content disabled:opacity-50"
         >
@@ -179,10 +191,10 @@ export function GlobalCrmPanel() {
       <div className="mb-4 rounded-xl border border-overlay/10 bg-overlay/[0.02] p-3">
         <div className="mb-2 flex items-center justify-between">
           <span className="text-xs font-semibold uppercase tracking-wide text-muted">
-            Pipeline
+            {t("panelSaas.crm.pipeline")}
           </span>
           <span className="text-xs text-muted">
-            Dönüşüm oranı:{" "}
+            {t("panelSaas.crm.conversionRate")}{" "}
             <span className="font-semibold text-emerald-300">%{conversionRate}</span>
           </span>
         </div>
@@ -217,7 +229,7 @@ export function GlobalCrmPanel() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Ad, telefon, e-posta ara…"
+            placeholder={t("panelSaas.crm.searchPlaceholder")}
             className="w-full rounded-lg border border-overlay/10 bg-overlay/[0.04] py-2 pl-9 pr-3 text-sm text-content placeholder:text-muted/60 outline-none focus:border-accent"
           />
         </div>
@@ -225,9 +237,9 @@ export function GlobalCrmPanel() {
           value={tenantFilter}
           onChange={(e) => setTenantFilter(e.target.value)}
           className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-2 text-xs text-content outline-none focus:border-accent"
-          aria-label="Okul filtrele"
+          aria-label={t("panelSaas.crm.tenantFilterAria")}
         >
-          <option value="ALL" className="bg-surface">Tüm okullar</option>
+          <option value="ALL" className="bg-surface">{t("panelSaas.crm.allSchools")}</option>
           {schools.map((s) => (
             <option key={s.id} value={s.id} className="bg-surface">{s.name}</option>
           ))}
@@ -236,9 +248,9 @@ export function GlobalCrmPanel() {
           value={kindFilter}
           onChange={(e) => setKindFilter(e.target.value)}
           className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2 py-2 text-xs text-content outline-none focus:border-accent"
-          aria-label="Tür filtrele"
+          aria-label={t("panelSaas.crm.kindFilterAria")}
         >
-          <option value="ALL" className="bg-surface">Tüm türler</option>
+          <option value="ALL" className="bg-surface">{t("panelSaas.crm.allKinds")}</option>
           {KINDS.map((k) => (
             <option key={k} value={k} className="bg-surface">{crmKindLabel(k)}</option>
           ))}
@@ -247,19 +259,19 @@ export function GlobalCrmPanel() {
 
       {filtered.length === 0 ? (
         <p className="text-sm text-muted">
-          {entries.length === 0 ? "Henüz CRM kaydı yok." : "Filtreye uygun kayıt yok."}
+          {entries.length === 0 ? t("panelSaas.crm.emptyNone") : t("panelSaas.crm.emptyFilter")}
         </p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="text-xs uppercase tracking-wide text-muted">
-                <th className="pb-2 pr-4 font-medium">Okul</th>
-                <th className="pb-2 pr-4 font-medium">Tür</th>
-                <th className="pb-2 pr-4 font-medium">Ad</th>
-                <th className="pb-2 pr-4 font-medium">İletişim</th>
-                <th className="pb-2 pr-4 font-medium">Durum</th>
-                <th className="pb-2 font-medium">Tarih</th>
+                <th className="pb-2 pr-4 font-medium">{t("panelSaas.crm.th.school")}</th>
+                <th className="pb-2 pr-4 font-medium">{t("panelSaas.crm.th.kind")}</th>
+                <th className="pb-2 pr-4 font-medium">{t("panelSaas.crm.th.name")}</th>
+                <th className="pb-2 pr-4 font-medium">{t("panelSaas.crm.th.contact")}</th>
+                <th className="pb-2 pr-4 font-medium">{t("panelSaas.crm.th.status")}</th>
+                <th className="pb-2 font-medium">{t("panelSaas.crm.th.date")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-overlay/5">
@@ -306,7 +318,7 @@ export function GlobalCrmPanel() {
           </table>
           {filtered.length > 500 && (
             <p className="mt-2 text-xs text-muted">
-              İlk 500 kayıt gösteriliyor. Daraltmak için filtre kullanın veya CSV indirin.
+              {t("panelSaas.crm.limitNote")}
             </p>
           )}
         </div>
@@ -329,10 +341,10 @@ function formatDate(ms: number | null): string {
 function exportCrmCsv(
   entries: GlobalCrmEntry[],
   schoolName: (tenantId: string) => string,
+  header: string[],
 ): void {
   if (typeof window === "undefined" || entries.length === 0) return;
   const escape = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-  const header = ["Okul", "Tür", "Ad", "Telefon", "E-posta", "Durum", "Detay", "Tarih"];
   const rows = entries.map((e) => [
     schoolName(e.tenantId),
     crmKindLabel(e.kind),

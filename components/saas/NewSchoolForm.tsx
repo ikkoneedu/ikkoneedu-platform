@@ -13,6 +13,7 @@ import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { SelectField } from "@/components/shared/SelectField";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { createSchool } from "@/lib/services/schools";
@@ -29,6 +30,7 @@ interface NewSchoolFormProps {
  * açar ve geçici şifre üretir. Süper admin değilse yönlendirme gösterir.
  */
 export function NewSchoolForm({ plans }: NewSchoolFormProps) {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const isSuper = profile?.role === ROLES.SUPER_ADMIN;
   const [busy, setBusy] = useState(false);
@@ -49,15 +51,15 @@ export function NewSchoolForm({ plans }: NewSchoolFormProps) {
     const brandColor = String(f.get("brandColor") ?? "").trim();
     const about = String(f.get("about") ?? "").trim();
     if (!name) {
-      setError("Okul adı zorunludur.");
+      setError(t("panelSaas.newSchool.err.nameRequired"));
       return;
     }
     if (email && !email.includes("@")) {
-      setError("Geçerli bir yetkili e-postası girin (veya boş bırakın).");
+      setError(t("panelSaas.newSchool.err.email"));
       return;
     }
     if (logo && !/^https?:\/\//i.test(logo)) {
-      setError("Logo bağlantısı http(s) ile başlamalı (veya boş bırakın).");
+      setError(t("panelSaas.newSchool.err.logo"));
       return;
     }
     setBusy(true);
@@ -103,40 +105,39 @@ export function NewSchoolForm({ plans }: NewSchoolFormProps) {
     <GlassCard tone="navy">
       <div className="mb-5 flex items-center gap-2">
         <PlusCircle size={18} className="text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Yeni Okul Ekle</h2>
+        <h2 className="text-lg font-semibold text-content">{t("panelSaas.newSchool.heading")}</h2>
       </div>
 
       {!firebaseReady || !isSuper ? (
         <p className="text-sm text-muted">
-          Gerçek okul oluşturma yalnızca giriş yapmış bir süper admin hesabıyla ve
-          Firebase aktifken kullanılabilir.{" "}
+          {t("panelSaas.newSchool.guard.intro")}{" "}
           <Link href="/super-admin" className="text-accent hover:text-content">
-            Süper Admin Konsolu
+            {t("panelSaas.newSchool.guard.link")}
           </Link>
         </p>
       ) : (
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <TextField label="Okul Adı" name="school" placeholder="Örnek Koleji" required />
-            <TextField label="Yetkili (Kurucu) Adı" name="manager" placeholder="Ad Soyad" />
-            <TextField label="Telefon" name="phone" type="tel" placeholder="0 5xx xxx xx xx" />
-            <TextField label="Kurucu E-posta (opsiyonel)" name="email" type="email" placeholder="kurucu@okul.com" />
-            <TextField label="Öğrenci Sayısı" name="students" type="number" placeholder="500" />
-            <SelectField label="Paket Türü" name="plan" items={plans} />
+            <TextField label={t("panelSaas.newSchool.field.name")} name="school" placeholder={t("panelSaas.newSchool.field.namePlaceholder")} required />
+            <TextField label={t("panelSaas.newSchool.field.manager")} name="manager" placeholder={t("panelSaas.newSchool.field.managerPlaceholder")} />
+            <TextField label={t("panelSaas.newSchool.field.phone")} name="phone" type="tel" placeholder={t("panelSaas.newSchool.field.phonePlaceholder")} />
+            <TextField label={t("panelSaas.newSchool.field.email")} name="email" type="email" placeholder={t("panelSaas.newSchool.field.emailPlaceholder")} />
+            <TextField label={t("panelSaas.newSchool.field.students")} name="students" type="number" placeholder={t("panelSaas.newSchool.field.studentsPlaceholder")} />
+            <SelectField label={t("panelSaas.newSchool.field.plan")} name="plan" items={plans} />
           </div>
 
           {/* Marka kimliği (white-label) — okula özgü public sayfa için */}
           <div className="mt-5 rounded-xl border border-overlay/10 bg-overlay/[0.02] p-4">
             <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-accent">
-              Marka Kimliği (opsiyonel)
+              {t("panelSaas.newSchool.brand.title")}
             </p>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <TextField label="Şehir" name="city" placeholder="Ankara" />
-              <TextField label="Logo Bağlantısı (URL)" name="logo" placeholder="https://…/logo.png" />
-              <TextField label="Slogan" name="slogan" placeholder="Geleceğe açılan kapı" />
+              <TextField label={t("panelSaas.newSchool.field.city")} name="city" placeholder={t("panelSaas.newSchool.field.cityPlaceholder")} />
+              <TextField label={t("panelSaas.newSchool.field.logo")} name="logo" placeholder={t("panelSaas.newSchool.field.logoPlaceholder")} />
+              <TextField label={t("panelSaas.newSchool.field.slogan")} name="slogan" placeholder={t("panelSaas.newSchool.field.sloganPlaceholder")} />
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="brandColor" className="text-sm font-medium text-muted">
-                  Marka Rengi
+                  {t("panelSaas.newSchool.field.brandColor")}
                 </label>
                 <input
                   id="brandColor"
@@ -149,13 +150,13 @@ export function NewSchoolForm({ plans }: NewSchoolFormProps) {
             </div>
             <div className="mt-4 flex flex-col gap-1.5">
               <label htmlFor="about" className="text-sm font-medium text-muted">
-                Tanıtım Metni
+                {t("panelSaas.newSchool.field.about")}
               </label>
               <textarea
                 id="about"
                 name="about"
                 rows={2}
-                placeholder="Okulunuzu kısaca tanıtın…"
+                placeholder={t("panelSaas.newSchool.field.aboutPlaceholder")}
                 className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
@@ -170,21 +171,21 @@ export function NewSchoolForm({ plans }: NewSchoolFormProps) {
           {done && (
             <div className="mt-4 rounded-xl border border-emerald-400/30 bg-emerald-400/5 p-4 text-sm">
               <p className="flex items-center gap-1.5 font-semibold text-content">
-                <CheckCircle2 size={15} className="text-emerald-400" /> Okul oluşturuldu: {done.school}
+                <CheckCircle2 size={15} className="text-emerald-400" /> {t("panelSaas.newSchool.success.created", { school: done.school })}
               </p>
               {done.email && done.password ? (
                 <p className="mt-1 flex flex-wrap items-center gap-2 text-muted">
-                  Kurucu: {done.email} · Geçici şifre:{" "}
+                  {t("panelSaas.newSchool.success.founder", { email: done.email })}{" "}
                   <span className="font-mono text-accent">{done.password}</span>
-                  <button type="button" onClick={copyPw} className="text-muted hover:text-content" aria-label="Şifreyi kopyala">
+                  <button type="button" onClick={copyPw} className="text-muted hover:text-content" aria-label={t("panelSaas.newSchool.copyPwAria")}>
                     {copied ? <CheckCircle2 size={13} /> : <Copy size={13} />}
                   </button>
                 </p>
               ) : (
                 <p className="mt-1 text-muted">
-                  Kurucu/personel eklemek için{" "}
-                  <Link href="/super-admin" className="text-accent hover:text-content">konsolu</Link>{" "}
-                  kullanın.
+                  {t("panelSaas.newSchool.success.addStaffPrefix")}{" "}
+                  <Link href="/super-admin" className="text-accent hover:text-content">{t("panelSaas.newSchool.success.console")}</Link>{" "}
+                  {t("panelSaas.newSchool.success.addStaffSuffix")}
                 </p>
               )}
             </div>
@@ -192,13 +193,13 @@ export function NewSchoolForm({ plans }: NewSchoolFormProps) {
 
           <PrimaryButton type="submit" size="lg" className="mt-6 w-full sm:w-fit" disabled={busy}>
             <PlusCircle size={18} aria-hidden="true" />
-            {busy ? "Oluşturuluyor…" : "Okul Oluştur"}
+            {busy ? t("panelSaas.newSchool.submitBusy") : t("panelSaas.newSchool.submit")}
           </PrimaryButton>
         </form>
       )}
 
       <Link href="/super-admin" className="mt-4 inline-flex items-center gap-1 text-xs text-muted hover:text-accent">
-        Tüm okulları yönet <ArrowUpRight size={13} aria-hidden="true" />
+        {t("panelSaas.newSchool.manageAll")} <ArrowUpRight size={13} aria-hidden="true" />
       </Link>
     </GlassCard>
   );

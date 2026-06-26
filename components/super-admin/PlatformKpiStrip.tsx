@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { School, Users, GraduationCap, BookOpen, Database, CheckCircle2 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useHasRole } from "@/components/auth/RoleGate";
 import { ROLES } from "@/lib/auth/role-constants";
@@ -24,6 +25,7 @@ interface Kpi {
  * Mevcut servislerden (schools, allUsers, global CRM) hesaplanır.
  */
 export function PlatformKpiStrip() {
+  const t = useT();
   const { firebaseReady } = useAuth();
   const isSuper = useHasRole([ROLES.SUPER_ADMIN]);
   const usable = firebaseReady && isSuper;
@@ -57,20 +59,20 @@ export function PlatformKpiStrip() {
   if (!usable || !k) return null;
 
   const items = [
-    { icon: School, label: "Okul", value: k.schools },
-    { icon: Users, label: "Toplam Kullanıcı", value: k.users },
-    { icon: GraduationCap, label: "Öğrenci", value: k.students },
-    { icon: BookOpen, label: "Öğretmen", value: k.teachers },
-    { icon: Database, label: "CRM Kaydı", value: k.crm },
-    { icon: CheckCircle2, label: "Kayda Dönüşen", value: k.converted, tone: "emerald" },
+    { icon: School, label: t("panelSaas.kpi.schools"), value: k.schools },
+    { icon: Users, label: t("panelSaas.kpi.users"), value: k.users },
+    { icon: GraduationCap, label: t("panelSaas.kpi.students"), value: k.students },
+    { icon: BookOpen, label: t("panelSaas.kpi.teachers"), value: k.teachers },
+    { icon: Database, label: t("panelSaas.kpi.crm"), value: k.crm },
+    { icon: CheckCircle2, label: t("panelSaas.kpi.converted"), value: k.converted, tone: "emerald" },
   ];
 
   return (
     <GlassCard tone="navy">
       <div className="mb-4 flex items-center gap-2">
         <Database size={18} className="text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Platform Özeti (canlı)</h2>
-        <span className="ml-auto text-xs text-muted">tüm okullar · gerçek veri</span>
+        <h2 className="text-lg font-semibold text-content">{t("panelSaas.kpi.heading")}</h2>
+        <span className="ml-auto text-xs text-muted">{t("panelSaas.kpi.subtitle")}</span>
       </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {items.map((it) => {

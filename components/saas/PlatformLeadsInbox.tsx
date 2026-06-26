@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { DataExportButtons } from "@/components/shared/DataExportButtons";
@@ -40,6 +41,7 @@ const STATUS_TONES: Record<string, string> = {
  * durum güncelleme, not + atanan kişi. Yalnızca SUPER_ADMIN + Firebase aktifken.
  */
 export function PlatformLeadsInbox() {
+  const t = useT();
   const { profile, firebaseReady } = useAuth();
   const isSuper = profile?.role === ROLES.SUPER_ADMIN;
 
@@ -66,7 +68,7 @@ export function PlatformLeadsInbox() {
 
   const handleConvert = async (record: PlatformLeadRecord, tenantId: string) => {
     if (!tenantId) {
-      setError("Önce bir okul seçin.");
+      setError(t("panelSaas.leads.selectSchoolFirst"));
       return;
     }
     setBusyId(record.id);
@@ -75,7 +77,7 @@ export function PlatformLeadsInbox() {
     try {
       const admissionId = await createAdmissionFromPlatformLead(tenantId, tenantId, record);
       patchLocal(record.id, { convertedToAdmissionId: admissionId });
-      setNotice(`Aday oluşturuldu (${tenantId}). Kayıt Kabul panosunda görünür.`);
+      setNotice(t("panelSaas.leads.admissionCreated", { tenant: tenantId }));
     } catch (err) {
       setError(getAuthErrorMessage(err));
     } finally {
@@ -108,7 +110,7 @@ export function PlatformLeadsInbox() {
     try {
       await updatePlatformLead(id, { notes, assignedTo });
       patchLocal(id, { notes, assignedTo });
-      setNotice("Kaydedildi.");
+      setNotice(t("panelSaas.leads.saved"));
     } catch (err) {
       setError(getAuthErrorMessage(err));
     } finally {
@@ -125,24 +127,24 @@ export function PlatformLeadsInbox() {
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <Target size={18} className="text-accent" aria-hidden="true" />
         <h2 className="text-lg font-semibold text-content">
-          Platform Satış Lead&apos;leri (canlı)
+          {t("panelSaas.leads.heading")}
         </h2>
         <span className="text-xs text-muted">{items.length}</span>
         <DataExportButtons
           className="ml-auto"
-          filename="platform-leadler"
-          title="Platform Satış Leadleri"
+          filename={t("panelSaas.leads.export.filename")}
+          title={t("panelSaas.leads.export.title")}
           columns={[
-            { key: "contactName", label: "Yetkili" },
-            { key: "institution", label: "Kurum" },
-            { key: "phone", label: "Telefon" },
-            { key: "email", label: "E-posta" },
-            { key: "city", label: "Şehir" },
-            { key: "institutionType", label: "Kurum Türü" },
-            { key: "studentCount", label: "Öğrenci Sayısı" },
-            { key: "status", label: "Durum" },
-            { key: "assignedTo", label: "Atanan" },
-            { key: "notes", label: "Not" },
+            { key: "contactName", label: t("panelSaas.leads.col.contactName") },
+            { key: "institution", label: t("panelSaas.leads.col.institution") },
+            { key: "phone", label: t("panelSaas.leads.col.phone") },
+            { key: "email", label: t("panelSaas.leads.col.email") },
+            { key: "city", label: t("panelSaas.leads.col.city") },
+            { key: "institutionType", label: t("panelSaas.leads.col.institutionType") },
+            { key: "studentCount", label: t("panelSaas.leads.col.studentCount") },
+            { key: "status", label: t("panelSaas.leads.col.status") },
+            { key: "assignedTo", label: t("panelSaas.leads.col.assignedTo") },
+            { key: "notes", label: t("panelSaas.leads.col.notes") },
           ]}
           rows={items as unknown as Record<string, unknown>[]}
         />
@@ -197,6 +199,7 @@ function LeadRow({
   onSave: (notes: string, assignedTo: string) => void;
   onConvert: (tenantId: string) => void;
 }) {
+  const t = useT();
   const [notes, setNotes] = useState(record.notes);
   const [assignedTo, setAssignedTo] = useState(record.assignedTo);
   const [targetTenant, setTargetTenant] = useState("");
@@ -239,7 +242,7 @@ function LeadRow({
           disabled={busy}
           onChange={(e) => onStatus(e.target.value as LeadStatus)}
           className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
-          aria-label="Lead durumu"
+          aria-label={t("panelSaas.leads.statusAria")}
         >
           {LEAD_STATUSES.map((s) => (
             <option key={s} value={s} className="bg-surface">
@@ -253,7 +256,7 @@ function LeadRow({
         <div className="border-t border-overlay/10 px-4 py-4">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
-              Not
+              {t("panelSaas.leads.note")}
               <textarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
@@ -262,11 +265,11 @@ function LeadRow({
               />
             </label>
             <label className="flex flex-col gap-1.5 text-xs font-medium text-muted">
-              Atanan kişi (opsiyonel)
+              {t("panelSaas.leads.assignedToLabel")}
               <input
                 value={assignedTo}
                 onChange={(e) => setAssignedTo(e.target.value)}
-                placeholder="Ör. satış temsilcisi"
+                placeholder={t("panelSaas.leads.assignedToPlaceholder")}
                 className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-3 py-2 text-sm text-content outline-none focus:border-accent"
               />
             </label>
@@ -279,26 +282,26 @@ function LeadRow({
               disabled={busy}
               onClick={() => onSave(notes, assignedTo)}
             >
-              <Save size={15} aria-hidden="true" /> Kaydet
+              <Save size={15} aria-hidden="true" /> {t("panelSaas.leads.save")}
             </PrimaryButton>
 
             {/* Adaya aktar (okul seç → admission) */}
             <div className="ml-auto flex items-end gap-2">
               {converted ? (
                 <span className="inline-flex items-center gap-1 rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-2.5 py-1.5 text-xs text-emerald-300">
-                  <CheckCircle2 size={13} aria-hidden="true" /> Adaya aktarıldı
+                  <CheckCircle2 size={13} aria-hidden="true" /> {t("panelSaas.leads.transferredToCandidate")}
                 </span>
               ) : (
                 <>
                   <label className="flex flex-col gap-1 text-xs text-muted">
-                    Okul
+                    {t("panelSaas.leads.school")}
                     <select
                       value={targetTenant}
                       disabled={busy}
                       onChange={(e) => setTargetTenant(e.target.value)}
                       className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent"
                     >
-                      <option value="" className="bg-surface">Seçiniz…</option>
+                      <option value="" className="bg-surface">{t("panelSaas.leads.select")}</option>
                       {schools.map((s) => (
                         <option key={s.id} value={s.id} className="bg-surface">
                           {s.name}
@@ -312,7 +315,7 @@ function LeadRow({
                     disabled={busy || !targetTenant}
                     onClick={() => onConvert(targetTenant)}
                   >
-                    Adaya Aktar
+                    {t("panelSaas.leads.transferToCandidate")}
                   </PrimaryButton>
                 </>
               )}
