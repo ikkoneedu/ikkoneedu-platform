@@ -3,20 +3,25 @@ import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { LessonPlansBoard } from "@/components/lesson-plans/LessonPlansBoard";
 import { productName } from "@/lib/constants";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: `Ders Planları — ${productName}`,
-  description: "Öğretmen ders planları: sınıf bazlı paylaşım.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("schoolLife.lessonPlans.meta.title", { product: productName }),
+    description: t("schoolLife.lessonPlans.meta.description"),
+  };
+}
 
-export default function LessonPlansPage() {
+export default async function LessonPlansPage() {
+  const t = await getServerT();
   return (
-    <PageShell title="Ders Planları">
+    <PageShell title={t("schoolLife.lessonPlans.page.title")}>
       <div className="flex flex-col gap-8">
         <SectionHeader
-          eyebrow="Akademik"
-          title="Ders Planları"
-          description="Öğretmenler ders planlarını sınıf bazlı paylaşır; öğrenci ve veliler kendi sınıflarının planlarını görür."
+          eyebrow={t("schoolLife.lessonPlans.section.eyebrow")}
+          title={t("schoolLife.lessonPlans.section.title")}
+          description={t("schoolLife.lessonPlans.section.description")}
         />
         <LessonPlansBoard />
       </div>

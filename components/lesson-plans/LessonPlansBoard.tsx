@@ -16,6 +16,7 @@ import {
 } from "@/lib/services/lesson-plans";
 import { listMyClasses, type ClassRecord } from "@/lib/services/access-codes";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const STAFF_ROLES: string[] = [
   ROLES.TEACHER, ROLES.COORDINATOR, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
@@ -27,6 +28,7 @@ const STAFF_ROLES: string[] = [
  * öğrenci/veli kendi sınıfının (veya okul geneli) planlarını görür. Tenant izole.
  */
 export function LessonPlansBoard({ readOnly = false }: { readOnly?: boolean }) {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const isStaff = profile != null && STAFF_ROLES.includes(profile.role);
@@ -113,7 +115,7 @@ export function LessonPlansBoard({ readOnly = false }: { readOnly?: boolean }) {
   if (!firebaseReady || !profile || !tenantId || items === null) {
     return (
       <GlassCard tone="navy">
-        <p className="py-8 text-center text-sm text-muted">Yükleniyor…</p>
+        <p className="py-8 text-center text-sm text-muted">{t("schoolLife.loading")}</p>
       </GlassCard>
     );
   }
@@ -132,7 +134,7 @@ export function LessonPlansBoard({ readOnly = false }: { readOnly?: boolean }) {
             <div className="flex items-center gap-2">
               <NotebookPen size={18} className="text-accent" aria-hidden="true" />
               <h2 className="text-lg font-semibold text-content">
-                {editId ? "Planı Düzenle" : "Ders Planı Paylaş"}
+                {editId ? t("schoolLife.lessonPlans.form.editTitle") : t("schoolLife.lessonPlans.form.addTitle")}
               </h2>
             </div>
             {editId && (
@@ -141,24 +143,24 @@ export function LessonPlansBoard({ readOnly = false }: { readOnly?: boolean }) {
                 onClick={cancelEdit}
                 className="flex items-center gap-1 text-xs font-medium text-muted transition-colors hover:text-content"
               >
-                <X size={14} aria-hidden="true" />Vazgeç
+                <X size={14} aria-hidden="true" />{t("schoolLife.cancel")}
               </button>
             )}
           </div>
           <form key={editId ?? "new"} onSubmit={handleSubmit} className="space-y-3">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <TextField label="Başlık" name="title" placeholder="Ünite 3 — Kesirler" defaultValue={editing?.title} required />
-              <TextField label="Ders" name="subject" placeholder="Matematik" defaultValue={editing?.subject} />
-              <TextField label="Hafta/Dönem" name="week" placeholder="3. Hafta" defaultValue={editing?.week} />
+              <TextField label={t("schoolLife.lessonPlans.form.titleLabel")} name="title" placeholder={t("schoolLife.lessonPlans.form.titlePlaceholder")} defaultValue={editing?.title} required />
+              <TextField label={t("schoolLife.lessonPlans.form.subjectLabel")} name="subject" placeholder={t("schoolLife.lessonPlans.form.subjectPlaceholder")} defaultValue={editing?.subject} />
+              <TextField label={t("schoolLife.lessonPlans.form.weekLabel")} name="week" placeholder={t("schoolLife.lessonPlans.form.weekPlaceholder")} defaultValue={editing?.week} />
             </div>
             {isTeacher && classes.length > 0 && (
               <div className="flex flex-col gap-1.5">
-                <label className="text-xs font-medium text-muted">Hedef Sınıf</label>
+                <label className="text-xs font-medium text-muted">{t("schoolLife.lessonPlans.form.targetClassLabel")}</label>
                 <select
                   name="classId" defaultValue={editing?.classId ?? ""}
                   className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
                 >
-                  <option value="" className="bg-surface">Okul geneli</option>
+                  <option value="" className="bg-surface">{t("schoolLife.lessonPlans.form.schoolWide")}</option>
                   {classes.map((c) => (
                     <option key={c.id} value={c.id} className="bg-surface">{c.name}</option>
                   ))}
@@ -166,11 +168,11 @@ export function LessonPlansBoard({ readOnly = false }: { readOnly?: boolean }) {
               </div>
             )}
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="lp-content" className="text-sm font-medium text-muted">Plan İçeriği</label>
+              <label htmlFor="lp-content" className="text-sm font-medium text-muted">{t("schoolLife.lessonPlans.form.contentLabel")}</label>
               <textarea
                 id="lp-content" name="content" rows={4} required
                 defaultValue={editing?.content}
-                placeholder="Kazanımlar, etkinlikler, ödevler…"
+                placeholder={t("schoolLife.lessonPlans.form.contentPlaceholder")}
                 className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
@@ -181,12 +183,12 @@ export function LessonPlansBoard({ readOnly = false }: { readOnly?: boolean }) {
             )}
             {saved && (
               <p className="flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-400">
-                <CheckCircle2 size={16} aria-hidden="true" />{editId ? "Ders planı güncellendi." : "Ders planı paylaşıldı."}
+                <CheckCircle2 size={16} aria-hidden="true" />{editId ? t("schoolLife.lessonPlans.savedEdit") : t("schoolLife.lessonPlans.savedAdd")}
               </p>
             )}
             <PrimaryButton type="submit" size="md" disabled={busy}>
               <Send size={16} aria-hidden="true" />
-              {busy ? "Kaydediliyor…" : editId ? "Güncelle" : "Paylaş"}
+              {busy ? t("schoolLife.saving") : editId ? t("schoolLife.update") : t("schoolLife.lessonPlans.share")}
             </PrimaryButton>
           </form>
         </GlassCard>
@@ -195,10 +197,10 @@ export function LessonPlansBoard({ readOnly = false }: { readOnly?: boolean }) {
       <GlassCard tone="navy">
         <div className="mb-4 flex items-center gap-2">
           <NotebookPen size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Ders Planları</h2>
+          <h2 className="text-lg font-semibold text-content">{t("schoolLife.lessonPlans.list.title")}</h2>
         </div>
         {visible.length === 0 ? (
-          <p className="text-sm text-muted">Henüz ders planı yok.</p>
+          <p className="text-sm text-muted">{t("schoolLife.lessonPlans.list.empty")}</p>
         ) : (
           <ul className="flex flex-col gap-3">
             {visible.map((p) => (
@@ -213,14 +215,14 @@ export function LessonPlansBoard({ readOnly = false }: { readOnly?: boolean }) {
                     )}
                     {p.week && <span className="text-muted">· {p.week}</span>}
                     <span className="rounded-full bg-accent/10 px-2 py-0.5 font-medium text-accent">
-                      {p.className || "Okul geneli"}
+                      {p.className || t("schoolLife.lessonPlans.schoolWideBadge")}
                     </span>
                     {canCreate && (
                       <>
                         <button
                           type="button"
                           onClick={() => startEdit(p)}
-                          aria-label="Planı düzenle"
+                          aria-label={t("schoolLife.lessonPlans.editAria")}
                           className="text-muted transition-colors hover:text-accent"
                         >
                           <Pencil size={13} aria-hidden="true" />
@@ -228,7 +230,7 @@ export function LessonPlansBoard({ readOnly = false }: { readOnly?: boolean }) {
                         <button
                           type="button"
                           onClick={() => handleDelete(p.id)}
-                          aria-label="Planı sil"
+                          aria-label={t("schoolLife.lessonPlans.deleteAria")}
                           className="text-muted transition-colors hover:text-brand"
                         >
                           <Trash2 size={14} aria-hidden="true" />

@@ -9,6 +9,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { createLunchMenu, updateLunchMenu, deleteLunchMenu, listLunchMenu, type LunchMenuRecord } from "@/lib/services/lunch-menu";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const STAFF_ROLES: string[] = [
   ROLES.COORDINATOR, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
@@ -27,6 +28,7 @@ function fmtDate(iso: string): string {
  * görür. Tenant izole. `readOnly` ile ekleme formu gizlenir.
  */
 export function LunchMenuBoard({ readOnly = false }: { readOnly?: boolean }) {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const canCreate = !readOnly && profile != null && STAFF_ROLES.includes(profile.role);
@@ -101,7 +103,7 @@ export function LunchMenuBoard({ readOnly = false }: { readOnly?: boolean }) {
   if (!firebaseReady || !profile || !tenantId || items === null) {
     return (
       <GlassCard tone="navy">
-        <p className="py-8 text-center text-sm text-muted">Yükleniyor…</p>
+        <p className="py-8 text-center text-sm text-muted">{t("schoolLife.loading")}</p>
       </GlassCard>
     );
   }
@@ -114,7 +116,7 @@ export function LunchMenuBoard({ readOnly = false }: { readOnly?: boolean }) {
             <div className="flex items-center gap-2">
               <UtensilsCrossed size={18} className="text-accent" aria-hidden="true" />
               <h2 className="text-lg font-semibold text-content">
-                {editId ? "Menüyü Düzenle" : "Günlük Menü Ekle"}
+                {editId ? t("schoolLife.lunch.form.editTitle") : t("schoolLife.lunch.form.addTitle")}
               </h2>
             </div>
             {editId && (
@@ -123,20 +125,20 @@ export function LunchMenuBoard({ readOnly = false }: { readOnly?: boolean }) {
                 onClick={cancelEdit}
                 className="flex items-center gap-1 text-xs font-medium text-muted transition-colors hover:text-content"
               >
-                <X size={14} aria-hidden="true" />Vazgeç
+                <X size={14} aria-hidden="true" />{t("schoolLife.cancel")}
               </button>
             )}
           </div>
           <form key={editId ?? "new"} onSubmit={handleSubmit} className="space-y-3">
-            <TextField label="Tarih" name="date" type="date" defaultValue={editing?.date} required />
+            <TextField label={t("schoolLife.lunch.form.dateLabel")} name="date" type="date" defaultValue={editing?.date} required />
             <div className="flex flex-col gap-1.5">
               <label htmlFor="lm-items" className="text-sm font-medium text-muted">
-                Öğünler (her satıra bir öğün)
+                {t("schoolLife.lunch.form.itemsLabel")}
               </label>
               <textarea
                 id="lm-items" name="items" rows={4} required
                 defaultValue={editing?.items.join("\n")}
-                placeholder={"Mercimek çorbası\nIzgara köfte\nPilav\nMevsim salata"}
+                placeholder={t("schoolLife.lunch.form.itemsPlaceholder")}
                 className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
@@ -147,12 +149,12 @@ export function LunchMenuBoard({ readOnly = false }: { readOnly?: boolean }) {
             )}
             {saved && (
               <p className="flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-400">
-                <CheckCircle2 size={16} aria-hidden="true" />{editId ? "Menü güncellendi." : "Menü eklendi."}
+                <CheckCircle2 size={16} aria-hidden="true" />{editId ? t("schoolLife.lunch.savedEdit") : t("schoolLife.lunch.savedAdd")}
               </p>
             )}
             <PrimaryButton type="submit" size="md" disabled={busy}>
               <Send size={16} aria-hidden="true" />
-              {busy ? "Kaydediliyor…" : editId ? "Güncelle" : "Ekle"}
+              {busy ? t("schoolLife.saving") : editId ? t("schoolLife.update") : t("schoolLife.add")}
             </PrimaryButton>
           </form>
         </GlassCard>
@@ -161,10 +163,10 @@ export function LunchMenuBoard({ readOnly = false }: { readOnly?: boolean }) {
       <GlassCard tone="navy">
         <div className="mb-4 flex items-center gap-2">
           <UtensilsCrossed size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Yemek Listesi</h2>
+          <h2 className="text-lg font-semibold text-content">{t("schoolLife.lunch.list.title")}</h2>
         </div>
         {items.length === 0 ? (
-          <p className="text-sm text-muted">Henüz menü yok.</p>
+          <p className="text-sm text-muted">{t("schoolLife.lunch.list.empty")}</p>
         ) : (
           <ul className="flex flex-col gap-3">
             {items.map((m) => (
@@ -178,7 +180,7 @@ export function LunchMenuBoard({ readOnly = false }: { readOnly?: boolean }) {
                       <button
                         type="button"
                         onClick={() => startEdit(m)}
-                        aria-label="Menüyü düzenle"
+                        aria-label={t("schoolLife.lunch.editAria")}
                         className="text-muted transition-colors hover:text-accent"
                       >
                         <Pencil size={14} aria-hidden="true" />
@@ -186,7 +188,7 @@ export function LunchMenuBoard({ readOnly = false }: { readOnly?: boolean }) {
                       <button
                         type="button"
                         onClick={() => handleDelete(m.id)}
-                        aria-label="Menüyü sil"
+                        aria-label={t("schoolLife.lunch.deleteAria")}
                         className="text-muted transition-colors hover:text-brand"
                       >
                         <Trash2 size={15} aria-hidden="true" />

@@ -9,6 +9,8 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { createBusRoute, updateBusRoute, deleteBusRoute, updateBusRouteLocation, listBusRoutes, type BusRouteRecord } from "@/lib/services/bus-routes";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { useT } from "@/components/i18n/LocaleProvider";
+import type { TranslateFn } from "@/lib/i18n/dictionaries";
 
 const STAFF_ROLES: string[] = [
   ROLES.COORDINATOR, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
@@ -16,13 +18,13 @@ const STAFF_ROLES: string[] = [
 ];
 
 /** Konum güncelleme zamanını "x dk önce" gibi gösterir. */
-function relTime(ms: number | null): string {
+function relTime(ms: number | null, t: TranslateFn): string {
   if (!ms) return "";
   const s = Math.max(0, Math.round((Date.now() - ms) / 1000));
-  if (s < 60) return `${s} sn önce`;
+  if (s < 60) return t("schoolLife.bus.relTime.seconds", { value: s });
   const m = Math.round(s / 60);
-  if (m < 60) return `${m} dk önce`;
-  return `${Math.round(m / 60)} sa önce`;
+  if (m < 60) return t("schoolLife.bus.relTime.minutes", { value: m });
+  return t("schoolLife.bus.relTime.hours", { value: Math.round(m / 60) });
 }
 
 /**
@@ -31,6 +33,7 @@ function relTime(ms: number | null): string {
  * üyeleri haritada görür. Tenant izole. `readOnly` ile form gizli.
  */
 export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const canCreate = !readOnly && profile != null && STAFF_ROLES.includes(profile.role);
@@ -81,7 +84,7 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
   const startShare = (routeId: string) => {
     if (!tenantId) return;
     if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
-      setGeoError("Cihaz konum servisini desteklemiyor.");
+      setGeoError(t("schoolLife.bus.geo.unsupported"));
       return;
     }
     setGeoError(null);
@@ -98,7 +101,7 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
           .catch(() => {});
       },
       (err) => {
-        setGeoError(err.message || "Konum alınamadı (izin verilmedi).");
+        setGeoError(err.message || t("schoolLife.bus.geo.failed"));
         stopShare();
       },
       { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 },
@@ -158,7 +161,7 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
   if (!firebaseReady || !profile || !tenantId || items === null) {
     return (
       <GlassCard tone="navy">
-        <p className="py-8 text-center text-sm text-muted">Yükleniyor…</p>
+        <p className="py-8 text-center text-sm text-muted">{t("schoolLife.loading")}</p>
       </GlassCard>
     );
   }
@@ -171,7 +174,7 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
             <div className="flex items-center gap-2">
               <Bus size={18} className="text-accent" aria-hidden="true" />
               <h2 className="text-lg font-semibold text-content">
-                {editId ? "Rotayı Düzenle" : "Servis Rotası Ekle"}
+                {editId ? t("schoolLife.bus.form.editTitle") : t("schoolLife.bus.form.addTitle")}
               </h2>
             </div>
             {editId && (
@@ -180,24 +183,24 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
                 onClick={cancelEdit}
                 className="flex items-center gap-1 text-xs font-medium text-muted transition-colors hover:text-content"
               >
-                <X size={14} aria-hidden="true" />Vazgeç
+                <X size={14} aria-hidden="true" />{t("schoolLife.cancel")}
               </button>
             )}
           </div>
           <form key={editId ?? "new"} onSubmit={handleSubmit} className="space-y-3">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <TextField label="Rota Adı" name="routeName" placeholder="1 Numaralı Hat" defaultValue={editing?.routeName} required />
-              <TextField label="Şoför" name="driver" placeholder="Ad Soyad" defaultValue={editing?.driver} />
-              <TextField label="Telefon" name="phone" placeholder="05xx…" defaultValue={editing?.phone} />
+              <TextField label={t("schoolLife.bus.form.routeNameLabel")} name="routeName" placeholder={t("schoolLife.bus.form.routeNamePlaceholder")} defaultValue={editing?.routeName} required />
+              <TextField label={t("schoolLife.bus.form.driverLabel")} name="driver" placeholder={t("schoolLife.bus.form.driverPlaceholder")} defaultValue={editing?.driver} />
+              <TextField label={t("schoolLife.bus.form.phoneLabel")} name="phone" placeholder={t("schoolLife.bus.form.phonePlaceholder")} defaultValue={editing?.phone} />
             </div>
             <div className="flex flex-col gap-1.5">
               <label htmlFor="bus-stops" className="text-sm font-medium text-muted">
-                Duraklar (her satıra bir durak — örn. Merkez Meydan - 07:30)
+                {t("schoolLife.bus.form.stopsLabel")}
               </label>
               <textarea
                 id="bus-stops" name="stops" rows={4}
                 defaultValue={editing?.stops.join("\n")}
-                placeholder={"Merkez Meydan - 07:30\nGül Sokak - 07:40\nOkul - 08:00"}
+                placeholder={t("schoolLife.bus.form.stopsPlaceholder")}
                 className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
@@ -208,12 +211,12 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
             )}
             {saved && (
               <p className="flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-400">
-                <CheckCircle2 size={16} aria-hidden="true" />{editId ? "Rota güncellendi." : "Rota eklendi."}
+                <CheckCircle2 size={16} aria-hidden="true" />{editId ? t("schoolLife.bus.savedEdit") : t("schoolLife.bus.savedAdd")}
               </p>
             )}
             <PrimaryButton type="submit" size="md" disabled={busy}>
               <Send size={16} aria-hidden="true" />
-              {busy ? "Kaydediliyor…" : editId ? "Güncelle" : "Ekle"}
+              {busy ? t("schoolLife.saving") : editId ? t("schoolLife.update") : t("schoolLife.add")}
             </PrimaryButton>
           </form>
         </GlassCard>
@@ -222,7 +225,7 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
       <GlassCard tone="navy">
         <div className="mb-4 flex items-center gap-2">
           <Bus size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Servis Rotaları</h2>
+          <h2 className="text-lg font-semibold text-content">{t("schoolLife.bus.list.title")}</h2>
         </div>
         {geoError && (
           <p className="mb-4 flex items-center gap-2 rounded-xl border border-brand/30 bg-brand/10 px-4 py-3 text-sm text-brand">
@@ -230,7 +233,7 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
           </p>
         )}
         {items.length === 0 ? (
-          <p className="text-sm text-muted">Henüz rota tanımlı değil.</p>
+          <p className="text-sm text-muted">{t("schoolLife.bus.list.empty")}</p>
         ) : (
           <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {items.map((r) => (
@@ -242,7 +245,7 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
                       <button
                         type="button"
                         onClick={() => startEdit(r)}
-                        aria-label="Rotayı düzenle"
+                        aria-label={t("schoolLife.bus.editAria")}
                         className="text-muted transition-colors hover:text-accent"
                       >
                         <Pencil size={14} aria-hidden="true" />
@@ -250,7 +253,7 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
                       <button
                         type="button"
                         onClick={() => handleDelete(r.id)}
-                        aria-label="Rotayı sil"
+                        aria-label={t("schoolLife.bus.deleteAria")}
                         className="text-muted transition-colors hover:text-brand"
                       >
                         <Trash2 size={15} aria-hidden="true" />
@@ -287,11 +290,11 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
                           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/60" />
                           <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
                         </span>
-                        <span className="font-medium text-emerald-400">Canlı konum</span>
-                        <span className="text-muted">· {relTime(r.locationUpdatedAt)}</span>
+                        <span className="font-medium text-emerald-400">{t("schoolLife.bus.liveLocation")}</span>
+                        <span className="text-muted">· {relTime(r.locationUpdatedAt, t)}</span>
                       </div>
                       <iframe
-                        title={`${r.routeName} canlı konum`}
+                        title={t("schoolLife.bus.mapTitle", { route: r.routeName })}
                         src={`https://maps.google.com/maps?q=${r.currentLat},${r.currentLng}&z=15&output=embed`}
                         className="h-44 w-full rounded-lg border border-overlay/10"
                         loading="lazy"
@@ -300,7 +303,7 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
                     </>
                   ) : (
                     <p className="flex items-center gap-1.5 text-xs text-muted">
-                      <MapPin size={12} aria-hidden="true" />Servis konumu henüz paylaşılmıyor.
+                      <MapPin size={12} aria-hidden="true" />{t("schoolLife.bus.notShared")}
                     </p>
                   )}
 
@@ -311,17 +314,17 @@ export function BusRoutesBoard({ readOnly = false }: { readOnly?: boolean }) {
                         onClick={stopShare}
                         className="mt-2 flex items-center gap-1.5 rounded-lg border border-brand/30 bg-brand/10 px-3 py-1.5 text-xs font-medium text-brand transition-colors hover:bg-brand/20"
                       >
-                        <Square size={12} aria-hidden="true" />Paylaşımı Durdur
+                        <Square size={12} aria-hidden="true" />{t("schoolLife.bus.stopShare")}
                       </button>
                     ) : (
                       <button
                         type="button"
                         onClick={() => startShare(r.id)}
                         disabled={sharingId !== null}
-                        title="Konumunuzu bu servis için canlı paylaşın"
+                        title={t("schoolLife.bus.shareTitle")}
                         className="mt-2 flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent/10 px-3 py-1.5 text-xs font-medium text-accent transition-colors hover:bg-accent/20 disabled:opacity-50"
                       >
-                        <Radio size={12} aria-hidden="true" />Konumu Paylaş
+                        <Radio size={12} aria-hidden="true" />{t("schoolLife.bus.shareLocation")}
                       </button>
                     )
                   )}

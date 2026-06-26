@@ -10,6 +10,7 @@ import { ROLES } from "@/lib/auth/role-constants";
 import { createEvent, updateEvent, deleteEvent, listEvents, type EventRecord } from "@/lib/services/events";
 import { createNotification } from "@/lib/services/notifications";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const STAFF_ROLES: string[] = [
   ROLES.TEACHER, ROLES.COORDINATOR, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
@@ -28,6 +29,7 @@ function fmtDate(iso: string): string {
  * tüm tenant üyeleri görür. Tenant izole. `readOnly` ile form gizlenir.
  */
 export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const canCreate = !readOnly && profile != null && STAFF_ROLES.includes(profile.role);
@@ -118,7 +120,7 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
   if (!firebaseReady || !profile || !tenantId || items === null) {
     return (
       <GlassCard tone="navy">
-        <p className="py-8 text-center text-sm text-muted">Yükleniyor…</p>
+        <p className="py-8 text-center text-sm text-muted">{t("schoolLife.loading")}</p>
       </GlassCard>
     );
   }
@@ -131,7 +133,7 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
             <div className="flex items-center gap-2">
               <CalendarDays size={18} className="text-accent" aria-hidden="true" />
               <h2 className="text-lg font-semibold text-content">
-                {editId ? "Etkinlik Düzenle" : "Etkinlik Ekle"}
+                {editId ? t("schoolLife.events.form.editTitle") : t("schoolLife.events.form.addTitle")}
               </h2>
             </div>
             {editId && (
@@ -140,20 +142,20 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
                 onClick={cancelEdit}
                 className="flex items-center gap-1 text-xs font-medium text-muted transition-colors hover:text-content"
               >
-                <X size={14} aria-hidden="true" />Vazgeç
+                <X size={14} aria-hidden="true" />{t("schoolLife.cancel")}
               </button>
             )}
           </div>
           <form key={editId ?? "new"} onSubmit={handleSubmit} className="space-y-3">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              <TextField label="Başlık" name="title" placeholder="Bahar Şenliği" defaultValue={editing?.title} required />
-              <TextField label="Tarih" name="date" type="date" defaultValue={editing?.date} required />
+              <TextField label={t("schoolLife.events.form.titleLabel")} name="title" placeholder={t("schoolLife.events.form.titlePlaceholder")} defaultValue={editing?.title} required />
+              <TextField label={t("schoolLife.events.form.dateLabel")} name="date" type="date" defaultValue={editing?.date} required />
             </div>
-            <TextField label="Yer" name="location" placeholder="Ana Kampüs / Konferans Salonu" defaultValue={editing?.location} />
+            <TextField label={t("schoolLife.events.form.locationLabel")} name="location" placeholder={t("schoolLife.events.form.locationPlaceholder")} defaultValue={editing?.location} />
             <div className="flex flex-col gap-1.5">
-              <label htmlFor="ev-desc" className="text-sm font-medium text-muted">Açıklama</label>
+              <label htmlFor="ev-desc" className="text-sm font-medium text-muted">{t("schoolLife.events.form.descriptionLabel")}</label>
               <textarea
-                id="ev-desc" name="description" rows={3} placeholder="Etkinlik detayları…"
+                id="ev-desc" name="description" rows={3} placeholder={t("schoolLife.events.form.descriptionPlaceholder")}
                 defaultValue={editing?.description}
                 className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
               />
@@ -165,12 +167,12 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
             )}
             {saved && (
               <p className="flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-400">
-                <CheckCircle2 size={16} aria-hidden="true" />{editId ? "Etkinlik güncellendi." : "Etkinlik eklendi."}
+                <CheckCircle2 size={16} aria-hidden="true" />{editId ? t("schoolLife.events.savedEdit") : t("schoolLife.events.savedAdd")}
               </p>
             )}
             <PrimaryButton type="submit" size="md" disabled={busy}>
               <Send size={16} aria-hidden="true" />
-              {busy ? "Kaydediliyor…" : editId ? "Güncelle" : "Ekle"}
+              {busy ? t("schoolLife.saving") : editId ? t("schoolLife.update") : t("schoolLife.add")}
             </PrimaryButton>
           </form>
         </GlassCard>
@@ -179,10 +181,10 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
       <GlassCard tone="navy">
         <div className="mb-4 flex items-center gap-2">
           <CalendarDays size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Etkinlik Takvimi</h2>
+          <h2 className="text-lg font-semibold text-content">{t("schoolLife.events.list.title")}</h2>
         </div>
         {items.length === 0 ? (
-          <p className="text-sm text-muted">Henüz etkinlik yok.</p>
+          <p className="text-sm text-muted">{t("schoolLife.events.list.empty")}</p>
         ) : (
           <ul className="flex flex-col gap-3">
             {items.map((ev) => (
@@ -198,7 +200,7 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
                         <button
                           type="button"
                           onClick={() => startEdit(ev)}
-                          aria-label="Etkinliği düzenle"
+                          aria-label={t("schoolLife.events.editAria")}
                           className="text-muted transition-colors hover:text-accent"
                         >
                           <Pencil size={14} aria-hidden="true" />
@@ -206,7 +208,7 @@ export function EventsBoard({ readOnly = false }: { readOnly?: boolean }) {
                         <button
                           type="button"
                           onClick={() => handleDelete(ev.id)}
-                          aria-label="Etkinliği sil"
+                          aria-label={t("schoolLife.events.deleteAria")}
                           className="text-muted transition-colors hover:text-brand"
                         >
                           <Trash2 size={15} aria-hidden="true" />
