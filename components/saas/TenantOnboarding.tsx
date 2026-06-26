@@ -13,6 +13,7 @@ import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { onboardTenant } from "@/lib/services/onboarding";
 import { sendPasswordReset } from "@/lib/services/auth-actions";
@@ -33,6 +34,7 @@ interface OnboardedInfo {
  * Admin alanında çalışır. `onConboarded` ile listeyi tazeler.
  */
 export function TenantOnboarding({ onCreated }: { onCreated?: () => void }) {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const isSuper = profile?.role === ROLES.SUPER_ADMIN;
   const adminUid = user?.uid;
@@ -88,7 +90,7 @@ export function TenantOnboarding({ onCreated }: { onCreated?: () => void }) {
     });
     setBusy(false);
     if (!result.ok || !result.admin) {
-      setError(result.error ?? "Onboarding başarısız.");
+      setError(result.error ?? t("panelSaas.onb.err.failed"));
       return;
     }
     setOnboarded({
@@ -133,32 +135,31 @@ export function TenantOnboarding({ onCreated }: { onCreated?: () => void }) {
     <GlassCard tone="navy">
       <div className="mb-1 flex items-center gap-2">
         <Building2 size={18} className="text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Yeni Okul Onboarding</h2>
+        <h2 className="text-lg font-semibold text-content">{t("panelSaas.onb.heading")}</h2>
       </div>
       <p className="mb-4 text-xs text-muted">
-        Tenant + okul profili + ilk okul admini (SCHOOL_ADMIN) tek adımda
-        oluşturulur. Admin için geçici şifre üretilir.
+        {t("panelSaas.onb.subtitle")}
       </p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <TextField
-            label="Okul Adı *"
+            label={t("panelSaas.onb.field.name")}
             name="name"
-            placeholder="İngiliz Kültür"
+            placeholder={t("panelSaas.onb.field.namePlaceholder")}
             required
             value={form.name}
             onChange={(e) => set("name", e.target.value)}
           />
           <TextField
-            label="Kısa Ad (slug / subdomain)"
+            label={t("panelSaas.onb.field.slug")}
             name="slug"
-            placeholder={slugPreview || "ingilizkultur"}
+            placeholder={slugPreview || t("panelSaas.onb.field.slugPlaceholder")}
             value={form.slug}
             onChange={(e) => set("slug", e.target.value)}
           />
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-muted">Paket</label>
+            <label className="text-sm font-medium text-muted">{t("panelSaas.onb.field.package")}</label>
             <select
               value={packageId}
               onChange={(e) => setPackageId(e.target.value as PackageId)}
@@ -175,30 +176,30 @@ export function TenantOnboarding({ onCreated }: { onCreated?: () => void }) {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
           <TextField
-            label="Şehir"
+            label={t("panelSaas.onb.field.city")}
             name="city"
-            placeholder="İstanbul"
+            placeholder={t("panelSaas.onb.field.cityPlaceholder")}
             value={form.city}
             onChange={(e) => set("city", e.target.value)}
           />
           <TextField
-            label="İlçe"
+            label={t("panelSaas.onb.field.district")}
             name="district"
-            placeholder="Kadıköy"
+            placeholder={t("panelSaas.onb.field.districtPlaceholder")}
             value={form.district}
             onChange={(e) => set("district", e.target.value)}
           />
           <TextField
-            label="Telefon"
+            label={t("panelSaas.onb.field.phone")}
             name="phone"
-            placeholder="0216 ..."
+            placeholder={t("panelSaas.onb.field.phonePlaceholder")}
             value={form.phone}
             onChange={(e) => set("phone", e.target.value)}
           />
           <TextField
-            label="Web Sitesi"
+            label={t("panelSaas.onb.field.website")}
             name="website"
-            placeholder="https://..."
+            placeholder={t("panelSaas.onb.field.websitePlaceholder")}
             value={form.website}
             onChange={(e) => set("website", e.target.value)}
           />
@@ -206,38 +207,38 @@ export function TenantOnboarding({ onCreated }: { onCreated?: () => void }) {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 sm:items-end">
           <TextField
-            label="Okul E-postası"
+            label={t("panelSaas.onb.field.schoolEmail")}
             name="schoolEmail"
             type="email"
-            placeholder="info@okul.com"
+            placeholder={t("panelSaas.onb.field.schoolEmailPlaceholder")}
             value={form.schoolEmail}
             onChange={(e) => set("schoolEmail", e.target.value)}
           />
           <TextField
-            label="Admin Ad Soyad"
+            label={t("panelSaas.onb.field.adminName")}
             name="adminName"
-            placeholder="Ad Soyad"
+            placeholder={t("panelSaas.onb.field.adminNamePlaceholder")}
             value={form.adminName}
             onChange={(e) => set("adminName", e.target.value)}
           />
           <TextField
-            label="Admin E-posta *"
+            label={t("panelSaas.onb.field.adminEmail")}
             name="adminEmail"
             type="email"
-            placeholder="admin@okul.com"
+            placeholder={t("panelSaas.onb.field.adminEmailPlaceholder")}
             required
             value={form.adminEmail}
             onChange={(e) => set("adminEmail", e.target.value)}
           />
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-muted">Durum</label>
+            <label className="text-sm font-medium text-muted">{t("panelSaas.onb.field.status")}</label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as TenantStatus)}
               className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-3 text-sm text-content outline-none focus:border-accent"
             >
-              <option value="trial" className="bg-surface">Deneme</option>
-              <option value="active" className="bg-surface">Aktif</option>
+              <option value="trial" className="bg-surface">{t("panelSaas.onb.status.trial")}</option>
+              <option value="active" className="bg-surface">{t("panelSaas.onb.status.active")}</option>
             </select>
           </div>
         </div>
@@ -245,11 +246,11 @@ export function TenantOnboarding({ onCreated }: { onCreated?: () => void }) {
         <div className="flex items-center gap-3">
           <PrimaryButton type="submit" size="md" disabled={busy}>
             <Plus size={16} aria-hidden="true" />
-            {busy ? "Oluşturuluyor…" : "Onboarding'i Tamamla"}
+            {busy ? t("panelSaas.onb.submitBusy") : t("panelSaas.onb.submit")}
           </PrimaryButton>
           {slugPreview && !onboarded && (
             <span className="text-xs text-muted">
-              Kimlik: <span className="font-mono text-accent">{slugPreview}</span>
+              {t("panelSaas.onb.identity")} <span className="font-mono text-accent">{slugPreview}</span>
               {" · "}
               <span className="font-mono text-accent">
                 {slugPreview}.ikkoneedu.com
@@ -269,25 +270,25 @@ export function TenantOnboarding({ onCreated }: { onCreated?: () => void }) {
         <div className="mt-4 flex flex-col gap-2 rounded-xl border border-accent/30 bg-accent/5 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="text-sm">
             <p className="font-semibold text-content">
-              Okul oluşturuldu — {onboarded.tenantId}
+              {t("panelSaas.onb.created", { tenantId: onboarded.tenantId })}
             </p>
             <p className="mt-0.5 text-muted">
-              Admin: {onboarded.email} · Geçici şifre:{" "}
+              {t("panelSaas.onb.adminLine", { email: onboarded.email })}{" "}
               <span className="font-mono text-accent">{onboarded.password}</span>
             </p>
             {resetState === "sent" && (
               <p className="mt-1 text-xs text-emerald-400">
-                Şifre belirleme e-postası gönderildi.
+                {t("panelSaas.onb.reset.sent")}
               </p>
             )}
             {resetState === "error" && (
-              <p className="mt-1 text-xs text-brand">E-posta gönderilemedi.</p>
+              <p className="mt-1 text-xs text-brand">{t("panelSaas.onb.reset.error")}</p>
             )}
           </div>
           <div className="flex shrink-0 flex-col gap-2">
             <PrimaryButton type="button" variant="secondary" size="sm" onClick={copyPassword}>
               {copied ? <CheckCircle2 size={15} /> : <Copy size={15} />}
-              {copied ? "Kopyalandı" : "Şifreyi Kopyala"}
+              {copied ? t("panelSaas.onb.copied") : t("panelSaas.onb.copyPw")}
             </PrimaryButton>
             <PrimaryButton
               type="button"
@@ -298,10 +299,10 @@ export function TenantOnboarding({ onCreated }: { onCreated?: () => void }) {
             >
               <Mail size={15} aria-hidden="true" />
               {resetState === "sending"
-                ? "Gönderiliyor…"
+                ? t("panelSaas.onb.reset.sending")
                 : resetState === "sent"
-                  ? "Gönderildi"
-                  : "Şifre E-postası Gönder"}
+                  ? t("panelSaas.onb.reset.sentBtn")
+                  : t("panelSaas.onb.reset.send")}
             </PrimaryButton>
           </div>
         </div>

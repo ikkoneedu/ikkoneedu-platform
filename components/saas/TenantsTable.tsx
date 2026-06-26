@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import {
@@ -36,10 +37,10 @@ const STATUS_TONES: Record<string, string> = {
 };
 
 const FILTERS = [
-  { id: "all", label: "Tümü" },
-  { id: "trial", label: "Deneme" },
-  { id: "active", label: "Aktif" },
-  { id: "suspended", label: "Askıda" },
+  { id: "all", labelKey: "panelSaas.tt.filter.all" },
+  { id: "trial", labelKey: "panelSaas.tt.filter.trial" },
+  { id: "active", labelKey: "panelSaas.tt.filter.active" },
+  { id: "suspended", labelKey: "panelSaas.tt.filter.suspended" },
 ] as const;
 
 /**
@@ -47,6 +48,7 @@ const FILTERS = [
  * Yalnızca SUPER_ADMIN + Firebase aktifken. `reloadKey` değişince yeniden çeker.
  */
 export function TenantsTable({ reloadKey = 0 }: { reloadKey?: number }) {
+  const tx = useT();
   const { profile, firebaseReady } = useAuth();
   const isSuper = profile?.role === ROLES.SUPER_ADMIN;
 
@@ -135,14 +137,14 @@ export function TenantsTable({ reloadKey = 0 }: { reloadKey?: number }) {
     <GlassCard tone="navy">
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <Building2 size={18} className="text-accent" aria-hidden="true" />
-        <h2 className="text-lg font-semibold text-content">Tenant & Okullar</h2>
+        <h2 className="text-lg font-semibold text-content">{tx("panelSaas.tt.heading")}</h2>
         <span className="text-xs text-muted">{visible.length}</span>
         <button
           type="button"
           onClick={() => void refresh()}
           disabled={refreshing}
           className="text-muted transition hover:text-content disabled:opacity-50"
-          aria-label="Yenile"
+          aria-label={tx("panelSaas.tt.refreshAria")}
         >
           <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} />
         </button>
@@ -159,18 +161,18 @@ export function TenantsTable({ reloadKey = 0 }: { reloadKey?: number }) {
                   : "border-overlay/10 text-muted hover:text-content"
               }`}
             >
-              {f.label}
+              {tx(f.labelKey)}
             </button>
           ))}
           <DataExportButtons
-            filename="tenantlar"
-            title="Tenantlar"
+            filename={tx("panelSaas.tt.export.filename")}
+            title={tx("panelSaas.tt.export.title")}
             columns={[
-              { key: "name", label: "Okul" },
-              { key: "slug", label: "Slug" },
-              { key: "packageId", label: "Paket" },
-              { key: "status", label: "Durum" },
-              { key: "city", label: "Şehir" },
+              { key: "name", label: tx("panelSaas.tt.col.name") },
+              { key: "slug", label: tx("panelSaas.tt.col.slug") },
+              { key: "packageId", label: tx("panelSaas.tt.col.package") },
+              { key: "status", label: tx("panelSaas.tt.col.status") },
+              { key: "city", label: tx("panelSaas.tt.col.city") },
             ]}
             rows={visible as unknown as Record<string, unknown>[]}
           />
@@ -184,7 +186,7 @@ export function TenantsTable({ reloadKey = 0 }: { reloadKey?: number }) {
       )}
 
       {visible.length === 0 ? (
-        <p className="text-sm text-muted">Bu filtre için tenant yok.</p>
+        <p className="text-sm text-muted">{tx("panelSaas.tt.empty")}</p>
       ) : (
         <div className="flex flex-col gap-2">
           {visible.map((t) => {
@@ -244,7 +246,7 @@ export function TenantsTable({ reloadKey = 0 }: { reloadKey?: number }) {
                       handleStatus(t.tenantId, e.target.value as TenantStatus)
                     }
                     className="rounded-lg border border-overlay/10 bg-overlay/[0.04] px-2.5 py-1.5 text-xs text-content outline-none focus:border-accent disabled:opacity-60"
-                    aria-label="Tenant durumu"
+                    aria-label={tx("panelSaas.tt.statusAria")}
                   >
                     {TENANT_STATUSES.map((s) => (
                       <option key={s} value={s} className="bg-surface">
@@ -258,47 +260,47 @@ export function TenantsTable({ reloadKey = 0 }: { reloadKey?: number }) {
                   <div className="grid grid-cols-1 gap-4 border-t border-overlay/10 px-4 py-4 sm:grid-cols-2">
                     <div className="text-sm">
                       <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
-                        Okul Profili
+                        {tx("panelSaas.tt.schoolProfile")}
                       </p>
                       {sp ? (
                         <ul className="space-y-0.5 text-muted">
                           <li>
-                            Şehir/İlçe:{" "}
+                            {tx("panelSaas.tt.cityDistrict")}{" "}
                             <span className="text-content">
                               {sp.city || "—"}
                               {sp.district ? ` / ${sp.district}` : ""}
                             </span>
                           </li>
                           <li>
-                            Telefon:{" "}
+                            {tx("panelSaas.tt.phone")}{" "}
                             <span className="text-content">{sp.phone || "—"}</span>
                           </li>
                           <li>
-                            E-posta:{" "}
+                            {tx("panelSaas.tt.email")}{" "}
                             <span className="text-content">{sp.email || "—"}</span>
                           </li>
                           <li>
-                            Web:{" "}
+                            {tx("panelSaas.tt.web")}{" "}
                             <span className="text-content">{sp.website || "—"}</span>
                           </li>
                           <li>
-                            Durum:{" "}
+                            {tx("panelSaas.tt.status")}{" "}
                             <span className="text-content">{sp.status}</span>
                           </li>
                         </ul>
                       ) : (
                         <p className="text-muted">
-                          Bu tenant için ayrı okul profili kaydı yok (eski kayıt).
+                          {tx("panelSaas.tt.noProfile")}
                         </p>
                       )}
                     </div>
 
                     <div className="text-sm">
                       <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted">
-                        Adminler ({admins.length})
+                        {tx("panelSaas.tt.admins", { count: admins.length })}
                       </p>
                       {admins.length === 0 ? (
-                        <p className="text-muted">Admin bulunamadı.</p>
+                        <p className="text-muted">{tx("panelSaas.tt.noAdmins")}</p>
                       ) : (
                         <ul className="space-y-1">
                           {admins.map((a) => (
