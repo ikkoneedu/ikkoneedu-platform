@@ -26,6 +26,8 @@ import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 import { ROLES, ROLE_LABELS } from "@/lib/auth/role-constants";
 import { getHomeRouteForRole } from "@/lib/auth/role-routing";
 import { productName } from "@/lib/constants";
+import { useT } from "@/components/i18n/LocaleProvider";
+import type { TranslateFn } from "@/lib/i18n/dictionaries";
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -35,23 +37,23 @@ function initials(name: string): string {
 }
 
 /** Role özel hızlı erişim bağlantısı. */
-function roleQuickLink(role: string): { href: string; label: string } | null {
+function roleQuickLink(role: string, t: TranslateFn): { href: string; label: string } | null {
   switch (role) {
     case ROLES.TEACHER:
-      return { href: "/teacher/classes", label: "Sınıflarım ve Kodlar" };
+      return { href: "/teacher/classes", label: t("panelFinance.profile.quick.teacherClasses") };
     case ROLES.COORDINATOR:
-      return { href: "/teacher", label: "Öğretmen Paneli" };
+      return { href: "/teacher", label: t("panelFinance.profile.quick.teacherPanel") };
     case ROLES.STUDENT:
-      return { href: "/student", label: "Öğrenci Panelim" };
+      return { href: "/student", label: t("panelFinance.profile.quick.studentPanel") };
     case ROLES.PARENT:
-      return { href: "/parent", label: "Veli Panelim" };
+      return { href: "/parent", label: t("panelFinance.profile.quick.parentPanel") };
     case ROLES.SUPER_ADMIN:
-      return { href: "/super-admin", label: "Süper Admin Konsolu" };
+      return { href: "/super-admin", label: t("panelFinance.profile.quick.superAdmin") };
     case ROLES.FOUNDER:
     case ROLES.SCHOOL_ADMIN:
     case ROLES.PRINCIPAL:
     case ROLES.VICE_PRINCIPAL:
-      return { href: "/admin", label: "Okul Yönetim Paneli" };
+      return { href: "/admin", label: t("panelFinance.profile.quick.schoolAdmin") };
     default:
       return null;
   }
@@ -59,6 +61,7 @@ function roleQuickLink(role: string): { href: string; label: string } | null {
 
 /** Profil — kullanıcı kendi bilgilerini görür ve ad/telefonunu günceller. */
 export default function ProfilePage() {
+  const t = useT();
   const { user, profile, refreshProfile } = useAuth();
   const { loading } = useRequireAuth();
   const [busy, setBusy] = useState(false);
@@ -94,7 +97,7 @@ export default function ProfilePage() {
     const displayName = String(data.get("displayName") ?? "").trim();
     const phone = String(data.get("phone") ?? "").trim();
     if (displayName.length < 2) {
-      setError("Lütfen geçerli bir ad girin.");
+      setError(t("panelFinance.profile.error.invalidName"));
       return;
     }
     setBusy(true);
@@ -115,27 +118,27 @@ export default function ProfilePage() {
     return (
       <div className="mesh-bg flex min-h-screen w-full items-center justify-center">
         <span className="h-1.5 w-24 animate-pulse rounded-full bg-accent/60" />
-        <span className="sr-only">Yükleniyor…</span>
+        <span className="sr-only">{t("panelFinance.profile.loading")}</span>
       </div>
     );
   }
 
   const suspended = profile.status === "SUSPENDED";
-  const quick = roleQuickLink(profile.role);
+  const quick = roleQuickLink(profile.role, t);
   const schoolDisplay =
     schoolName ??
     (profile.tenantId === "public"
-      ? "Genel Kullanıcı"
+      ? t("panelFinance.profile.generalUser")
       : profile.tenantId === "platform"
-        ? "Platform"
+        ? t("panelFinance.profile.platform")
         : profile.tenantId || "—");
 
   const details = [
-    { icon: Mail, label: "E-posta", value: profile.email },
-    { icon: School, label: "Okul", value: schoolDisplay },
-    { icon: ShieldCheck, label: "Rol", value: ROLE_LABELS[profile.role] ?? profile.role },
+    { icon: Mail, label: t("panelFinance.profile.detail.email"), value: profile.email },
+    { icon: School, label: t("panelFinance.profile.detail.school"), value: schoolDisplay },
+    { icon: ShieldCheck, label: t("panelFinance.profile.detail.role"), value: ROLE_LABELS[profile.role] ?? profile.role },
     ...(profile.className
-      ? [{ icon: User, label: "Sınıf", value: profile.className }]
+      ? [{ icon: User, label: t("panelFinance.profile.detail.class"), value: profile.className }]
       : []),
   ];
 
@@ -154,7 +157,7 @@ export default function ProfilePage() {
             className="flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-content"
           >
             <ArrowLeft size={15} aria-hidden="true" />
-            Panele dön
+            {t("panelFinance.profile.back")}
           </Link>
         </div>
 
@@ -166,7 +169,7 @@ export default function ProfilePage() {
             </div>
             <div className="min-w-0">
               <h1 className="text-xl font-bold tracking-tight text-content sm:text-2xl">
-                {profile.displayName || "Kullanıcı"}
+                {profile.displayName || t("panelFinance.profile.fallbackName")}
               </h1>
               <div className="mt-1.5 flex flex-wrap items-center gap-2">
                 <span className="rounded-full border border-accent/30 bg-accent/10 px-2.5 py-0.5 text-xs font-medium text-accent">
@@ -179,7 +182,7 @@ export default function ProfilePage() {
                       : "border-emerald-400/30 bg-emerald-400/10 text-emerald-400"
                   }`}
                 >
-                  {suspended ? "Askıda" : "Aktif"}
+                  {suspended ? t("panelFinance.profile.status.suspended") : t("panelFinance.profile.status.active")}
                 </span>
               </div>
             </div>
@@ -217,27 +220,26 @@ export default function ProfilePage() {
 
         {/* Düzenleme */}
         <GlassCard tone="navy" className="mt-6 sm:p-8">
-          <h2 className="text-lg font-semibold text-content">Profili Düzenle</h2>
+          <h2 className="text-lg font-semibold text-content">{t("panelFinance.profile.edit.heading")}</h2>
           <p className="mt-1 text-sm text-muted">
-            Ad ve telefon bilgilerinizi güncelleyebilirsiniz. Rol, okul ve hesap
-            durumu yöneticiniz tarafından belirlenir.
+            {t("panelFinance.profile.edit.description")}
           </p>
 
           <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <TextField
-              label="Ad Soyad"
+              label={t("panelFinance.profile.edit.name")}
               name="displayName"
               icon={User}
               defaultValue={profile.displayName}
               required
             />
             <TextField
-              label="Telefon"
+              label={t("panelFinance.profile.edit.phone")}
               name="phone"
               type="tel"
               icon={Phone}
               defaultValue={profile.phone ?? ""}
-              placeholder="0 5xx xxx xx xx"
+              placeholder={t("panelFinance.profile.edit.phonePlaceholder")}
             />
 
             {error && (
@@ -249,13 +251,13 @@ export default function ProfilePage() {
             {done && (
               <p className="flex items-center gap-2 rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-400">
                 <CheckCircle2 size={16} aria-hidden="true" />
-                Profiliniz güncellendi.
+                {t("panelFinance.profile.edit.success")}
               </p>
             )}
 
             <PrimaryButton type="submit" size="lg" className="w-full" disabled={busy}>
               <Save size={18} aria-hidden="true" />
-              {busy ? "Kaydediliyor…" : "Kaydet"}
+              {busy ? t("panelFinance.profile.edit.saveBusy") : t("panelFinance.profile.edit.save")}
             </PrimaryButton>
           </form>
         </GlassCard>

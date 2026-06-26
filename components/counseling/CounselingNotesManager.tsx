@@ -16,6 +16,7 @@ import {
   type CounselingSessionRecord,
 } from "@/lib/services/counseling";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 // Rehberlik (PDR) HASSAS veri — yalnızca yönetim + koordinatör (rehberlik).
 // ÖĞRETMEN hariç (tüm öğrencilerin psikolojik danışma notlarını göremez).
@@ -44,6 +45,7 @@ function formatDate(ms: number | null): string {
  * Personel öğrenci görüşme notu ekler; liste + CSV/PDF. Tenant izole.
  */
 export function CounselingNotesManager() {
+  const t = useT();
   const { user, profile, firebaseReady } = useAuth();
   const tenantId = profile?.tenantId;
   const canManage = profile != null && STAFF_ROLES.includes(profile.role);
@@ -76,11 +78,8 @@ export function CounselingNotesManager() {
       <GlassCard tone="navy" className="flex items-start gap-3">
         <AlertCircle size={18} className="mt-0.5 shrink-0 text-amber-400" aria-hidden="true" />
         <div className="text-sm text-muted">
-          <p className="font-semibold text-content">Rehberlik notları kullanılamıyor</p>
-          <p className="mt-1">
-            Bu bölüm yalnızca giriş yapmış bir okul personeli hesabıyla ve Firebase
-            aktifken çalışır.
-          </p>
+          <p className="font-semibold text-content">{t("panelFinance.notes.unavailable.title")}</p>
+          <p className="mt-1">{t("panelFinance.notes.unavailable.body")}</p>
         </div>
       </GlassCard>
     );
@@ -94,7 +93,7 @@ export function CounselingNotesManager() {
     const tag = String(f.get("tag") ?? "");
     const note = String(f.get("note") ?? "").trim();
     if (!studentName || !note) {
-      setError("Öğrenci adı ve görüşme notu zorunludur.");
+      setError(t("panelFinance.notes.error.required"));
       return;
     }
     setBusy(true);
@@ -128,24 +127,24 @@ export function CounselingNotesManager() {
       <GlassCard tone="navy">
         <div className="mb-4 flex items-center gap-2">
           <Plus size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Görüşme Notu Ekle</h2>
+          <h2 className="text-lg font-semibold text-content">{t("panelFinance.notes.add.heading")}</h2>
         </div>
         <form onSubmit={add} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <TextField label="Öğrenci" name="studentName" placeholder="Ad Soyad" required />
-          <SelectField label="Etiket" name="tag" items={[...COUNSELING_TAGS]} />
+          <TextField label={t("panelFinance.notes.add.student")} name="studentName" placeholder={t("panelFinance.notes.add.studentPlaceholder")} required />
+          <SelectField label={t("panelFinance.notes.add.tag")} name="tag" items={[...COUNSELING_TAGS]} />
           <div className="flex flex-col gap-1.5 sm:col-span-2">
-            <label className="text-sm font-medium text-muted">Görüşme Notu</label>
+            <label className="text-sm font-medium text-muted">{t("panelFinance.notes.add.note")}</label>
             <textarea
               name="note"
               rows={3}
-              placeholder="Görüşme özetini yazın…"
+              placeholder={t("panelFinance.notes.add.notePlaceholder")}
               className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] px-4 py-3 text-sm text-content placeholder:text-muted/60 outline-none focus:border-accent focus:ring-1 focus:ring-accent"
             />
           </div>
           <div>
             <PrimaryButton type="submit" size="md" disabled={busy}>
               <Plus size={16} aria-hidden="true" />
-              {busy ? "Ekleniyor…" : "Ekle"}
+              {busy ? t("panelFinance.notes.add.submitBusy") : t("panelFinance.notes.add.submit")}
             </PrimaryButton>
           </div>
         </form>
@@ -155,27 +154,27 @@ export function CounselingNotesManager() {
       <GlassCard tone="navy">
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <NotebookPen size={18} className="text-accent" aria-hidden="true" />
-          <h2 className="text-lg font-semibold text-content">Görüşme Notları (canlı)</h2>
+          <h2 className="text-lg font-semibold text-content">{t("panelFinance.notes.list.heading")}</h2>
           <span className="text-xs text-muted">{rows?.length ?? 0}</span>
           <button
             type="button"
             onClick={() => void load()}
             disabled={refreshing}
             className="ml-auto text-muted transition hover:text-content disabled:opacity-50"
-            aria-label="Yenile"
+            aria-label={t("panelFinance.notes.list.refresh")}
           >
             <RefreshCw size={15} className={refreshing ? "animate-spin" : ""} />
           </button>
           {(rows?.length ?? 0) > 0 && (
             <DataExportButtons
               filename="rehberlik-notlari"
-              title="Rehberlik Görüşme Notları"
+              title={t("panelFinance.notes.list.exportTitle")}
               formats={["pdf", "csv"]}
               columns={[
-                { key: "studentName", label: "Öğrenci" },
-                { key: "tag", label: "Etiket" },
-                { key: "note", label: "Not" },
-                { key: "counselorName", label: "Rehber" },
+                { key: "studentName", label: t("panelFinance.notes.col.student") },
+                { key: "tag", label: t("panelFinance.notes.col.tag") },
+                { key: "note", label: t("panelFinance.notes.col.note") },
+                { key: "counselorName", label: t("panelFinance.notes.col.counselor") },
               ]}
               rows={(rows ?? []) as unknown as Record<string, unknown>[]}
             />
@@ -183,10 +182,10 @@ export function CounselingNotesManager() {
         </div>
 
         {rows === null ? (
-          <p className="text-sm text-muted">Yükleniyor…</p>
+          <p className="text-sm text-muted">{t("panelFinance.notes.list.loading")}</p>
         ) : rows.length === 0 ? (
           <p className="flex items-center gap-2 text-sm text-muted">
-            <Inbox size={15} aria-hidden="true" /> Henüz görüşme notu yok.
+            <Inbox size={15} aria-hidden="true" /> {t("panelFinance.notes.list.empty")}
           </p>
         ) : (
           <ul className="flex flex-col gap-2">

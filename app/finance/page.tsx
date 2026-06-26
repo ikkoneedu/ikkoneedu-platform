@@ -3,21 +3,25 @@ import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { PaymentManager } from "@/components/finance/PaymentManager";
 import { productName } from "@/lib/constants";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: `Finans Merkezi — ${productName}`,
-  description:
-    "Tahsilat, gelir, ödeme ve kayıt gelirlerini tek ekrandan takip edin.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("panelFinance.meta.title", { product: productName }),
+    description: t("panelFinance.meta.description"),
+  };
+}
 
-export default function FinancePage() {
+export default async function FinancePage() {
+  const t = await getServerT();
   return (
-    <PageShell title="Finans Merkezi">
+    <PageShell title={t("panelFinance.page.title")}>
       <div className="flex flex-col gap-10">
         <SectionHeader
-          eyebrow="Finans"
-          title="Finans Merkezi"
-          description="Öğrenci bazlı tahsilatı, bakiyeyi ve ödeme durumlarını tek ekrandan yönetin."
+          eyebrow={t("panelFinance.section.eyebrow")}
+          title={t("panelFinance.section.title")}
+          description={t("panelFinance.section.description")}
         />
 
         {/* Canlı ödeme yönetimi — GERÇEK Firestore (özet + tablo + tahsilat).

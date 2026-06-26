@@ -5,21 +5,25 @@ import { SectionHeader } from "@/components/shared/SectionHeader";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { CounselingNotesManager } from "@/components/counseling/CounselingNotesManager";
 import { productName } from "@/lib/constants";
+import { getServerT } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: `Rehberlik Merkezi — ${productName}`,
-  description:
-    "Öğrenci gelişimini, görüşme süreçlerini ve rehberlik notlarını güvenli şekilde takip edin.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerT();
+  return {
+    title: t("panelFinance.counseling.meta.title", { product: productName }),
+    description: t("panelFinance.counseling.meta.description"),
+  };
+}
 
-export default function CounselingPage() {
+export default async function CounselingPage() {
+  const t = await getServerT();
   return (
-    <PageShell title="Rehberlik Merkezi">
+    <PageShell title={t("panelFinance.counseling.page.title")}>
       <div className="flex flex-col gap-10">
         <SectionHeader
-          eyebrow="Öğrenci Gelişimi"
-          title="Rehberlik Merkezi"
-          description="Öğrenci görüşme notlarını ve rehberlik kayıtlarını güvenli şekilde takip edin."
+          eyebrow={t("panelFinance.counseling.section.eyebrow")}
+          title={t("panelFinance.counseling.section.title")}
+          description={t("panelFinance.counseling.section.description")}
         />
 
         {/* Canlı rehberlik görüşme notları (gerçek Firestore).
@@ -35,13 +39,10 @@ export default function CounselingPage() {
             </span>
             <div>
               <h2 className="text-sm font-semibold text-content">
-                Gizlilik ve Yetki Uyarısı
+                {t("panelFinance.counseling.privacy.title")}
               </h2>
               <p className="mt-1 text-sm leading-relaxed text-muted">
-                Rehberlik kayıtları KVKK kapsamında hassas veri olarak işlenir.
-                Bu ekrandaki öğrenci görüşme notlarına yalnızca yetkili rehberlik
-                personeli rol bazlı erişim ile ulaşabilir. Bilgiler üçüncü
-                kişilerle paylaşılmamalı ve gizlilik ilkelerine uygun saklanmalıdır.
+                {t("panelFinance.counseling.privacy.body")}
               </p>
             </div>
           </div>
