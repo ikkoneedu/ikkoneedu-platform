@@ -94,3 +94,37 @@ body {
 .light .text-glow {
   text-shadow: none;
 }
+
+/* ---- AI robot maskotu animasyonları ---- */
+.ai-robot {
+  animation: ai-robot-float 4s ease-in-out infinite;
+}
+.ai-robot__antenna {
+  transform-origin: 60px 12px;
+  animation: ai-robot-pulse 1.8s ease-in-out infinite;
+}
+.ai-robot__eyes {
+  transform-origin: center;
+  animation: ai-robot-blink 4.5s infinite;
+}
+.ai-robot--think {
+  animation-duration: 2.4s;
+}
+.ai-robot--think .ai-robot__antenna {
+  animation-duration: 0.7s;
+}
+@keyframes ai-robot-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes ai-robot-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+@keyframes ai-robot-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ai-robot, .ai-robot__antenna, .ai-robot__eyes { animation: none; }
+}

@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { Bot, Send, User } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { AiRobot } from "@/components/ai/AiRobot";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { getMockAiReply, type AiMessage } from "@/lib/ai-mock-data";
 
@@ -66,12 +67,10 @@ export function AiChatPanel({ initialMessages }: AiChatPanelProps) {
     <GlassCard tone="navy" className="flex h-full min-h-[28rem] flex-col">
       {/* Başlık */}
       <div className="flex items-center gap-3 border-b border-overlay/10 pb-4">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent/30 bg-accent/15 text-accent">
-          <Bot size={20} aria-hidden="true" />
-        </span>
+        <AiRobot size={48} thinking={busy} className="shrink-0" />
         <div>
-          <h2 className="text-base font-semibold text-content">AI Brain Sohbet</h2>
-          <p className="text-xs text-muted">Rol bazlı kurumsal asistan</p>
+          <h2 className="text-base font-semibold text-content">Okul Beyni</h2>
+          <p className="text-xs text-muted">İngiliz Kültür Koleji yapay zekâ asistanı</p>
         </div>
         <span className="ml-auto flex items-center gap-1.5 text-xs text-muted">
           <span className={`h-2 w-2 rounded-full ${demo ? "bg-amber-400" : "bg-emerald-400"}`} />
