@@ -76,8 +76,11 @@ if (!projectId || !clientEmail || !privateKey) {
   process.exit(1);
 }
 
+console.log("• Proje :", projectId);
+console.log("• Hesap :", clientEmail);
+
 if (!getApps().length) {
-  initializeApp({ credential: cert({ projectId, clientEmail, privateKey }) });
+  initializeApp({ credential: cert({ projectId, clientEmail, privateKey }), projectId });
 }
 
 const auth = getAuth();
