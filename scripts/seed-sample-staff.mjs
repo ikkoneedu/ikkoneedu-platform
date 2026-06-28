@@ -45,12 +45,34 @@ function loadEnvLocal() {
 
 loadEnvLocal();
 
-const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID;
-const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
-const privateKey = (process.env.FIREBASE_ADMIN_PRIVATE_KEY ?? "").replace(/\\n/g, "\n");
+// Kimlik bilgisi kaynağı:
+//  1) İlk CLI argümanı bir service account .json yolu ise doğrudan oradan.
+//  2) Aksi halde .env.local / ortam değişkenlerinden FIREBASE_ADMIN_*.
+let projectId = process.env.FIREBASE_ADMIN_PROJECT_ID;
+let clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL;
+let privateKey = (process.env.FIREBASE_ADMIN_PRIVATE_KEY ?? "").replace(/\\n/g, "\n");
+
+const jsonArg = process.argv[2];
+if (jsonArg && jsonArg.endsWith(".json")) {
+  try {
+    const sa = JSON.parse(readFileSync(resolve(process.cwd(), jsonArg), "utf8"));
+    projectId = sa.project_id || projectId;
+    clientEmail = sa.client_email || clientEmail;
+    privateKey = (sa.private_key || privateKey).replace(/\\n/g, "\n");
+    console.log("• Kimlik bilgisi JSON'dan okundu:", jsonArg);
+  } catch (e) {
+    console.error("HATA: JSON okunamadı:", jsonArg, "-", e.message);
+    process.exit(1);
+  }
+}
 
 if (!projectId || !clientEmail || !privateKey) {
-  console.error("HATA: FIREBASE_ADMIN_PROJECT_ID / CLIENT_EMAIL / PRIVATE_KEY gerekli.");
+  console.error("HATA: Admin kimlik bilgileri eksik. Bulunanlar:");
+  console.error("  FIREBASE_ADMIN_PROJECT_ID :", projectId ? "✓" : "✗ EKSİK");
+  console.error("  FIREBASE_ADMIN_CLIENT_EMAIL:", clientEmail ? "✓" : "✗ EKSİK");
+  console.error("  FIREBASE_ADMIN_PRIVATE_KEY :", privateKey ? "✓" : "✗ EKSİK");
+  console.error("\nÇözüm 1 (JSON ile):  node scripts/seed-sample-staff.mjs ./serviceAccount.json");
+  console.error("Çözüm 2 (.env.local): yukarıdaki 3 anahtarın .env.local'de TAM olduğundan emin olun.");
   process.exit(1);
 }
 
