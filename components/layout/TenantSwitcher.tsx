@@ -6,6 +6,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { useT } from "@/components/i18n/LocaleProvider";
 import { ROLES } from "@/lib/auth/role-constants";
 import { listTenants, type TenantRecord } from "@/lib/services/tenants";
+import { SINGLE_SCHOOL_MODE } from "@/lib/config/app-mode";
 
 /**
  * Süper admin okul (tenant) seçici. Seçilen okul `setActiveTenant` ile
@@ -15,7 +16,8 @@ import { listTenants, type TenantRecord } from "@/lib/services/tenants";
 export function TenantSwitcher() {
   const { profile, firebaseReady, activeTenantId, setActiveTenant } = useAuth();
   const tx = useT();
-  const isSuper = profile?.role === ROLES.SUPER_ADMIN;
+  // Tek-okul modunda çoklu okul seçici anlamsız → her zaman gizli.
+  const isSuper = !SINGLE_SCHOOL_MODE && profile?.role === ROLES.SUPER_ADMIN;
 
   const [tenants, setTenants] = useState<TenantRecord[]>([]);
 

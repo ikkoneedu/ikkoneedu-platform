@@ -10,6 +10,7 @@ import { useT } from "@/components/i18n/LocaleProvider";
 import { canRoleAccess } from "@/lib/auth/route-config";
 import { useTenantModules } from "@/components/modules/useTenantModules";
 import type { ModuleStatus } from "@/lib/modules/module-catalog";
+import { SINGLE_SCHOOL_MODE, SINGLE_SCHOOL_HIDDEN_ROUTES } from "@/lib/config/app-mode";
 
 /** Menü öğesi için modül durum rozeti stili (yalnız bilgilendirici). */
 const BADGE_STYLE: Partial<Record<ModuleStatus, string>> = {
@@ -50,10 +51,14 @@ export function Sidebar({
 
   // Rol-duyarlı menü: oturum açıkken kullanıcının erişemediği öğeler gizlenir.
   // Mock Mod'da (Firebase yok) veya profil yokken tüm öğeler gösterilir.
-  const visibleItems =
+  const roleItems =
     firebaseReady && profile
       ? items.filter((item) => canRoleAccess(profile.role, item.href))
       : items;
+  // Tek-okul modunda çoklu okul rotalarını (ör. /school-select) menüden gizle.
+  const visibleItems = SINGLE_SCHOOL_MODE
+    ? roleItems.filter((item) => !SINGLE_SCHOOL_HIDDEN_ROUTES.includes(item.href))
+    : roleItems;
 
   const isItemActive = (item: NavigationItem) => {
     if (activeId) return item.id === activeId;

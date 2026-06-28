@@ -22,6 +22,7 @@ import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { productName } from "@/lib/constants";
 import { tenantFeatures } from "@/lib/mock-data";
 import { useT } from "@/components/i18n/LocaleProvider";
+import { SINGLE_SCHOOL_MODE } from "@/lib/config/app-mode";
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -39,6 +40,12 @@ const selectCards = [
 export default function SchoolSelectPage() {
   const router = useRouter();
   const t = useT();
+
+  // Tek-okul modunda diğer okullar gizlenir; yalnızca kurucu okul (+ platform
+  // sahibi kartı) gösterilir. Çoklu okul satışı aktifleşince hepsi geri gelir.
+  const cards = SINGLE_SCHOOL_MODE
+    ? selectCards.filter((c) => c.id === "ikk" || c.isSuper)
+    : selectCards;
 
   return (
     <div className="mesh-bg min-h-screen w-full">
@@ -97,7 +104,7 @@ export default function SchoolSelectPage() {
           transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}
           className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
         >
-          {selectCards.map((card) => {
+          {cards.map((card) => {
             const Icon = card.icon;
             return (
               <GlassCard

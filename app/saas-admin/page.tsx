@@ -12,6 +12,7 @@ import { VisionCard } from "@/components/saas/VisionCard";
 import { productName } from "@/lib/constants";
 import { saasPlanTypes, saasVisionTiers } from "@/lib/saas-mock-data";
 import { getServerT } from "@/lib/i18n/server";
+import { SINGLE_SCHOOL_MODE } from "@/lib/config/app-mode";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerT();
@@ -35,26 +36,31 @@ export default async function SaasAdminPage() {
         {/* Genel durum — GERÇEK (okul/lead/demo sayımları) */}
         <RealSaasOverview />
 
-        {/* Demo talepleri — gerçek Firestore (canlı) */}
+        {/* Demo talepleri — gerçek Firestore (canlı). Tek-okul modunda da açık. */}
         <DemoRequestsInbox />
 
         {/* Platform satış lead pipeline'ı — demo dönüşümlerinden (canlı) */}
         <PlatformLeadsInbox />
 
-        {/* Tenant onboarding + tenant/okul/admin yönetimi (gerçek Firestore) */}
-        <TenantManagement />
+        {/* Çoklu okul satış/yönetim yüzeyleri — tek-okul modunda pasif (gizli). */}
+        {!SINGLE_SCHOOL_MODE && (
+          <>
+            {/* Tenant onboarding + tenant/okul/admin yönetimi (gerçek Firestore) */}
+            <TenantManagement />
 
-        {/* Okullar listesi — GERÇEK Firestore (kök schools) */}
-        <RealSchoolTable />
+            {/* Okullar listesi — GERÇEK Firestore (kök schools) */}
+            <RealSchoolTable />
 
-        {/* Yeni okul ekle (gerçek Firestore'a yazar) */}
-        <NewSchoolForm plans={saasPlanTypes} />
+            {/* Yeni okul ekle (gerçek Firestore'a yazar) */}
+            <NewSchoolForm plans={saasPlanTypes} />
 
-        {/* Modül yetkileri önizleme — SALT OKUNUR (paket→modül çözümleme) */}
-        <ModuleEntitlementsPreview />
+            {/* Modül yetkileri önizleme — SALT OKUNUR (paket→modül çözümleme) */}
+            <ModuleEntitlementsPreview />
 
-        {/* Gelecek vizyonu (bilgilendirici — abonelik/gelir/AI fazları sonra) */}
-        <VisionCard tiers={saasVisionTiers} />
+            {/* Gelecek vizyonu (bilgilendirici — abonelik/gelir/AI fazları sonra) */}
+            <VisionCard tiers={saasVisionTiers} />
+          </>
+        )}
       </div>
     </PageShell>
   );
