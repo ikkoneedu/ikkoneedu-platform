@@ -84,15 +84,15 @@ export function CinematicHero() {
         <div className="absolute inset-x-[-50%] bottom-[-10%] top-0 origin-bottom [transform:rotateX(72deg)] bg-[linear-gradient(rgba(178,199,239,0.18)_1px,transparent_1px),linear-gradient(90deg,rgba(178,199,239,0.18)_1px,transparent_1px)] bg-[length:54px_54px] opacity-40 [mask-image:linear-gradient(to_top,black,transparent_85%)]" />
       </div>
 
-      {/* Okunabilirlik için sol karartma + yumuşak vinyet */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(130%_120%_at_0%_45%,rgba(5,12,22,0.92),rgba(5,12,22,0.35)_45%,transparent_68%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_85%_at_50%_50%,transparent_45%,rgba(5,12,22,0.5)_100%)]" />
+      {/* Okunabilirlik için sol karartma + yumuşak vinyet — TEMA DUYARLI
+          (light modda açık zemin tonu, dark modda koyu). */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(130%_120%_at_0%_45%,rgb(var(--color-background)/0.92),rgb(var(--color-background)/0.35)_45%,transparent_68%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_85%_at_50%_50%,transparent_45%,rgb(var(--color-background)/0.5)_100%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-background to-transparent" />
 
-      {/* Mobil okunabilirlik scrim'i — küçük ekranda ağ düğümleri metnin arkasından
-          taşıp metinle iç içe girmesin diye. Masaüstünde sol vinyet yeterli olduğu
-          için yalnızca mobilde (sm altı) uygulanır. */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/75 via-background/60 to-background/90 sm:hidden" />
+      {/* Mobil okunabilirlik scrim'i — küçük ekranda ağ düğümleri/etiketleri metnin
+          arkasından taşıp metinle iç içe girmesin diye GÜÇLENDİRİLDİ. Yalnız mobilde. */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-background/85 via-background/70 to-background/95 sm:hidden" />
 
       {/* HUD köşe çerçeveleri */}
       <div className="pointer-events-none absolute left-5 top-5 h-7 w-7 border-l border-t border-accent/25 sm:left-7 sm:top-7" />

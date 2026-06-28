@@ -65,13 +65,15 @@ export function HeroOverlay({ visible, onCorePulse }: HeroOverlayProps) {
 
         <motion.h1
           variants={item}
-          className="mt-4 text-5xl font-bold leading-[0.95] tracking-tight sm:text-6xl lg:text-7xl"
+          className="mt-4 text-5xl font-bold leading-[1.04] tracking-tight sm:text-6xl sm:leading-[0.95] lg:text-7xl"
         >
-          <span className="bg-gradient-to-br from-white via-accent to-overlay/70 bg-clip-text text-transparent text-glow">
+          {/* Degrade tema duyarlı: content (dark'ta açık, light'ta koyu) → accent
+              → brand. Eski 'from-white' light modda görünmüyordu. */}
+          <span className="bg-gradient-to-br from-content via-accent to-brand bg-clip-text text-transparent text-glow">
             IKK ONE
           </span>
           <br />
-          <span className="bg-gradient-to-br from-white via-accent to-overlay/70 bg-clip-text text-transparent text-glow">
+          <span className="bg-gradient-to-br from-content via-accent to-brand bg-clip-text text-transparent text-glow">
             EDU OS
           </span>
         </motion.h1>
