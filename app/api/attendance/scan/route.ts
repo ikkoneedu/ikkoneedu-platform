@@ -1,7 +1,14 @@
 import { NextResponse } from "next/server";
 import { getAdminAuth, getAdminDb, isAdminConfigured } from "@/lib/firebase/admin";
 import { getAttendanceSecret, verifyAttendanceSig } from "@/lib/attendance/sign";
-import { parseAttendanceQR, dateStr, haversineMeters } from "@/lib/attendance/token";
+import {
+  parseAttendanceQR,
+  dateStr,
+  haversineMeters,
+  minutesOfDay,
+  isoWeekday,
+  parseHm,
+} from "@/lib/attendance/token";
 import {
   SCHOOL_LOCATION,
   ATTENDANCE_GEOFENCE_ENABLED,
@@ -133,6 +140,32 @@ export async function POST(request: Request) {
   const existing = await ref.get();
   const geo = lat !== null && lng !== null ? { lat, lng } : null;
   const action = parsed.action;
+  const nowMs = now.getTime();
+
+  // Bu tarama checkIn'i İLK kez yazıyor mu? (geç tespiti yalnız o zaman)
+  const willSetCheckIn = action === "in" && (!existing.exists || !existing.data()?.checkIn);
+
+  // Geç-giriş tespiti — mesai programına göre (yoksa geç sayılmaz).
+  let late = false;
+  let lateMinutes = 0;
+  if (willSetCheckIn) {
+    const schSnap = await adminDb.doc(`tenants/${staffTenant}/staffSchedules/${parsed.uid}`).get();
+    if (schSnap.exists) {
+      const s = schSnap.data() ?? {};
+      const leaveStart = String(s.leaveStart ?? "");
+      const leaveEnd = String(s.leaveEnd ?? "");
+      const onLeave = leaveStart && leaveEnd && parsed.date >= leaveStart && parsed.date <= leaveEnd;
+      const workdays = Array.isArray(s.workdays) ? s.workdays.map((x: unknown) => Number(x)) : [1, 2, 3, 4, 5];
+      const isWorkday = workdays.includes(isoWeekday(nowMs));
+      if (!onLeave && isWorkday) {
+        const diff = minutesOfDay(nowMs) - (parseHm(String(s.startTime ?? "09:00")) + (Number(s.graceMinutes ?? 0) || 0));
+        if (diff > 0) {
+          late = true;
+          lateMinutes = diff;
+        }
+      }
+    }
+  }
 
   if (!existing.exists) {
     // Gün için ilk kayıt — seçilen aksiyona göre ilgili alanı doldur.
@@ -145,6 +178,8 @@ export async function POST(request: Request) {
       checkInGeo: action === "in" ? geo : null,
       checkOut: action === "out" ? now : null,
       checkOutGeo: action === "out" ? geo : null,
+      late,
+      lateMinutes,
       scannedBy: operatorUid,
       createdAt: now,
       updatedAt: now,
@@ -152,15 +187,37 @@ export async function POST(request: Request) {
     });
   } else if (action === "in") {
     // Giriş yalnızca boşsa yazılır (günün ilk girişi korunur).
-    const cur = existing.data() ?? {};
-    if (!cur.checkIn) {
-      await ref.set({ checkIn: now, checkInGeo: geo, scannedBy: operatorUid, updatedAt: now }, { merge: true });
+    if (willSetCheckIn) {
+      await ref.set({ checkIn: now, checkInGeo: geo, late, lateMinutes, scannedBy: operatorUid, updatedAt: now }, { merge: true });
     } else {
       await ref.set({ updatedAt: now }, { merge: true });
     }
   } else {
     // Çıkış her seferinde güncellenir (en son çıkış geçerli).
     await ref.set({ checkOut: now, checkOutGeo: geo, scannedBy: operatorUid, updatedAt: now }, { merge: true });
+  }
+
+  // Geç giriş → yönetim uyarısı (günde bir; sebep sorma akışı için).
+  if (willSetCheckIn && late) {
+    const alertRef = adminDb.doc(`tenants/${staffTenant}/staffAlerts/${logId}`);
+    if (!(await alertRef.get()).exists) {
+      await alertRef.set({
+        uid: parsed.uid,
+        name: String(staff.displayName ?? ""),
+        department: String(staff.department ?? ""),
+        phone: String(staff.phone ?? ""),
+        date: parsed.date,
+        type: "late",
+        lateMinutes,
+        checkIn: now,
+        status: "open",
+        question: "",
+        answer: "",
+        createdAt: now,
+        updatedAt: now,
+        expireAt,
+      });
+    }
   }
 
   const time = new Intl.DateTimeFormat("tr-TR", {

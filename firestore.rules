@@ -631,6 +631,24 @@ service cloud.firestore {
         || (canManageRecords() && myTenant() == tenantId && tenantNotSuspended(tenantId));
     }
 
+    // ---- Geç-giriş uyarıları — yönetim hepsini, personel KENDİNİ okur. CREATE
+    //      yalnızca sunucu (Admin SDK). Yönetim soru/durum, personel yanıt yazar.
+    match /tenants/{tenantId}/staffAlerts/{alertId} {
+      allow read: if isSuperAdmin()
+        || (canManageRecords() && myTenant() == tenantId)
+        || (isSignedIn() && resource.data.uid == request.auth.uid);
+      allow update: if (
+          canManageRecords() && myTenant() == tenantId
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['question', 'status', 'updatedAt'])
+        ) || (
+          isSignedIn() && resource.data.uid == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys()
+               .hasOnly(['answer', 'status', 'updatedAt'])
+        );
+      allow create, delete: if false; // create yalnızca Admin SDK
+    }
+
     // ---- Tenant denetim kayıtları — yönetim okur, personel ekler, kilitli --
     match /tenants/{tenantId}/auditLogs/{docId} {
       allow read: if isSuperAdmin()
@@ -652,7 +670,7 @@ service cloud.firestore {
         && !(document[0] in ['messages', 'notifications', 'students', 'parents',
              'teachers', 'admissions', 'admissionMeetings', 'leads', 'appointments',
              'payments', 'auditLogs', 'meetingRequests', 'assignmentSubmissions',
-             'counselingSessions', 'attendanceLogs']);
+             'counselingSessions', 'attendanceLogs', 'staffAlerts']);
       // Askıdaki okulun personeli veri yazamaz (süper admin ayrı kurallarla erişir).
       // Özel-kurallı koleksiyonlar bu yazımdan HARİÇ.
       // (Sınıflar/duyuru/program/not/yoklama bu kuralda kalır: personel yazar.)

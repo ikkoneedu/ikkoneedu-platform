@@ -62,6 +62,33 @@ export function dateStr(ms: number, timeZone = "Europe/Istanbul"): string {
   return parts;
 }
 
+/** Verilen zamanın saat dilimindeki gün-içi dakikası (00:00'dan). */
+export function minutesOfDay(ms: number, timeZone = "Europe/Istanbul"): number {
+  const s = new Intl.DateTimeFormat("en-GB", {
+    timeZone,
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(ms));
+  const [h, m] = s.split(":").map((x) => Number(x));
+  return (h || 0) * 60 + (m || 0);
+}
+
+/** ISO haftanın günü (1=Pzt … 7=Paz) verilen saat diliminde. */
+export function isoWeekday(ms: number, timeZone = "Europe/Istanbul"): number {
+  const wd = new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short" }).format(
+    new Date(ms),
+  );
+  const map: Record<string, number> = { Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6, Sun: 7 };
+  return map[wd] ?? 1;
+}
+
+/** "HH:MM" → gün-içi dakika. */
+export function parseHm(hhmm: string): number {
+  const [h, m] = String(hhmm ?? "").split(":").map((x) => Number(x));
+  return (h || 0) * 60 + (m || 0);
+}
+
 /** İki koordinat arası mesafe (metre) — Haversine. */
 export function haversineMeters(
   lat1: number,

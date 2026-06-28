@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/layout/PageShell";
 import { MyAttendanceHistory } from "@/components/staff-ops/MyAttendanceHistory";
+import { MyLateAlerts } from "@/components/staff-ops/MyLateAlerts";
 import { getServerT } from "@/lib/i18n/server";
 import { productName } from "@/lib/constants";
 
@@ -13,7 +14,10 @@ export default async function MyHistoryPage() {
   const t = await getServerT();
   return (
     <PageShell title={t("hist.title")}>
-      <MyAttendanceHistory />
+      <div className="flex flex-col gap-8">
+        <MyLateAlerts />
+        <MyAttendanceHistory />
+      </div>
     </PageShell>
   );
 }
