@@ -611,6 +611,15 @@ service cloud.firestore {
              .hasOnly(['currentLat', 'currentLng', 'locationUpdatedAt', 'updatedAt']);
     }
 
+    // ---- Personel giriş-çıkış kayıtları — yalnız YÖNETİM okur; YAZMA yalnızca
+    //      sunucu (firebase-admin, QR + geofence doğrulamalı) tarafından yapılır.
+    //      İstemci ASLA yazamaz (sahte giriş engeli). Genel kuraldan da HARİÇ.
+    match /tenants/{tenantId}/attendanceLogs/{logId} {
+      allow read: if isSuperAdmin()
+        || (canManageRecords() && myTenant() == tenantId);
+      allow write: if false; // yalnızca Admin SDK (sunucu API)
+    }
+
     // ---- Tenant denetim kayıtları — yönetim okur, personel ekler, kilitli --
     match /tenants/{tenantId}/auditLogs/{docId} {
       allow read: if isSuperAdmin()
@@ -632,7 +641,7 @@ service cloud.firestore {
         && !(document[0] in ['messages', 'notifications', 'students', 'parents',
              'teachers', 'admissions', 'admissionMeetings', 'leads', 'appointments',
              'payments', 'auditLogs', 'meetingRequests', 'assignmentSubmissions',
-             'counselingSessions']);
+             'counselingSessions', 'attendanceLogs']);
       // Askıdaki okulun personeli veri yazamaz (süper admin ayrı kurallarla erişir).
       // Özel-kurallı koleksiyonlar bu yazımdan HARİÇ.
       // (Sınıflar/duyuru/program/not/yoklama bu kuralda kalır: personel yazar.)
@@ -641,7 +650,7 @@ service cloud.firestore {
         && !(document[0] in ['messages', 'students', 'parents', 'teachers',
              'admissions', 'admissionMeetings', 'leads', 'appointments',
              'payments', 'settings', 'auditLogs', 'meetingRequests',
-             'assignmentSubmissions', 'counselingSessions']);
+             'assignmentSubmissions', 'counselingSessions', 'attendanceLogs']);
     }
 
     // ---- Global CRM (collection group) — yalnızca SUPER_ADMIN -------------
