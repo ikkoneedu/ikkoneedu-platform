@@ -115,16 +115,17 @@ export function StaffQrCard() {
       ) : activeQr ? (
         <>
           <div
-            className={`rounded-2xl border-4 bg-white p-4 ${
+            className={`w-full max-w-[320px] rounded-2xl border-4 bg-white p-3 sm:p-4 ${
               isIn ? "border-emerald-400" : "border-rose-400"
             }`}
           >
             <QRCodeSVG
               value={activeQr}
-              size={220}
+              size={512}
               level="M"
               marginSize={0}
               fgColor={isIn ? "#047857" : "#be123c"}
+              className="h-auto w-full"
               aria-label={isIn ? t("att.myqr.entryQrTitle") : t("att.myqr.exitQrTitle")}
             />
           </div>

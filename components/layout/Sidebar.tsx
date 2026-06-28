@@ -105,7 +105,9 @@ export function Sidebar({
                 "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all",
                 isActive
                   ? "border-r-2 border-accent bg-accent/10 font-semibold text-accent"
-                  : "text-muted hover:bg-overlay/[0.04] hover:text-content",
+                  : item.highlight
+                    ? "border border-emerald-400/40 bg-emerald-400/10 font-semibold text-emerald-300 hover:bg-emerald-400/20"
+                    : "text-muted hover:bg-overlay/[0.04] hover:text-content",
               ].join(" ")}
             >
               <Icon size={18} aria-hidden="true" />

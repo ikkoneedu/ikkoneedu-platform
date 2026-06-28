@@ -85,6 +85,8 @@ export interface NavigationItem {
    * (genel-bakış, ayarlar, süper admin gibi) her zaman görünür.
    */
   moduleId?: ModuleId;
+  /** Menüde vurgulu (farklı renk) gösterilsin — dikkat çeken öğeler için. */
+  highlight?: boolean;
 }
 
 /** Ana navigasyon öğeleri — sidebar, topbar ve mobil menüde ortak kullanılır. */
@@ -115,7 +117,7 @@ export const navigationItems: NavigationItem[] = [
   { id: "ik-cv", labelKey: "nav.hiring", href: "/hiring", icon: ClipboardCheck, moduleId: "hiring" },
   { id: "sertifikalar", labelKey: "nav.certificates", href: "/certificates", icon: Award, moduleId: "certificates" },
   { id: "kimlik-kartim", labelKey: "nav.staffCard", href: "/staff-card", icon: IdCard },
-  { id: "qr-kartim", labelKey: "nav.attMyQr", href: "/attendance/my-qr", icon: QrCode },
+  { id: "qr-kartim", labelKey: "nav.attMyQr", href: "/attendance/my-qr", icon: QrCode, highlight: true },
   { id: "giris-cikis-okuyucu", labelKey: "nav.attScanner", href: "/attendance/scanner", icon: ScanLine },
   { id: "giris-cikis-gecmisim", labelKey: "nav.myHistory", href: "/attendance/my-history", icon: History },
   { id: "mesai-izin", labelKey: "nav.staffSchedule", href: "/staff-schedule", icon: CalendarClock },
@@ -130,7 +132,9 @@ export const navigationItems: NavigationItem[] = [
 /** Mobil alt navigasyonda gösterilecek öncelikli öğeler. */
 export const mobileNavigationItems: NavigationItem[] = navigationItems.filter(
   (item) =>
-    ["genel-bakis", "okullar", "executive", "super-admin"].includes(item.id),
+    ["genel-bakis", "qr-kartim", "kimlik-kartim", "executive", "super-admin"].includes(
+      item.id,
+    ),
 );
 
 /** Yönetim paneli (/admin) kenar çubuğu menüsü. */

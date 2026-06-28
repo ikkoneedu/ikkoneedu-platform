@@ -51,7 +51,11 @@ export function MobileBottomNav({
             aria-current={isActive ? "page" : undefined}
             className={[
               "flex flex-1 flex-col items-center gap-1 rounded-lg py-1.5 text-[11px] font-medium transition-colors",
-              isActive ? "text-accent" : "text-muted hover:text-content",
+              isActive
+                ? "text-accent"
+                : item.highlight
+                  ? "text-emerald-300"
+                  : "text-muted hover:text-content",
             ].join(" ")}
           >
             <Icon size={20} aria-hidden="true" />
