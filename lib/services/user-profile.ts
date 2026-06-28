@@ -42,7 +42,13 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
  */
 export async function updateMyProfile(
   uid: string,
-  fields: { displayName?: string; phone?: string },
+  fields: {
+    displayName?: string;
+    phone?: string;
+    photoURL?: string;
+    title?: string;
+    birthDate?: string;
+  },
 ): Promise<void> {
   if (!isFirebaseConfigured() || !db) {
     throw new Error("Firebase yapılandırılmamış.");
@@ -50,6 +56,9 @@ export async function updateMyProfile(
   const data: Record<string, unknown> = { updatedAt: serverTimestamp() };
   if (fields.displayName !== undefined) data.displayName = fields.displayName;
   if (fields.phone !== undefined) data.phone = fields.phone;
+  if (fields.photoURL !== undefined) data.photoURL = fields.photoURL;
+  if (fields.title !== undefined) data.title = fields.title;
+  if (fields.birthDate !== undefined) data.birthDate = fields.birthDate;
   await updateDoc(doc(db, userProfileDoc(uid)), data);
 }
 

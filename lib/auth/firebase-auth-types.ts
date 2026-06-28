@@ -36,6 +36,14 @@ export interface UserProfile {
   displayName: string;
   /** İletişim telefonu (kullanıcı kendi günceller). */
   phone?: string;
+  /** Profil/kimlik kartı fotoğrafı URL'i (kullanıcı kendi günceller). */
+  photoURL?: string;
+  /** Unvan/görev (ör. "İngilizce Öğretmeni") — kimlik kartında gösterilir. */
+  title?: string;
+  /** Doğum tarihi (YYYY-MM-DD) — kimlik kartında gösterilir. */
+  birthDate?: string;
+  /** Personel departmanı (lib/staff/departments.ts). */
+  department?: string;
   role: Role;
   /** Kullanıcının bağlı olduğu okul/tenant (çoklu kiracılık anahtarı). */
   tenantId: string;

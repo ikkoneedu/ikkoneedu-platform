@@ -69,6 +69,7 @@ export const PROTECTED_PREFIXES: string[] = [
   "/hiring",
   "/certificates",
   "/attendance",
+  "/staff-card",
 ];
 
 /** Okul yaşamı modülleri — tüm okul üyeleri erişir (personel oluşturur, herkes görür). */
@@ -175,6 +176,12 @@ export const ROUTE_ROLES: Record<string, Role[]> = {
   ],
   // Personel QR kartı — tüm çalışanlar kendi QR'ını görür (veli/öğrenci hariç).
   "/attendance": [
+    ROLES.TEACHER, ROLES.COORDINATOR, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
+    ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PR, ROLES.SALES, ROLES.SUPPORT,
+    ROLES.DRIVER, ROLES.SUPER_ADMIN,
+  ],
+  // Personel kimlik kartı — tüm çalışanlar (veli/öğrenci hariç).
+  "/staff-card": [
     ROLES.TEACHER, ROLES.COORDINATOR, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
     ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PR, ROLES.SALES, ROLES.SUPPORT,
     ROLES.DRIVER, ROLES.SUPER_ADMIN,
