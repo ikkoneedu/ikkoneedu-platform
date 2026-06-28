@@ -81,11 +81,17 @@ const MANAGER_ROLES: string[] = [
   ROLES.SUPER_ADMIN,
 ];
 
-/** Giriş hesabı oluşturma yetkisi (kurallar TEACHER create + link için isSchoolManager ister). */
+/**
+ * Giriş hesabı oluşturma yetkisi. Kurallar: öğrenci/veli için canManageRecords
+ * (müdür yrd./koordinatör dahil) + öğretmen için de canManageRecords yeterli.
+ * Kayıt masası (koordinatör) öğrenci/veli/öğretmen hesabı açabilir.
+ */
 const ACCOUNT_ROLES: string[] = [
   ROLES.SCHOOL_ADMIN,
   ROLES.FOUNDER,
   ROLES.PRINCIPAL,
+  ROLES.VICE_PRINCIPAL,
+  ROLES.COORDINATOR,
   ROLES.SUPER_ADMIN,
 ];
 
