@@ -15,6 +15,18 @@ export const runtime = "nodejs";
  * Yanıt: { ok, uid, date, qrIn, qrOut } — giriş ve çıkış için ayrı imzalı QR.
  */
 export async function POST(request: Request) {
+  try {
+    return await handle(request);
+  } catch (e) {
+    // Hiçbir durumda çıplak 500 yok — gerçek sebebi JSON'da göster.
+    return NextResponse.json(
+      { ok: false, error: `Sunucu hatası: ${String((e as Error)?.message ?? e)}` },
+      { status: 500 },
+    );
+  }
+}
+
+async function handle(request: Request) {
   if (!isAdminConfigured()) {
     return NextResponse.json(
       { ok: false, error: "Admin SDK yapılandırılmamış (FIREBASE_ADMIN_* eksik)." },

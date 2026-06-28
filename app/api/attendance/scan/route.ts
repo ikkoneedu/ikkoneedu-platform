@@ -31,6 +31,17 @@ const NON_STAFF = ["PARENT", "STUDENT", "PUBLIC"];
  * Yanıt: { ok, action:'in'|'out', name, date, time }
  */
 export async function POST(request: Request) {
+  try {
+    return await handle(request);
+  } catch (e) {
+    return NextResponse.json(
+      { ok: false, error: `Sunucu hatası: ${String((e as Error)?.message ?? e)}` },
+      { status: 500 },
+    );
+  }
+}
+
+async function handle(request: Request) {
   if (!isAdminConfigured()) {
     return NextResponse.json(
       { ok: false, error: "Admin SDK yapılandırılmamış." },
