@@ -23,6 +23,7 @@ export function StaffQrCard() {
   const [mode, setMode] = useState<Mode>("in");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string>("");
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -35,13 +36,14 @@ export function StaffQrCard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken }),
       });
-      const data = await res.json();
-      if (!res.ok || !data.ok) throw new Error(data.error ?? "error");
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
       setQrIn(data.qrIn);
       setQrOut(data.qrOut);
       setDate(data.date);
-    } catch {
+    } catch (e) {
       setError(true);
+      setErrorMsg(String((e as Error)?.message ?? e));
       setQrIn(null);
       setQrOut(null);
     } finally {
@@ -104,9 +106,12 @@ export function StaffQrCard() {
       {loading ? (
         <p className="py-10 text-sm text-muted">{t("att.myqr.loading")}</p>
       ) : error ? (
-        <p className="flex items-center gap-2 py-10 text-sm text-brand">
-          <AlertCircle size={16} aria-hidden="true" /> {t("att.myqr.error")}
-        </p>
+        <div className="flex flex-col items-center gap-2 py-10 text-center">
+          <p className="flex items-center gap-2 text-sm text-brand">
+            <AlertCircle size={16} aria-hidden="true" /> {t("att.myqr.error")}
+          </p>
+          {errorMsg && <p className="max-w-xs text-xs text-muted/70">{errorMsg}</p>}
+        </div>
       ) : activeQr ? (
         <>
           <div

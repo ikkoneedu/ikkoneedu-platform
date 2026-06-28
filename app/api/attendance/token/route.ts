@@ -54,9 +54,21 @@ export async function POST(request: Request) {
   }
 
   // Profil aktif mi? (askıya alınan personel QR alamaz)
-  const snap = await adminDb.doc(`users/${uid}`).get();
-  const data = snap.exists ? snap.data() ?? {} : {};
-  if (!snap.exists || String(data.status ?? "") !== "ACTIVE") {
+  let data: Record<string, unknown> = {};
+  try {
+    const snap = await adminDb.doc(`users/${uid}`).get();
+    if (!snap.exists) {
+      return NextResponse.json({ ok: false, error: "Profil bulunamadı." }, { status: 403 });
+    }
+    data = snap.data() ?? {};
+  } catch (e) {
+    // Çoğunlukla sunucu service account'unun Firestore IAM yetkisi eksik.
+    return NextResponse.json(
+      { ok: false, error: `Sunucu Firestore'a erişemedi: ${String((e as Error)?.message ?? e)}` },
+      { status: 502 },
+    );
+  }
+  if (String(data.status ?? "") !== "ACTIVE") {
     return NextResponse.json({ ok: false, error: "Hesap aktif değil." }, { status: 403 });
   }
 
