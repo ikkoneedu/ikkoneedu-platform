@@ -90,7 +90,7 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-  if (!verifyAttendanceSig(secret, parsed.uid, parsed.date, parsed.sig)) {
+  if (!verifyAttendanceSig(secret, parsed.uid, parsed.date, parsed.action, parsed.sig)) {
     return NextResponse.json({ ok: false, error: "QR imzası doğrulanamadı." }, { status: 400 });
   }
 
@@ -125,37 +125,42 @@ export async function POST(request: Request) {
     }
   }
 
-  // 5) Kayıt upsert — ilk okutma GİRİŞ, sonraki ÇIKIŞ.
+  // 5) Kayıt upsert — aksiyon QR'da imzalı: GİRİŞ checkIn, ÇIKIŞ checkOut.
   const now = new Date();
   const expireAt = new Date(now.getTime() + ATTENDANCE_RETENTION_DAYS * 86400000);
   const logId = `${parsed.date}_${parsed.uid}`;
   const ref = adminDb.doc(`tenants/${staffTenant}/attendanceLogs/${logId}`);
   const existing = await ref.get();
   const geo = lat !== null && lng !== null ? { lat, lng } : null;
+  const action = parsed.action;
 
-  let action: "in" | "out";
   if (!existing.exists) {
-    action = "in";
+    // Gün için ilk kayıt — seçilen aksiyona göre ilgili alanı doldur.
     await ref.set({
       uid: parsed.uid,
       name: String(staff.displayName ?? ""),
       department: String(staff.department ?? ""),
       date: parsed.date,
-      checkIn: now,
-      checkInGeo: geo,
-      checkOut: null,
-      checkOutGeo: null,
+      checkIn: action === "in" ? now : null,
+      checkInGeo: action === "in" ? geo : null,
+      checkOut: action === "out" ? now : null,
+      checkOutGeo: action === "out" ? geo : null,
       scannedBy: operatorUid,
       createdAt: now,
       updatedAt: now,
       expireAt,
     });
+  } else if (action === "in") {
+    // Giriş yalnızca boşsa yazılır (günün ilk girişi korunur).
+    const cur = existing.data() ?? {};
+    if (!cur.checkIn) {
+      await ref.set({ checkIn: now, checkInGeo: geo, scannedBy: operatorUid, updatedAt: now }, { merge: true });
+    } else {
+      await ref.set({ updatedAt: now }, { merge: true });
+    }
   } else {
-    action = "out";
-    await ref.set(
-      { checkOut: now, checkOutGeo: geo, scannedBy: operatorUid, updatedAt: now },
-      { merge: true },
-    );
+    // Çıkış her seferinde güncellenir (en son çıkış geçerli).
+    await ref.set({ checkOut: now, checkOutGeo: geo, scannedBy: operatorUid, updatedAt: now }, { merge: true });
   }
 
   const time = new Intl.DateTimeFormat("tr-TR", {

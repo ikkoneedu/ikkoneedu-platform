@@ -13,19 +13,28 @@
 
 export const ATTENDANCE_QR_PREFIX = "IKK-ATT";
 
-/** İmzalanan ham yük (uid + tarih). HMAC bu string üzerinden hesaplanır. */
-export function attendancePayload(uid: string, date: string): string {
-  return `${uid}|${date}`;
+/** Personelin seçtiği aksiyon: giriş veya çıkış. */
+export type AttendanceAction = "in" | "out";
+
+/** İmzalanan ham yük (uid + tarih + aksiyon). HMAC bu string üzerinden. */
+export function attendancePayload(uid: string, date: string, action: AttendanceAction): string {
+  return `${uid}|${date}|${action}`;
 }
 
-/** Tam QR metnini oluşturur. */
-export function buildAttendanceQR(uid: string, date: string, sig: string): string {
-  return `${ATTENDANCE_QR_PREFIX}|${uid}|${date}|${sig}`;
+/** Tam QR metnini oluşturur (aksiyon dahil). */
+export function buildAttendanceQR(
+  uid: string,
+  date: string,
+  action: AttendanceAction,
+  sig: string,
+): string {
+  return `${ATTENDANCE_QR_PREFIX}|${uid}|${date}|${action}|${sig}`;
 }
 
 export interface ParsedAttendanceQR {
   uid: string;
   date: string;
+  action: AttendanceAction;
   sig: string;
 }
 
@@ -33,11 +42,12 @@ export interface ParsedAttendanceQR {
 export function parseAttendanceQR(qr: string): ParsedAttendanceQR | null {
   if (typeof qr !== "string") return null;
   const parts = qr.trim().split("|");
-  if (parts.length !== 4) return null;
-  const [prefix, uid, date, sig] = parts;
+  if (parts.length !== 5) return null;
+  const [prefix, uid, date, action, sig] = parts;
   if (prefix !== ATTENDANCE_QR_PREFIX) return null;
   if (!uid || !/^\d{4}-\d{2}-\d{2}$/.test(date) || !sig) return null;
-  return { uid, date, sig };
+  if (action !== "in" && action !== "out") return null;
+  return { uid, date, action, sig };
 }
 
 /** Verilen zamanın belirtilen saat diliminde YYYY-MM-DD karşılığı. */

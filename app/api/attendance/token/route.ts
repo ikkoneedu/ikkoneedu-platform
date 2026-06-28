@@ -12,7 +12,7 @@ export const runtime = "nodejs";
  * gün geçersizdir. Yalnızca kimliği doğrulanmış kullanıcı KENDİ token'ını alır.
  *
  * İstek (POST): { idToken }
- * Yanıt: { ok, qr, uid, date }
+ * Yanıt: { ok, uid, date, qrIn, qrOut } — giriş ve çıkış için ayrı imzalı QR.
  */
 export async function POST(request: Request) {
   if (!isAdminConfigured()) {
@@ -61,8 +61,8 @@ export async function POST(request: Request) {
   }
 
   const date = dateStr(Date.now());
-  const sig = signAttendance(secret, uid, date);
-  const qr = buildAttendanceQR(uid, date, sig);
+  const qrIn = buildAttendanceQR(uid, date, "in", signAttendance(secret, uid, date, "in"));
+  const qrOut = buildAttendanceQR(uid, date, "out", signAttendance(secret, uid, date, "out"));
 
-  return NextResponse.json({ ok: true, qr, uid, date });
+  return NextResponse.json({ ok: true, uid, date, qrIn, qrOut });
 }
