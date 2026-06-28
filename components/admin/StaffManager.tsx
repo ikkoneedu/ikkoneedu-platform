@@ -29,6 +29,11 @@ import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import { createAuditLog } from "@/lib/services/audit-logs";
 import { sendPasswordReset } from "@/lib/services/auth-actions";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import {
+  DEPARTMENTS,
+  DEFAULT_DEPARTMENT_ID,
+  departmentLabel,
+} from "@/lib/staff/departments";
 
 /**
  * Okul yöneticisi personel & kullanıcı yönetimi.
@@ -82,6 +87,7 @@ export function StaffManager() {
     const displayName = String(data.get("displayName") ?? "").trim();
     const email = String(data.get("email") ?? "").trim();
     const role = String(data.get("role") ?? ROLES.TEACHER) as StaffRole;
+    const department = String(data.get("department") ?? DEFAULT_DEPARTMENT_ID);
     if (!displayName || !email.includes("@")) {
       setError("Lütfen ad soyad ve geçerli bir e-posta girin.");
       return;
@@ -98,6 +104,7 @@ export function StaffManager() {
         role,
         displayName,
         email,
+        department,
       });
       setCreated({ email: result.email, password: result.tempPassword });
       form.reset();
@@ -154,7 +161,7 @@ export function StaffManager() {
             <UserPlus size={18} className="text-accent" aria-hidden="true" />
             <h2 className="text-lg font-semibold text-content">Personel Oluştur</h2>
           </div>
-          <form onSubmit={handleCreate} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:items-end">
+          <form onSubmit={handleCreate} className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:items-end">
             <TextField label="Ad Soyad" name="displayName" placeholder="Ad Soyad" required />
             <TextField label="E-posta" name="email" type="email" placeholder="ornek@okul.com" required />
             <div className="flex flex-col gap-1.5">
@@ -172,7 +179,19 @@ export function StaffManager() {
                 <option value={ROLES.DRIVER} className="bg-surface">{ROLE_LABELS.DRIVER}</option>
               </select>
             </div>
-            <PrimaryButton type="submit" size="md" disabled={busy}>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-muted">Departman</label>
+              <select
+                name="department"
+                defaultValue={DEFAULT_DEPARTMENT_ID}
+                className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
+              >
+                {DEPARTMENTS.map((d) => (
+                  <option key={d.id} value={d.id} className="bg-surface">{d.label}</option>
+                ))}
+              </select>
+            </div>
+            <PrimaryButton type="submit" size="md" disabled={busy} className="lg:col-span-2">
               <UserPlus size={16} aria-hidden="true" />
               Oluştur
             </PrimaryButton>
@@ -237,9 +256,13 @@ export function StaffManager() {
               { key: "displayName", label: "Ad" },
               { key: "email", label: "E-posta" },
               { key: "role", label: "Rol" },
+              { key: "departmentLabel", label: "Departman" },
               { key: "status", label: "Durum" },
             ]}
-            rows={users as unknown as Record<string, unknown>[]}
+            rows={users.map((u) => ({
+              ...u,
+              departmentLabel: u.department ? departmentLabel(u.department) : "—",
+            })) as unknown as Record<string, unknown>[]}
           />
         </div>
         {users.length === 0 ? (
@@ -251,6 +274,7 @@ export function StaffManager() {
                 <tr className="text-xs uppercase tracking-wide text-muted">
                   <th className="pb-2 pr-4 font-medium">Ad</th>
                   <th className="pb-2 pr-4 font-medium">E-posta</th>
+                  <th className="pb-2 pr-4 font-medium">Departman</th>
                   <th className="pb-2 pr-4 font-medium">Durum</th>
                   <th className="pb-2 font-medium">{canCreate ? "Rol / İşlem" : "Rol"}</th>
                 </tr>
@@ -267,6 +291,9 @@ export function StaffManager() {
                     <tr key={u.uid} className="text-content">
                       <td className="py-2.5 pr-4">{u.displayName || "—"}</td>
                       <td className="py-2.5 pr-4 text-muted">{u.email}</td>
+                      <td className="py-2.5 pr-4 text-muted">
+                        {u.department ? departmentLabel(u.department) : "—"}
+                      </td>
                       <td className="py-2.5 pr-4">
                         <span
                           className={[

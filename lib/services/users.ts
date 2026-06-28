@@ -49,6 +49,8 @@ export interface CreateStaffInput {
   role: StaffRole;
   displayName: string;
   email: string;
+  /** Personel departmanı (lib/staff/departments.ts). Opsiyonel. */
+  department?: string;
 }
 
 export interface CreatedStaff {
@@ -70,6 +72,8 @@ export async function createManagedAccount(input: {
   email: string;
   /** Belirtilmezse schoolId = tenantId (okul başına tek tenant). */
   schoolId?: string;
+  /** Personel departmanı (lib/staff/departments.ts). Opsiyonel. */
+  department?: string;
 }): Promise<CreatedStaff> {
   if (!isFirebaseConfigured() || !db) {
     throw new Error("Firebase yapılandırılmamış.");
@@ -100,6 +104,7 @@ export async function createManagedAccount(input: {
       role: input.role,
       tenantId: input.tenantId,
       schoolId: input.schoolId ?? input.tenantId,
+      department: input.department ?? "",
       status: "ACTIVE",
       // Geçici şifreyle açılan yönetilen hesap: ilk girişte şifre zorunlu değişir.
       mustChangePassword: true,
@@ -141,6 +146,8 @@ export interface TenantUser {
   status: string;
   /** Öğrenci/veli sınıfı (sınıf hedefli duyuru fan-out'u için). */
   classId: string;
+  /** Personel departmanı (lib/staff/departments.ts). */
+  department: string;
 }
 
 /** Tenant'taki kullanıcıları listeler (yalnızca personel erişebilir). */
@@ -158,6 +165,7 @@ export async function listTenantUsers(tenantId: string): Promise<TenantUser[]> {
       role: data.role as Role,
       status: String(data.status ?? ""),
       classId: String(data.classId ?? ""),
+      department: String(data.department ?? ""),
     };
   });
 }
@@ -206,6 +214,7 @@ export async function listAllUsers(): Promise<AllUser[]> {
       role: data.role as Role,
       status: String(data.status ?? ""),
       classId: String(data.classId ?? ""),
+      department: String(data.department ?? ""),
       tenantId: String(data.tenantId ?? ""),
     };
   });
