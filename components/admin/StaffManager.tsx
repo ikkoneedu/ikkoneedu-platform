@@ -46,8 +46,17 @@ export function StaffManager() {
     ROLES.SCHOOL_ADMIN,
     ROLES.FOUNDER,
     ROLES.PRINCIPAL,
+    ROLES.VICE_PRINCIPAL,
+    ROLES.COORDINATOR,
     ROLES.SUPER_ADMIN,
   ]);
+  // Üst yönetim tüm kadroyu açar; müdür yrd./koordinatör yalnız alt kadroyu
+  // (öğretmen/PR/şoför) — üst yönetim rolü oluşturamaz (yetki yükseltme engeli).
+  const isTopManager =
+    profile?.role === ROLES.SCHOOL_ADMIN ||
+    profile?.role === ROLES.FOUNDER ||
+    profile?.role === ROLES.PRINCIPAL ||
+    profile?.role === ROLES.SUPER_ADMIN;
   const tenantId = profile?.tenantId;
   const adminUid = user?.uid;
   const ready = firebaseReady && Boolean(tenantId) && Boolean(adminUid);
@@ -172,11 +181,16 @@ export function StaffManager() {
                 className="rounded-xl border border-overlay/10 bg-overlay/[0.04] px-3 py-2.5 text-sm text-content outline-none focus:border-accent focus:ring-1 focus:ring-accent"
               >
                 <option value={ROLES.TEACHER} className="bg-surface">{ROLE_LABELS.TEACHER}</option>
-                <option value={ROLES.PRINCIPAL} className="bg-surface">{ROLE_LABELS.PRINCIPAL}</option>
-                <option value={ROLES.VICE_PRINCIPAL} className="bg-surface">{ROLE_LABELS.VICE_PRINCIPAL}</option>
-                <option value={ROLES.COORDINATOR} className="bg-surface">{ROLE_LABELS.COORDINATOR}</option>
                 <option value={ROLES.PR} className="bg-surface">{ROLE_LABELS.PR}</option>
+                <option value={ROLES.SALES} className="bg-surface">{ROLE_LABELS.SALES}</option>
                 <option value={ROLES.DRIVER} className="bg-surface">{ROLE_LABELS.DRIVER}</option>
+                {isTopManager && (
+                  <>
+                    <option value={ROLES.COORDINATOR} className="bg-surface">{ROLE_LABELS.COORDINATOR}</option>
+                    <option value={ROLES.VICE_PRINCIPAL} className="bg-surface">{ROLE_LABELS.VICE_PRINCIPAL}</option>
+                    <option value={ROLES.PRINCIPAL} className="bg-surface">{ROLE_LABELS.PRINCIPAL}</option>
+                  </>
+                )}
               </select>
             </div>
             <div className="flex flex-col gap-1.5">

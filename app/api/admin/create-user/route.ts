@@ -32,14 +32,35 @@ function strongPassword(): string {
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const STAFF_CREATABLE = ["TEACHER", "PARENT", "STUDENT"];
 
-/** Çağıran rolü, hedef rolü, aynı tenant mı → oluşturma izni var mı? */
+// Hedef rol kümeleri (yetki yükseltme engeli için katmanlı).
+const STUDENT_PARENT = ["PARENT", "STUDENT"];
+// Müdür yrd./koordinatörün açabileceği alt kadro (üst yönetim HARİÇ).
+const LOWER_STAFF = ["TEACHER", "PR", "SALES", "SUPPORT", "DRIVER"];
+// Yönetimin açabileceği tüm personel (üst yönetim: principal/vice/coordinator dahil).
+const ALL_STAFF = [...LOWER_STAFF, "PRINCIPAL", "VICE_PRINCIPAL", "COORDINATOR"];
+
+/**
+ * Çağıran rolü, hedef rolü, aynı tenant mı → oluşturma izni var mı?
+ * Firestore users-create kurallarıyla AYNI hiyerarşiyi uygular (Admin SDK
+ * kuralları bypass ettiği için güvenlik burada zorlanır):
+ *  - SUPER_ADMIN: her şey, her tenant.
+ *  - SCHOOL_ADMIN/FOUNDER/PRINCIPAL: kendi tenant'ında öğrenci/veli + tüm personel.
+ *  - VICE_PRINCIPAL/COORDINATOR: öğrenci/veli + alt kadro (üst yönetim hariç).
+ *  - PR/SALES (kayıt/halkla ilişkiler): yalnız öğrenci/veli.
+ *  - TEACHER: yalnız öğrenci/veli.
+ */
 function canCreate(callerRole: string, targetRole: string, sameTenant: boolean): boolean {
-  if (callerRole === "SUPER_ADMIN") return true; // her rol, her tenant
+  if (callerRole === "SUPER_ADMIN") return true;
+  if (!sameTenant) return false;
   if (["SCHOOL_ADMIN", "FOUNDER", "PRINCIPAL"].includes(callerRole)) {
-    // Yalnız kendi tenant'ında TEACHER/PARENT/STUDENT. SUPER/FOUNDER/SCHOOL_ADMIN OLAMAZ.
-    return sameTenant && STAFF_CREATABLE.includes(targetRole);
+    return STUDENT_PARENT.includes(targetRole) || ALL_STAFF.includes(targetRole);
+  }
+  if (["VICE_PRINCIPAL", "COORDINATOR"].includes(callerRole)) {
+    return STUDENT_PARENT.includes(targetRole) || LOWER_STAFF.includes(targetRole);
+  }
+  if (["PR", "SALES", "TEACHER"].includes(callerRole)) {
+    return STUDENT_PARENT.includes(targetRole);
   }
   return false;
 }

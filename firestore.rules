@@ -221,21 +221,37 @@ service cloud.firestore {
           && request.resource.data.status == 'ACTIVE'
         )
         || (
-          // Personel, kendi tenant'ında öğrenci/veli profili oluşturabilir.
-          isStaff()
+          // Öğrenci/veli hesabı: personel (öğretmen dahil) VEYA kayıt/halkla
+          // ilişkiler (admissions: PR/SALES/koordinatör/müdür yrd.) oluşturur.
+          (isStaff() || canAccessAdmissions())
           && (request.resource.data.role == 'STUDENT'
               || request.resource.data.role == 'PARENT')
           && request.resource.data.tenantId == myTenant()
         )
         || (
-          // Okul yönetimi (kurucu/okul yöneticisi) kendi tenant'ında personel
-          // hesabı oluşturabilir: müdür, müdür yrd., koordinatör, öğretmen, PR.
+          // Okul yönetimi (kurucu/okul yön./müdür) TÜM personel rollerini açar:
+          // müdür yrd., koordinatör, öğretmen, PR, SALES, destek, şoför.
           isSchoolManager()
           && (request.resource.data.role == 'TEACHER'
               || request.resource.data.role == 'PRINCIPAL'
               || request.resource.data.role == 'VICE_PRINCIPAL'
               || request.resource.data.role == 'COORDINATOR'
-              || request.resource.data.role == 'PR')
+              || request.resource.data.role == 'PR'
+              || request.resource.data.role == 'SALES'
+              || request.resource.data.role == 'SUPPORT'
+              || request.resource.data.role == 'DRIVER')
+          && request.resource.data.tenantId == myTenant()
+        )
+        || (
+          // Müdür yardımcısı + koordinatör YALNIZCA alt kadroyu açar
+          // (öğretmen/PR/SALES/destek/şoför) — üst yönetim oluşturamaz (yetki
+          // yükseltme engeli). canManageRecords = vice/koordinatör + yönetim.
+          canManageRecords()
+          && (request.resource.data.role == 'TEACHER'
+              || request.resource.data.role == 'PR'
+              || request.resource.data.role == 'SALES'
+              || request.resource.data.role == 'SUPPORT'
+              || request.resource.data.role == 'DRIVER')
           && request.resource.data.tenantId == myTenant()
         );
 

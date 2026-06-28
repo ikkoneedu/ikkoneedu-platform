@@ -116,8 +116,8 @@ export const ROUTE_ROLES: Record<string, Role[]> = {
   // Finans/ekonomik panel — Müdür (PRINCIPAL) ve yardımcısı HARİÇ.
   "/finance": [ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.SUPER_ADMIN],
   "/crm": [
-    ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL,
-    ROLES.PR, ROLES.SALES, ROLES.SUPER_ADMIN,
+    ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
+    ROLES.COORDINATOR, ROLES.PR, ROLES.SALES, ROLES.SUPER_ADMIN,
   ],
   // Rehberlik (PDR) — HASSAS. Yalnızca yönetim + koordinatör (rehberlik).
   // Sıradan ÖĞRETMEN tüm öğrencilerin psikolojik danışma notlarını göremez.
