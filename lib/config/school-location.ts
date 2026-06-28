@@ -1,17 +1,16 @@
 /**
  * Okul konumu (geofence) yapılandırması — personel giriş-çıkış doğrulaması.
  *
- * ⚠️ DOLDURULACAK: Aşağıdaki koordinatlar PLACEHOLDER'dır (İstanbul merkez).
- * İngiliz Kültür Koleji'nin GERÇEK Google Maps koordinatını (enlem/boylam) ve
- * makul bir yarıçapı (metre) buraya yazın. Yanlış koordinat → tüm girişler
- * reddedilir. Koordinatı Google Maps'te sağ tık → "Buradaki konum" ile alın.
+ * İngiliz Kültür Koleji'nin gerçek Google Maps koordinatı. Tarama yalnızca bu
+ * noktanın `radiusMeters` yarıçapı içinde kabul edilir. Kampüs sınırını
+ * değiştirmek için yalnızca yarıçapı güncelleyin.
  */
 export const SCHOOL_LOCATION = {
-  /** Enlem (latitude) — PLACEHOLDER, gerçeğiyle değiştirin. */
-  lat: 41.0082,
-  /** Boylam (longitude) — PLACEHOLDER, gerçeğiyle değiştirin. */
-  lng: 28.9784,
-  /** İzin verilen yarıçap (metre). Okul kampüsünü kapsayacak şekilde ayarlayın. */
+  /** Enlem (latitude) — İngiliz Kültür Koleji. */
+  lat: 39.98668852119746,
+  /** Boylam (longitude) — İngiliz Kültür Koleji. */
+  lng: 32.71039317714647,
+  /** İzin verilen yarıçap (metre). Okul kampüsünü kapsar. */
   radiusMeters: 200,
 };
 
