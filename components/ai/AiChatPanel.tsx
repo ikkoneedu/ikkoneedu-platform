@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { Bot, Send, User } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { getMockAiReply, type AiMessage } from "@/lib/ai-mock-data";
 
 interface AiChatPanelProps {
@@ -11,31 +12,54 @@ interface AiChatPanelProps {
 }
 
 /**
- * AI Brain sohbet paneli — ChatGPT / Claude benzeri mock arayüz.
+ * AI Brain sohbet paneli.
  *
- * Gerçek AI yoktur; gönderilen mesaja getMockAiReply ile demo yanıt eklenir.
- * İleride getMockAiReply, sunucu tarafındaki sendChat (OpenAI/Anthropic) ile
- * değiştirilebilir — UI sözleşmesi (AiMessage) aynı kalır.
+ * ANTHROPIC_API_KEY tanımlıysa /api/ai/generate ile GERÇEK Claude yanıtı üretir;
+ * yoksa getMockAiReply ile demo yanıta düşer (sıfır maliyet). UI sözleşmesi aynı.
  */
 export function AiChatPanel({ initialMessages }: AiChatPanelProps) {
+  const { user } = useAuth();
   const [messages, setMessages] = useState<AiMessage[]>(initialMessages);
   const [input, setInput] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [demo, setDemo] = useState(false);
 
-  const sendMessage = (text: string) => {
+  const sendMessage = async (text: string) => {
     const trimmed = text.trim();
-    if (!trimmed) return;
-
-    setMessages((prev) => [
-      ...prev,
-      { id: prev.length, role: "user", text: trimmed },
-      { id: prev.length + 1, role: "assistant", text: getMockAiReply(trimmed) },
-    ]);
+    if (!trimmed || busy) return;
     setInput("");
+    setBusy(true);
+    const base = messages.length;
+    setMessages((prev) => [...prev, { id: base, role: "user", text: trimmed }]);
+
+    let reply = "";
+    let isDemo = false;
+    try {
+      const idToken = user ? await user.getIdToken() : "";
+      const res = await fetch("/api/ai/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken, kind: "chat", prompt: trimmed }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data?.ok && data.text) {
+        reply = data.text;
+      } else {
+        isDemo = true;
+        reply = getMockAiReply(trimmed);
+      }
+    } catch {
+      isDemo = true;
+      reply = getMockAiReply(trimmed);
+    }
+    setDemo(isDemo);
+    setMessages((prev) => [...prev, { id: base + 1, role: "assistant", text: reply }]);
+    setBusy(false);
   };
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    sendMessage(input);
+    void sendMessage(input);
   };
 
   return (
@@ -50,8 +74,8 @@ export function AiChatPanel({ initialMessages }: AiChatPanelProps) {
           <p className="text-xs text-muted">Rol bazlı kurumsal asistan</p>
         </div>
         <span className="ml-auto flex items-center gap-1.5 text-xs text-muted">
-          <span className="h-2 w-2 rounded-full bg-emerald-400" />
-          Çevrimiçi
+          <span className={`h-2 w-2 rounded-full ${demo ? "bg-amber-400" : "bg-emerald-400"}`} />
+          {demo ? "Demo" : "Canlı"}
         </span>
       </div>
 
@@ -101,9 +125,9 @@ export function AiChatPanel({ initialMessages }: AiChatPanelProps) {
           placeholder="AI Brain'e sorunuzu yazın..."
           className="flex-1 bg-transparent text-sm text-content placeholder:text-muted/60 focus:outline-none"
         />
-        <PrimaryButton type="submit" size="sm">
+        <PrimaryButton type="submit" size="sm" disabled={busy}>
           <Send size={16} aria-hidden="true" />
-          Gönder
+          {busy ? "..." : "Gönder"}
         </PrimaryButton>
       </form>
     </GlassCard>
