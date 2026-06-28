@@ -33,6 +33,9 @@ import {
   Bus,
   NotebookPen,
   ClipboardCheck,
+  QrCode,
+  ScanLine,
+  ClipboardList,
   type LucideIcon,
 } from "lucide-react";
 
@@ -108,6 +111,9 @@ export const navigationItems: NavigationItem[] = [
   { id: "sosyal-studyo", labelKey: "nav.socialStudio", href: "/social-studio", icon: Sparkles, moduleId: "socialStudio" },
   { id: "ik-cv", labelKey: "nav.hiring", href: "/hiring", icon: ClipboardCheck, moduleId: "hiring" },
   { id: "sertifikalar", labelKey: "nav.certificates", href: "/certificates", icon: Award, moduleId: "certificates" },
+  { id: "qr-kartim", labelKey: "nav.attMyQr", href: "/attendance/my-qr", icon: QrCode },
+  { id: "giris-cikis-okuyucu", labelKey: "nav.attScanner", href: "/attendance/scanner", icon: ScanLine },
+  { id: "giris-cikis-kayit", labelKey: "nav.attLogs", href: "/attendance/logs", icon: ClipboardList },
   { id: "messages", labelKey: "nav.messages", href: "/messages", icon: MessageSquare, moduleId: "messages" },
   { id: "bildirimler", labelKey: "nav.notifications", href: "/notifications", icon: Bell, moduleId: "notifications" },
   { id: "demo", labelKey: "nav.demo", href: "/demo", icon: Rocket },

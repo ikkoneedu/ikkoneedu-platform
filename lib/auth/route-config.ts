@@ -68,6 +68,7 @@ export const PROTECTED_PREFIXES: string[] = [
   "/social-studio",
   "/hiring",
   "/certificates",
+  "/attendance",
 ];
 
 /** Okul yaşamı modülleri — tüm okul üyeleri erişir (personel oluşturur, herkes görür). */
@@ -171,6 +172,22 @@ export const ROUTE_ROLES: Record<string, Role[]> = {
   "/certificates": [
     ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
     ROLES.COORDINATOR, ROLES.TEACHER, ROLES.SUPER_ADMIN,
+  ],
+  // Personel QR kartı — tüm çalışanlar kendi QR'ını görür (veli/öğrenci hariç).
+  "/attendance": [
+    ROLES.TEACHER, ROLES.COORDINATOR, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
+    ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PR, ROLES.SALES, ROLES.SUPPORT,
+    ROLES.DRIVER, ROLES.SUPER_ADMIN,
+  ],
+  // Giriş-Çıkış okuyucu — operatör personel (ön büro/yönetim). API ayrıca doğrular.
+  "/attendance/scanner": [
+    ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
+    ROLES.COORDINATOR, ROLES.PR, ROLES.SUPPORT, ROLES.SUPER_ADMIN,
+  ],
+  // Giriş-Çıkış kayıtları (rapor) — yalnız yönetim.
+  "/attendance/logs": [
+    ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
+    ROLES.COORDINATOR, ROLES.SUPER_ADMIN,
   ],
 };
 
