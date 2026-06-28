@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { cert } from "firebase-admin/app";
-import { isAdminConfigured, getAdminDb } from "@/lib/firebase/admin";
+import { isAdminConfigured, getAdminDb, readAdminCreds } from "@/lib/firebase/admin";
 import { getAttendanceSecret } from "@/lib/attendance/sign";
 
 export const runtime = "nodejs";
@@ -11,30 +11,36 @@ export const runtime = "nodejs";
  * Sorun çözülünce bu dosya silinebilir.
  */
 export async function GET() {
-  const pk = process.env.FIREBASE_ADMIN_PRIVATE_KEY ?? "";
-  const norm = pk.replace(/\\n/g, "\n");
+  const creds = readAdminCreds();
+  const source = process.env.FIREBASE_SERVICE_ACCOUNT?.trim()
+    ? "FIREBASE_SERVICE_ACCOUNT (json)"
+    : process.env.FIREBASE_ADMIN_PRIVATE_KEY
+      ? "FIREBASE_ADMIN_* (üçlü)"
+      : "yok";
+  const pk = creds?.privateKey ?? "";
 
   const out: Record<string, unknown> = {
-    projectId: process.env.FIREBASE_ADMIN_PROJECT_ID ?? null,
-    clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL ?? null,
+    credsSource: source,
+    projectId: creds?.projectId ?? null,
+    clientEmail: creds?.clientEmail ?? null,
     hasPrivateKey: pk.length > 0,
     privateKeyLength: pk.length,
-    privateKeyStartsOk: norm.startsWith("-----BEGIN PRIVATE KEY-----"),
-    privateKeyEndsOk: norm.trimEnd().endsWith("-----END PRIVATE KEY-----"),
+    privateKeyStartsOk: pk.startsWith("-----BEGIN PRIVATE KEY-----"),
+    privateKeyEndsOk: pk.trimEnd().endsWith("-----END PRIVATE KEY-----"),
     hasAttendanceSecret: Boolean(getAttendanceSecret()),
     adminConfigured: isAdminConfigured(),
   };
 
   // 1) Private key gerçekten parse oluyor mu? (gerçek hata mesajı — sır içermez)
-  try {
-    cert({
-      projectId: process.env.FIREBASE_ADMIN_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_ADMIN_CLIENT_EMAIL,
-      privateKey: norm,
-    });
-    out.certParse = "ok";
-  } catch (e) {
-    out.certParse = `error: ${String((e as Error)?.message ?? e)}`;
+  if (creds) {
+    try {
+      cert(creds);
+      out.certParse = "ok";
+    } catch (e) {
+      out.certParse = `error: ${String((e as Error)?.message ?? e)}`;
+    }
+  } else {
+    out.certParse = "kimlik bilgisi yok";
   }
 
   // 2) Firestore okunabiliyor mu? (IAM testi)
