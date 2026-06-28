@@ -70,6 +70,7 @@ export const PROTECTED_PREFIXES: string[] = [
   "/certificates",
   "/attendance",
   "/staff-card",
+  "/staff-schedule",
 ];
 
 /** Okul yaşamı modülleri — tüm okul üyeleri erişir (personel oluşturur, herkes görür). */
@@ -193,6 +194,11 @@ export const ROUTE_ROLES: Record<string, Role[]> = {
   ],
   // Giriş-Çıkış kayıtları (rapor) — yalnız yönetim.
   "/attendance/logs": [
+    ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
+    ROLES.COORDINATOR, ROLES.SUPER_ADMIN,
+  ],
+  // Personel mesai & izin yönetimi — yalnız yönetim.
+  "/staff-schedule": [
     ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
     ROLES.COORDINATOR, ROLES.SUPER_ADMIN,
   ],

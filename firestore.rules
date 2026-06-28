@@ -616,9 +616,19 @@ service cloud.firestore {
     //      sunucu (firebase-admin, QR + geofence doğrulamalı) tarafından yapılır.
     //      İstemci ASLA yazamaz (sahte giriş engeli). Genel kuraldan da HARİÇ.
     match /tenants/{tenantId}/attendanceLogs/{logId} {
+      // Yönetim hepsini; personel YALNIZCA kendi kaydını okur (geçmişim sayfası).
       allow read: if isSuperAdmin()
-        || (canManageRecords() && myTenant() == tenantId);
+        || (canManageRecords() && myTenant() == tenantId)
+        || (isSignedIn() && resource.data.uid == request.auth.uid);
       allow write: if false; // yalnızca Admin SDK (sunucu API)
+    }
+
+    // ---- Personel mesai & izin programı — yönetim YAZAR, tenant üyesi OKUR --
+    // Geç-giriş tespiti bu programa göre yapılır. Genel YAZMA kuralından hariç.
+    match /tenants/{tenantId}/staffSchedules/{uid} {
+      allow read: if isTenantMember(tenantId);
+      allow write: if isSuperAdmin()
+        || (canManageRecords() && myTenant() == tenantId && tenantNotSuspended(tenantId));
     }
 
     // ---- Tenant denetim kayıtları — yönetim okur, personel ekler, kilitli --
@@ -651,7 +661,8 @@ service cloud.firestore {
         && !(document[0] in ['messages', 'students', 'parents', 'teachers',
              'admissions', 'admissionMeetings', 'leads', 'appointments',
              'payments', 'settings', 'auditLogs', 'meetingRequests',
-             'assignmentSubmissions', 'counselingSessions', 'attendanceLogs']);
+             'assignmentSubmissions', 'counselingSessions', 'attendanceLogs',
+             'staffSchedules', 'staffAlerts']);
     }
 
     // ---- Global CRM (collection group) — yalnızca SUPER_ADMIN -------------

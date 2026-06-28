@@ -37,6 +37,8 @@ import {
   ScanLine,
   ClipboardList,
   IdCard,
+  CalendarClock,
+  History,
   type LucideIcon,
 } from "lucide-react";
 
@@ -115,6 +117,8 @@ export const navigationItems: NavigationItem[] = [
   { id: "kimlik-kartim", labelKey: "nav.staffCard", href: "/staff-card", icon: IdCard },
   { id: "qr-kartim", labelKey: "nav.attMyQr", href: "/attendance/my-qr", icon: QrCode },
   { id: "giris-cikis-okuyucu", labelKey: "nav.attScanner", href: "/attendance/scanner", icon: ScanLine },
+  { id: "giris-cikis-gecmisim", labelKey: "nav.myHistory", href: "/attendance/my-history", icon: History },
+  { id: "mesai-izin", labelKey: "nav.staffSchedule", href: "/staff-schedule", icon: CalendarClock },
   { id: "giris-cikis-kayit", labelKey: "nav.attLogs", href: "/attendance/logs", icon: ClipboardList },
   { id: "messages", labelKey: "nav.messages", href: "/messages", icon: MessageSquare, moduleId: "messages" },
   { id: "bildirimler", labelKey: "nav.notifications", href: "/notifications", icon: Bell, moduleId: "notifications" },

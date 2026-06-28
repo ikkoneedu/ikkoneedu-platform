@@ -148,6 +148,8 @@ export interface TenantUser {
   classId: string;
   /** Personel departmanı (lib/staff/departments.ts). */
   department: string;
+  /** İletişim telefonu (WhatsApp/iletişim için). */
+  phone: string;
 }
 
 /** Tenant'taki kullanıcıları listeler (yalnızca personel erişebilir). */
@@ -166,6 +168,7 @@ export async function listTenantUsers(tenantId: string): Promise<TenantUser[]> {
       status: String(data.status ?? ""),
       classId: String(data.classId ?? ""),
       department: String(data.department ?? ""),
+      phone: String(data.phone ?? ""),
     };
   });
 }
@@ -215,6 +218,7 @@ export async function listAllUsers(): Promise<AllUser[]> {
       status: String(data.status ?? ""),
       classId: String(data.classId ?? ""),
       department: String(data.department ?? ""),
+      phone: String(data.phone ?? ""),
       tenantId: String(data.tenantId ?? ""),
     };
   });
