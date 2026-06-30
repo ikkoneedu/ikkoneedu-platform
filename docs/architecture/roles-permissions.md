@@ -12,6 +12,7 @@ eşleme `lib/auth/roles.ts`, kontrol `lib/auth/access-control.ts` içindedir.
 | `SUPPORT` | 60 | Teknik destek |
 | `SALES` | 50 | Satış / kayıt ekibi |
 | `TEACHER` | 40 | Öğretmen |
+| `DRIVER` | 30 | Servis şoförü — servis ve personel giriş-çıkış kapsamı |
 | `PARENT` | 20 | Veli |
 | `STUDENT` | 10 | Öğrenci |
 
@@ -47,6 +48,7 @@ eşleme `lib/auth/roles.ts`, kontrol `lib/auth/access-control.ts` içindedir.
 - **STUDENT:** `/student`, `/ai-brain`, `/notifications`.
 - **SALES:** `/crm`, `/admissions-ai`, `/messages`.
 - **SUPPORT:** `/settings` (okuma), sistem izleme.
+- **DRIVER:** Servis ve personel giriş-çıkış kapsamındaki kendi görev ekranları.
 
 ## Yetki kontrolü (kod)
 
