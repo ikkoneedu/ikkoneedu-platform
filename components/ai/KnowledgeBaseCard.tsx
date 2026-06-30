@@ -36,9 +36,16 @@ export function KnowledgeBaseCard({ items }: KnowledgeBaseCardProps) {
         ))}
       </div>
 
-      <PrimaryButton variant="secondary" size="md" className="mt-6 w-full sm:w-fit">
+      <PrimaryButton
+        type="button"
+        variant="secondary"
+        size="md"
+        className="mt-6 w-full sm:w-fit"
+        disabled
+        title="Yakında"
+      >
         <Upload size={16} aria-hidden="true" />
-        Doküman Yükle
+        Doküman Yükle · Yakında
       </PrimaryButton>
     </GlassCard>
   );

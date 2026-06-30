@@ -73,7 +73,7 @@ Alt route'lar:
 
 Gerçek entegrasyonda oturum şu claim'leri taşır:
 
-- `role` — SUPER_ADMIN | SCHOOL_ADMIN | TEACHER | PARENT | STUDENT | SALES | SUPPORT
+- `role` — SUPER_ADMIN | FOUNDER | SCHOOL_ADMIN | PRINCIPAL | VICE_PRINCIPAL | COORDINATOR | TEACHER | PARENT | STUDENT | SUPPORT | SALES | PR | DRIVER | PUBLIC
 - `tenantId` — bağlı okul (tenant)
 - `schoolId` — kampüs
 

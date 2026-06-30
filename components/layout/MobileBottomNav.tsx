@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { mobileNavigationItems, type NavigationItem } from "@/lib/constants";
 import { useT } from "@/components/i18n/LocaleProvider";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { canRoleAccess } from "@/lib/auth/route-config";
 
 interface MobileBottomNavProps {
   /** Gösterilecek öğeler (varsayılan: genel mobil navigasyon). */
@@ -25,6 +27,12 @@ export function MobileBottomNav({
 }: MobileBottomNavProps) {
   const pathname = usePathname();
   const t = useT();
+  const { profile, firebaseReady } = useAuth();
+
+  const visibleItems =
+    firebaseReady && profile
+      ? items.filter((item) => canRoleAccess(profile.role, item.href))
+      : items;
 
   const isItemActive = (item: NavigationItem) => {
     if (activeId) return item.id === activeId;
@@ -40,7 +48,7 @@ export function MobileBottomNav({
         className,
       ].join(" ")}
     >
-      {items.map((item) => {
+      {visibleItems.map((item) => {
         const isActive = isItemActive(item);
         const Icon = item.icon;
 

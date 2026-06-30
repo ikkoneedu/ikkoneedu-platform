@@ -5,6 +5,7 @@ import { Calendar, Clock, Users, Hash, Settings2 } from "lucide-react";
 import Link from "next/link";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { getSettings, type ScholarshipSettings } from "@/lib/services/settings";
 
 /**
@@ -14,6 +15,7 @@ import { getSettings, type ScholarshipSettings } from "@/lib/services/settings";
  */
 export function ScholarshipSettingsBanner() {
   const { profile, firebaseReady } = useAuth();
+  const t = useT();
   const tenantId = profile?.tenantId;
   const usable = firebaseReady && Boolean(tenantId);
 
@@ -35,17 +37,25 @@ export function ScholarshipSettingsBanner() {
 
   const hasAny = s.examDate || s.applicationDeadline || s.quota || s.applicationPrefix;
   const items = [
-    { icon: Calendar, label: "Sınav Tarihi", value: s.examDate },
-    { icon: Clock, label: "Son Başvuru", value: s.applicationDeadline },
-    { icon: Users, label: "Kontenjan", value: s.quota },
-    { icon: Hash, label: "Başvuru Ön Eki", value: s.applicationPrefix },
+    { icon: Calendar, label: t("panelSettings.scholarshipBanner.examDate"), value: s.examDate },
+    {
+      icon: Clock,
+      label: t("panelSettings.scholarshipBanner.applicationDeadline"),
+      value: s.applicationDeadline,
+    },
+    { icon: Users, label: t("panelSettings.scholarshipBanner.quota"), value: s.quota },
+    {
+      icon: Hash,
+      label: t("panelSettings.scholarshipBanner.applicationPrefix"),
+      value: s.applicationPrefix,
+    },
   ].filter((i) => i.value);
 
   return (
     <GlassCard tone="navy">
       <div className="flex flex-wrap items-center gap-4">
         <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-accent">
-          <Settings2 size={14} aria-hidden="true" /> Bursluluk Ayarları
+          <Settings2 size={14} aria-hidden="true" /> {t("panelSettings.scholarshipBanner.title")}
         </span>
         {hasAny ? (
           <div className="flex flex-wrap gap-4">
@@ -60,13 +70,13 @@ export function ScholarshipSettingsBanner() {
             })}
           </div>
         ) : (
-          <span className="text-sm text-muted">Henüz ayar girilmedi.</span>
+          <span className="text-sm text-muted">{t("panelSettings.scholarshipBanner.empty")}</span>
         )}
         <Link
           href="/settings#okul-ayarlari"
           className="ml-auto text-xs text-muted transition-colors hover:text-accent"
         >
-          Ayarları düzenle
+          {t("panelSettings.scholarshipBanner.edit")}
         </Link>
       </div>
     </GlassCard>

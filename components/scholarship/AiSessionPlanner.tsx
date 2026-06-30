@@ -62,7 +62,9 @@ export function AiSessionPlanner() {
       </div>
 
       <div className="mt-6">
-        <PrimaryButton>AI ile Oturum Planla</PrimaryButton>
+        <PrimaryButton type="button" disabled title="Yakında">
+          AI ile Oturum Planla · Yakında
+        </PrimaryButton>
       </div>
     </GlassCard>
   );

@@ -36,7 +36,9 @@ export function ClassPlacementAdvisor() {
       </div>
 
       <div className="mt-4">
-        <PrimaryButton variant="secondary">Öneri Hesapla</PrimaryButton>
+        <PrimaryButton type="button" variant="secondary" disabled title="Yakında">
+          Öneri Hesapla · Yakında
+        </PrimaryButton>
       </div>
 
       <div className="mt-6 rounded-2xl border border-accent/20 bg-accent/[0.06] p-4">

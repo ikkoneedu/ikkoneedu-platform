@@ -13,6 +13,14 @@ export const tr: Record<string, string> = {
   "dashAdmin.header.description":
     "Sistem genel görünümü ve stratejik performans metrikleri.",
   "dashAdmin.header.reports": "Raporlar",
+  "dashAdmin.roleFocus.principal.eyebrow": "Müdür görünümü",
+  "dashAdmin.roleFocus.principal.title": "Okul operasyonuna hızlı erişim",
+  "dashAdmin.roleFocus.principal.desc":
+    "Öğrenci, veli, öğretmen, sınıf ve ders programı ekranlarına tek yerden ulaşın.",
+  "dashAdmin.roleFocus.vice.eyebrow": "Müdür yardımcısı görünümü",
+  "dashAdmin.roleFocus.vice.title": "Günlük okul akışı",
+  "dashAdmin.roleFocus.vice.desc":
+    "Sınıf düzeni, ders programı, etkinlik, duyuru, mesaj ve veli iletişimi akışlarını yönetin.",
   "dashAdmin.ai.eyebrow": "AI Zekası · Yakında",
   "dashAdmin.ai.body":
     "Yapay zeka destekli okul performans öngörüleri ve erken uyarı analizleri",
@@ -34,6 +42,14 @@ export const en: Record<string, string> = {
   "dashAdmin.header.description":
     "System overview and strategic performance metrics.",
   "dashAdmin.header.reports": "Reports",
+  "dashAdmin.roleFocus.principal.eyebrow": "Principal view",
+  "dashAdmin.roleFocus.principal.title": "Quick access to school operations",
+  "dashAdmin.roleFocus.principal.desc":
+    "Reach student, parent, teacher, class and timetable screens from one place.",
+  "dashAdmin.roleFocus.vice.eyebrow": "Vice principal view",
+  "dashAdmin.roleFocus.vice.title": "Daily school flow",
+  "dashAdmin.roleFocus.vice.desc":
+    "Manage class structure, timetable, events, announcements, messages and parent communication flows.",
   "dashAdmin.ai.eyebrow": "AI Intelligence · Coming soon",
   "dashAdmin.ai.body":
     "AI-powered school performance forecasts and early-warning analytics are",
