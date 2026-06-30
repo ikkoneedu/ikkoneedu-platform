@@ -5,8 +5,6 @@ import {
   Bell,
   HelpCircle,
   Sparkles,
-  Languages,
-  Moon,
   CircleUser,
   Download,
 } from "lucide-react";
@@ -18,6 +16,8 @@ import { AccountSummaryCard } from "@/components/shared/AccountSummaryCard";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { LanguageToggle } from "@/components/i18n/LanguageToggle";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { TenantOverview } from "@/components/dashboard/TenantOverview";
 import { LiveExecutiveMetrics } from "@/components/executive/LiveExecutiveMetrics";
 import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
@@ -35,14 +35,16 @@ function SidebarFooter() {
   const t = useT();
   return (
     <div className="space-y-4">
-      <PrimaryButton
-        variant="secondary"
-        size="md"
-        className="w-full border-accent/20 bg-accent/10 text-accent hover:bg-accent/20"
-      >
-        <Plus size={18} aria-hidden="true" />
-        {t("dashAdmin.sidebar.createExam")}
-      </PrimaryButton>
+      <Link href="/exam-ai" className="block">
+        <PrimaryButton
+          variant="secondary"
+          size="md"
+          className="w-full border-accent/20 bg-accent/10 text-accent hover:bg-accent/20"
+        >
+          <Plus size={18} aria-hidden="true" />
+          {t("dashAdmin.sidebar.createExam")}
+        </PrimaryButton>
+      </Link>
 
       <div className="space-y-1 border-t border-overlay/5 pt-4">
         <Link
@@ -75,22 +77,8 @@ function TopbarActions() {
           AI Brain
         </PrimaryButton>
       </Link>
-      <Link
-        href="/coming-soon"
-        aria-label={t("dashAdmin.topbar.langAria")}
-        title={t("dashAdmin.topbar.langTitle")}
-        className="flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-overlay/[0.06] hover:text-content"
-      >
-        <Languages size={18} aria-hidden="true" />
-      </Link>
-      <Link
-        href="/coming-soon"
-        aria-label={t("dashAdmin.topbar.themeAria")}
-        title={t("dashAdmin.topbar.themeTitle")}
-        className="flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-overlay/[0.06] hover:text-content"
-      >
-        <Moon size={18} aria-hidden="true" />
-      </Link>
+      <LanguageToggle className="rounded-full border-0 bg-transparent px-2 hover:bg-overlay/[0.06]" />
+      <ThemeToggle className="rounded-full border-0 bg-transparent hover:bg-overlay/[0.06]" />
       <Link
         href="/profile"
         aria-label={t("dashAdmin.topbar.profileAria")}

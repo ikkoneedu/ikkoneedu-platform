@@ -8,9 +8,9 @@ export const maxDuration = 60;
 /**
  * Günlük zamanlanmış görev (Vercel Cron — vercel.json: her gün 03:00 UTC).
  *
- * Güvenlik: CRON_SECRET tanımlıysa Vercel'in eklediği `Authorization: Bearer
- * <CRON_SECRET>` başlığı doğrulanır. Tanımsızsa (kurulum öncesi) çalışır ama
- * AI/yazma yapmaz.
+ * Güvenlik: Vercel'in eklediği `Authorization: Bearer <CRON_SECRET>` başlığı
+ * doğrulanır. Production'da CRON_SECRET zorunludur; development'da tanımsızsa
+ * çalışır ama AI/yazma yapmaz.
  *
  * Hazırlık iskeleti: "Yazılım Moderatör" ajanı, anahtar varsa günlük bir sistem
  * özeti üretir. İleride buraya: okul beyni öğrenme/özet, devamsızlık digest'i,
@@ -18,6 +18,13 @@ export const maxDuration = 60;
  */
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
+  if (!secret && process.env.NODE_ENV === "production") {
+    return NextResponse.json(
+      { ok: false, error: "CRON_SECRET production ortamında zorunludur." },
+      { status: 503 },
+    );
+  }
+
   if (secret) {
     const auth = request.headers.get("authorization");
     if (auth !== `Bearer ${secret}`) {
