@@ -25,6 +25,7 @@ import {
   UserAdminActions,
   MANAGER_ASSIGNABLE_ROLES,
 } from "@/components/admin/UserAdminActions";
+import { BulkStaffImport } from "@/components/admin/BulkStaffImport";
 import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import { createAuditLog } from "@/lib/services/audit-logs";
 import { sendPasswordReset } from "@/lib/services/auth-actions";
@@ -260,6 +261,15 @@ export function StaffManager() {
             </div>
           )}
         </GlassCard>
+      )}
+
+      {canCreate && tenantId && adminUid && (
+        <BulkStaffImport
+          tenantId={tenantId}
+          createdBy={adminUid}
+          isTopManager={isTopManager}
+          onDone={refresh}
+        />
       )}
 
       <GlassCard tone="navy">
