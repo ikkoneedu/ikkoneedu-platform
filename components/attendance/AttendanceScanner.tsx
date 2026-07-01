@@ -47,7 +47,14 @@ function getPosition(): Promise<GeolocationPosition> {
 
 type ScanResult =
   | { kind: "in" | "out"; name: string; time: string }
+  | { kind: "student"; names: string; time: string; label: string }
   | { kind: "error"; message: string };
+
+interface StudentCandidate {
+  id: string;
+  name: string;
+  classId: string;
+}
 
 /**
  * Giriş-Çıkış Okuyucu — okul girişindeki tarama noktası.
@@ -69,6 +76,58 @@ export function AttendanceScanner() {
   const [status, setStatus] = useState<"idle" | "scanning" | "locating">("idle");
   const [result, setResult] = useState<ScanResult | null>(null);
   const [manual, setManual] = useState("");
+  const [pendingParentToken, setPendingParentToken] = useState<string | null>(null);
+  const [selectionCandidates, setSelectionCandidates] = useState<StudentCandidate[] | null>(null);
+
+  const submitStudentScan = useCallback(
+    async (token: string, studentIds?: string[]) => {
+      if (!user) return;
+      let lat: number | null = null;
+      let lng: number | null = null;
+      try {
+        const pos = await getPosition();
+        lat = pos.coords.latitude;
+        lng = pos.coords.longitude;
+      } catch {
+        setResult({ kind: "error", message: t("att.scan.locationDenied") });
+        cooldownRef.current = Date.now() + 3500;
+        return;
+      }
+      const idToken = await user.getIdToken();
+      const res = await fetch("/api/attendance/student-scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken, token, lat, lng, studentIds }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        setResult({ kind: "error", message: data.error ?? t("att.scan.error") });
+        return;
+      }
+      if (data.needsSelection) {
+        setPendingParentToken(token);
+        setSelectionCandidates(data.students as StudentCandidate[]);
+        return;
+      }
+      const results = data.results as Array<{ studentId: string; name: string; action: "in" | "out" | "done" }>;
+      const first = results[0];
+      const label =
+        first?.action === "in"
+          ? t("att.scan.studentIn")
+          : first?.action === "out"
+            ? t("att.scan.studentWaiting")
+            : t("att.scan.studentDone");
+      setResult({
+        kind: "student",
+        names: results.map((r) => r.name).join(", "),
+        time: data.time,
+        label,
+      });
+      setPendingParentToken(null);
+      setSelectionCandidates(null);
+    },
+    [user, t],
+  );
 
   const submitScan = useCallback(
     async (token: string) => {
@@ -78,6 +137,10 @@ export function AttendanceScanner() {
       busyRef.current = true;
       setStatus("locating");
       try {
+        if (token.startsWith("IKK-PQR|")) {
+          await submitStudentScan(token);
+          return;
+        }
         let lat: number | null = null;
         let lng: number | null = null;
         try {
@@ -109,8 +172,21 @@ export function AttendanceScanner() {
         setStatus((s) => (s === "locating" ? "scanning" : s));
       }
     },
-    [user, t],
+    [user, t, submitStudentScan],
   );
+
+  const confirmStudentSelection = async (studentId: string) => {
+    if (!pendingParentToken || busyRef.current) return;
+    busyRef.current = true;
+    setStatus("locating");
+    try {
+      await submitStudentScan(pendingParentToken, [studentId]);
+    } finally {
+      cooldownRef.current = Date.now() + 3500;
+      busyRef.current = false;
+      setStatus((s) => (s === "locating" ? "scanning" : s));
+    }
+  };
 
   const stop = useCallback(() => {
     if (intervalRef.current) {
@@ -207,6 +283,26 @@ export function AttendanceScanner() {
           </div>
         )}
 
+        {/* Veli QR'ı birden fazla öğrenciye bağlıysa seçim iste. */}
+        {selectionCandidates && selectionCandidates.length > 0 && (
+          <div className="mt-4 rounded-xl border border-accent/30 bg-accent/5 p-4">
+            <p className="text-sm font-semibold text-content">{t("att.scan.selectStudent")}</p>
+            <p className="mt-1 text-xs text-muted">{t("att.scan.selectStudentDesc")}</p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {selectionCandidates.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => void confirmStudentSelection(s.id)}
+                  className="rounded-lg border border-accent/30 bg-accent/10 px-3 py-2 text-sm font-medium text-accent transition hover:bg-accent/20"
+                >
+                  {s.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Sonuç bandı */}
         {result && (
           <div
@@ -220,15 +316,17 @@ export function AttendanceScanner() {
           >
             {result.kind === "error" ? (
               <XCircle size={18} aria-hidden="true" />
-            ) : result.kind === "in" ? (
-              <LogIn size={18} aria-hidden="true" />
-            ) : (
+            ) : result.kind === "out" ? (
               <LogOut size={18} aria-hidden="true" />
+            ) : (
+              <LogIn size={18} aria-hidden="true" />
             )}
             <span className="font-medium">
               {result.kind === "error"
                 ? result.message
-                : `${result.name} · ${result.kind === "in" ? t("att.scan.in") : t("att.scan.out")} · ${result.time}`}
+                : result.kind === "student"
+                  ? `${result.names} · ${result.label} · ${result.time}`
+                  : `${result.name} · ${result.kind === "in" ? t("att.scan.in") : t("att.scan.out")} · ${result.time}`}
             </span>
             {result.kind !== "error" && <CheckCircle2 size={16} className="ml-auto" aria-hidden="true" />}
           </div>

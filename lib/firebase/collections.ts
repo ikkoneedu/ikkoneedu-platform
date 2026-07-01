@@ -63,6 +63,7 @@ export const COLLECTIONS = {
   MEETING_REQUESTS: "meetingRequests",
   ATTENDANCE_LOGS: "attendanceLogs",
   PERMISSION_GRANTS: "permissionGrants",
+  STUDENT_ATTENDANCE_LOGS: "studentAttendanceLogs",
 } as const;
 
 export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];
@@ -231,3 +232,10 @@ export const accessCodeDoc = (tenantId: string, code: string): string =>
 /** tenants/{tenantId}/permissionGrants — görev bazlı geçici route yetki devri. */
 export const tenantPermissionGrants = (tenantId: string): string =>
   tenantPath(tenantId, COLLECTIONS.PERMISSION_GRANTS);
+
+/**
+ * tenants/{tenantId}/studentAttendanceLogs — veli QR'ı ile otomatik öğrenci
+ * yoklaması (giriş = okulda, çıkış = velisi tarafından bekleniyor).
+ */
+export const tenantStudentAttendanceLogs = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.STUDENT_ATTENDANCE_LOGS);

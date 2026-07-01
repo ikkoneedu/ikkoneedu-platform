@@ -89,6 +89,50 @@ export function parseHm(hhmm: string): number {
   return (h || 0) * 60 + (m || 0);
 }
 
+/**
+ * Veli QR token biçimi (SAF) — `IKK-PQR|<parentUid>|<YYYY-MM-DD bitiş>|<hmacHex>`.
+ *
+ * Personel QR'ının aksine GÜNLÜK değil, veli/öğrenci eşleşmesi yıl boyu SABİT
+ * kalsın diye yaklaşık bir yıl geçerlidir (bkz. `oneYearValidity`). Aksiyon
+ * (giriş/çıkış) QR'da TAŞINMAZ — sunucu, o öğrencinin bugünkü kaydına bakarak
+ * otomatik belirler (ilk okutma giriş, ikincisi veli bekliyor/çıkış).
+ */
+export const PARENT_ATTENDANCE_QR_PREFIX = "IKK-PQR";
+
+export function parentAttendancePayload(parentUid: string, expiresDate: string): string {
+  return `${parentUid}|${expiresDate}`;
+}
+
+export function buildParentAttendanceQR(
+  parentUid: string,
+  expiresDate: string,
+  sig: string,
+): string {
+  return `${PARENT_ATTENDANCE_QR_PREFIX}|${parentUid}|${expiresDate}|${sig}`;
+}
+
+export interface ParsedParentAttendanceQR {
+  parentUid: string;
+  expiresDate: string;
+  sig: string;
+}
+
+/** Veli QR metnini ayrıştırır; biçim hatalıysa null. */
+export function parseParentAttendanceQR(qr: string): ParsedParentAttendanceQR | null {
+  if (typeof qr !== "string") return null;
+  const parts = qr.trim().split("|");
+  if (parts.length !== 4) return null;
+  const [prefix, parentUid, expiresDate, sig] = parts;
+  if (prefix !== PARENT_ATTENDANCE_QR_PREFIX) return null;
+  if (!parentUid || !/^\d{4}-\d{2}-\d{2}$/.test(expiresDate) || !sig) return null;
+  return { parentUid, expiresDate, sig };
+}
+
+/** Üretim anından ~1 yıl sonrasının tarihi (okul yılı boyu sabit QR için). */
+export function oneYearValidity(ms: number, timeZone = "Europe/Istanbul"): string {
+  return dateStr(ms + 365 * 86400000, timeZone);
+}
+
 /** İki koordinat arası mesafe (metre) — Haversine. */
 export function haversineMeters(
   lat1: number,

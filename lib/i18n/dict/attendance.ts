@@ -57,6 +57,22 @@ export const tr = {
   "att.logs.col.out": "Çıkış",
   "att.logs.exportTitle": "Personel Giriş-Çıkış Kayıtları",
   "att.logs.unavailable": "Bu rapor yalnızca okul yönetimi tarafından, giriş yapılmış ve Firebase aktifken görüntülenebilir.",
+
+  // Veli QR Kartı (yıl boyu sabit — öğrenci otomatik yoklama)
+  "att.parentqr.title": "Veli QR Kodum",
+  "att.parentqr.desc": "Bu QR kodu okul yılı boyunca sabittir. Okula bırakırken okutun: öğrenciniz otomatik okulda görünür. Almaya geldiğinizde tekrar okutun: öğretmen \"velisi bekliyor\" bildirimini görür.",
+  "att.parentqr.loading": "QR oluşturuluyor…",
+  "att.parentqr.validUntil": "{date} tarihine kadar geçerli",
+  "att.parentqr.refresh": "Yenile",
+  "att.parentqr.error": "QR alınamadı. Bağlantınızı kontrol edip tekrar deneyin.",
+  "att.parentqr.howto": "Okul girişindeki okuyucuya bu QR'ı gösterin. Aynı QR tüm yıl geçerlidir; ekran görüntüsü de kullanılabilir.",
+
+  // Okuyucu — öğrenci (veli QR) sonuçları
+  "att.scan.studentIn": "okula geldi",
+  "att.scan.studentWaiting": "velisi bekliyor",
+  "att.scan.studentDone": "bugün için tamamlandı",
+  "att.scan.selectStudent": "Hangi öğrenci?",
+  "att.scan.selectStudentDesc": "Bu veliye birden fazla öğrenci bağlı. Devam etmek için seçin.",
 } as const;
 
 export const en = {
@@ -111,4 +127,18 @@ export const en = {
   "att.logs.col.out": "Out",
   "att.logs.exportTitle": "Staff Entry-Exit Logs",
   "att.logs.unavailable": "This report is available only to school management, when signed in and Firebase is active.",
+
+  "att.parentqr.title": "My Parent QR Code",
+  "att.parentqr.desc": "This QR code stays the same for the whole school year. Scan it when dropping off: your child is automatically marked present. Scan it again on pickup: the teacher sees a \"parent waiting\" alert.",
+  "att.parentqr.loading": "Generating QR…",
+  "att.parentqr.validUntil": "Valid until {date}",
+  "att.parentqr.refresh": "Refresh",
+  "att.parentqr.error": "Could not get QR. Check your connection and try again.",
+  "att.parentqr.howto": "Show this QR to the scanner at the school entrance. It stays valid all year; a screenshot also works.",
+
+  "att.scan.studentIn": "arrived at school",
+  "att.scan.studentWaiting": "parent is waiting",
+  "att.scan.studentDone": "already done for today",
+  "att.scan.selectStudent": "Which student?",
+  "att.scan.selectStudentDesc": "This parent has more than one linked student. Select one to continue.",
 } as const;

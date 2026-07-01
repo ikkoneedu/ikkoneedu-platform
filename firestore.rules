@@ -648,6 +648,21 @@ service cloud.firestore {
       allow write: if false; // yalnızca Admin SDK (sunucu API)
     }
 
+    // ---- Öğrenci giriş-çıkış kayıtları (veli QR'ı ile otomatik) — yönetim +
+    //      KENDİ sınıfının öğretmeni okur, veli/öğrenci KENDİ kaydını okur.
+    //      YAZMA yalnızca sunucu (Admin SDK, veli QR + geofence doğrulamalı).
+    match /tenants/{tenantId}/studentAttendanceLogs/{logId} {
+      allow read: if isSuperAdmin()
+        || (canManageRecords() && myTenant() == tenantId)
+        || (isActiveUser() && myTenant() == tenantId && myRole() == 'TEACHER'
+            && 'classId' in resource.data && resource.data.classId != ''
+            && myProfile().get('classIds', []).hasAny([resource.data.classId]))
+        || (hasProfile() && myProfile().get('linkedStudentId', '') == resource.data.studentId)
+        || (hasProfile() && 'linkedStudentIds' in myProfile()
+            && myProfile().linkedStudentIds.hasAny([resource.data.studentId]));
+      allow write: if false; // yalnızca Admin SDK (sunucu API)
+    }
+
     // ---- Personel mesai & izin programı — yönetim YAZAR, tenant üyesi OKUR --
     // Geç-giriş tespiti bu programa göre yapılır. Genel YAZMA kuralından hariç.
     match /tenants/{tenantId}/staffSchedules/{uid} {
@@ -710,7 +725,8 @@ service cloud.firestore {
         && !(document[0] in ['messages', 'notifications', 'students', 'parents',
              'teachers', 'admissions', 'admissionMeetings', 'leads', 'appointments',
              'payments', 'auditLogs', 'meetingRequests', 'assignmentSubmissions',
-             'counselingSessions', 'attendanceLogs', 'staffAlerts', 'permissionGrants']);
+             'counselingSessions', 'attendanceLogs', 'staffAlerts', 'permissionGrants',
+             'studentAttendanceLogs']);
       // Askıdaki okulun personeli veri yazamaz (süper admin ayrı kurallarla erişir).
       // Özel-kurallı koleksiyonlar bu yazımdan HARİÇ.
       // (Sınıflar/duyuru/program/not/yoklama bu kuralda kalır: personel yazar.)
@@ -720,7 +736,8 @@ service cloud.firestore {
              'admissions', 'admissionMeetings', 'leads', 'appointments',
              'payments', 'settings', 'auditLogs', 'meetingRequests',
              'assignmentSubmissions', 'counselingSessions', 'attendanceLogs',
-             'staffSchedules', 'staffAlerts', 'permissionGrants']);
+             'staffSchedules', 'staffAlerts', 'permissionGrants',
+             'studentAttendanceLogs']);
     }
 
     // ---- Global CRM (collection group) — yalnızca SUPER_ADMIN -------------

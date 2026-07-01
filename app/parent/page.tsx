@@ -22,6 +22,7 @@ import { MeetingRequests } from "@/components/meetings/MeetingRequests";
 import { GradeBoard } from "@/components/grades/GradeBoard";
 import { ScheduleBoard } from "@/components/schedule/ScheduleBoard";
 import { AttendanceBoard } from "@/components/attendance/AttendanceBoard";
+import { ParentQrCard } from "@/components/attendance/ParentQrCard";
 import { ParentFinanceCard } from "@/components/parent/ParentFinanceCard";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { getServerT } from "@/lib/i18n/server";
@@ -82,6 +83,9 @@ export default async function ParentPage() {
 
         {/* Canlı bağlı öğrenci (gerçek Firestore — yalnızca giriş yapmış velide) */}
         <ParentChildCard />
+
+        {/* Veli QR kodu — okula bırakma/alma sırasında okutulur, yıl boyu sabit */}
+        <ParentQrCard />
 
         {/* Canlı özet — çocuğun not/yoklama/ödev sayıları */}
         <ParentSummary />
