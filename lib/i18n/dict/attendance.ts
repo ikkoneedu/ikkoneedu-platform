@@ -6,6 +6,7 @@ export const tr = {
   "nav.attMyQr": "QR Kartım",
   "nav.attScanner": "Giriş-Çıkış Okuyucu",
   "nav.attLogs": "Giriş-Çıkış Kayıtları",
+  "nav.attPickup": "Bekleme Odası",
 
   // QR Kartım (personel)
   "att.myqr.metaTitle": "Personel QR Kartım",
@@ -73,12 +74,24 @@ export const tr = {
   "att.scan.studentDone": "bugün için tamamlandı",
   "att.scan.selectStudent": "Hangi öğrenci?",
   "att.scan.selectStudentDesc": "Bu veliye birden fazla öğrenci bağlı. Devam etmek için seçin.",
+
+  // Bekleme odası / çağırma ekranı
+  "att.pickup.metaTitle": "Bekleme Odası",
+  "att.pickup.title": "Bekleme Odası",
+  "att.pickup.desc": "Velisi okula gelip QR kodunu tekrar okuttuğu öğrenciler burada canlı listelenir. Öğrenci gönderildiğinde \"Teslim Edildi\"yi işaretleyin.",
+  "att.pickup.inSchoolCount": "{count} öğrenci okulda",
+  "att.pickup.loading": "Yükleniyor…",
+  "att.pickup.empty": "Şu anda bekleyen öğrenci yok.",
+  "att.pickup.waitingSince": "Velisi {time} itibariyle bekliyor",
+  "att.pickup.markDone": "Teslim Edildi",
+  "att.pickup.unavailable": "Bu ekran yalnızca sınıf öğretmeni, danışma veya okul yönetimi tarafından, giriş yapılmış ve Firebase aktifken görüntülenebilir.",
 } as const;
 
 export const en = {
   "nav.attMyQr": "My QR Card",
   "nav.attScanner": "Entry-Exit Scanner",
   "nav.attLogs": "Entry-Exit Logs",
+  "nav.attPickup": "Waiting Room",
 
   "att.myqr.metaTitle": "My Staff QR Card",
   "att.myqr.title": "My Staff QR Card",
@@ -141,4 +154,14 @@ export const en = {
   "att.scan.studentDone": "already done for today",
   "att.scan.selectStudent": "Which student?",
   "att.scan.selectStudentDesc": "This parent has more than one linked student. Select one to continue.",
+
+  "att.pickup.metaTitle": "Waiting Room",
+  "att.pickup.title": "Waiting Room",
+  "att.pickup.desc": "Students whose parent has arrived and scanned the QR code again are listed here live. Mark \"Picked Up\" once the student has been sent out.",
+  "att.pickup.inSchoolCount": "{count} students at school",
+  "att.pickup.loading": "Loading…",
+  "att.pickup.empty": "No students waiting right now.",
+  "att.pickup.waitingSince": "Parent waiting since {time}",
+  "att.pickup.markDone": "Picked Up",
+  "att.pickup.unavailable": "This screen is only available to the classroom teacher, reception, or school management, when signed in and Firebase is active.",
 } as const;

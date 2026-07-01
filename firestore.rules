@@ -653,7 +653,9 @@ service cloud.firestore {
     //      YAZMA yalnızca sunucu (Admin SDK, veli QR + geofence doğrulamalı).
     match /tenants/{tenantId}/studentAttendanceLogs/{logId} {
       allow read: if isSuperAdmin()
-        || (canManageRecords() && myTenant() == tenantId)
+        // Yönetim + danışma (SUPPORT — bekleme odası ekranı) tüm okulu okur.
+        || (isActiveUser() && myTenant() == tenantId
+            && (canManageRecords() || myRole() == 'SUPPORT'))
         || (isActiveUser() && myTenant() == tenantId && myRole() == 'TEACHER'
             && 'classId' in resource.data && resource.data.classId != ''
             && myProfile().get('classIds', []).hasAny([resource.data.classId]))

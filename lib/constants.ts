@@ -39,6 +39,7 @@ import {
   IdCard,
   CalendarClock,
   History,
+  UserCheck,
   type LucideIcon,
 } from "lucide-react";
 
@@ -122,6 +123,7 @@ export const navigationItems: NavigationItem[] = [
   { id: "giris-cikis-gecmisim", labelKey: "nav.myHistory", href: "/attendance/my-history", icon: History },
   { id: "mesai-izin", labelKey: "nav.staffSchedule", href: "/staff-schedule", icon: CalendarClock },
   { id: "giris-cikis-kayit", labelKey: "nav.attLogs", href: "/attendance/logs", icon: ClipboardList },
+  { id: "bekleme-odasi", labelKey: "nav.attPickup", href: "/attendance/pickup", icon: UserCheck },
   { id: "messages", labelKey: "nav.messages", href: "/messages", icon: MessageSquare, moduleId: "messages" },
   { id: "bildirimler", labelKey: "nav.notifications", href: "/notifications", icon: Bell, moduleId: "notifications" },
   { id: "demo", labelKey: "nav.demo", href: "/demo", icon: Rocket },

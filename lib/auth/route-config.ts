@@ -197,6 +197,12 @@ export const ROUTE_ROLES: Record<string, Role[]> = {
     ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
     ROLES.COORDINATOR, ROLES.SUPER_ADMIN,
   ],
+  // Bekleme odası / çağırma ekranı — sınıf öğretmeni (kendi sınıfı) + danışma
+  // (SUPPORT) + yönetim. Veli/öğrenci HARİÇ.
+  "/attendance/pickup": [
+    ROLES.TEACHER, ROLES.SUPPORT, ROLES.SCHOOL_ADMIN, ROLES.FOUNDER,
+    ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL, ROLES.COORDINATOR, ROLES.SUPER_ADMIN,
+  ],
   // Personel mesai & izin yönetimi — yalnız yönetim.
   "/staff-schedule": [
     ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
