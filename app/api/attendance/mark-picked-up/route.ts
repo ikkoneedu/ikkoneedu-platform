@@ -10,8 +10,12 @@ const MANAGEMENT_ROLES = [
 /**
  * Bekleme odası / çağırma ekranından "Teslim Edildi" onayı (SUNUCU, Admin SDK).
  *
- * Yalnızca sınıfın öğretmeni (kendi sınıfı) veya yönetim/danışma (SUPPORT)
- * bir öğrenciyi "velisi bekliyor" durumundan "teslim edildi"ye geçirebilir.
+ * Yönetim/danışma (SUPPORT) VEYA herhangi bir öğretmen bir öğrenciyi "velisi
+ * bekliyor" durumundan "teslim edildi"ye geçirebilir — sınıfın kendi
+ * öğretmeniyle sınırlı DEĞİLDİR: mesai bitiminden sonra öğrenciler ortak
+ * bekleme odasına toplanır ve o odadaki nöbetçi öğretmen, öğrencinin kendi
+ * sınıf öğretmeni olmasa bile teslim onayı verebilmelidir (bkz.
+ * `studentAttendanceLogs` Firestore kuralı — aynı geniş erişimi uygular).
  * İstemci `studentAttendanceLogs`'a doğrudan yazamaz (kurallar `write: false`).
  *
  * İstek (POST): { idToken, logId }
@@ -77,11 +81,8 @@ async function handle(request: Request) {
   }
 
   const isManagement = isSuper || MANAGEMENT_ROLES.includes(opRole);
-  const isOwnClassTeacher =
-    opRole === "TEACHER" &&
-    Array.isArray(op.classIds) &&
-    op.classIds.includes(String(log.classId ?? ""));
-  if (!isManagement && !isOwnClassTeacher) {
+  const isTeacher = opRole === "TEACHER";
+  if (!isManagement && !isTeacher) {
     return NextResponse.json({ ok: false, error: "Bu öğrenciyi teslim etme yetkiniz yok." }, { status: 403 });
   }
 

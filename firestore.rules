@@ -648,17 +648,15 @@ service cloud.firestore {
       allow write: if false; // yalnızca Admin SDK (sunucu API)
     }
 
-    // ---- Öğrenci giriş-çıkış kayıtları (veli QR'ı ile otomatik) — yönetim +
-    //      KENDİ sınıfının öğretmeni okur, veli/öğrenci KENDİ kaydını okur.
-    //      YAZMA yalnızca sunucu (Admin SDK, veli QR + geofence doğrulamalı).
+    // ---- Öğrenci giriş-çıkış kayıtları (veli QR'ı ile otomatik) — yönetim,
+    //      danışma (SUPPORT) VE TÜM öğretmenler tüm okulu okur (sınıf ekranı +
+    //      bekleme odası ekranı ikisi de aynı koleksiyondan beslenir — bkz.
+    //      PickupWaitingBoard "Sınıfım"/"Bekleme Odası" sekmeleri). Veli/
+    //      öğrenci yalnız KENDİ kaydını okur. YAZMA yalnızca sunucu (Admin SDK).
     match /tenants/{tenantId}/studentAttendanceLogs/{logId} {
       allow read: if isSuperAdmin()
-        // Yönetim + danışma (SUPPORT — bekleme odası ekranı) tüm okulu okur.
         || (isActiveUser() && myTenant() == tenantId
-            && (canManageRecords() || myRole() == 'SUPPORT'))
-        || (isActiveUser() && myTenant() == tenantId && myRole() == 'TEACHER'
-            && 'classId' in resource.data && resource.data.classId != ''
-            && myProfile().get('classIds', []).hasAny([resource.data.classId]))
+            && (canManageRecords() || myRole() == 'SUPPORT' || myRole() == 'TEACHER'))
         || (hasProfile() && myProfile().get('linkedStudentId', '') == resource.data.studentId)
         || (hasProfile() && 'linkedStudentIds' in myProfile()
             && myProfile().linkedStudentIds.hasAny([resource.data.studentId]));
