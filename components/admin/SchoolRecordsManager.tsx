@@ -71,6 +71,7 @@ import {
   type ProvisionResult,
 } from "@/lib/services/account-provisioning";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
+import { BulkStudentImport } from "@/components/admin/BulkStudentImport";
 
 const MANAGER_ROLES: string[] = [
   ROLES.SCHOOL_ADMIN,
@@ -393,6 +394,18 @@ export function SchoolRecordsManager() {
             className="w-full rounded-xl border border-overlay/10 bg-overlay/[0.04] py-2.5 pl-9 pr-4 text-sm text-content outline-none focus:border-accent"
           />
         </div>
+      )}
+
+      {/* Toplu öğrenci/veli ekleme — öğrenciler sekmesinde, kayıt yönetimi olanlara. */}
+      {loaded && tenantId && user && tab === "students" && (
+        <BulkStudentImport
+          tenantId={tenantId}
+          schoolId={schoolId}
+          createdBy={user.uid}
+          classes={classes}
+          canCreateAccounts={canCreateAccounts}
+          onDone={refresh}
+        />
       )}
 
       {!loaded ? (
