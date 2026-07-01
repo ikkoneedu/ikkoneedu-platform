@@ -7,15 +7,23 @@ import {
   Sparkles,
   CircleUser,
   Download,
+  Users,
+  CalendarDays,
+  School,
+  MessageSquare,
+  ClipboardList,
+  BookOpen,
 } from "lucide-react";
 import Link from "next/link";
 import { useT } from "@/components/i18n/LocaleProvider";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Topbar } from "@/components/layout/Topbar";
 import { AccountSummaryCard } from "@/components/shared/AccountSummaryCard";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
+import { GlassCard } from "@/components/shared/GlassCard";
 import { LanguageToggle } from "@/components/i18n/LanguageToggle";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { TenantOverview } from "@/components/dashboard/TenantOverview";
@@ -29,6 +37,32 @@ import {
   adminMobileNavItems,
   adminTopbarLinks,
 } from "@/lib/constants";
+import { ROLES, type Role } from "@/lib/auth/role-constants";
+import { canRoleAccess } from "@/lib/auth/route-config";
+
+const PRINCIPAL_QUICK_LINKS = [
+  { href: "/admin/records", labelKey: "nav.records", icon: School },
+  { href: "/admin/users", labelKey: "nav.staff", icon: Users },
+  { href: "/admin/timetable", labelKey: "nav.timetable", icon: CalendarDays },
+  { href: "/teacher/classes", labelKey: "nav.myClasses", icon: BookOpen },
+  { href: "/events", labelKey: "nav.events", icon: Bell },
+  { href: "/attendance/logs", labelKey: "nav.attLogs", icon: ClipboardList },
+] as const;
+
+const VICE_PRINCIPAL_QUICK_LINKS = [
+  { href: "/admin/records", labelKey: "nav.records", icon: School },
+  { href: "/admin/timetable", labelKey: "nav.timetable", icon: CalendarDays },
+  { href: "/teacher/classes", labelKey: "nav.myClasses", icon: BookOpen },
+  { href: "/events", labelKey: "nav.events", icon: Bell },
+  { href: "/notifications", labelKey: "nav.notifications", icon: Bell },
+  { href: "/messages", labelKey: "nav.messages", icon: MessageSquare },
+] as const;
+
+function roleQuickLinks(role?: Role | null) {
+  if (role === ROLES.PRINCIPAL) return PRINCIPAL_QUICK_LINKS;
+  if (role === ROLES.VICE_PRINCIPAL) return VICE_PRINCIPAL_QUICK_LINKS;
+  return [];
+}
 
 /* Kenar çubuğu alt alanı: birincil eylem + yardımcı bağlantılar */
 function SidebarFooter() {
@@ -90,8 +124,49 @@ function TopbarActions() {
   );
 }
 
+function RoleQuickAccess() {
+  const { profile } = useAuth();
+  const t = useT();
+  const links = roleQuickLinks(profile?.role);
+  if (links.length === 0) return null;
+
+  const isPrincipal = profile?.role === ROLES.PRINCIPAL;
+  return (
+    <GlassCard tone="navy">
+      <SectionHeader
+        className="mb-5"
+        eyebrow={t(isPrincipal ? "dashAdmin.roleFocus.principal.eyebrow" : "dashAdmin.roleFocus.vice.eyebrow")}
+        title={t(isPrincipal ? "dashAdmin.roleFocus.principal.title" : "dashAdmin.roleFocus.vice.title")}
+        description={t(isPrincipal ? "dashAdmin.roleFocus.principal.desc" : "dashAdmin.roleFocus.vice.desc")}
+      />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {links.map((link) => {
+          const Icon = link.icon;
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="group flex items-center gap-3 rounded-2xl border border-overlay/10 bg-overlay/[0.03] p-4 transition-all hover:-translate-y-0.5 hover:border-accent/30 hover:bg-overlay/[0.06]"
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-navy/50 text-accent">
+                <Icon size={18} aria-hidden="true" />
+              </span>
+              <span className="text-sm font-semibold text-content group-hover:text-accent">
+                {t(link.labelKey)}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </GlassCard>
+  );
+}
+
 export default function AdminPage() {
   const t = useT();
+  const { profile } = useAuth();
+  const canOpenExecutive =
+    !profile || canRoleAccess(profile.role, "/executive");
   return (
     <div className="mesh-bg min-h-screen w-full lg:pl-64">
       <Sidebar
@@ -115,18 +190,22 @@ export default function AdminPage() {
               className="mb-6"
               title={t("dashAdmin.header.title")}
               description={t("dashAdmin.header.description")}
-              action={
+              action={canOpenExecutive ? (
                 <Link href="/executive">
                   <PrimaryButton variant="secondary" size="md">
                     <Download size={18} aria-hidden="true" />
                     {t("dashAdmin.header.reports")}
                   </PrimaryButton>
                 </Link>
-              }
+              ) : undefined}
             />
 
             <div className="mb-10">
               <AccountSummaryCard />
+            </div>
+
+            <div className="mb-10">
+              <RoleQuickAccess />
             </div>
 
             {/* Okul özeti — gerçek Firestore verisi (yalnızca giriş yapmış personelde görünür) */}
@@ -135,9 +214,11 @@ export default function AdminPage() {
             </div>
 
             {/* Canlı okul metrikleri (lead/randevu/bursluluk/tahsilat) */}
-            <div className="mb-10">
-              <LiveExecutiveMetrics />
-            </div>
+            {canOpenExecutive && (
+              <div className="mb-10">
+                <LiveExecutiveMetrics />
+              </div>
+            )}
 
             {/* Duyuru panosu (canlı) */}
             <div className="mb-10">

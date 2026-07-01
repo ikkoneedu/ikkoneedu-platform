@@ -155,7 +155,7 @@ export const adminMobileNavItems: NavigationItem[] = [
   { id: "ai-brain", labelKey: "nav.aiBrain", href: "/ai-brain", icon: Bot },
   { id: "takvim", labelKey: "nav.calendar", href: "/scheduler-ai", icon: CalendarDays },
   { id: "mesajlar", labelKey: "nav.messages", href: "/messages", icon: MessageSquare },
-  { id: "profil", labelKey: "nav.profile", href: "/settings", icon: User },
+  { id: "profil", labelKey: "nav.profile", href: "/profile", icon: User },
 ];
 
 /** Yönetim paneli üst çubuk orta bağlantıları. */

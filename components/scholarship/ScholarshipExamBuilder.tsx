@@ -57,7 +57,9 @@ export function ScholarshipExamBuilder() {
       </div>
 
       <div className="mt-6">
-        <PrimaryButton>Sınavı Oluştur</PrimaryButton>
+        <PrimaryButton type="button" disabled title="Yakında">
+          Sınavı Oluştur · Yakında
+        </PrimaryButton>
       </div>
     </GlassCard>
   );

@@ -42,6 +42,13 @@ export const tr: Record<string, string> = {
   "panelSettings.live.field.applicationDeadline": "Son Başvuru",
   "panelSettings.live.field.quota": "Kontenjan",
   "panelSettings.live.field.applicationPrefix": "Başvuru No Ön Eki (ör. IKK)",
+  "panelSettings.scholarshipBanner.title": "Bursluluk Ayarları",
+  "panelSettings.scholarshipBanner.examDate": "Sınav Tarihi",
+  "panelSettings.scholarshipBanner.applicationDeadline": "Son Başvuru",
+  "panelSettings.scholarshipBanner.quota": "Kontenjan",
+  "panelSettings.scholarshipBanner.applicationPrefix": "Başvuru Ön Eki",
+  "panelSettings.scholarshipBanner.empty": "Henüz ayar girilmedi.",
+  "panelSettings.scholarshipBanner.edit": "Ayarları düzenle",
 
   // LiveSettings — ders programı alanları
   "panelSettings.live.field.lessonStart": "İlk Ders Saati",
@@ -154,6 +161,13 @@ export const en: Record<string, string> = {
   "panelSettings.live.field.applicationDeadline": "Application Deadline",
   "panelSettings.live.field.quota": "Quota",
   "panelSettings.live.field.applicationPrefix": "Application No. Prefix (e.g. IKK)",
+  "panelSettings.scholarshipBanner.title": "Scholarship Settings",
+  "panelSettings.scholarshipBanner.examDate": "Exam Date",
+  "panelSettings.scholarshipBanner.applicationDeadline": "Application Deadline",
+  "panelSettings.scholarshipBanner.quota": "Quota",
+  "panelSettings.scholarshipBanner.applicationPrefix": "Application Prefix",
+  "panelSettings.scholarshipBanner.empty": "No settings entered yet.",
+  "panelSettings.scholarshipBanner.edit": "Edit settings",
 
   // LiveSettings — timetable fields
   "panelSettings.live.field.lessonStart": "First Lesson Time",

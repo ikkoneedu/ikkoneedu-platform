@@ -111,7 +111,7 @@ export const ROUTE_ROLES: Record<string, Role[]> = {
   "/settings": [ROLES.SUPER_ADMIN, ROLES.FOUNDER, ROLES.SCHOOL_ADMIN],
   "/executive": [
     ROLES.SUPER_ADMIN, ROLES.FOUNDER, ROLES.SCHOOL_ADMIN,
-    ROLES.PRINCIPAL, ROLES.VICE_PRINCIPAL,
+    ROLES.PRINCIPAL,
   ],
   // Finans/ekonomik panel — Müdür (PRINCIPAL) ve yardımcısı HARİÇ.
   "/finance": [ROLES.SCHOOL_ADMIN, ROLES.FOUNDER, ROLES.SUPER_ADMIN],
