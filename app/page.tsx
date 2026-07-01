@@ -16,6 +16,7 @@ import { SectionHeader } from "@/components/shared/SectionHeader";
 import { Reveal } from "@/components/landing/Reveal";
 import { CinematicHero } from "@/components/landing/CinematicHero";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { DragonAIBot } from "@/components/ai/DragonAIBot";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { LanguageToggle } from "@/components/i18n/LanguageToggle";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -93,31 +94,16 @@ export default async function HomePage() {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/features" className="hidden lg:block">
-              <PrimaryButton variant="ghost" size="sm">
-                {t("nav.features")}
-              </PrimaryButton>
-            </Link>
-            <Link href="/pricing" className="hidden lg:block">
-              <PrimaryButton variant="ghost" size="sm">
-                {t("nav.pricing")}
-              </PrimaryButton>
-            </Link>
-            <Link href="/founder-school" className="hidden lg:block">
-              <PrimaryButton variant="ghost" size="sm">
-                {t("nav.founderSchool")}
-              </PrimaryButton>
-            </Link>
-            <Link href="/login">
-              <PrimaryButton variant="ghost" size="sm">
+            {/* Özellikler / Fiyatlandırma / Kurucu Okul nav'dan kaldırıldı
+                (pasif) — sayfaların kendisi hâlâ var, yalnız burada linklenmiyor. */}
+            <Link href="/enter">
+              <PrimaryButton size="sm" className="whitespace-nowrap">
+                <LogIn size={16} aria-hidden="true" />
                 {t("common.login")}
               </PrimaryButton>
             </Link>
             <LanguageToggle />
             <ThemeToggle />
-            <Link href="/demo">
-              <PrimaryButton size="sm">{t("nav.requestDemo")}</PrimaryButton>
-            </Link>
           </div>
         </div>
       </header>
@@ -344,7 +330,7 @@ export default async function HomePage() {
                     <ArrowRight size={18} aria-hidden="true" />
                   </PrimaryButton>
                 </Link>
-                <Link href="/login">
+                <Link href="/enter">
                   <PrimaryButton variant="secondary" size="lg" className="w-full sm:w-auto">
                     <LogIn size={18} aria-hidden="true" />
                     {t("common.login")}
@@ -358,6 +344,9 @@ export default async function HomePage() {
 
       {/* Footer */}
       <SiteFooter />
+
+      {/* AI yardımcı maskotu — sağ alt köşede sabit, tıklanabilir (bkz. DragonAIBot). */}
+      <DragonAIBot />
     </div>
   );
 }

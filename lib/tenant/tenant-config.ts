@@ -102,3 +102,15 @@ export const PUBLIC_SCHOOLS: PublicSchool[] = [
 export function getPublicSchoolBySlug(slug: string): PublicSchool | undefined {
   return PUBLIC_SCHOOLS.find((school) => school.slug === slug);
 }
+
+/**
+ * `/enter` giriş kapısında (landing "Giriş Yap") gösterilecek GERÇEK okullar.
+ * `PUBLIC_SCHOOLS`'un tamamı değil — `atael`/`demo-okul` gibi vitrin/demo
+ * kayıtları burada listelenmez. Yeni bir gerçek okul devreye alındığında
+ * yalnızca bu diziye slug'ını eklemek yeterlidir.
+ */
+export const GATEWAY_SCHOOL_SLUGS = ["ingiliz-kultur"];
+
+export const GATEWAY_SCHOOLS: PublicSchool[] = PUBLIC_SCHOOLS.filter((school) =>
+  GATEWAY_SCHOOL_SLUGS.includes(school.slug),
+);

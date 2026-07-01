@@ -128,3 +128,37 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .ai-robot, .ai-robot__antenna, .ai-robot__eyes { animation: none; }
 }
+
+/* ---- Ejderha AI robot maskotu (DragonAIBot) — PNG üzerine katmanlı animasyon ---- */
+/* Üç iç içe katman: float (süzülme) > sway (ara sıra dönüş) > body (blink/kanat hissi). */
+.dragon-bot-float {
+  animation: dragon-bot-float 4.5s ease-in-out infinite;
+}
+.dragon-bot-sway {
+  animation: dragon-bot-sway 9s ease-in-out infinite;
+  transform-origin: 50% 85%;
+}
+.dragon-bot-body {
+  animation: dragon-bot-breathe 5.5s ease-in-out infinite;
+  transform-origin: 50% 50%;
+}
+@keyframes dragon-bot-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+/* Çoğu zaman dingin durur, arada hafifçe sağa-sola döner ("ara sıra"). */
+@keyframes dragon-bot-sway {
+  0%, 78%, 100% { transform: rotate(0deg); }
+  85% { transform: rotate(-3.5deg); }
+  92% { transform: rotate(3deg); }
+}
+/* Tek düz PNG'de gerçek göz kırpma/kanat çırpma yapılamaz; hafif nefes alma +
+   göz kırpma hissi veren kısa bir squash-stretch ile yaklaşık olarak taklit edilir. */
+@keyframes dragon-bot-breathe {
+  0%, 90%, 100% { transform: scale(1, 1); }
+  94% { transform: scale(1.015, 0.965); }
+  97% { transform: scale(0.985, 1.015); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dragon-bot-float, .dragon-bot-sway, .dragon-bot-body { animation: none; }
+}
