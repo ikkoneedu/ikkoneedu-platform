@@ -36,6 +36,12 @@ export interface UserProfile {
   displayName: string;
   /** İletişim telefonu (kullanıcı kendi günceller). */
   phone?: string;
+  /**
+   * Telefon numarası Firebase Phone Auth ile doğrulandı mı? Yalnızca
+   * `linkWithPhoneNumber` başarıyla tamamlandığında (SMS kodu onaylanınca)
+   * `true` yapılır; telefonla girişin ön koşuludur.
+   */
+  phoneVerified?: boolean;
   /** Profil/kimlik kartı fotoğrafı URL'i (kullanıcı kendi günceller). */
   photoURL?: string;
   /** Unvan/görev (ör. "İngilizce Öğretmeni") — kimlik kartında gösterilir. */

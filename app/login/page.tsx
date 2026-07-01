@@ -25,6 +25,7 @@ import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { OtpStep } from "@/components/auth/OtpStep";
+import { PhoneLoginForm } from "@/components/auth/PhoneLoginForm";
 import { AuthAmbientScene } from "@/components/auth/AuthAmbientScene";
 import { DragonAIBot } from "@/components/ai/DragonAIBot";
 import { useT } from "@/components/i18n/LocaleProvider";
@@ -91,6 +92,9 @@ function LoginContent() {
   const [schoolBrand, setSchoolBrand] = useState<SchoolRecord | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
+  // Giriş yöntemi: e-posta (+ OTP) veya telefon (SMS). Telefon SMS kodu 2.
+  // faktör kabul edildiğinden telefonla girişte e-posta OTP adımı yoktur.
+  const [method, setMethod] = useState<"email" | "phone">("email");
   // İki adımlı giriş: şifre doğrulandıktan sonra e-postaya kod gönderilir.
   const [step, setStep] = useState<"credentials" | "otp">("credentials");
   const [pendingUser, setPendingUser] = useState<User | null>(null);
@@ -292,6 +296,25 @@ function LoginContent() {
     }
   };
 
+  // Telefonla (SMS) giriş başarılı — profil oku, yetki kontrolü + yönlendir.
+  // SMS kodu 2. faktör olduğundan e-posta OTP adımı UYGULANMAZ.
+  const handlePhoneAuthenticated = async (signedInUser: User) => {
+    const signedInProfile = await getUserProfile(signedInUser.uid);
+    if (!signedInProfile) {
+      // Numara hiçbir hesaba bağlı değil (Firebase boş telefon hesabı açtı) —
+      // oturumu kapat ve yönlendir.
+      await signOut();
+      setError(t("login.phoneNoAccount"));
+      return;
+    }
+    const home = getHomeRouteForRole(signedInProfile.role);
+    const safe = sanitizeRedirect(redirectParam);
+    const safeRedirect =
+      safe && canRoleAccess(signedInProfile.role, safe) ? safe : home;
+    markOtpVerified(signedInUser.uid);
+    router.push(safeRedirect);
+  };
+
   return (
     <div className="mesh-bg relative flex min-h-screen w-full items-center justify-center overflow-hidden px-4 py-10 sm:px-6">
       {/* 3B-hisli hareketli arka plan (ana sayfa sinematik havasının devamı) */}
@@ -403,6 +426,43 @@ function LoginContent() {
               </p>
             ) : null}
 
+            {/* Giriş yöntemi sekmeleri: E-posta (+ kod) / Telefon (SMS) */}
+            <div className="mt-5 grid grid-cols-2 gap-1 rounded-xl border border-overlay/10 bg-overlay/[0.03] p-1">
+              {(["email", "phone"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => {
+                    setMethod(m);
+                    setError(null);
+                    setResetMsg(null);
+                  }}
+                  className={`rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    method === m
+                      ? "bg-accent/15 text-accent"
+                      : "text-muted hover:text-content"
+                  }`}
+                  aria-pressed={method === m}
+                >
+                  {m === "email" ? t("login.tabEmail") : t("login.tabPhone")}
+                </button>
+              ))}
+            </div>
+
+            {method === "phone" ? (
+              <div className="mt-6">
+                <PhoneLoginForm
+                  onAuthenticated={(u) => handlePhoneAuthenticated(u)}
+                  disabled={!firebaseReady}
+                />
+                {!firebaseReady && (
+                  <p className="mt-3 flex items-center gap-2 rounded-xl border border-brand/30 bg-brand/10 px-4 py-3 text-sm text-brand">
+                    <AlertCircle size={16} aria-hidden="true" />
+                    {t("login.errFirebase")}
+                  </p>
+                )}
+              </div>
+            ) : (
             <form ref={formRef} onSubmit={handleSubmit} className="mt-6 space-y-4">
               <TextField
                 label={t("login.identifierLabel")}
@@ -464,6 +524,7 @@ function LoginContent() {
                 <ArrowRight size={18} aria-hidden="true" />
               </PrimaryButton>
             </form>
+            )}
 
             {/* Demo giriş butonları — yalnızca Firebase BAĞLI DEĞİLKEN (demo/tanıtım).
                 Gerçek giriş aktifken gizlenir; aksi halde korumalı panellere

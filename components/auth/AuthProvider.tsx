@@ -86,8 +86,12 @@ interface AuthContextValue {
    * bunu kontrol edip tamamlanmadıysa `/login?step=otp`e yönlendirir.
    */
   otpVerified: boolean;
-  /** OTP adımı başarıyla tamamlandığında `/login` sayfasından çağrılır. */
-  markOtpVerified: () => void;
+  /**
+   * OTP adımı başarıyla tamamlandığında `/login` sayfasından çağrılır.
+   * Telefonla girişte SMS kodu 2. faktör sayıldığından, henüz context `user`
+   * güncellenmeden çağrılabilmesi için uid AÇIKÇA geçilebilir (yarış önlenir).
+   */
+  markOtpVerified: (uid?: string) => void;
 }
 
 /** Bir kullanıcının OTP doğrulama bayrağı için sessionStorage anahtarı. */
@@ -217,15 +221,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user]);
 
-  const markOtpVerified = useCallback(() => {
-    if (!user) return;
-    try {
-      window.sessionStorage.setItem(otpStorageKey(user.uid), "1");
-    } catch {
-      /* sessionStorage erişilemezse yok say — RoleGuard yine de yeniden sorar */
-    }
-    setOtpVerified(true);
-  }, [user]);
+  const markOtpVerified = useCallback(
+    (explicitUid?: string) => {
+      const uid = explicitUid ?? user?.uid;
+      if (!uid) return;
+      try {
+        window.sessionStorage.setItem(otpStorageKey(uid), "1");
+      } catch {
+        /* sessionStorage erişilemezse yok say — RoleGuard yine de yeniden sorar */
+      }
+      setOtpVerified(true);
+    },
+    [user],
+  );
 
   const signIn = useCallback(
     async (email: string, password: string, remember = true) => {

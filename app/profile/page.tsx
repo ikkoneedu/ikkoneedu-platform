@@ -20,6 +20,7 @@ import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useRequireAuth } from "@/components/auth/useRequireAuth";
+import { LinkPhoneNumber } from "@/components/profile/LinkPhoneNumber";
 import { updateMyProfile } from "@/lib/services/user-profile";
 import { getSchool } from "@/lib/services/schools";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
@@ -241,6 +242,9 @@ export default function ProfilePage() {
               defaultValue={profile.phone ?? ""}
               placeholder={t("panelFinance.profile.edit.phonePlaceholder")}
             />
+
+            {/* Telefonu Firebase Phone Auth ile doğrula → telefonla giriş açılır. */}
+            <LinkPhoneNumber />
 
             {error && (
               <p className="flex items-center gap-2 rounded-xl border border-brand/30 bg-brand/10 px-4 py-3 text-sm text-brand">

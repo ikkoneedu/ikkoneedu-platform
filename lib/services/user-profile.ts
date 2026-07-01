@@ -45,6 +45,7 @@ export async function updateMyProfile(
   fields: {
     displayName?: string;
     phone?: string;
+    phoneVerified?: boolean;
     photoURL?: string;
     title?: string;
     birthDate?: string;
@@ -56,6 +57,7 @@ export async function updateMyProfile(
   const data: Record<string, unknown> = { updatedAt: serverTimestamp() };
   if (fields.displayName !== undefined) data.displayName = fields.displayName;
   if (fields.phone !== undefined) data.phone = fields.phone;
+  if (fields.phoneVerified !== undefined) data.phoneVerified = fields.phoneVerified;
   if (fields.photoURL !== undefined) data.photoURL = fields.photoURL;
   if (fields.title !== undefined) data.title = fields.title;
   if (fields.birthDate !== undefined) data.birthDate = fields.birthDate;

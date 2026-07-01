@@ -274,8 +274,8 @@ service cloud.firestore {
           // rastgele alan da eklenemez (affectedKeys hasOnly).
           isSelf(uid)
           && request.resource.data.diff(resource.data).affectedKeys()
-               .hasOnly(['displayName', 'phone', 'photoURL', 'mustChangePassword',
-                         'birthDate', 'title', 'updatedAt'])
+               .hasOnly(['displayName', 'phone', 'phoneVerified', 'photoURL',
+                         'mustChangePassword', 'birthDate', 'title', 'updatedAt'])
         )
         || (
           // Okul yönetimi (kurucu/okul yön./müdür) kendi tenant'ındaki bir
