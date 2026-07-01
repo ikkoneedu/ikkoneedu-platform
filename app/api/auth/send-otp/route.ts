@@ -104,7 +104,12 @@ async function handle(request: Request) {
     `,
   });
   if (!result.ok) {
-    return NextResponse.json({ ok: false, error: result.error ?? "E-posta gönderilemedi." }, { status: 502 });
+    // Gönderim başarısızsa kodu SİL — aksi halde kullanıcı, hiç kod gelmediği
+    // hâlde 60sn soğuma süresine takılıp tekrar deneyemez (özellikle Resend
+    // alan adı doğrulanmadan gönderim reddedildiğinde). Silince hemen yeniden
+    // deneyebilir; başarılı gönderimde soğuma normal işler.
+    await ref.delete().catch(() => {});
+    return NextResponse.json({ ok: false, error: friendlyEmailError(result.error) }, { status: 502 });
   }
 
   // Mock modda (RESEND_API_KEY yok) + production DIŞINDA, geliştiricinin test
@@ -112,4 +117,17 @@ async function handle(request: Request) {
   // servisi yapılandırıldığında bu dal zaten çalışmaz — result.mock false olur).
   const devCode = result.mock && process.env.NODE_ENV !== "production" ? code : undefined;
   return NextResponse.json({ ok: true, mock: result.mock, devCode });
+}
+
+/**
+ * Resend/e-posta hatalarını kullanıcı için anlaşılır Türkçe mesaja çevirir.
+ * En yaygın üretim hatası, alan adı doğrulanmadan başka adrese gönderim
+ * denemesidir ("you can only send testing emails to your own address").
+ */
+function friendlyEmailError(raw?: string): string {
+  const s = (raw ?? "").toLowerCase();
+  if (s.includes("verify a domain") || s.includes("testing emails") || s.includes("own email")) {
+    return "Doğrulama kodu e-postası gönderilemedi: e-posta alan adı henüz doğrulanmamış. Yönetici, e-posta servisinde (Resend) alan adı doğrulamasını tamamlamalı.";
+  }
+  return raw ?? "Doğrulama kodu e-postası gönderilemedi. Lütfen tekrar deneyin.";
 }
