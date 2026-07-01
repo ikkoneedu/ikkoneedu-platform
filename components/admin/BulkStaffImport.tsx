@@ -7,6 +7,7 @@ import {
   Play,
   Copy,
   Download,
+  Printer,
   CheckCircle2,
   AlertCircle,
   ChevronDown,
@@ -15,6 +16,7 @@ import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { ROLES, ROLE_LABELS, type Role } from "@/lib/auth/role-constants";
 import { createManagedAccount } from "@/lib/services/users";
+import { printCredentialCards } from "@/lib/print/credential-cards";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -156,6 +158,19 @@ export function BulkStaffImport({ tenantId, createdBy, isTopManager, onDone }: B
     }
   };
 
+  const printCards = () => {
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
+    printCredentialCards(
+      okResults.map((x) => ({
+        displayName: x.r.displayName,
+        email: x.r.email,
+        password: x.s.password,
+        roleLabel: ROLE_LABELS[x.r.role],
+      })),
+      { loginUrl: appUrl ? `${appUrl}/login` : undefined },
+    );
+  };
+
   const downloadCsv = () => {
     const blob = new Blob([`e-posta,ad,rol,gecici_sifre\n${credentialsText}\n`], {
       type: "text/csv;charset=utf-8",
@@ -277,6 +292,10 @@ mehmet@okul.com, Mehmet Demir, Koordinatör`}</pre>
                 <PrimaryButton type="button" variant="secondary" size="sm" onClick={downloadCsv}>
                   <Download size={15} aria-hidden="true" />
                   CSV İndir
+                </PrimaryButton>
+                <PrimaryButton type="button" variant="secondary" size="sm" onClick={printCards}>
+                  <Printer size={15} aria-hidden="true" />
+                  Kartları Yazdır
                 </PrimaryButton>
               </>
             )}

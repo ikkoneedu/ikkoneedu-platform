@@ -8,6 +8,7 @@ import {
   AlertCircle,
   Users,
   Mail,
+  Printer,
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
@@ -26,6 +27,7 @@ import {
   MANAGER_ASSIGNABLE_ROLES,
 } from "@/components/admin/UserAdminActions";
 import { BulkStaffImport } from "@/components/admin/BulkStaffImport";
+import { printCredentialCards } from "@/lib/print/credential-cards";
 import { DataExportButtons } from "@/components/shared/DataExportButtons";
 import { createAuditLog } from "@/lib/services/audit-logs";
 import { sendPasswordReset } from "@/lib/services/auth-actions";
@@ -65,7 +67,13 @@ export function StaffManager() {
   const [users, setUsers] = useState<TenantUser[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [created, setCreated] = useState<{ email: string; password: string; emailSent?: boolean } | null>(null);
+  const [created, setCreated] = useState<{
+    email: string;
+    password: string;
+    displayName: string;
+    role: string;
+    emailSent?: boolean;
+  } | null>(null);
   const [copied, setCopied] = useState(false);
   const [resetState, setResetState] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
@@ -116,7 +124,13 @@ export function StaffManager() {
         email,
         department,
       });
-      setCreated({ email: result.email, password: result.tempPassword, emailSent: result.emailSent });
+      setCreated({
+        email: result.email,
+        password: result.tempPassword,
+        displayName,
+        role,
+        emailSent: result.emailSent,
+      });
       form.reset();
       await refresh();
     } catch (err) {
@@ -242,6 +256,26 @@ export function StaffManager() {
                 <PrimaryButton type="button" variant="secondary" size="sm" onClick={copyPassword}>
                   {copied ? <CheckCircle2 size={15} /> : <Copy size={15} />}
                   {copied ? "Kopyalandı" : "Şifreyi Kopyala"}
+                </PrimaryButton>
+                <PrimaryButton
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => {
+                    const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
+                    printCredentialCards(
+                      [{
+                        displayName: created.displayName,
+                        email: created.email,
+                        password: created.password,
+                        roleLabel: ROLE_LABELS[created.role as keyof typeof ROLE_LABELS] ?? created.role,
+                      }],
+                      { loginUrl: appUrl ? `${appUrl}/login` : undefined },
+                    );
+                  }}
+                >
+                  <Printer size={15} aria-hidden="true" />
+                  Kartı Yazdır
                 </PrimaryButton>
                 <PrimaryButton
                   type="button"
