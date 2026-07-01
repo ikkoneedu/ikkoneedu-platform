@@ -162,3 +162,24 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .dragon-bot-float, .dragon-bot-sway, .dragon-bot-body { animation: none; }
 }
+
+/* ---- Auth (giriş/kayıt) hareketli 3B-hisli arka plan sahnesi ---- */
+/* Perspektif ızgara zemini yavaşça "ileri" akar → derinlik/hareket hissi. */
+.auth-scene-grid {
+  animation: auth-grid-scroll 8s linear infinite;
+}
+@keyframes auth-grid-scroll {
+  0% { background-position: 0 0; }
+  100% { background-position: 0 56px; }
+}
+/* Yüzen parçacıklar — hafifçe süzülür ve nabız gibi parlar. */
+.auth-scene-particle {
+  animation: auth-particle-float 9s ease-in-out infinite;
+}
+@keyframes auth-particle-float {
+  0%, 100% { transform: translateY(0); opacity: 0.25; }
+  50% { transform: translateY(-24px); opacity: 0.7; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-scene-grid, .auth-scene-particle { animation: none; }
+}

@@ -100,7 +100,11 @@ export function CinematicHero() {
       <div className="pointer-events-none absolute bottom-5 left-5 h-7 w-7 border-b border-l border-accent/25 sm:bottom-7 sm:left-7" />
       <div className="pointer-events-none absolute bottom-5 right-5 h-7 w-7 border-b border-r border-accent/25 sm:bottom-7 sm:right-7" />
 
-      {/* Açılış metni — hazır olunca kaybolur */}
+      {/* Açılış metni — hazır olunca kaybolur.
+          Ağ sahnesi/çekirdek ekranın ortasında (geniş ekranda sağ-orta)
+          doğduğu için, "başlatılıyor" durum satırı ORTAYA DEĞİL ALT şeride
+          alınır (metinle çakışmasın diye) ve okunabilirlik için hafif bir
+          arka-plan paneline sarılır. */}
       <AnimatePresence>
         {!ready && (
           <motion.div
@@ -108,24 +112,26 @@ export function CinematicHero() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0, transition: { duration: 0.6 } }}
-            className="absolute inset-0 z-20 flex flex-col items-center justify-center px-6"
+            className="pointer-events-none absolute inset-x-0 bottom-[9%] z-20 flex flex-col items-center px-6"
           >
-            <motion.span
-              initial={{ opacity: 0, letterSpacing: "0.1em" }}
-              animate={{ opacity: 1, letterSpacing: "0.35em" }}
-              transition={{ duration: 1.1, ease: "easeOut" }}
-              className="font-mono text-[11px] uppercase text-accent/85 sm:text-xs"
-            >
-              {t("hero.initializing")}
-              <BlinkingDots />
-            </motion.span>
-            <div className="mt-4 h-px w-44 overflow-hidden rounded-full bg-overlay/10">
-              <motion.div
-                initial={{ width: "0%" }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 3, ease: "easeInOut" }}
-                className="h-full bg-gradient-to-r from-transparent via-accent to-transparent"
-              />
+            <div className="flex flex-col items-center rounded-2xl border border-accent/15 bg-background/70 px-5 py-3 backdrop-blur-md">
+              <motion.span
+                initial={{ opacity: 0, letterSpacing: "0.1em" }}
+                animate={{ opacity: 1, letterSpacing: "0.35em" }}
+                transition={{ duration: 1.1, ease: "easeOut" }}
+                className="font-mono text-[11px] uppercase text-accent/85 sm:text-xs"
+              >
+                {t("hero.initializing")}
+                <BlinkingDots />
+              </motion.span>
+              <div className="mt-3 h-px w-44 overflow-hidden rounded-full bg-overlay/10">
+                <motion.div
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 3, ease: "easeInOut" }}
+                  className="h-full bg-gradient-to-r from-transparent via-accent to-transparent"
+                />
+              </div>
             </div>
           </motion.div>
         )}

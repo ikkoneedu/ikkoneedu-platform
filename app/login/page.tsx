@@ -25,6 +25,8 @@ import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { OtpStep } from "@/components/auth/OtpStep";
+import { AuthAmbientScene } from "@/components/auth/AuthAmbientScene";
+import { DragonAIBot } from "@/components/ai/DragonAIBot";
 import { useT } from "@/components/i18n/LocaleProvider";
 import { getUserProfile } from "@/lib/services/user-profile";
 import { getHomeRouteForRole } from "@/lib/auth/role-routing";
@@ -292,10 +294,12 @@ function LoginContent() {
 
   return (
     <div className="mesh-bg relative flex min-h-screen w-full items-center justify-center overflow-hidden px-4 py-10 sm:px-6">
+      {/* 3B-hisli hareketli arka plan (ana sayfa sinematik havasının devamı) */}
+      <AuthAmbientScene />
       <div className="pointer-events-none absolute -left-32 top-0 h-96 w-96 rounded-full bg-navy/40 blur-3xl" />
       <div className="pointer-events-none absolute -right-32 bottom-0 h-96 w-96 rounded-full bg-accent/10 blur-3xl" />
 
-      <div className="relative grid w-full max-w-5xl grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
+      <div className="relative z-10 grid w-full max-w-5xl grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16">
         {/* Sol taraf — marka ve faydalar */}
         <motion.section
           {...fadeUp}
@@ -336,6 +340,19 @@ function LoginContent() {
               );
             })}
           </ul>
+
+          {/* 3B-hisli hareketli maskot — giriş sahnesine premium bir karşılama.
+              Sahnede süzülür/sallanır (bkz. DragonAIBot). Küçük ekranda gizli
+              (kartın üstünü sıkıştırmasın); sm ve üzerinde belirir. */}
+          <div className="relative mt-4 hidden h-52 items-end justify-center sm:flex">
+            <div className="absolute bottom-8 h-6 w-44 rounded-[50%] bg-accent/25 blur-2xl" />
+            <DragonAIBot
+              inline
+              size={188}
+              greeting="Hoş geldiniz! Giriş yapmaya hazır mısınız?"
+              label={`${productName} AI Asistanı`}
+            />
+          </div>
         </motion.section>
 
         {/* Sağ taraf — giriş kartı */}
