@@ -24,7 +24,7 @@ import { useT } from "@/components/i18n/LocaleProvider";
 export default function CodeLoginPage() {
   const t = useT();
   const router = useRouter();
-  const { firebaseReady } = useAuth();
+  const { firebaseReady, markOtpVerified } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -57,6 +57,11 @@ export default function CodeLoginPage() {
         setSubmitting(false);
         return;
       }
+      // Kod ile giriş kendi başına yeterli kimlik doğrulamasıdır (kodun sahibi
+      // = kullanıcı). E-posta OTP adımına gerek yoktur; aksi halde RoleGuard
+      // öğrenci/veliyi /login?step=otp'ye yollardı. (Telefon girişindeki
+      // markOtpVerified ile aynı mantık.)
+      if (uid) markOtpVerified(uid);
       router.push(getHomeRouteForRole(profile.role));
     } catch (err) {
       const code2 = (err as { code?: string })?.code;

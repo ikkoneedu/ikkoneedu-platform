@@ -20,7 +20,7 @@ import { productName, productFullName } from "@/lib/constants";
  */
 export default function RegisterPage() {
   const router = useRouter();
-  const { signUpPublic, firebaseReady } = useAuth();
+  const { signUpPublic, firebaseReady, markOtpVerified } = useAuth();
   const t = useT();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,7 +55,11 @@ export default function RegisterPage() {
     setSubmitting(true);
     setError(null);
     try {
-      await signUpPublic(email, password, displayName);
+      const newUser = await signUpPublic(email, password, displayName);
+      // Kullanıcı az önce kendi şifresini belirledi; taze kayıtta ek e-posta
+      // OTP adımı istemeyiz (yoksa RoleGuard /portal'a geçerken
+      // /login?step=otp'ye yollar). Oturum bu sekmede doğrulanmış sayılır.
+      markOtpVerified(newUser.uid);
       router.push("/portal");
     } catch (err) {
       setError(getAuthErrorMessage(err));
