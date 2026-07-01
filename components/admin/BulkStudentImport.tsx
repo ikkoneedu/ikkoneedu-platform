@@ -19,30 +19,12 @@ import { createParent, linkParentToStudent, type ParentRecord } from "@/lib/serv
 import { provisionParentAccount } from "@/lib/services/account-provisioning";
 import type { SchoolClass } from "@/lib/services/classes";
 import { printCredentialCards } from "@/lib/print/credential-cards";
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-/** "Ayşe Nur Yılmaz" → { firstName: "Ayşe Nur", lastName: "Yılmaz" } */
-function splitName(full: string): { firstName: string; lastName: string } {
-  const parts = full.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return { firstName: "", lastName: "" };
-  if (parts.length === 1) return { firstName: parts[0], lastName: "" };
-  return { firstName: parts.slice(0, -1).join(" "), lastName: parts[parts.length - 1] };
-}
-
-/** Sınıf adını hoşgörülü eşleştir: "1-A" = "1 A" = "1a". */
-const normClass = (s: string) => s.trim().toLocaleLowerCase("tr-TR").replace(/[\s-]/g, "");
-
-interface ParsedRow {
-  line: number;
-  studentName: string;
-  classId: string;
-  className: string;
-  parentName: string;
-  parentEmail: string;
-  parentPhone: string;
-  problem: string | null;
-}
+import {
+  normClass,
+  splitName,
+  parseStudentRows,
+  type ParsedStudentRow,
+} from "@/lib/admin/bulk-import";
 
 type RowStatus =
   | { state: "pending" }
@@ -89,40 +71,7 @@ export function BulkStudentImport({
     return m;
   }, [classes]);
 
-  const rows = useMemo<ParsedRow[]>(() => {
-    const out: ParsedRow[] = [];
-    raw.split(/\r?\n/).forEach((line, i) => {
-      const trimmed = line.trim();
-      if (!trimmed) return;
-      const parts = trimmed.split(/[,;\t]/).map((p) => p.trim());
-      const studentName = parts[0] ?? "";
-      // Başlık satırını atla.
-      if (i === 0 && normClass(studentName).startsWith("öğrenci")) return;
-      const classRaw = parts[1] ?? "";
-      const parentName = parts[2] ?? "";
-      const parentEmail = (parts[3] ?? "").toLowerCase();
-      const parentPhone = parts[4] ?? "";
-
-      const matched = classRaw ? classMap.get(normClass(classRaw)) : undefined;
-      let problem: string | null = null;
-      if (studentName.trim().length < 2) problem = "Öğrenci adı gerekli";
-      else if (classRaw && !matched) problem = `Sınıf bulunamadı: "${classRaw}"`;
-      else if (parentEmail && !EMAIL_RE.test(parentEmail)) problem = "Geçersiz veli e-postası";
-      else if (parentEmail && !parentName) problem = "Veli e-postası için veli adı gerekli";
-
-      out.push({
-        line: i + 1,
-        studentName,
-        classId: matched?.id ?? "",
-        className: matched?.name ?? (classRaw || "—"),
-        parentName,
-        parentEmail,
-        parentPhone,
-        problem,
-      });
-    });
-    return out;
-  }, [raw, classMap]);
+  const rows = useMemo(() => parseStudentRows(raw, classMap), [raw, classMap]);
 
   const validRows = rows.filter((r) => !r.problem);
   const invalidCount = rows.length - validRows.length;

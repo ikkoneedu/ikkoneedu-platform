@@ -14,36 +14,15 @@ import {
 } from "lucide-react";
 import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
-import { ROLES, ROLE_LABELS, type Role } from "@/lib/auth/role-constants";
+import { ROLE_LABELS } from "@/lib/auth/role-constants";
 import { createManagedAccount } from "@/lib/services/users";
 import { printCredentialCards } from "@/lib/print/credential-cards";
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-/** Alt kadro (herkesin açabildiği) + üst kadro (yalnız üst yönetim). */
-const LOWER_ROLES: Role[] = [ROLES.TEACHER, ROLES.PR, ROLES.SALES, ROLES.DRIVER];
-const MGMT_ROLES: Role[] = [ROLES.COORDINATOR, ROLES.VICE_PRINCIPAL, ROLES.PRINCIPAL];
-
-/** Serbest girilen rol metnini role koduna çevirir (TR/İng eş anlamlılar). */
-const ROLE_ALIASES: Record<string, Role> = {
-  teacher: ROLES.TEACHER, ogretmen: ROLES.TEACHER, "öğretmen": ROLES.TEACHER,
-  pr: ROLES.PR, "halkla ilişkiler": ROLES.PR, "halkla iliskiler": ROLES.PR,
-  sales: ROLES.SALES, "satış": ROLES.SALES, satis: ROLES.SALES, "satış ekibi": ROLES.SALES,
-  driver: ROLES.DRIVER, "şoför": ROLES.DRIVER, sofor: ROLES.DRIVER, "servis şoförü": ROLES.DRIVER,
-  coordinator: ROLES.COORDINATOR, "koordinatör": ROLES.COORDINATOR, koordinator: ROLES.COORDINATOR,
-  vice_principal: ROLES.VICE_PRINCIPAL, "müdür yardımcısı": ROLES.VICE_PRINCIPAL,
-  "mudur yardimcisi": ROLES.VICE_PRINCIPAL, vice: ROLES.VICE_PRINCIPAL,
-  principal: ROLES.PRINCIPAL, "müdür": ROLES.PRINCIPAL, mudur: ROLES.PRINCIPAL,
-};
-
-interface ParsedRow {
-  line: number;
-  email: string;
-  displayName: string;
-  role: Role;
-  /** Geçersizse hata sebebi; geçerliyse null. */
-  problem: string | null;
-}
+import {
+  LOWER_ROLES,
+  MGMT_ROLES,
+  parseStaffRows,
+  type ParsedStaffRow,
+} from "@/lib/admin/bulk-import";
 
 type RowStatus =
   | { state: "pending" }
@@ -79,31 +58,7 @@ export function BulkStaffImport({ tenantId, createdBy, isTopManager, onDone }: B
     [isTopManager],
   );
 
-  const rows = useMemo<ParsedRow[]>(() => {
-    const seen = new Set<string>();
-    const out: ParsedRow[] = [];
-    raw.split(/\r?\n/).forEach((line, i) => {
-      const trimmed = line.trim();
-      if (!trimmed) return;
-      const parts = trimmed.split(/[,;\t]/).map((p) => p.trim());
-      const email = (parts[0] ?? "").toLowerCase();
-      // Başlık satırını atla.
-      if (i === 0 && (email === "email" || email === "e-posta" || email === "eposta")) return;
-      const displayName = parts[1] || email.split("@")[0];
-      const roleRaw = (parts[2] ?? "").toLocaleLowerCase("tr-TR");
-      const role = roleRaw ? ROLE_ALIASES[roleRaw] : ROLES.TEACHER;
-
-      let problem: string | null = null;
-      if (!EMAIL_RE.test(email)) problem = "Geçersiz e-posta";
-      else if (seen.has(email)) problem = "Listede tekrar eden e-posta";
-      else if (roleRaw && !role) problem = `Bilinmeyen rol: "${parts[2]}"`;
-      else if (role && !allowedRoles.includes(role)) problem = `Bu rolü oluşturamazsınız: ${ROLE_LABELS[role]}`;
-      seen.add(email);
-
-      out.push({ line: i + 1, email, displayName, role: role ?? ROLES.TEACHER, problem });
-    });
-    return out;
-  }, [raw, allowedRoles]);
+  const rows = useMemo(() => parseStaffRows(raw, allowedRoles), [raw, allowedRoles]);
 
   const validRows = rows.filter((r) => !r.problem);
   const invalidCount = rows.length - validRows.length;
@@ -144,7 +99,7 @@ export function BulkStaffImport({ tenantId, createdBy, isTopManager, onDone }: B
 
   const okResults = rows
     .map((r) => ({ r, s: statuses[r.line] }))
-    .filter((x) => x.s?.state === "ok") as { r: ParsedRow; s: Extract<RowStatus, { state: "ok" }> }[];
+    .filter((x) => x.s?.state === "ok") as { r: ParsedStaffRow; s: Extract<RowStatus, { state: "ok" }> }[];
 
   const credentialsText = okResults
     .map((x) => `${x.r.email},${x.r.displayName},${ROLE_LABELS[x.r.role]},${x.s.password}`)
