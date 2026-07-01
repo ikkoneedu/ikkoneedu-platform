@@ -40,6 +40,7 @@ import {
   CalendarClock,
   History,
   UserCheck,
+  MonitorSmartphone,
   type LucideIcon,
 } from "lucide-react";
 
@@ -148,6 +149,7 @@ export const adminNavigationItems: NavigationItem[] = [
   { id: "ai-zekasi", labelKey: "nav.aiIntel", href: "/ai-brain", icon: Brain },
   { id: "takvim", labelKey: "nav.calendar", href: "/scheduler-ai", icon: CalendarDays },
   { id: "analizler", labelKey: "nav.analytics", href: "/executive", icon: BarChart3 },
+  { id: "kiosk-cihazlari", labelKey: "nav.attDevices", href: "/admin/attendance-devices", icon: MonitorSmartphone },
   { id: "yonetim", labelKey: "nav.management", href: "/settings", icon: Settings },
 ];
 

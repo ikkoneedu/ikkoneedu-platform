@@ -64,6 +64,8 @@ export const COLLECTIONS = {
   ATTENDANCE_LOGS: "attendanceLogs",
   PERMISSION_GRANTS: "permissionGrants",
   STUDENT_ATTENDANCE_LOGS: "studentAttendanceLogs",
+  ATTENDANCE_DEVICES: "attendanceDevices",
+  ATTENDANCE_SCAN_LOGS: "attendanceScanLogs",
 } as const;
 
 export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];
@@ -239,3 +241,14 @@ export const tenantPermissionGrants = (tenantId: string): string =>
  */
 export const tenantStudentAttendanceLogs = (tenantId: string): string =>
   tenantPath(tenantId, COLLECTIONS.STUDENT_ATTENDANCE_LOGS);
+
+/**
+ * tenants/{tenantId}/attendanceDevices — okul girişindeki USB QR okuyucu
+ * kiosk cihazları (Keyboard Wedge / HID). Bkz. `lib/attendance/device-auth.ts`.
+ */
+export const tenantAttendanceDevices = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.ATTENDANCE_DEVICES);
+
+/** tenants/{tenantId}/attendanceScanLogs — kiosk tarama denetim kaydı. */
+export const tenantAttendanceScanLogs = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.ATTENDANCE_SCAN_LOGS);

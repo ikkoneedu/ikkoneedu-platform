@@ -663,6 +663,27 @@ service cloud.firestore {
       allow write: if false; // yalnızca Admin SDK (sunucu API)
     }
 
+    // ---- Kiosk cihazları (USB QR okuyucu / Keyboard Wedge terminalleri) —
+    //      yönetim okur/durum-ad-lokasyon günceller; CİHAZ SIRRI (secretHash)
+    //      yalnızca Admin SDK üretir (create false; update yalnızca güvenli
+    //      alanlarla sınırlı — secretHash İSTEMCİDEN ASLA değiştirilemez).
+    match /tenants/{tenantId}/attendanceDevices/{deviceId} {
+      allow read: if isSuperAdmin()
+        || (canManageRecords() && myTenant() == tenantId);
+      allow create: if false;
+      allow update: if (isSuperAdmin() || (canManageRecords() && myTenant() == tenantId))
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['status', 'name', 'location', 'updatedAt']);
+      allow delete: if false;
+    }
+
+    // ---- Kiosk tarama denetim kaydı — yalnız yönetim okur, yazma Admin SDK --
+    match /tenants/{tenantId}/attendanceScanLogs/{logId} {
+      allow read: if isSuperAdmin()
+        || (canManageRecords() && myTenant() == tenantId);
+      allow write: if false;
+    }
+
     // ---- Personel mesai & izin programı — yönetim YAZAR, tenant üyesi OKUR --
     // Geç-giriş tespiti bu programa göre yapılır. Genel YAZMA kuralından hariç.
     match /tenants/{tenantId}/staffSchedules/{uid} {
@@ -726,7 +747,7 @@ service cloud.firestore {
              'teachers', 'admissions', 'admissionMeetings', 'leads', 'appointments',
              'payments', 'auditLogs', 'meetingRequests', 'assignmentSubmissions',
              'counselingSessions', 'attendanceLogs', 'staffAlerts', 'permissionGrants',
-             'studentAttendanceLogs']);
+             'studentAttendanceLogs', 'attendanceDevices', 'attendanceScanLogs']);
       // Askıdaki okulun personeli veri yazamaz (süper admin ayrı kurallarla erişir).
       // Özel-kurallı koleksiyonlar bu yazımdan HARİÇ.
       // (Sınıflar/duyuru/program/not/yoklama bu kuralda kalır: personel yazar.)
@@ -737,7 +758,7 @@ service cloud.firestore {
              'payments', 'settings', 'auditLogs', 'meetingRequests',
              'assignmentSubmissions', 'counselingSessions', 'attendanceLogs',
              'staffSchedules', 'staffAlerts', 'permissionGrants',
-             'studentAttendanceLogs']);
+             'studentAttendanceLogs', 'attendanceDevices', 'attendanceScanLogs']);
     }
 
     // ---- Global CRM (collection group) — yalnızca SUPER_ADMIN -------------

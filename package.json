@@ -13,6 +13,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "test:scanner-buffer": "node --experimental-strip-types scripts/test-scanner-buffer.ts",
     "firebase:check": "node scripts/firebase-check.mjs",
     "firebase:create-admin-profile": "node scripts/create-admin-profile.mjs",
     "firebase:set-claims": "node scripts/set-claims.mjs",
