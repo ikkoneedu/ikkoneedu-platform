@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAdminAuth, getAdminDb, isAdminConfigured } from "@/lib/firebase/admin";
+import { strongPassword } from "@/lib/auth/passwords";
 
 export const runtime = "nodejs";
 
@@ -17,19 +18,6 @@ export const runtime = "nodejs";
  * Yanıt: { ok, mode:'created'|'linked', uid, email, tempPassword? }
  * tempPassword YALNIZCA bir kez döner; Firestore'a ASLA yazılmaz.
  */
-
-const ALPHA = "ABCDEFGHJKLMNPQRSTUVWXYZ";
-const LOWER = "abcdefghijkmnpqrstuvwxyz";
-const DIGIT = "23456789";
-const SYM = "!@#$%*?";
-
-function strongPassword(): string {
-  const all = ALPHA + LOWER + DIGIT + SYM;
-  const pick = (s: string) => s[Math.floor(Math.random() * s.length)];
-  let out = pick(ALPHA) + pick(LOWER) + pick(DIGIT) + pick(SYM);
-  for (let i = 0; i < 11; i += 1) out += pick(all);
-  return out.split("").sort(() => Math.random() - 0.5).join("");
-}
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

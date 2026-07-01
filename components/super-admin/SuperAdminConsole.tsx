@@ -52,7 +52,9 @@ import {
 } from "@/lib/services/audit-logs";
 import { sendPasswordReset } from "@/lib/services/auth-actions";
 import { UserAdminActions } from "@/components/admin/UserAdminActions";
+import { DeletedUsersPanel } from "@/components/super-admin/DeletedUsersPanel";
 import { DataExportButtons } from "@/components/shared/DataExportButtons";
+import { deleteUserAccount } from "@/lib/services/user-deletion";
 import { getAuthErrorMessage } from "@/lib/auth/auth-errors";
 
 /** Süper admin her role atayabilir. */
@@ -238,6 +240,18 @@ export function SuperAdminConsole() {
 
   const [resetState, setResetState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const [auditFilter, setAuditFilter] = useState<string>("ALL");
+  const [deletedRefreshKey, setDeletedRefreshKey] = useState(0);
+
+  const handleDeleteUser = useCallback(
+    async (targetUid: string) => {
+      if (!user) throw new Error("Oturum doğrulanamadı.");
+      const idToken = await user.getIdToken();
+      const result = await deleteUserAccount(idToken, targetUid);
+      if (!result.ok) throw new Error(result.error ?? "Silme başarısız.");
+      setDeletedRefreshKey((k) => k + 1);
+    },
+    [user],
+  );
 
   const filteredAuditLogs =
     auditFilter === "ALL" ? auditLogs : auditLogs.filter((l) => l.action === auditFilter);
@@ -552,6 +566,7 @@ export function SuperAdminConsole() {
                           onAction={(action, meta) =>
                             logAction(action, `users/${u.uid}`, meta)
                           }
+                          onDelete={handleDeleteUser}
                         />
                       )}
                     </td>
@@ -562,6 +577,9 @@ export function SuperAdminConsole() {
           </div>
         )}
       </GlassCard>
+
+      {/* Silinen kullanıcılar — yedek + geri yükleme */}
+      <DeletedUsersPanel refreshKey={deletedRefreshKey} />
 
       {/* İşlem kayıtları (denetim) */}
       <GlassCard tone="navy">

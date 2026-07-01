@@ -788,6 +788,14 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // ---- Silinen kullanıcı yedekleri (yalnızca SUPER_ADMIN okur) -----------
+    // Kök koleksiyon; yazma yalnızca Admin SDK (/api/admin/delete-user,
+    // /api/admin/restore-user) — istemci asla doğrudan yazamaz/silemez.
+    match /deletedUsers/{uid} {
+      allow read: if isSuperAdmin();
+      allow write: if false;
+    }
+
     // ---- Öğrenci kayıtları / notlar (kök; gizli) --------------------------
     // Okuma: öğrencinin kendisi, bağlı velisi, aynı tenant personeli.
     // Yazma: yalnızca aynı tenant personeli.

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Ban, RotateCcw } from "lucide-react";
+import { Ban, RotateCcw, Trash2 } from "lucide-react";
 import { ROLE_LABELS, type Role } from "@/lib/auth/role-constants";
 import {
   setUserRole,
@@ -22,6 +22,12 @@ interface UserAdminActionsProps {
   onError?: (message: string) => void;
   /** Başarılı işlem sonrası denetim kaydı için (action, meta). */
   onAction?: (action: string, meta: Record<string, unknown>) => void | Promise<void>;
+  /**
+   * Verilirse "Sil" butonu gösterilir (yedekleyerek siler — bkz.
+   * `/api/admin/delete-user`). Yalnızca SUPER_ADMIN ekranından (SuperAdminConsole)
+   * geçilir; okul yönetimi ekranlarında (StaffManager) bu prop verilmez.
+   */
+  onDelete?: (uid: string) => Promise<void>;
 }
 
 /**
@@ -36,6 +42,7 @@ export function UserAdminActions({
   onChanged,
   onError,
   onAction,
+  onDelete,
 }: UserAdminActionsProps) {
   const [busy, setBusy] = useState(false);
   const suspended = status === "SUSPENDED";
@@ -77,6 +84,15 @@ export function UserAdminActions({
     );
   };
 
+  const handleDelete = () => {
+    if (!onDelete) return;
+    const ok = window.confirm(
+      "Bu kullanıcıyı silmek istediğinize emin misiniz? Hesap kilitlenir ama bir yedek kalır; gerekirse geri yüklenebilir.",
+    );
+    if (!ok) return;
+    void run(() => onDelete(uid), "user.delete", {});
+  };
+
   return (
     <div className="flex items-center gap-2">
       <select
@@ -107,6 +123,18 @@ export function UserAdminActions({
         {suspended ? <RotateCcw size={13} /> : <Ban size={13} />}
         {suspended ? "Etkinleştir" : "Askıya al"}
       </button>
+      {onDelete && (
+        <button
+          type="button"
+          onClick={handleDelete}
+          disabled={busy}
+          className="inline-flex items-center gap-1 rounded-lg border border-brand/30 bg-brand/10 px-2 py-1 text-xs text-brand transition hover:bg-brand/20 disabled:opacity-50"
+          aria-label="Kullanıcıyı sil"
+        >
+          <Trash2 size={13} />
+          Sil
+        </button>
+      )}
     </div>
   );
 }
