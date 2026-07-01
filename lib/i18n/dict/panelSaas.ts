@@ -275,6 +275,9 @@ export const tr: Record<string, string> = {
   "panelSaas.console.onboarded.line": "{school} · Kurucu: {email} · Geçici şifre:",
   "panelSaas.console.onboarded.note":
     "Bu bilgileri kurucuya iletin; e-posta + şifre ile /login üzerinden giriş yapacak. Alternatif olarak kurucunun kendi şifresini belirlemesi için sıfırlama e-postası gönderebilirsiniz.",
+  "panelSaas.console.onboarded.emailSent": "Giriş bilgileri kurucuya e-posta ile de gönderildi ✓",
+  "panelSaas.console.onboarded.emailNot":
+    "Not: Giriş bilgileri e-postası gönderilemedi (e-posta servisi henüz hazır değil). Şifreyi elle iletin.",
   "panelSaas.console.reset.sent": "Şifre belirleme e-postası gönderildi.",
   "panelSaas.console.reset.error": "E-posta gönderilemedi.",
   "panelSaas.console.copied": "Kopyalandı",
@@ -716,6 +719,9 @@ export const en: Record<string, string> = {
   "panelSaas.console.onboarded.line": "{school} · Founder: {email} · Temporary password:",
   "panelSaas.console.onboarded.note":
     "Share this information with the founder; they will sign in via /login with email + password. Alternatively, you can send a reset email so the founder can set their own password.",
+  "panelSaas.console.onboarded.emailSent": "Login details were also emailed to the founder ✓",
+  "panelSaas.console.onboarded.emailNot":
+    "Note: the login-details email could not be sent (email service not ready yet). Share the password manually.",
   "panelSaas.console.reset.sent": "Password setup email sent.",
   "panelSaas.console.reset.error": "Could not send email.",
   "panelSaas.console.copied": "Copied",

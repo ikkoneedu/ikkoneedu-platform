@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { getAdminAuth, getAdminDb, isAdminConfigured } from "@/lib/firebase/admin";
 import { strongPassword } from "@/lib/auth/passwords";
+import { sendEmail } from "@/lib/email/resend";
+import { welcomeEmail } from "@/lib/email/templates";
+import { ROLE_LABELS, type Role } from "@/lib/auth/role-constants";
 
 export const runtime = "nodejs";
 
@@ -219,5 +222,25 @@ export async function POST(request: Request) {
     /* claim atanamadıysa profil otoritedir; sessizce devam */
   }
 
-  return NextResponse.json({ ok: true, mode: "created", uid, email, tempPassword: password });
+  // 7) Hoş geldin e-postası — giriş bilgilerini yeni kullanıcıya gönderir.
+  //    EN İYİ ÇABA: e-posta gönderilemese de hesap oluşturma BAŞARILI sayılır
+  //    (yönetici geçici şifreyi zaten yanıtta görür). `emailSent`, gerçek
+  //    gönderim yapıldıysa (mock değil) true döner; UI bunu gösterebilir.
+  let emailSent = false;
+  try {
+    const appUrl = (process.env.NEXT_PUBLIC_APP_URL ?? "").replace(/\/$/, "");
+    const { subject, html } = welcomeEmail({
+      displayName: profileBase.displayName,
+      email,
+      tempPassword: password,
+      roleLabel: ROLE_LABELS[role as Role] ?? role,
+      loginUrl: appUrl ? `${appUrl}/login` : undefined,
+    });
+    const r = await sendEmail({ to: email, subject, html });
+    emailSent = r.ok && !r.mock;
+  } catch {
+    /* e-posta gönderimi kritik değil; sessizce devam */
+  }
+
+  return NextResponse.json({ ok: true, mode: "created", uid, email, tempPassword: password, emailSent });
 }

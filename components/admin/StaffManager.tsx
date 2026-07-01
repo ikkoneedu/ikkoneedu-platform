@@ -64,7 +64,7 @@ export function StaffManager() {
   const [users, setUsers] = useState<TenantUser[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [created, setCreated] = useState<{ email: string; password: string } | null>(null);
+  const [created, setCreated] = useState<{ email: string; password: string; emailSent?: boolean } | null>(null);
   const [copied, setCopied] = useState(false);
   const [resetState, setResetState] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
@@ -115,7 +115,7 @@ export function StaffManager() {
         email,
         department,
       });
-      setCreated({ email: result.email, password: result.tempPassword });
+      setCreated({ email: result.email, password: result.tempPassword, emailSent: result.emailSent });
       form.reset();
       await refresh();
     } catch (err) {
@@ -222,6 +222,11 @@ export function StaffManager() {
                 <p className="mt-0.5 text-xs text-muted">
                   Bu bilgileri personele iletin; e-posta + şifre ile giriş yapacak.
                   Alternatif olarak şifre belirleme e-postası gönderebilirsiniz.
+                </p>
+                <p className={`mt-1 text-xs ${created.emailSent ? "text-emerald-400" : "text-amber-400"}`}>
+                  {created.emailSent
+                    ? "Giriş bilgileri e-posta ile de gönderildi ✓"
+                    : "Not: Giriş bilgileri e-postası gönderilemedi (e-posta servisi henüz hazır değil). Şifreyi elle iletin."}
                 </p>
                 {resetState === "sent" && (
                   <p className="mt-1 text-xs text-emerald-400">

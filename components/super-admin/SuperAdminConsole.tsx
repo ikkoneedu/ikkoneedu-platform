@@ -97,6 +97,7 @@ export function SuperAdminConsole() {
     school: string;
     email: string;
     password: string;
+    emailSent?: boolean;
   } | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -215,6 +216,7 @@ export function SuperAdminConsole() {
           school: school.name,
           email: result.email,
           password: result.tempPassword,
+          emailSent: result.emailSent,
         });
       }
 
@@ -388,6 +390,11 @@ export function SuperAdminConsole() {
               </p>
               <p className="mt-0.5 text-xs text-muted">
                 {t("panelSaas.console.onboarded.note")}
+              </p>
+              <p className={`mt-1 text-xs ${onboarded.emailSent ? "text-emerald-400" : "text-amber-400"}`}>
+                {onboarded.emailSent
+                  ? t("panelSaas.console.onboarded.emailSent")
+                  : t("panelSaas.console.onboarded.emailNot")}
               </p>
               {resetState === "sent" && (
                 <p className="mt-1 text-xs text-emerald-400">

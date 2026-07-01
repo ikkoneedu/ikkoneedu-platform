@@ -19,7 +19,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db, isFirebaseConfigured } from "@/lib/firebase/client";
+import { auth, db, isFirebaseConfigured } from "@/lib/firebase/client";
 import { getSecondaryAuth } from "@/lib/firebase/secondary-app";
 import { userProfileDoc, usersRoot } from "@/lib/firebase/collections";
 import { ROLES, type Role } from "@/lib/auth/role-constants";
@@ -57,6 +57,8 @@ export interface CreatedStaff {
   uid: string;
   email: string;
   tempPassword: string;
+  /** Hoş geldin e-postası GERÇEKTEN gönderildiyse (mock değil) true. */
+  emailSent?: boolean;
 }
 
 /**
@@ -125,7 +127,33 @@ export async function createManagedAccount(input: {
   // 3) İkincil oturumu kapat.
   await signOut(secondary);
 
-  return { uid, email, tempPassword: password };
+  // 4) Hoş geldin e-postası (giriş bilgileri) — EN İYİ ÇABA. E-posta gönderimi
+  //    sunucuda olmalı (Resend server-only); bu yüzden ana oturumun (yönetici)
+  //    idToken'ı ile /api/admin/send-welcome çağrılır. Gönderim başarısız olsa
+  //    da hesap oluşturma başarılıdır (yönetici geçici şifreyi zaten görür).
+  let emailSent = false;
+  try {
+    const token = await auth?.currentUser?.getIdToken();
+    if (token) {
+      const res = await fetch("/api/admin/send-welcome", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          idToken: token,
+          email,
+          tempPassword: password,
+          displayName: input.displayName,
+          role: input.role,
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as { sent?: boolean };
+      emailSent = Boolean(data.sent);
+    }
+  } catch {
+    /* e-posta kritik değil; sessizce devam */
+  }
+
+  return { uid, email, tempPassword: password, emailSent };
 }
 
 /**
