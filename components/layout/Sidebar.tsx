@@ -7,7 +7,7 @@ import { Logo } from "@/components/shared/LogoMark";
 import { navigationItems, type NavigationItem } from "@/lib/constants";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useT } from "@/components/i18n/LocaleProvider";
-import { canRoleAccess } from "@/lib/auth/route-config";
+import { canAccessRoute } from "@/lib/auth/route-config";
 import { useTenantModules } from "@/components/modules/useTenantModules";
 import type { ModuleStatus } from "@/lib/modules/module-catalog";
 import { SINGLE_SCHOOL_MODE, SINGLE_SCHOOL_HIDDEN_ROUTES } from "@/lib/config/app-mode";
@@ -45,15 +45,16 @@ export function Sidebar({
   className = "",
 }: SidebarProps) {
   const pathname = usePathname();
-  const { profile, firebaseReady } = useAuth();
+  const { profile, firebaseReady, activeGrantRoutes } = useAuth();
   const t = useT();
   const { ready: modulesReady, statusOf } = useTenantModules();
 
-  // Rol-duyarlı menü: oturum açıkken kullanıcının erişemediği öğeler gizlenir.
+  // Rol-duyarlı menü: oturum açıkken kullanıcının erişemediği öğeler gizlenir
+  // (Genel Müdür'ün görev bazlı açtığı grant'lar da hesaba katılır).
   // Mock Mod'da (Firebase yok) veya profil yokken tüm öğeler gösterilir.
   const roleItems =
     firebaseReady && profile
-      ? items.filter((item) => canRoleAccess(profile.role, item.href))
+      ? items.filter((item) => canAccessRoute(profile.role, item.href, activeGrantRoutes))
       : items;
   // Tek-okul modunda çoklu okul rotalarını (ör. /school-select) menüden gizle.
   const visibleItems = SINGLE_SCHOOL_MODE

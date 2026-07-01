@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { generateText, firstAvailableProvider } from "@/lib/ai/providers";
 import { getAgent } from "@/lib/ai/registry";
+import { getAdminDb, isAdminConfigured } from "@/lib/firebase/admin";
+import { dateStr } from "@/lib/attendance/token";
+import { notifyGeneralManagers } from "@/lib/server/tenant-leadership-admin";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -54,5 +57,64 @@ export async function GET(request: Request) {
     tasks.summary = "skipped (AI anahtarı veya CRON_SECRET yok)";
   }
 
+  // Günlük giriş-çıkış özeti → yalnız Genel Müdüre (kişisel bildirim).
+  // Idempotent: aynı gün için tenant başına bir kez üretilir (dailyReports kaydı).
+  if (secret && isAdminConfigured()) {
+    try {
+      tasks.dailyReports = await sendDailyReportsToGeneralManagers();
+    } catch (e) {
+      tasks.dailyReportsError = String((e as Error)?.message ?? e);
+    }
+  }
+
   return NextResponse.json({ ok: true, tasks });
+}
+
+/** Tamamlanmış okul gününün (dün, İstanbul saati) devam özetini Genel Müdürlere gönderir. */
+async function sendDailyReportsToGeneralManagers(): Promise<number> {
+  const adminDb = getAdminDb();
+  if (!adminDb) return 0;
+  const reportDate = dateStr(Date.now() - 24 * 60 * 60 * 1000);
+
+  const tenantsSnap = await adminDb.collection("tenants").get();
+  let sent = 0;
+  for (const tenantDoc of tenantsSnap.docs) {
+    const tenantId = tenantDoc.id;
+    const status = String(tenantDoc.data()?.status ?? "").toLowerCase();
+    if (status === "suspended" || status === "cancelled") continue;
+
+    // Tekilleştirme: bu tenant + gün için daha önce gönderildiyse atla.
+    const reportRef = adminDb.doc(`tenants/${tenantId}/dailyReports/${reportDate}`);
+    if ((await reportRef.get()).exists) continue;
+
+    const logsSnap = await adminDb
+      .collection(`tenants/${tenantId}/attendanceLogs`)
+      .where("date", "==", reportDate)
+      .get();
+    if (logsSnap.empty) continue; // o gün hiç kayıt yoksa (tatil vb.) bildirim atma
+
+    let lateCount = 0;
+    let missingCheckOut = 0;
+    for (const doc of logsSnap.docs) {
+      const d = doc.data();
+      if (d.late) lateCount += 1;
+      if (d.checkIn && !d.checkOut) missingCheckOut += 1;
+    }
+
+    await notifyGeneralManagers(adminDb, tenantId, {
+      title: `Günlük devam özeti · ${reportDate}`,
+      body: `${logsSnap.size} personel giriş yaptı, ${lateCount} geç kaldı, ${missingCheckOut} kişi çıkış okutmadı.`,
+      type: "system",
+      link: "/attendance/logs",
+    });
+    await reportRef.set({
+      date: reportDate,
+      totalCheckIns: logsSnap.size,
+      lateCount,
+      missingCheckOut,
+      sentAt: new Date(),
+    });
+    sent += 1;
+  }
+  return sent;
 }

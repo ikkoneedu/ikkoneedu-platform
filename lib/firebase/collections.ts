@@ -62,6 +62,7 @@ export const COLLECTIONS = {
   LESSON_PLANS: "lessonPlans",
   MEETING_REQUESTS: "meetingRequests",
   ATTENDANCE_LOGS: "attendanceLogs",
+  PERMISSION_GRANTS: "permissionGrants",
 } as const;
 
 export type CollectionName = (typeof COLLECTIONS)[keyof typeof COLLECTIONS];
@@ -226,3 +227,7 @@ export const tenantAccessCodes = (tenantId: string): string =>
 /** tenants/{tenantId}/accessCodes/{code} */
 export const accessCodeDoc = (tenantId: string, code: string): string =>
   `${tenantAccessCodes(tenantId)}/${code}`;
+
+/** tenants/{tenantId}/permissionGrants — görev bazlı geçici route yetki devri. */
+export const tenantPermissionGrants = (tenantId: string): string =>
+  tenantPath(tenantId, COLLECTIONS.PERMISSION_GRANTS);

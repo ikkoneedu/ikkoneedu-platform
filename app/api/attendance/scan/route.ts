@@ -14,6 +14,7 @@ import {
   ATTENDANCE_GEOFENCE_ENABLED,
   ATTENDANCE_RETENTION_DAYS,
 } from "@/lib/config/school-location";
+import { notifyGeneralManagers } from "@/lib/server/tenant-leadership-admin";
 
 export const runtime = "nodejs";
 
@@ -208,9 +209,30 @@ async function handle(request: Request) {
     await ref.set({ checkOut: now, checkOutGeo: geo, scannedBy: operatorUid, updatedAt: now }, { merge: true });
   }
 
-  // Geç giriş → yönetim uyarısı (günde bir; sebep sorma akışı için).
-  if (willSetCheckIn && late) {
-    const alertRef = adminDb.doc(`tenants/${staffTenant}/staffAlerts/${logId}`);
+  // Erken çıkış tespiti — mesai bitiş saatinden önce ÇIKIŞ (yoksa erken sayılmaz).
+  let earlyLeave = false;
+  let earlyMinutes = 0;
+  if (action === "out") {
+    const schSnap = await adminDb.doc(`tenants/${staffTenant}/staffSchedules/${parsed.uid}`).get();
+    if (schSnap.exists) {
+      const s = schSnap.data() ?? {};
+      const workdays = Array.isArray(s.workdays) ? s.workdays.map((x: unknown) => Number(x)) : [1, 2, 3, 4, 5];
+      const isWorkday = workdays.includes(isoWeekday(nowMs));
+      if (isWorkday) {
+        const diff = parseHm(String(s.endTime ?? "17:00")) - minutesOfDay(nowMs);
+        if (diff > 0) {
+          earlyLeave = true;
+          earlyMinutes = diff;
+        }
+      }
+    }
+  }
+
+  // Geç giriş / erken çıkış → yönetim uyarısı (günde bir tip başına; sebep
+  // sorma akışı için) + Genel Müdüre özel bildirim.
+  const alertType = willSetCheckIn && late ? "late" : action === "out" && earlyLeave ? "early_leave" : null;
+  if (alertType) {
+    const alertRef = adminDb.doc(`tenants/${staffTenant}/staffAlerts/${logId}_${alertType}`);
     if (!(await alertRef.get()).exists) {
       await alertRef.set({
         uid: parsed.uid,
@@ -218,14 +240,23 @@ async function handle(request: Request) {
         department: String(staff.department ?? ""),
         phone: String(staff.phone ?? ""),
         date: parsed.date,
-        type: "late",
-        lateMinutes,
-        checkIn: now,
+        type: alertType,
+        lateMinutes: alertType === "late" ? lateMinutes : earlyMinutes,
+        checkIn: alertType === "late" ? now : null,
+        checkOut: alertType === "early_leave" ? now : null,
         status: "open",
         question: "",
         answer: "",
         createdAt: now,
         updatedAt: now,
+        expireAt,
+      });
+      await notifyGeneralManagers(adminDb, staffTenant, {
+        title: alertType === "late" ? "Geç giriş" : "Erken çıkış",
+        body:
+          alertType === "late"
+            ? `${String(staff.displayName ?? "")} bugün ${lateMinutes} dk geç geldi.`
+            : `${String(staff.displayName ?? "")} bugün mesai bitmeden ${earlyMinutes} dk önce çıktı.`,
         expireAt,
       });
     }

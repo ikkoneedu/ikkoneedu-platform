@@ -33,6 +33,14 @@ const MANAGER_ROLES: string[] = [
   ROLES.SUPER_ADMIN,
 ];
 
+// Sebep sorma yalnızca Genel Müdür (+Kurucu/Süper Admin) — Firestore kuralları
+// (isGeneralManager()) ile birebir eşleşir. Diğer yönetim rolleri salt okur.
+const GENERAL_MANAGER_ROLES: string[] = [
+  ROLES.SCHOOL_ADMIN,
+  ROLES.FOUNDER,
+  ROLES.SUPER_ADMIN,
+];
+
 const STATUS_STYLE: Record<string, string> = {
   open: "border-rose-400/30 bg-rose-400/10 text-rose-300",
   asked: "border-amber-400/30 bg-amber-400/10 text-amber-300",
@@ -45,6 +53,7 @@ export function StaffAlertsManager() {
   const t = useT();
   const tenantId = profile?.tenantId;
   const usable = firebaseReady && Boolean(tenantId) && profile != null && MANAGER_ROLES.includes(profile.role);
+  const canAsk = profile != null && GENERAL_MANAGER_ROLES.includes(profile.role);
 
   const [rows, setRows] = useState<StaffAlert[] | null>(null);
   const [loading, setLoading] = useState(false);
@@ -117,10 +126,11 @@ export function StaffAlertsManager() {
       ) : (
         <ul className="flex flex-col gap-3">
           {rows.map((a) => {
-            const wa = whatsappLink(
-              a.phone,
-              t("alert.lateBy", { minutes: a.lateMinutes, time: formatAttendanceTime(a.checkIn) }),
-            );
+            const badgeLabel =
+              a.type === "early_leave"
+                ? t("alert.earlyBy", { minutes: a.lateMinutes, time: formatAttendanceTime(a.checkOut) })
+                : t("alert.lateBy", { minutes: a.lateMinutes, time: formatAttendanceTime(a.checkIn) });
+            const wa = whatsappLink(a.phone, badgeLabel);
             return (
               <li key={a.id} className="rounded-xl border border-overlay/10 bg-overlay/[0.03] p-4">
                 <div className="flex flex-wrap items-center gap-2">
@@ -130,14 +140,14 @@ export function StaffAlertsManager() {
                   )}
                   <span className="text-xs text-muted">· {a.date}</span>
                   <span className="rounded-full border border-rose-400/30 bg-rose-400/10 px-2 py-0.5 text-xs text-rose-300">
-                    {t("alert.lateBy", { minutes: a.lateMinutes, time: formatAttendanceTime(a.checkIn) })}
+                    {badgeLabel}
                   </span>
                   <span className={`ml-auto rounded-full border px-2 py-0.5 text-xs ${STATUS_STYLE[a.status]}`}>
                     {t(`alert.status.${a.status}`)}
                   </span>
                 </div>
 
-                {a.status === "open" ? (
+                {a.status === "open" && canAsk && (
                   <div className="mt-3 flex flex-wrap gap-2">
                     <input
                       value={drafts[a.id] ?? ""}
@@ -159,7 +169,13 @@ export function StaffAlertsManager() {
                       </a>
                     )}
                   </div>
-                ) : (
+                )}
+
+                {a.status === "open" && !canAsk && (
+                  <p className="mt-3 text-xs text-muted">{t("alert.askOnlyGeneralManager")}</p>
+                )}
+
+                {a.status !== "open" && (
                   <div className="mt-3 space-y-2 text-sm">
                     <p className="text-muted">
                       <span className="font-medium text-content/70">{t("alert.question")}:</span> {a.question}

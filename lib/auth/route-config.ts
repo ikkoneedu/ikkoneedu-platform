@@ -249,3 +249,18 @@ export function canRoleAccess(
   if (!role) return false;
   return required.includes(role);
 }
+
+/**
+ * `canRoleAccess` + görev bazlı geçici yetki devri (bkz.
+ * `lib/services/permission-grants.ts`). Genel Müdür bir kullanıcıya statik
+ * rol yetkisinin dışında belirli bir route'u geçici olarak açtıysa
+ * (`AuthProvider.activeGrantRoutes`), o kullanıcı rolü uymasa bile erişebilir.
+ */
+export function canAccessRoute(
+  role: Role | null | undefined,
+  pathname: string,
+  activeGrantRoutes: string[] = [],
+): boolean {
+  if (canRoleAccess(role, pathname)) return true;
+  return activeGrantRoutes.some((granted) => matchesPrefix(pathname, granted));
+}

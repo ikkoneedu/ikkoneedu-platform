@@ -17,7 +17,7 @@ import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { ROLES, ROLE_LABELS } from "@/lib/auth/role-constants";
+import { ROLES, ROLE_LABELS, ROLE_LEVELS } from "@/lib/auth/role-constants";
 import { listTenantUsers } from "@/lib/services/users";
 import { getSchoolProfile } from "@/lib/services/school-profiles";
 import { createUserNotification } from "@/lib/services/notifications";
@@ -110,10 +110,14 @@ export function MessageCenter() {
         if (isStaff) {
           const users = await listTenantUsers(tenantId);
           if (!active) return;
+          // Hiyerarşiye göre sırala (Genel Müdür → Müdür → Müdür Yrd. → ... →
+          // Öğretmen) ki doğrudan mesajlaşırken üst/alt kadro kolay bulunsun.
           setCandidates(
             users
               .filter((u) => u.uid !== uid && u.status === "ACTIVE")
-              .map((u) => ({ uid: u.uid, name: u.displayName || u.email, role: u.role })),
+              .map((u) => ({ uid: u.uid, name: u.displayName || u.email, role: u.role }))
+              .sort((a, b) => (ROLE_LEVELS[b.role as keyof typeof ROLE_LEVELS] ?? 0) -
+                (ROLE_LEVELS[a.role as keyof typeof ROLE_LEVELS] ?? 0)),
           );
         } else {
           // Veli/öğrenci kullanıcı listesini okuyamaz. Sabit hedefler:

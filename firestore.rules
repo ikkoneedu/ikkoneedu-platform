@@ -82,6 +82,15 @@ service cloud.firestore {
             || myRole() == 'PRINCIPAL' || myRole() == 'SUPER_ADMIN');
     }
 
+    // Genel Müdür ve üstü — görev bazlı yetki devri (permissionGrants) verebilen
+    // kadro. PRINCIPAL/VICE_PRINCIPAL bilinçli olarak HARİÇ (kullanıcı isteği:
+    // yalnızca Genel Müdür yetki devredebilir).
+    function isGeneralManager() {
+      return isActiveUser()
+        && (myRole() == 'SCHOOL_ADMIN' || myRole() == 'FOUNDER'
+            || myRole() == 'SUPER_ADMIN');
+    }
+
     // Okul kayıt yönetimi (öğrenci/veli/öğretmen/sınıf yazma yetkisi):
     // yönetim + koordinatör + müdür yardımcısı (öğretmen HARİÇ).
     function canManageRecords() {
@@ -647,14 +656,16 @@ service cloud.firestore {
         || (canManageRecords() && myTenant() == tenantId && tenantNotSuspended(tenantId));
     }
 
-    // ---- Geç-giriş uyarıları — yönetim hepsini, personel KENDİNİ okur. CREATE
-    //      yalnızca sunucu (Admin SDK). Yönetim soru/durum, personel yanıt yazar.
+    // ---- Geç-giriş/erken-çıkış uyarıları — yönetim hepsini okur, personel
+    //      KENDİNİ okur. CREATE yalnızca sunucu (Admin SDK). Soru sorma
+    //      yalnızca Genel Müdür (kullanıcı isteği: "genel müdür sebebini
+    //      sormalı"); personel kendi uyarısına yanıt yazar.
     match /tenants/{tenantId}/staffAlerts/{alertId} {
       allow read: if isSuperAdmin()
         || (canManageRecords() && myTenant() == tenantId)
         || (isSignedIn() && resource.data.uid == request.auth.uid);
       allow update: if (
-          canManageRecords() && myTenant() == tenantId
+          isGeneralManager() && myTenant() == tenantId
           && request.resource.data.diff(resource.data).affectedKeys()
                .hasOnly(['question', 'status', 'updatedAt'])
         ) || (
@@ -663,6 +674,19 @@ service cloud.firestore {
                .hasOnly(['answer', 'status', 'updatedAt'])
         );
       allow create, delete: if false; // create yalnızca Admin SDK
+    }
+
+    // ---- Görev bazlı yetki devri — yalnız Genel Müdür/Kurucu/Süper Admin
+    //      verir/geri alır. Tenant üyesi (personel) okur ki devredilen kişi
+    //      kendi grantını görebilsin; UI zaten kendi rolünde filtreler.
+    match /tenants/{tenantId}/permissionGrants/{grantId} {
+      allow read: if isTenantMember(tenantId);
+      allow create: if isGeneralManager() && myTenant() == tenantId
+        && tenantNotSuspended(tenantId)
+        && request.resource.data.grantedBy == request.auth.uid;
+      allow update: if isGeneralManager() && myTenant() == tenantId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']);
+      allow delete: if false;
     }
 
     // ---- Tenant denetim kayıtları — yönetim okur, personel ekler, kilitli --
@@ -686,7 +710,7 @@ service cloud.firestore {
         && !(document[0] in ['messages', 'notifications', 'students', 'parents',
              'teachers', 'admissions', 'admissionMeetings', 'leads', 'appointments',
              'payments', 'auditLogs', 'meetingRequests', 'assignmentSubmissions',
-             'counselingSessions', 'attendanceLogs', 'staffAlerts']);
+             'counselingSessions', 'attendanceLogs', 'staffAlerts', 'permissionGrants']);
       // Askıdaki okulun personeli veri yazamaz (süper admin ayrı kurallarla erişir).
       // Özel-kurallı koleksiyonlar bu yazımdan HARİÇ.
       // (Sınıflar/duyuru/program/not/yoklama bu kuralda kalır: personel yazar.)
@@ -696,7 +720,7 @@ service cloud.firestore {
              'admissions', 'admissionMeetings', 'leads', 'appointments',
              'payments', 'settings', 'auditLogs', 'meetingRequests',
              'assignmentSubmissions', 'counselingSessions', 'attendanceLogs',
-             'staffSchedules', 'staffAlerts']);
+             'staffSchedules', 'staffAlerts', 'permissionGrants']);
     }
 
     // ---- Global CRM (collection group) — yalnızca SUPER_ADMIN -------------

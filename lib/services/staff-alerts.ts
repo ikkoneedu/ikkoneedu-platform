@@ -18,6 +18,7 @@ import { tenantPath } from "@/lib/firebase/collections";
 const COLLECTION = "staffAlerts";
 
 export type AlertStatus = "open" | "asked" | "answered";
+export type AlertType = "late" | "early_leave";
 
 export interface StaffAlert {
   id: string;
@@ -26,8 +27,11 @@ export interface StaffAlert {
   department: string;
   phone: string;
   date: string;
+  /** Geç giriş için geç dakika, erken çıkış için erken çıkış dakikası. */
   lateMinutes: number;
   checkIn: number | null;
+  checkOut: number | null;
+  type: AlertType;
   status: AlertStatus;
   question: string;
   answer: string;
@@ -53,6 +57,8 @@ function mapAlert(id: string, data: Record<string, unknown>): StaffAlert {
     date: String(data.date ?? ""),
     lateMinutes: Number(data.lateMinutes ?? 0) || 0,
     checkIn: toMillis(data.checkIn),
+    checkOut: toMillis(data.checkOut),
+    type: data.type === "early_leave" ? "early_leave" : "late",
     status: (String(data.status ?? "open") as AlertStatus),
     question: String(data.question ?? ""),
     answer: String(data.answer ?? ""),

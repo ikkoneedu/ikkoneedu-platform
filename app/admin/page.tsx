@@ -23,6 +23,7 @@ import { LiveExecutiveMetrics } from "@/components/executive/LiveExecutiveMetric
 import { AnnouncementBoard } from "@/components/announcements/AnnouncementBoard";
 import { MeetingRequests } from "@/components/meetings/MeetingRequests";
 import { AiInsightCard } from "@/components/dashboard/AiInsightCard";
+import { PermissionDelegationPanel } from "@/components/admin/PermissionDelegationPanel";
 import {
   productName,
   adminNavigationItems,
@@ -147,6 +148,11 @@ export default function AdminPage() {
             {/* Veli görüşme talepleri (canlı — yönetim onaylar/reddeder) */}
             <div className="mb-10">
               <MeetingRequests />
+            </div>
+
+            {/* Görev bazlı yetki devri — yalnız Genel Müdür/Kurucu/Süper Admin görür. */}
+            <div className="mb-10">
+              <PermissionDelegationPanel />
             </div>
 
             {/* AI öngörüleri — dürüst "Yakında" (sahte metrik/grafik yok;

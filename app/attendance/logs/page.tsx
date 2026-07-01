@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PageShell } from "@/components/layout/PageShell";
 import { SectionHeader } from "@/components/shared/SectionHeader";
 import { AttendanceLogs } from "@/components/attendance/AttendanceLogs";
+import { StaffAlertsManager } from "@/components/staff-ops/StaffAlertsManager";
 import { getServerT } from "@/lib/i18n/server";
 import { productName } from "@/lib/constants";
 
@@ -20,6 +21,7 @@ export default async function AttendanceLogsPage() {
           title={t("att.logs.title")}
           description={t("att.logs.desc")}
         />
+        <StaffAlertsManager />
         <AttendanceLogs />
       </div>
     </PageShell>

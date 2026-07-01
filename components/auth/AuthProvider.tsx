@@ -27,6 +27,7 @@ import {
 import { getSchool } from "@/lib/services/schools";
 import { ROLES } from "@/lib/auth/role-constants";
 import type { UserProfile } from "@/lib/auth/firebase-auth-types";
+import { watchActiveGrantsForUser } from "@/lib/services/permission-grants";
 
 interface AuthContextValue {
   /** Firebase Auth kullanıcısı (oturum yoksa null). */
@@ -72,6 +73,13 @@ interface AuthContextValue {
   activeTenantId: string | null;
   /** Süper admin bir okulu görüntülemek için seçer (null = kendi/sistem). */
   setActiveTenant: (tenantId: string | null) => void;
+  /**
+   * Genel Müdür tarafından görev bazlı açılmış, statik rol yetkisinin
+   * dışındaki route'lar (permissionGrants — canlı dinlenir). Route erişim
+   * kontrolünde `canRoleAccess(role, path) || activeGrantRoutes.includes(path)`
+   * şeklinde kullanılır.
+   */
+  activeGrantRoutes: string[];
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -94,6 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [tenantSuspended, setTenantSuspended] = useState(false);
   const [activeTenantId, setActiveTenantIdState] = useState<string | null>(null);
+  const [activeGrantRoutes, setActiveGrantRoutes] = useState<string[]>([]);
 
   // Seçili tenant'ı oturumlar arası koru (yalnız tarayıcı).
   useEffect(() => {
@@ -228,6 +237,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  // Görev bazlı yetki devirlerini canlı dinle (kullanıcı/tenant değişince yeniden bağlan).
+  useEffect(() => {
+    if (!user || !profile?.tenantId) {
+      setActiveGrantRoutes([]);
+      return;
+    }
+    const unsubscribe = watchActiveGrantsForUser(
+      profile.tenantId,
+      user.uid,
+      setActiveGrantRoutes,
+    );
+    return unsubscribe;
+  }, [user, profile?.tenantId]);
+
   // Süper admin bir okul seçtiyse, panellere o tenant'ı görmesi için profilin
   // tenantId/schoolId'sini geçici olarak değiştir (yalnız bellekte; Firestore'da
   // değişmez). Diğer roller etkilenmez.
@@ -252,6 +275,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refreshProfile,
     activeTenantId: effectiveActiveTenant,
     setActiveTenant,
+    activeGrantRoutes,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

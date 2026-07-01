@@ -32,7 +32,7 @@ export type Role = (typeof ROLES)[keyof typeof ROLES];
 export const ROLE_LABELS: Record<Role, string> = {
   SUPER_ADMIN: "Süper Admin",
   FOUNDER: "Kurucu",
-  SCHOOL_ADMIN: "Okul Yöneticisi",
+  SCHOOL_ADMIN: "Genel Müdür",
   PRINCIPAL: "Müdür",
   VICE_PRINCIPAL: "Müdür Yardımcısı",
   COORDINATOR: "Koordinatör",
