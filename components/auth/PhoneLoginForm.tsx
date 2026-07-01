@@ -107,6 +107,10 @@ export function PhoneLoginForm({ onAuthenticated, disabled }: PhoneLoginFormProp
       await onAuthenticated(cred.user);
     } catch (e) {
       setError(mapError(e));
+    } finally {
+      // Başarıda üst bileşen genelde yönlendirir (bileşen unmount olur); ancak
+      // profil bulunamaz → signOut gibi yönlendirmeyen durumlarda buton
+      // "Doğrulanıyor…"da takılı kalmasın diye her hâlükârda sıfırla.
       setBusy(false);
     }
   }, [busy, code, onAuthenticated, clearVerifier, mapError]);

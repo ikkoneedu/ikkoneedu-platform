@@ -461,6 +461,14 @@ function LoginContent() {
                     {t("login.errFirebase")}
                   </p>
                 )}
+                {/* Üst-seviye hata (ör. "numara bir hesaba bağlı değil") telefon
+                    sekmesinde de görünmeli — e-posta formundaki hata kutusu burada yok. */}
+                {error && (
+                  <p className="mt-3 flex items-center gap-2 rounded-xl border border-brand/30 bg-brand/10 px-4 py-3 text-sm text-brand">
+                    <AlertCircle size={16} aria-hidden="true" />
+                    {error}
+                  </p>
+                )}
               </div>
             ) : (
             <form ref={formRef} onSubmit={handleSubmit} className="mt-6 space-y-4">
