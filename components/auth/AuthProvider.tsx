@@ -80,6 +80,19 @@ interface AuthContextValue {
    * şeklinde kullanılır.
    */
   activeGrantRoutes: string[];
+  /**
+   * E-posta girişinin ikinci faktörü (kod) BU SEKME/OTURUM için tamamlandı mı?
+   * `sessionStorage` bazlıdır (cihazlar/sekmeler arası sızmaz). `RoleGuard`
+   * bunu kontrol edip tamamlanmadıysa `/login?step=otp`e yönlendirir.
+   */
+  otpVerified: boolean;
+  /** OTP adımı başarıyla tamamlandığında `/login` sayfasından çağrılır. */
+  markOtpVerified: () => void;
+}
+
+/** Bir kullanıcının OTP doğrulama bayrağı için sessionStorage anahtarı. */
+function otpStorageKey(uid: string): string {
+  return `ikk_otp_verified_${uid}`;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -103,6 +116,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [tenantSuspended, setTenantSuspended] = useState(false);
   const [activeTenantId, setActiveTenantIdState] = useState<string | null>(null);
   const [activeGrantRoutes, setActiveGrantRoutes] = useState<string[]>([]);
+  const [otpVerified, setOtpVerified] = useState(false);
 
   // Seçili tenant'ı oturumlar arası koru (yalnız tarayıcı).
   useEffect(() => {
@@ -190,6 +204,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, [resolveTenantSuspended]);
 
+  // Kullanıcı değişince bu sekmede OTP zaten doğrulanmış mı diye bak.
+  useEffect(() => {
+    if (!user) {
+      setOtpVerified(false);
+      return;
+    }
+    try {
+      setOtpVerified(window.sessionStorage.getItem(otpStorageKey(user.uid)) === "1");
+    } catch {
+      setOtpVerified(false);
+    }
+  }, [user]);
+
+  const markOtpVerified = useCallback(() => {
+    if (!user) return;
+    try {
+      window.sessionStorage.setItem(otpStorageKey(user.uid), "1");
+    } catch {
+      /* sessionStorage erişilemezse yok say — RoleGuard yine de yeniden sorar */
+    }
+    setOtpVerified(true);
+  }, [user]);
+
   const signIn = useCallback(
     async (email: string, password: string, remember = true) => {
       if (!isFirebaseConfigured() || !auth) {
@@ -209,7 +246,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     if (!auth) return;
+    const uid = auth.currentUser?.uid;
     await firebaseSignOut(auth);
+    if (uid) {
+      try {
+        window.sessionStorage.removeItem(otpStorageKey(uid));
+      } catch {
+        /* yok say */
+      }
+    }
   }, []);
 
   const signUpPublic = useCallback(
@@ -276,6 +321,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     activeTenantId: effectiveActiveTenant,
     setActiveTenant,
     activeGrantRoutes,
+    otpVerified,
+    markOtpVerified,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

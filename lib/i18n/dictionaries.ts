@@ -323,6 +323,20 @@ const tr: Dict = {
   "login.errEmailOnly": "Lütfen e-posta adresinizle giriş yapın (örn. ad@okul.com).",
   "login.errNoProfile":
     "Yetki profiliniz bulunamadı. Lütfen sistem yöneticisiyle iletişime geçin.",
+
+  // Giriş — e-posta doğrulama kodu (OTP, ikinci adım)
+  "login.otpBadge": "Güvenlik Doğrulaması",
+  "login.otpTitle": "E-postanıza gelen kodu girin",
+  "login.otpDesc": "{email} adresine 6 haneli bir doğrulama kodu gönderdik. Kod 5 dakika geçerlidir.",
+  "login.otpCodeLabel": "Doğrulama Kodu",
+  "login.otpSubmit": "Doğrula ve Giriş Yap",
+  "login.otpVerifying": "Doğrulanıyor...",
+  "login.otpBack": "Geri dön",
+  "login.otpResend": "Kodu tekrar gönder",
+  "login.otpResending": "Gönderiliyor...",
+  "login.otpResent": "Gönderildi ✓",
+  "login.otpSendFailed": "Kod gönderilemedi. Lütfen tekrar deneyin.",
+  "login.otpMock": "(Geliştirme modu: kod e-posta yerine sunucu konsoluna yazıldı.)",
 };
 
 const en: Dict = {
@@ -577,6 +591,19 @@ const en: Dict = {
   "login.errEmailOnly": "Please sign in with your email address (e.g. name@school.com).",
   "login.errNoProfile":
     "Your authorization profile was not found. Please contact your system administrator.",
+
+  "login.otpBadge": "Security Verification",
+  "login.otpTitle": "Enter the code sent to your email",
+  "login.otpDesc": "We sent a 6-digit verification code to {email}. The code is valid for 5 minutes.",
+  "login.otpCodeLabel": "Verification Code",
+  "login.otpSubmit": "Verify and Sign In",
+  "login.otpVerifying": "Verifying...",
+  "login.otpBack": "Go back",
+  "login.otpResend": "Resend code",
+  "login.otpResending": "Sending...",
+  "login.otpResent": "Sent ✓",
+  "login.otpSendFailed": "Could not send the code. Please try again.",
+  "login.otpMock": "(Development mode: the code was logged to the server console instead of emailed.)",
 };
 
 export const dictionaries: Record<Locale, Dict> = {

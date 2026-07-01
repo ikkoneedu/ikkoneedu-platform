@@ -796,6 +796,12 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ---- E-posta giriş doğrulama kodları (OTP) — istemci ASLA erişemez ----
+    // Yalnızca Admin SDK okur/yazar (/api/auth/send-otp, /api/auth/verify-otp).
+    match /otpCodes/{uid} {
+      allow read, write: if false;
+    }
+
     // ---- Öğrenci kayıtları / notlar (kök; gizli) --------------------------
     // Okuma: öğrencinin kendisi, bağlı velisi, aynı tenant personeli.
     // Yazma: yalnızca aynı tenant personeli.

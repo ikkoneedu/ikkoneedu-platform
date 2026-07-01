@@ -22,7 +22,7 @@ const isProduction = process.env.NODE_ENV === "production";
  * - Rol bu route için yetkili değilse 403 ekranı gösterir (kendi paneline link).
  */
 export function RoleGuard({ children }: { children: ReactNode }) {
-  const { user, profile, loading, firebaseReady, signOut, tenantSuspended } = useAuth();
+  const { user, profile, loading, firebaseReady, signOut, tenantSuspended, otpVerified } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -39,8 +39,14 @@ export function RoleGuard({ children }: { children: ReactNode }) {
     if (!firebaseReady || loading || publicRoute) return;
     if (!user) {
       router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
+      return;
     }
-  }, [firebaseReady, loading, user, pathname, router, publicRoute]);
+    // Şifreyle giriş yapılmış ama bu sekmede e-posta doğrulama kodu (OTP)
+    // henüz tamamlanmamış — korumalı panele geçmeden önce kodu tamamlatır.
+    if (profile && !otpVerified) {
+      router.replace(`/login?step=otp&redirect=${encodeURIComponent(pathname)}`);
+    }
+  }, [firebaseReady, loading, user, profile, otpVerified, pathname, router, publicRoute]);
 
   // Halka açık yol: doğrudan render et (oturum gerektirmez).
   if (publicRoute) return <>{children}</>;
@@ -70,6 +76,7 @@ export function RoleGuard({ children }: { children: ReactNode }) {
   }
 
   if (!user) return null; // /login'e yönlendiriliyor
+  if (profile && !otpVerified) return null; // /login?step=otp'ye yönlendiriliyor
 
   // Profil yoksa: oturumu kapat (yarım oturumla korumalı panelde takılı kalmasın).
   if (!profile) {

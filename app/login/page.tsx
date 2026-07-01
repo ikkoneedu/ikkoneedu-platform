@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState, type FormEvent } from "react";
 import { motion } from "framer-motion";
+import type { User } from "firebase/auth";
 import {
   Mail,
   Lock,
@@ -23,6 +24,7 @@ import { GlassCard } from "@/components/shared/GlassCard";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { TextField } from "@/components/shared/TextField";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { OtpStep } from "@/components/auth/OtpStep";
 import { useT } from "@/components/i18n/LocaleProvider";
 import { getUserProfile } from "@/lib/services/user-profile";
 import { getHomeRouteForRole } from "@/lib/auth/role-routing";
@@ -79,13 +81,22 @@ function LoginContent() {
   const school = searchParams.get("school") ?? "";
   const redirectParam = searchParams.get("redirect") ?? "";
 
-  const { signIn, signOut, firebaseReady } = useAuth();
+  const { user, profile, signIn, signOut, firebaseReady, otpVerified, markOtpVerified } = useAuth();
   const t = useT();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [resetMsg, setResetMsg] = useState<string | null>(null);
   const [schoolBrand, setSchoolBrand] = useState<SchoolRecord | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+
+  // İki adımlı giriş: şifre doğrulandıktan sonra e-postaya kod gönderilir.
+  const [step, setStep] = useState<"credentials" | "otp">("credentials");
+  const [pendingUser, setPendingUser] = useState<User | null>(null);
+  const [pendingRedirect, setPendingRedirect] = useState<string>("/");
+  const [otpError, setOtpError] = useState<string | null>(null);
+  const [otpSubmitting, setOtpSubmitting] = useState(false);
+  const [resendState, setResendState] = useState<"idle" | "sending" | "sent" | "cooldown">("idle");
+  const otpStepParam = searchParams.get("step") === "otp";
 
   // Okuldan gelindiyse (?school=slug) o okulun marka kimliğini yükle (logo/renk).
   useEffect(() => {
@@ -127,6 +138,107 @@ function LoginContent() {
   const config = ROLE_CONFIG[role];
   const subtitle = config ? t(config.subtitleKey) : t("login.subtitleDefault");
 
+  // Şifre doğrulandıktan sonra e-postaya kod gönderir ve OTP adımına geçer.
+  // Kod gönderimi başarısız olsa bile OTP ekranında kalınır (kullanıcı
+  // "Tekrar gönder"i deneyebilir) — yarım oturumda protected sayfaya
+  // sızma yoktur çünkü RoleGuard zaten `otpVerified`i ayrıca kontrol eder.
+  const beginOtpStep = async (targetUser: User, redirectTo: string) => {
+    setPendingUser(targetUser);
+    setPendingRedirect(redirectTo);
+    setStep("otp");
+    setOtpError(null);
+    try {
+      const idToken = await targetUser.getIdToken();
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok || !result.ok) {
+        setOtpError(result.error ?? t("login.otpSendFailed"));
+      } else if (result.devCode) {
+        setOtpError(`${t("login.otpMock")} Kod: ${result.devCode}`);
+      }
+    } catch {
+      setOtpError(t("login.otpSendFailed"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleOtpSubmit = async (code: string) => {
+    if (!pendingUser || otpSubmitting) return;
+    setOtpSubmitting(true);
+    setOtpError(null);
+    try {
+      const idToken = await pendingUser.getIdToken();
+      const res = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken, code }),
+      });
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok || !result.ok) {
+        setOtpError(result.error ?? t("login.otpSendFailed"));
+        setOtpSubmitting(false);
+        return;
+      }
+      markOtpVerified();
+      router.push(pendingRedirect);
+    } catch {
+      setOtpError(t("login.otpSendFailed"));
+      setOtpSubmitting(false);
+    }
+  };
+
+  const handleOtpResend = async () => {
+    if (!pendingUser || resendState === "sending" || resendState === "cooldown") return;
+    setResendState("sending");
+    setOtpError(null);
+    try {
+      const idToken = await pendingUser.getIdToken();
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+      });
+      const result = await res.json().catch(() => ({}));
+      if (!res.ok || !result.ok) {
+        setOtpError(result.error ?? t("login.otpSendFailed"));
+        setResendState(res.status === 429 ? "cooldown" : "idle");
+        if (res.status === 429) setTimeout(() => setResendState("idle"), 60000);
+        return;
+      }
+      if (result.devCode) setOtpError(`${t("login.otpMock")} Kod: ${result.devCode}`);
+      setResendState("sent");
+      setTimeout(() => setResendState("idle"), 60000);
+    } catch {
+      setOtpError(t("login.otpSendFailed"));
+      setResendState("idle");
+    }
+  };
+
+  const handleOtpBack = async () => {
+    await signOut();
+    setStep("credentials");
+    setPendingUser(null);
+    setOtpError(null);
+  };
+
+  // RoleGuard, OTP tamamlanmamış oturumu buraya `?step=otp` ile yönlendirir —
+  // kullanıcı zaten şifreyle girmiş (Firebase oturumu açık), tekrar şifre
+  // sormadan doğrudan kod adımına geç.
+  useEffect(() => {
+    if (!otpStepParam || !firebaseReady || !user || !profile || otpVerified) return;
+    if (step === "otp") return;
+    const home = getHomeRouteForRole(profile.role);
+    const safe = sanitizeRedirect(redirectParam);
+    const safeRedirect = safe && canRoleAccess(profile.role, safe) ? safe : home;
+    void beginOtpStep(user, safeRedirect);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [otpStepParam, firebaseReady, user, profile, otpVerified]);
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (submitting) return;
@@ -152,12 +264,12 @@ function LoginContent() {
     setSubmitting(true);
     setError(null);
     try {
-      const user = await signIn(identifier, password, remember);
+      const signedInUser = await signIn(identifier, password, remember);
       // Firestore users/{uid} profilini oku (role, tenantId, schoolId).
-      const profile = await getUserProfile(user.uid);
+      const signedInProfile = await getUserProfile(signedInUser.uid);
 
       // Profil yoksa: girişi sonlandır ve yetki mesajı göster.
-      if (!profile) {
+      if (!signedInProfile) {
         await signOut();
         setError(t("login.errNoProfile"));
         setSubmitting(false);
@@ -166,11 +278,12 @@ function LoginContent() {
 
       // Güvenli yönlendirme: redirect parametresi yalnızca site içi VE bu rolün
       // erişebileceği bir yolsa kullanılır; aksi halde rolün ana sayfasına gidilir.
-      const home = getHomeRouteForRole(profile.role);
+      const home = getHomeRouteForRole(signedInProfile.role);
       const safe = sanitizeRedirect(redirectParam);
       const safeRedirect =
-        safe && canRoleAccess(profile.role, safe) ? safe : home;
-      router.push(safeRedirect);
+        safe && canRoleAccess(signedInProfile.role, safe) ? safe : home;
+      // Şifre doğru — ikinci faktör (e-posta kodu) için OTP adımına geç.
+      await beginOtpStep(signedInUser, safeRedirect);
     } catch (err) {
       setError(getAuthErrorMessage(err));
       setSubmitting(false);
@@ -228,6 +341,18 @@ function LoginContent() {
         {/* Sağ taraf — giriş kartı */}
         <motion.section {...fadeUp} transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }}>
           <GlassCard tone="navy" className="sm:p-8">
+            {step === "otp" ? (
+              <OtpStep
+                email={profile?.email ?? pendingUser?.email ?? ""}
+                submitting={otpSubmitting}
+                error={otpError}
+                resendState={resendState}
+                onSubmit={(code) => void handleOtpSubmit(code)}
+                onResend={() => void handleOtpResend()}
+                onBack={() => void handleOtpBack()}
+              />
+            ) : (
+              <>
             <h2 className="text-xl font-bold tracking-tight text-content sm:text-2xl">
               {t("login.cardTitle", { product: productName })}
             </h2>
@@ -374,6 +499,8 @@ function LoginContent() {
                 {t("login.browseLink")}
               </Link>
             </p>
+              </>
+            )}
           </GlassCard>
         </motion.section>
       </div>
